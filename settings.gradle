@@ -1,0 +1,5 @@
+rootProject.name = 'sei-manager'
+
+include 'sei-manager-service'
+include 'sei-manager-api'
+
