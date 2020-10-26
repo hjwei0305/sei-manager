@@ -1,5 +1,6 @@
 package com.changhong.sei.manager;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -11,8 +12,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @author 王锦光 wangj
  * @version 1.0.1 2019-12-18 10:41
  */
+@EnableAdminServer
 @SpringBootApplication
-@EnableFeignClients(basePackages = {"com.changhong.sei.manager.service.client"})
+//@EnableFeignClients(basePackages = {"com.changhong.sei.manager.service.client"})
 public class RestApplication {
     public static void main(String[] args) {
         SpringApplication.run(RestApplication.class, args);
