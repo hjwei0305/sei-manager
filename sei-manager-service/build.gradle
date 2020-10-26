@@ -24,6 +24,7 @@ dependencies {
 
     compile(
             "de.codecentric:spring-boot-admin-starter-server:2.1.6",
+            "de.codecentric:spring-boot-admin-starter-client:2.1.6",
             "de.codecentric:spring-boot-admin-server-ui:2.1.6"
     )
 
