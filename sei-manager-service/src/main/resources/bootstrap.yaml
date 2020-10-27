@@ -21,6 +21,8 @@ spring:
     admin:
       discovery:
         enabled: false
+      ui:
+        title: SEI-Manager
   application:
     name: ${sei.application.code}
   cloud:

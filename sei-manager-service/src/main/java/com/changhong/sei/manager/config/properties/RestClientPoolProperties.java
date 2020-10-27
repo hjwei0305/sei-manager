@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-10-27 00:56
  */
-@ConfigurationProperties(prefix = "zlt.elasticsearch.rest-pool")
+@ConfigurationProperties(prefix = "sei.elasticsearch.rest-pool")
 @RefreshScope
 public class RestClientPoolProperties implements Serializable {
     private static final long serialVersionUID = 8127887133113338096L;
@@ -30,7 +30,7 @@ public class RestClientPoolProperties implements Serializable {
     /**
      * 最大连接数
      */
-    private Integer maxConnectNum = 30;
+    private Integer maxConnectNum = 50;
     /**
      * 最大路由连接数
      */
