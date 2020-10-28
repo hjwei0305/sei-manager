@@ -1,6 +1,7 @@
 package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.manager.dto.LogDetailResponse;
 import com.changhong.sei.manager.dto.LogResponse;
@@ -25,18 +26,25 @@ public class LogServiceTest extends BaseUnitTest {
     @Test
     public void findByPage() {
         LogSearch search = new LogSearch();
-        search.setIdxName("sei-basic-");
+        search.setIdxName("sei-basic-*");
+        search.addQuickSearchProperty(LogResponse.SEARCH_TRACE_ID);
+        search.addQuickSearchProperty(LogResponse.SEARCH_MESSAGE);
+        search.addQuickSearchProperty(LogResponse.SEARCH_LEVEL);
+        search.setQuickSearchValue("sei");
+        search.addFilter(new SearchFilter(LogResponse.SEARCH_TIMESTAMP, "2020-10-28 18:22:49", SearchFilter.Operator.LE));
+        search.addFilter(new SearchFilter(LogResponse.SEARCH_TIMESTAMP, "2020-10-28 17:22:49", SearchFilter.Operator.GE));
         service.findByPage(search);
     }
 
     @Test
     public void detail() {
         ResultData<LogDetailResponse> resultData = service.detail("sei-basic-*", "Rl6jZ3UBL-RVZTytXIH3");
-        System.out.println(resultData);
+        System.out.println(resultData.getData().getMessage());
     }
 
     @Test
     public void findByTraceId() {
-        ResultData<List<LogResponse>> resultData = service.findByTraceId("sei-basic-*", "ED7CDDC017F211EBBB7B0242C0A8460C");
+        ResultData<List<LogResponse>> resultData = service.findByTraceId("sei-basic-*", "7D0EBFA618F311EBBB7B0242C0A8460C");
+        System.out.println(resultData);
     }
 }

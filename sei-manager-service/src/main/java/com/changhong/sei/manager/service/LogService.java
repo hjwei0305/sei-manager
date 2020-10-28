@@ -71,7 +71,7 @@ public class LogService {
     public ResultData<List<LogResponse>> findByTraceId(String serviceName, String traceId) {
         LogSearch search = new LogSearch();
         search.setIdxName(serviceName);
-        search.addFilter(new SearchFilter("traceId", traceId));
+        search.addFilter(new SearchFilter(LogResponse.SEARCH_TRACE_ID, traceId));
 
         ResultData<List<HashMap<String, Object>>> resultData = elasticService.search(search);
         if (resultData.successful()) {

@@ -15,6 +15,11 @@ import java.io.Serializable;
 @ApiModel(description = "日志")
 public class LogResponse implements Serializable {
     private static final long serialVersionUID = -7357129504573889779L;
+    public static final String SEARCH_TRACE_ID = "traceId";
+    public static final String SEARCH_TIMESTAMP = "timestamp";
+    public static final String SEARCH_ENV = "env";
+    public static final String SEARCH_LEVEL = "level";
+    public static final String SEARCH_MESSAGE = "message";
 
     /**
      * 时间戳
