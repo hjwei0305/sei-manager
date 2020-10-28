@@ -94,7 +94,7 @@ public class LogService {
         try {
             if (Objects.nonNull(temp)) {
                 Date date = DateUtils.parseTime(String.valueOf(temp), DateUtils.ISO_DATE_TIME_FORMAT);
-                temp = DateUtils.formatTime(date);
+                temp = DateUtils.formatDate(date, "yyyy-MM-dd HH:mm:ss.SSS");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +127,7 @@ public class LogService {
         try {
             if (Objects.nonNull(temp)) {
                 Date date = DateUtils.parseTime(String.valueOf(temp), DateUtils.ISO_DATE_TIME_FORMAT);
-                temp = DateUtils.formatTime(date);
+                temp = DateUtils.formatDate(date, "yyyy-MM-dd HH:mm:ss.SSS");
             }
         } catch (Exception e) {
             e.printStackTrace();
