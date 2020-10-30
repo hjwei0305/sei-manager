@@ -370,7 +370,8 @@ public class BaseElasticService {
                     case LLK:
                     case RLK:
                         // 模糊查询
-                        queryBuilder.must(QueryBuilders.queryStringQuery(String.valueOf(matchValue)));
+//                        queryBuilder.must(QueryBuilders.queryStringQuery(String.valueOf(matchValue)));
+                        queryBuilder.must(QueryBuilders.matchQuery(filter.getFieldName(), matchValue));
                         break;
                     case GE:
                         if (StringUtils.equalsIgnoreCase("timestamp", filter.getFieldName())) {

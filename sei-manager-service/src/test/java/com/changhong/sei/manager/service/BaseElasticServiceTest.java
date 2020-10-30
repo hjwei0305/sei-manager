@@ -73,7 +73,9 @@ public class BaseElasticServiceTest extends BaseUnitTest {
         String a = "2020-11-12T17:01:38.841Z";
 
         System.out.println(DateUtils.parseTime(s, DateUtils.ISO_DATE_TIME_FORMAT));
+        System.out.println(DateUtils.formatDate(DateUtils.parseTime(s, DateUtils.ISO_DATE_TIME_FORMAT), "yyyy-MM-dd HH:mm:ss.SSS"));
         System.out.println(DateUtils.parseTime(a, DateUtils.ISO_DATE_TIME_FORMAT));
+        System.out.println(DateUtils.formatDate(DateUtils.parseTime(a, DateUtils.ISO_DATE_TIME_FORMAT), "yyyy-MM-dd HH:mm:ss.SSS"));
         Object obj = null;
         String s1 = String.valueOf(obj);
         System.out.println(s1);

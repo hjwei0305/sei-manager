@@ -1,11 +1,13 @@
 package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.manager.dto.LogDetailResponse;
 import com.changhong.sei.manager.dto.LogResponse;
 import com.changhong.sei.manager.dto.LogSearch;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,9 +33,13 @@ public class LogServiceTest extends BaseUnitTest {
         search.addQuickSearchProperty(LogResponse.SEARCH_MESSAGE);
         search.addQuickSearchProperty(LogResponse.SEARCH_LEVEL);
         search.setQuickSearchValue("sei");
-        search.addFilter(new SearchFilter(LogResponse.SEARCH_TIMESTAMP, "2020-10-28 18:22:49", SearchFilter.Operator.LE));
-        search.addFilter(new SearchFilter(LogResponse.SEARCH_TIMESTAMP, "2020-10-28 17:22:49", SearchFilter.Operator.GE));
-        service.findByPage(search);
+        List<SearchFilter> filters = Lists.newArrayList();
+        filters.add(new SearchFilter(LogResponse.SEARCH_MESSAGE, "请求", SearchFilter.Operator.LK));
+        search.setFilters(filters);
+//        search.addFilter(new SearchFilter(LogResponse.SEARCH_TIMESTAMP, "2020-10-28 18:22:49", SearchFilter.Operator.LE));
+//        search.addFilter(new SearchFilter(LogResponse.SEARCH_TIMESTAMP, "2020-10-28 17:22:49", SearchFilter.Operator.GE));
+        ResultData<PageResult<LogResponse>> resultData = service.findByPage(search);
+        System.out.println(resultData);
     }
 
     @Test
