@@ -1,7 +1,12 @@
 package com.changhong.sei.manager.service;
 
+import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.manager.dao.ApplicationDao;
+import com.changhong.sei.manager.dto.ApplicationDto;
 import com.changhong.sei.manager.dto.ApplicationResponse;
+import com.changhong.sei.manager.entity.Application;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -14,13 +19,20 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 实现功能：
+ * 应用服务(Application)业务逻辑实现类
  *
- * @author 马超(Vision.Mac)
- * @version 1.0.00  2020-10-30 13:48
+ * @author sei
+ * @since 2020-10-30 15:20:57
  */
-@Service
-public class ApplicationService {
+@Service("applicationService")
+public class ApplicationService extends BaseEntityService<Application> {
+    @Autowired
+    private ApplicationDao dao;
+
+    @Override
+    protected BaseEntityDao<Application> getDao() {
+        return dao;
+    }
 
     @Autowired
     private DiscoveryClient discoveryClient;
@@ -35,8 +47,8 @@ public class ApplicationService {
     /**
      * 获取当前所有可用应用服务清单
      */
-    public ResultData<List<ApplicationResponse>> getServices() {
-        List<ApplicationResponse> services = new ArrayList<>();
+    public ResultData<List<ApplicationDto>> getServices() {
+        List<ApplicationDto> services = new ArrayList<>();
         List<String> list = discoveryClient.getServices();
         ApplicationResponse app;
         for (String code : list) {
@@ -61,13 +73,12 @@ public class ApplicationService {
             ApplicationResponse app;
             for (ServiceInstance instance : instances) {
                 app = new ApplicationResponse();
-                app.setInstanceId(instance.getInstanceId());
+                app.setId(instance.getInstanceId());
                 app.setCode(instance.getServiceId());
                 URI uri = instance.getUri();
                 if (Objects.nonNull(uri)) {
                     if (instance.getPort() == -1) {
-                        String temp = uri.getHost();
-                        app.setUri(temp.replace(temp, ":-1"));
+                        app.setUri(uri.toString().replace(":-1", ""));
                     } else {
                         app.setUri(uri.getHost());
                     }

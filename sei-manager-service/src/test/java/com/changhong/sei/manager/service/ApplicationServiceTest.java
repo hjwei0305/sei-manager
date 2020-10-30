@@ -1,8 +1,11 @@
 package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.core.test.BaseUnitTest;
+import com.changhong.sei.manager.dto.ApplicationDto;
 import com.changhong.sei.manager.dto.ApplicationResponse;
+import com.changhong.sei.manager.entity.Application;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,8 +23,25 @@ public class ApplicationServiceTest extends BaseUnitTest {
     private ApplicationService service;
 
     @Test
+    public void save() {
+        Application app = new Application();
+        app.setCode("test");
+        app.setName("test测试");
+        app.setVersion("test-1.0.1");
+        app.setUri("http://test:8080/test");
+        OperateResultWithData<Application> result = service.save(app);
+        System.out.println(result);
+    }
+
+    @Test
+    public void findId() {
+        Application result = service.findOne("AC708D97-1A82-11EB-9804-B2736CF14622");
+        System.out.println(result);
+    }
+
+    @Test
     public void getServices() {
-        ResultData<List<ApplicationResponse>> result = service.getServices();
+        ResultData<List<ApplicationDto>> result = service.getServices();
         System.out.println(result);
     }
 

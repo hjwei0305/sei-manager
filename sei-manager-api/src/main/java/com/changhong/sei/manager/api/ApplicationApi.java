@@ -1,6 +1,7 @@
 package com.changhong.sei.manager.api;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.manager.dto.ApplicationDto;
 import com.changhong.sei.manager.dto.ApplicationResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -26,7 +27,7 @@ public interface ApplicationApi {
      */
     @GetMapping(path = "getServices")
     @ApiOperation(value = "获取当前所有可用应用服务清单", notes = "获取当前所有可用应用服务清单")
-    ResultData<List<ApplicationResponse>> getServices();
+    ResultData<List<ApplicationDto>> getServices();
 
     /**
      * 获取指定应用的实例清单
