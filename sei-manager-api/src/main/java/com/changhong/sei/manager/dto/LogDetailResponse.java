@@ -46,6 +46,17 @@ public class LogDetailResponse extends LogResponse implements Serializable {
     @ApiModelProperty(notes = "堆栈信息")
     private String stackTrace;
 
+    @ApiModelProperty(notes = "java类")
+    private String className;
+    @ApiModelProperty(notes = "方法")
+    private String methodName;
+    @ApiModelProperty(notes = "参数")
+    private String args;
+    @ApiModelProperty(notes = "URL")
+    private String requestURI;
+    @ApiModelProperty(notes = "用户代理")
+    private String userAgent;
+
     public String getHost() {
         return host;
     }
@@ -84,6 +95,46 @@ public class LogDetailResponse extends LogResponse implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public String getArgs() {
+        return args;
+    }
+
+    public void setArgs(String args) {
+        this.args = args;
+    }
+
+    public String getRequestURI() {
+        return requestURI;
+    }
+
+    public void setRequestURI(String requestURI) {
+        this.requestURI = requestURI;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
     public String getStackTrace() {

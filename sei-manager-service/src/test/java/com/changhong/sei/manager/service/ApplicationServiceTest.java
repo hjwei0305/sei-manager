@@ -25,12 +25,17 @@ public class ApplicationServiceTest extends BaseUnitTest {
     @Test
     public void save() {
         Application app = new Application();
-        app.setCode("test");
+//        app.setCode("test");
         app.setName("test测试");
         app.setVersion("test-1.0.1");
         app.setUri("http://test:8080/test");
         OperateResultWithData<Application> result = service.save(app);
         System.out.println(result);
+    }
+
+    @Test
+    public void getServiceCodes() {
+         service.getServiceCodes();
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.changhong.sei.manager.service;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.manager.dao.ApplicationDao;
 import com.changhong.sei.manager.dto.ApplicationDto;
 import com.changhong.sei.manager.dto.ApplicationResponse;
@@ -36,6 +37,16 @@ public class ApplicationService extends BaseEntityService<Application> {
 
     @Autowired
     private DiscoveryClient discoveryClient;
+
+    /**
+     * 数据保存操作
+     *
+     * @param entity
+     */
+    @Override
+    public OperateResultWithData<Application> save(Application entity) {
+        return super.save(entity);
+    }
 
     /**
      * 获取当前所有可用应用服务清单

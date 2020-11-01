@@ -22,11 +22,11 @@ dependencies {
     // 第三方组件依赖包
     compile("mysql:mysql-connector-java:$mysqlVersion")
 
-    compile(
-            "de.codecentric:spring-boot-admin-starter-server:2.1.6",
-            "de.codecentric:spring-boot-admin-starter-client:2.1.6",
-            "de.codecentric:spring-boot-admin-server-ui:2.1.6"
-    )
+//    compile(
+//            "de.codecentric:spring-boot-admin-starter-server:2.1.6",
+//            "de.codecentric:spring-boot-admin-starter-client:2.1.6",
+//            "de.codecentric:spring-boot-admin-server-ui:2.1.6"
+//    )
 
     // elasticsearch
     // 官方推荐使用REST Client，Client分为两个Low Level REST Client和High Level REST Client，
