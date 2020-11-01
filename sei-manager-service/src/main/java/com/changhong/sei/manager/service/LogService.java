@@ -104,10 +104,8 @@ public class LogService {
         log.setId(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("traceId");
         log.setTraceId(Objects.nonNull(temp) ? String.valueOf(temp) : "");
-        temp = map.get("currentServer");
-        log.setCurrentServer(Objects.nonNull(temp) ? String.valueOf(temp) : "");
-        temp = map.get("fromServer");
-        log.setFromServer(Objects.nonNull(temp) ? String.valueOf(temp) : "");
+        temp = map.get("tracePath");
+        log.setTracePath(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("env");
         log.setEnv(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("serviceName");
@@ -137,10 +135,8 @@ public class LogService {
         log.setId(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("traceId");
         log.setTraceId(Objects.nonNull(temp) ? String.valueOf(temp) : "");
-        temp = map.get("currentServer");
-        log.setCurrentServer(Objects.nonNull(temp) ? String.valueOf(temp) : "");
-        temp = map.get("fromServer");
-        log.setFromServer(Objects.nonNull(temp) ? String.valueOf(temp) : "");
+        temp = map.get("tracePath");
+        log.setTracePath(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("env");
         log.setEnv(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("serviceName");

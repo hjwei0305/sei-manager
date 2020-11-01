@@ -3,7 +3,6 @@ package com.changhong.sei.manager.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -40,15 +39,10 @@ public class LogResponse implements Serializable {
     private String traceId;
 
     /**
-     * 当前服务
+     * 服务调用链
      */
-    @ApiModelProperty(notes = "当前服务")
-    private String currentServer;
-    /**
-     * 调用服务
-     */
-    @ApiModelProperty(notes = "调用服务")
-    private String fromServer;
+    @ApiModelProperty(notes = "服务调用链")
+    private String tracePath;
 
     /**
      * 环境
@@ -100,20 +94,12 @@ public class LogResponse implements Serializable {
         this.traceId = traceId;
     }
 
-    public String getCurrentServer() {
-        return currentServer;
+    public String getTracePath() {
+        return tracePath;
     }
 
-    public void setCurrentServer(String currentServer) {
-        this.currentServer = currentServer;
-    }
-
-    public String getFromServer() {
-        return fromServer;
-    }
-
-    public void setFromServer(String fromServer) {
-        this.fromServer = fromServer;
+    public void setTracePath(String tracePath) {
+        this.tracePath = tracePath;
     }
 
     public String getEnv() {
