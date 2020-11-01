@@ -39,16 +39,6 @@ public class ApplicationService extends BaseEntityService<Application> {
     private DiscoveryClient discoveryClient;
 
     /**
-     * 数据保存操作
-     *
-     * @param entity
-     */
-    @Override
-    public OperateResultWithData<Application> save(Application entity) {
-        return super.save(entity);
-    }
-
-    /**
      * 获取当前所有可用应用服务清单
      */
     public ResultData<List<String>> getServiceCodes() {
