@@ -53,7 +53,7 @@ public class LogDetailResponse extends LogResponse implements Serializable {
     @ApiModelProperty(notes = "参数")
     private String args;
     @ApiModelProperty(notes = "URL")
-    private String requestURI;
+    private String url;
     @ApiModelProperty(notes = "用户代理")
     private String userAgent;
 
@@ -121,12 +121,12 @@ public class LogDetailResponse extends LogResponse implements Serializable {
         this.args = args;
     }
 
-    public String getRequestURI() {
-        return requestURI;
+    public String getUrl() {
+        return url;
     }
 
-    public void setRequestURI(String requestURI) {
-        this.requestURI = requestURI;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getUserAgent() {

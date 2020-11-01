@@ -44,7 +44,7 @@ public class LogServiceTest extends BaseUnitTest {
 
     @Test
     public void detail() {
-        ResultData<LogDetailResponse> resultData = service.detail("sei-basic-*", "Rl6jZ3UBL-RVZTytXIH3");
+        ResultData<LogDetailResponse> resultData = service.detail("sei-manager-*", "efm2hHUBL-RVZTyt3HOA");
         System.out.println(resultData.getData().getMessage());
     }
 

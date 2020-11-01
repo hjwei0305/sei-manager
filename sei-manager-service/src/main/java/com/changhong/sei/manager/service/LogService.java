@@ -159,11 +159,11 @@ public class LogService {
         temp = map.get("userName");
         log.setUserName(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("className");
-        log.setUserName(Objects.nonNull(temp) ? String.valueOf(temp) : "");
+        log.setClassName(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("methodName");
-        log.setUserName(Objects.nonNull(temp) ? String.valueOf(temp) : "");
+        log.setMethodName(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("args");
-        log.setUserName(Objects.nonNull(temp) ? String.valueOf(temp) : "");
+        log.setArgs(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("requestURI");
         if (Objects.nonNull(temp)) {
             String url = String.valueOf(temp);
@@ -171,10 +171,10 @@ public class LogService {
             if (Objects.nonNull(temp)) {
                 url = url + "?" + temp;
             }
-            log.setUserName(url);
+            log.setUrl(url);
         }
         temp = map.get("userAgent");
-        log.setUserName(Objects.nonNull(temp) ? String.valueOf(temp) : "");
+        log.setUserAgent(Objects.nonNull(temp) ? String.valueOf(temp) : "");
         temp = map.get("stackTrace");
         log.setStackTrace(Objects.nonNull(temp) ? String.valueOf(temp) : "");
 
