@@ -1,4 +1,4 @@
-package com.changhong.sei.manager;
+package com.changhong.sei;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
