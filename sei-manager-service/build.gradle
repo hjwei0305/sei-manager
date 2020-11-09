@@ -5,7 +5,7 @@ apply plugin: "com.google.cloud.tools.jib"
 // 扩展定义
 ext {
     // 启动类
-    MainClass = 'com.changhong.sei.manager.RestApplication'
+    MainClass = 'com.changhong.sei.RestApplication'
 }
 
 dependencyManagement {
