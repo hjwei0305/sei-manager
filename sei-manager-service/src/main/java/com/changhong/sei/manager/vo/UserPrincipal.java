@@ -1,6 +1,6 @@
 package com.changhong.sei.manager.vo;
 
-import com.changhong.sei.manager.entity.Permission;
+import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.entity.Role;
 import com.changhong.sei.manager.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -78,7 +78,7 @@ public class UserPrincipal implements UserDetails {
      */
     private Collection<? extends GrantedAuthority> authorities;
 
-    public static UserPrincipal create(User user, List<Role> roles, List<Permission> permissions) {
+    public static UserPrincipal create(User user, List<Role> roles, List<Feature> permissions) {
         List<String> roleNames = roles.stream()
                 .map(Role::getName)
                 .collect(Collectors.toList());

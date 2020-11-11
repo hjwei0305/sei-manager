@@ -1,62 +1,64 @@
-package com.changhong.sei.manager.entity;
+package com.changhong.sei.manager.dto;
 
-import com.changhong.sei.core.entity.BaseEntity;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import com.changhong.sei.core.dto.BaseEntityDto;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
- * 权限表(SecPermission)实体类
+ * 实现功能: 功能项DTO
  *
- * @author sei
- * @since 2020-11-10 16:24:28
+ * @author 王锦光 wangjg
+ * @version 2020-01-19 20:51
  */
-@Entity
-@Table(name = "sec_permission")
-@DynamicInsert
-@DynamicUpdate
-public class Permission extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = -51296555709366977L;
+@ApiModel(description = "功能项DTO")
+public class FeatureDto extends BaseEntityDto {
+    private static final long serialVersionUID = -5851073755279966733L;
     /**
-     * 权限名
+     * 功能项名称
      */
-    @Column(name = "name")
+    @NotBlank
+    @Size(max = 30)
+    @ApiModelProperty(value = "功能项名称(max = 30)", required = true)
     private String name;
+
     /**
      * 类型为页面时，代表前端路由地址，类型为按钮时，代表后端接口地址
      */
-    @Column(name = "url")
+    @ApiModelProperty(value = "类型为页面时，代表前端路由地址，类型为按钮时，代表后端接口地址(max = 400)")
     private String url;
+
     /**
      * 权限类型，页面-1，按钮-2
      */
-    @Column(name = "type")
+    @ApiModelProperty(value = "权限类型，页面-1，按钮-2", required = true)
+    @NotNull
     private Integer type;
     /**
      * 权限表达式
      */
-    @Column(name = "permission")
+    @ApiModelProperty(value = "权限表达式")
     private String permission;
     /**
      * 后端接口访问方式
      */
-    @Column(name = "method")
+    @ApiModelProperty(value = "后端接口访问方式")
     private String method;
     /**
      * 排序
      */
-    @Column(name = "sort")
-    private Integer sort;
+    @ApiModelProperty(value = "排序")
+    private Integer rank = 0;
     /**
-     * 父级id
+     * 功能项组Id
      */
-    @Column(name = "parent_id")
+    @NotBlank
+    @Size(max = 36)
+    @ApiModelProperty(value = "功能项组Id(max = 36)")
     private String parentId;
-
 
     public String getName() {
         return name;
@@ -98,12 +100,12 @@ public class Permission extends BaseEntity implements Serializable {
         this.method = method;
     }
 
-    public Integer getSort() {
-        return sort;
+    public Integer getRank() {
+        return rank;
     }
 
-    public void setSort(Integer sort) {
-        this.sort = sort;
+    public void setRank(Integer rank) {
+        this.rank = rank;
     }
 
     public String getParentId() {
@@ -113,5 +115,4 @@ public class Permission extends BaseEntity implements Serializable {
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
-
 }

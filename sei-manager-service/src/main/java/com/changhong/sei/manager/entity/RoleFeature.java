@@ -12,48 +12,48 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * 用户角色关系表(SecUserRole)实体类
+ * 角色权限关系表(SecRoleFeature)实体类
  *
  * @author sei
- * @since 2020-11-10 16:24:34
+ * @since 2020-11-10 16:24:31
  */
 @Entity
-@Table(name = "sec_user_role")
+@Table(name = "sec_role_feature")
 @DynamicInsert
 @DynamicUpdate
-public class UserRole extends BaseEntity implements RelationEntity<User, Role>, Serializable {
-    private static final long serialVersionUID = 667040883030050793L;
+public class RoleFeature extends BaseEntity implements RelationEntity<Role, Feature>, Serializable {
+    private static final long serialVersionUID = 968598213653869516L;
 
     /**
      * 功能角色
      */
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User parent;
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role parent;
     /**
      * 功能项
      */
     @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role child;
+    @JoinColumn(name = "feature_id", nullable = false)
+    private Feature child;
 
     @Override
-    public User getParent() {
+    public Role getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(User parent) {
+    public void setParent(Role parent) {
         this.parent = parent;
     }
 
     @Override
-    public Role getChild() {
+    public Feature getChild() {
         return child;
     }
 
     @Override
-    public void setChild(Role child) {
+    public void setChild(Feature child) {
         this.child = child;
     }
 }

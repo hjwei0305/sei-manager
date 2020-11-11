@@ -1,7 +1,7 @@
 package com.changhong.sei.manager.dao;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
-import com.changhong.sei.manager.entity.Permission;
+import com.changhong.sei.manager.entity.Feature;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,7 +15,7 @@ import java.util.List;
  * @since 2020-11-10 16:24:28
  */
 @Repository
-public interface PermissionDao extends BaseEntityDao<Permission> {
+public interface FeatureDao extends BaseEntityDao<Feature> {
 
     /**
      * 根据角色列表查询权限列表
@@ -23,6 +23,6 @@ public interface PermissionDao extends BaseEntityDao<Permission> {
      * @param ids 角色id列表
      * @return 权限列表
      */
-    @Query(value = "SELECT DISTINCT sec_permission.* FROM sec_permission,sec_role,sec_role_permission WHERE sec_role.id = sec_role_permission.role_id AND sec_permission.id = sec_role_permission.permission_id AND sec_role.id IN (:ids)", nativeQuery = true)
-    List<Permission> selectByRoleIdList(@Param("ids") List<String> ids);
+    @Query(value = "SELECT DISTINCT sec_feature.* FROM sec_feature,sec_role,sec_role_feature WHERE sec_role.id = sec_role_feature.role_id AND sec_feature.id = sec_role_feature.feature_id AND sec_role.id IN (:ids)", nativeQuery = true)
+    List<Feature> selectByRoleIdList(@Param("ids") List<String> ids);
 }

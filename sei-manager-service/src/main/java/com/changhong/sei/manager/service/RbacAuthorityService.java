@@ -1,17 +1,12 @@
 package com.changhong.sei.manager.service;
 
-import com.changhong.sei.manager.dao.PermissionDao;
+import com.changhong.sei.manager.dao.FeatureDao;
 import com.changhong.sei.manager.dao.RoleDao;
-import com.changhong.sei.manager.entity.Permission;
-import com.changhong.sei.manager.entity.Role;
-import com.changhong.sei.manager.vo.UserPrincipal;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
@@ -19,9 +14,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,7 +28,7 @@ public class RbacAuthorityService {
     @Autowired
     private RoleDao roleDao;
     @Autowired
-    private PermissionDao permissionDao;
+    private FeatureDao permissionDao;
 
     private final RequestMappingHandlerMapping mapping;
 

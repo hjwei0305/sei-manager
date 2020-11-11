@@ -1,6 +1,8 @@
 package com.changhong.sei.manager.dao;
 
-import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.dao.BaseRelationDao;
+import com.changhong.sei.manager.entity.Role;
+import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.entity.UserRole;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +13,6 @@ import org.springframework.stereotype.Repository;
  * @since 2020-11-10 16:24:35
  */
 @Repository
-public interface UserRoleDao extends BaseEntityDao<UserRole> {
+public interface UserRoleDao extends BaseRelationDao<UserRole, User, Role> {
 
 }

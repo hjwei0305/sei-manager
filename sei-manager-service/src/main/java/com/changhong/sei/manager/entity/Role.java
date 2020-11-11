@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 /**
@@ -42,6 +43,11 @@ public class Role extends BaseEntity implements Serializable {
     @Column(name = "update_time")
     private Long updateTime;
 
+    /**
+     * 授权分配关系Id
+     */
+    @Transient
+    private String relationId;
 
     public String getName() {
         return name;
@@ -75,4 +81,11 @@ public class Role extends BaseEntity implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getRelationId() {
+        return relationId;
+    }
+
+    public void setRelationId(String relationId) {
+        this.relationId = relationId;
+    }
 }
