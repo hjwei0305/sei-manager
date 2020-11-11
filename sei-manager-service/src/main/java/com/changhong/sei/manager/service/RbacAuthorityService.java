@@ -44,40 +44,41 @@ public class RbacAuthorityService {
     }
 
     public boolean hasPermission(HttpServletRequest request, Authentication authentication) {
+        return true;
         //checkRequest(request);
 
-        Object userInfo = authentication.getPrincipal();
-        boolean hasPermission = false;
-
-        if (userInfo instanceof UserDetails) {
-            UserPrincipal principal = (UserPrincipal) userInfo;
-            String userId = principal.getId();
-
-            List<Role> roles = roleDao.selectByUserId(userId);
-            List<String> roleIds = roles.stream().map(Role::getId).collect(Collectors.toList());
-            List<Permission> permissions = permissionDao.selectByRoleIdList(roleIds);
-
-            //获取资源，前后端分离，所以过滤页面权限，只保留按钮权限
-            List<Permission> btnPerms = permissions.stream()
-                    // 过滤页面权限
-                    .filter(permission -> Objects.equals(permission.getType(), 2))
-                    // 过滤 URL 为空
-                    .filter(permission -> StringUtils.isNotBlank(permission.getUrl()))
-                    // 过滤 METHOD 为空
-                    .filter(permission -> StringUtils.isNotBlank(permission.getMethod()))
-                    .collect(Collectors.toList());
-
-            for (Permission btnPerm : btnPerms) {
-                AntPathRequestMatcher antPathMatcher = new AntPathRequestMatcher(btnPerm.getUrl(), btnPerm.getMethod());
-                if (antPathMatcher.matches(request)) {
-                    hasPermission = true;
-                    break;
-                }
-            }
-            return hasPermission;
-        } else {
-            return false;
-        }
+//        Object userInfo = authentication.getPrincipal();
+//        boolean hasPermission = false;
+//
+//        if (userInfo instanceof UserDetails) {
+//            UserPrincipal principal = (UserPrincipal) userInfo;
+//            String userId = principal.getId();
+//
+//            List<Role> roles = roleDao.selectByUserId(userId);
+//            List<String> roleIds = roles.stream().map(Role::getId).collect(Collectors.toList());
+//            List<Permission> permissions = permissionDao.selectByRoleIdList(roleIds);
+//
+//            //获取资源，前后端分离，所以过滤页面权限，只保留按钮权限
+//            List<Permission> btnPerms = permissions.stream()
+//                    // 过滤页面权限
+//                    .filter(permission -> Objects.equals(permission.getType(), 2))
+//                    // 过滤 URL 为空
+//                    .filter(permission -> StringUtils.isNotBlank(permission.getUrl()))
+//                    // 过滤 METHOD 为空
+//                    .filter(permission -> StringUtils.isNotBlank(permission.getMethod()))
+//                    .collect(Collectors.toList());
+//
+//            for (Permission btnPerm : btnPerms) {
+//                AntPathRequestMatcher antPathMatcher = new AntPathRequestMatcher(btnPerm.getUrl(), btnPerm.getMethod());
+//                if (antPathMatcher.matches(request)) {
+//                    hasPermission = true;
+//                    break;
+//                }
+//            }
+//            return hasPermission;
+//        } else {
+//            return false;
+//        }
     }
 
     /**
