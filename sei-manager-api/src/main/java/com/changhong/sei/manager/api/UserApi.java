@@ -6,6 +6,7 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.manager.dto.LoginRequest;
 import com.changhong.sei.manager.dto.LoginResponse;
 import com.changhong.sei.manager.dto.UserDto;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +29,12 @@ public interface UserApi extends BaseEntityApi<UserDto> {
      * 登录
      */
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "登录", notes = "登录")
     ResultData<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest);
 
     @PostMapping("/logout")
-    ResultData<String> logout(HttpServletRequest request);
+    @ApiOperation(value = "退出登录", notes = "退出登录")
+    ResultData<String> logout();
 
     /**
      * 在线用户列表
@@ -39,13 +42,15 @@ public interface UserApi extends BaseEntityApi<UserDto> {
      * @param search 分页参数
      */
     @PostMapping(value = "/online", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "在线用户列表", notes = "在线用户列表")
     ResultData<UserDto> online(@RequestBody Search search);
 
     /**
-     * 批量踢出在线用户
+     * 踢出在线用户
      *
      * @param name 用户名
      */
     @DeleteMapping(value = "/kickout/{name}")
+    @ApiOperation(value = "踢出在线用户", notes = "踢出在线用户")
     ResultData<String> kickoutUser(@PathVariable("name") String name);
 }

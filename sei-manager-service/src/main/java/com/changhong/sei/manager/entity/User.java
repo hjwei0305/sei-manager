@@ -1,6 +1,5 @@
 package com.changhong.sei.manager.entity;
 
-import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -51,7 +50,7 @@ public class User extends BaseEntity implements Serializable {
      * 状态，启用-1，禁用-0
      */
     @Column(name = "status")
-    private Integer status;
+    private Boolean status;
     /**
      * 创建时间
      */
@@ -104,11 +103,11 @@ public class User extends BaseEntity implements Serializable {
         this.email = email;
     }
 
-    public Integer getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(Boolean status) {
         this.status = status;
     }
 

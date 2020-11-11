@@ -56,7 +56,7 @@ public class UserPrincipal implements UserDetails {
     /**
      * 状态，启用-1，禁用-0
      */
-    private Integer status;
+    private Boolean status;
 
     /**
      * 创建时间
@@ -91,7 +91,7 @@ public class UserPrincipal implements UserDetails {
         return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getNickname(), user.getPhone(), user.getEmail(), user.getStatus(), user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
     }
 
-    public UserPrincipal(String id, String username, String password, String nickname, String phone, String email, Integer status, Long createTime, Long updateTime, List<String> roles, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(String id, String username, String password, String nickname, String phone, String email, boolean status, Long createTime, Long updateTime, List<String> roles, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -121,7 +121,7 @@ public class UserPrincipal implements UserDetails {
         return email;
     }
 
-    public Integer getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 

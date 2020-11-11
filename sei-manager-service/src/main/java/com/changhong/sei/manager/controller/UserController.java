@@ -1,26 +1,36 @@
 package com.changhong.sei.manager.controller;
 
+import com.changhong.sei.core.cache.CacheBuilder;
+import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.manager.api.UserApi;
+import com.changhong.sei.manager.commom.Constants;
 import com.changhong.sei.manager.dto.LoginRequest;
 import com.changhong.sei.manager.dto.LoginResponse;
 import com.changhong.sei.manager.dto.UserDto;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.UserService;
+import com.changhong.sei.manager.vo.UserPrincipal;
 import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * 用户表(SecUser)控制类
@@ -31,7 +41,8 @@ import javax.validation.Valid;
 @RestController
 @Api(value = "UserApi", tags = "用户服务")
 @RequestMapping(path = "user", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class UserController extends BaseEntityController<User, UserDto> implements UserApi {
+public class UserController extends BaseEntityController<User, UserDto> implements UserApi, Constants {
+
     /**
      * 用户表服务对象
      */
@@ -44,6 +55,8 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     }
 
     @Autowired
+    private CacheBuilder cacheBuilder;
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     /**
@@ -51,25 +64,47 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      */
     @Override
     public ResultData<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        String jwt = jwtUtil.createJWT(authentication,loginRequest.getRememberMe());
-//        return ApiResponse.ofSuccess(new JwtResponse(jwt));
 
-        return ResultData.success();
+        LoginResponse loginResponse = new LoginResponse();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserPrincipal) {
+            UserPrincipal userPrincipal = (UserPrincipal) principal;
+
+            SessionUser user = new SessionUser();
+            user.setUserId(userPrincipal.getId());
+            user.setAccount(userPrincipal.getUsername());
+            user.setUserName(userPrincipal.getNickname());
+            user.setLoginAccount(loginRequest.getUsername());
+            user.setTenantCode("SEI");
+            ContextUtil.generateToken(user);
+
+            String sid = user.getSessionId();
+            // 默认10小时
+            cacheBuilder.set(REDIS_JWT_KEY_PREFIX + sid, user.getToken(), 36000000);
+
+            loginResponse.setUserId(user.getUserId());
+            loginResponse.setAccount(user.getAccount());
+            loginResponse.setUserName(user.getUserName());
+            loginResponse.setLoginAccount(user.getLoginAccount());
+            loginResponse.setSessionId(sid);
+            Collection<? extends GrantedAuthority> authorities = userPrincipal.getAuthorities();
+            if (CollectionUtils.isNotEmpty(authorities)) {
+                for (GrantedAuthority authority : authorities) {
+                    loginResponse.putAuthority(authority.getAuthority());
+                }
+            }
+        }
+        return ResultData.success(loginResponse);
     }
 
     @Override
-    public ResultData<String> logout(HttpServletRequest request) {
-//        try {
-//            // 设置JWT过期
-//            jwtUtil.invalidateJWT(request);
-//        } catch (SecurityException e) {
-//            throw new SecurityException(Status.UNAUTHORIZED);
-//        }
-//        return ApiResponse.ofStatus(Status.LOGOUT);
+    public ResultData<String> logout() {
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+        cacheBuilder.remove(REDIS_JWT_KEY_PREFIX + sessionUser.getSessionId());
         return ResultData.success();
     }
 

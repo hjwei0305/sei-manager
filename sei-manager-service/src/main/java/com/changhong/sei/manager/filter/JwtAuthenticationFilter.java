@@ -1,13 +1,19 @@
 package com.changhong.sei.manager.filter;
 
+import com.changhong.sei.core.cache.CacheBuilder;
+import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.JsonUtils;
+import com.changhong.sei.manager.commom.Constants;
 import com.changhong.sei.manager.config.CustomConfig;
 import com.changhong.sei.manager.service.UserService;
+import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * 实现功能：
@@ -34,14 +39,17 @@ import java.util.regex.Pattern;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-10 17:16
  */
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter implements Constants {
     @Autowired
     private UserService userService;
 
     @Autowired
     private CustomConfig customConfig;
+    @Autowired
+    private CacheBuilder cacheBuilder;
 
     @Override
+    @SuppressWarnings("NullableProblems")
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (checkIgnores(request)) {
             filterChain.doFilter(request, response);
@@ -54,16 +62,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String jwt = null;
-        String bearerToken = request.getHeader("x-sid");
-        if (StringUtils.isNotBlank(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            jwt = bearerToken.substring(7);
+        String sid = request.getHeader("x-sid");
+        if (StringUtils.isNotBlank(sid)) {
+            jwt = cacheBuilder.get(REDIS_JWT_KEY_PREFIX + sid);
         }
 
-        jwt = "swa";
         if (StringUtils.isNotBlank(jwt)) {
             try {
-//                String username = jwtUtil.getUsernameFromJWT(jwt);
-                String username = "admin";
+                SessionUser sessionUser = ContextUtil.getSessionUser(jwt);
+                MDC.put("userId", sessionUser.getUserId());
+                MDC.put("account", sessionUser.getAccount());
+                MDC.put("userName", sessionUser.getUserName());
+
+                ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
+                // 设置token到可传播的线程全局变量中
+                ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
+                String username = sessionUser.getAccount();
 
                 UserDetails userDetails = userService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -71,7 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 securityContext.setAuthentication(authenticationToken);
                 filterChain.doFilter(request, response);
-            } catch (SecurityException e) {
+            } catch (Exception e) {
                 try {
                     response.setHeader("Access-Control-Allow-Origin", "*");
                     response.setHeader("Access-Control-Allow-Methods", "*");
@@ -90,7 +104,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.setContentType("application/json;charset=UTF-8");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
-                response.getWriter().write(JsonUtils.toJson(ResultData.fail("认证失败!")));
+                response.getWriter().write(JsonUtils.toJson(ResultData.fail("会话不存在!")));
             } catch (IOException e) {
                 LogUtil.error("Response写出JSON异常，", e);
             }
@@ -159,6 +173,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         ignores.add("/**/*.svg");
         ignores.add("/**/*.png");
         ignores.add("/**/*.gif");
+        ignores.add("/**/login");
 
         if (CollectionUtils.isNotEmpty(ignores)) {
             for (String ignore : ignores) {

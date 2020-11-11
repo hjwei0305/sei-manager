@@ -3,7 +3,6 @@ package com.changhong.sei.manager.service;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
-import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.manager.dao.ApplicationDao;
 import com.changhong.sei.manager.dto.ApplicationDto;
 import com.changhong.sei.manager.dto.ApplicationResponse;

@@ -41,39 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomConfig customConfig;
 
     @Autowired
-    private AccessDeniedHandler accessDeniedHandler;
-
-    @Autowired
     private UserService userService;
-
-    /**
-     * 替换平台默认的token检查过滤器
-     */
-    @Bean
-    public SessionUserAuthenticationHandler userAuthenticationHandler() {
-        return new ExtTokenAuthenticationFilter();
-    }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
-    }
-
-    @Bean
-    public RbacAuthorityService rbacAuthorityService(RequestMappingHandlerMapping mapping) {
-        return new RbacAuthorityService(mapping);
-    }
-
-    @Bean
-    public BCryptPasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -93,6 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 认证请求
                 .authorizeRequests()
+                // 登录地址
+                .antMatchers(HttpMethod.POST, "/**/login", "/**/logout").permitAll()
                 // 所有请求都需要登录访问
                 .anyRequest()
                 .authenticated()
@@ -108,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 // 异常处理
-                .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler);
+                .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler());
         // @formatter:on
 
         // 添加自定义 JWT 过滤器
@@ -157,6 +127,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customConfig.getIgnores().getPattern().forEach(url -> and.ignoring().antMatchers(url));
     }
 
+    /**
+     * 替换平台默认的token检查过滤器
+     */
+    @Bean
+    public SessionUserAuthenticationHandler userAuthenticationHandler() {
+        return new ExtTokenAuthenticationFilter();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
+
+    @Bean
+    public RbacAuthorityService rbacAuthorityService(RequestMappingHandlerMapping mapping) {
+        return new RbacAuthorityService(mapping);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
@@ -166,8 +165,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 response.setContentType("application/json;charset=UTF-8");
                 response.setStatus(200);
 
-                response.getWriter()
-                        .write(JsonUtils.toJson(ResultData.fail(accessDeniedException.getMessage())));
+                response.getWriter().write(JsonUtils.toJson(ResultData.fail(accessDeniedException.getMessage())));
             } catch (IOException e) {
                 LogUtil.error("Response写出JSON异常，", e);
             }
