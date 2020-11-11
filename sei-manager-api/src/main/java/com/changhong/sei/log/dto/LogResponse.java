@@ -1,4 +1,4 @@
-package com.changhong.sei.manager.dto;
+package com.changhong.sei.log.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

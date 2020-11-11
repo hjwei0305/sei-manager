@@ -1,6 +1,5 @@
-package com.changhong.sei.manager.config;
+package com.changhong.sei.log.config;
 
-import com.changhong.sei.manager.config.properties.RestClientPoolProperties;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;

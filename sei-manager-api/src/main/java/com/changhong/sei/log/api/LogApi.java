@@ -1,10 +1,10 @@
-package com.changhong.sei.manager.api;
+package com.changhong.sei.log.api;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
-import com.changhong.sei.manager.dto.LogDetailResponse;
-import com.changhong.sei.manager.dto.LogResponse;
-import com.changhong.sei.manager.dto.LogSearch;
+import com.changhong.sei.log.dto.LogDetailResponse;
+import com.changhong.sei.log.dto.LogResponse;
+import com.changhong.sei.log.dto.LogSearch;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

@@ -1,12 +1,12 @@
-package com.changhong.sei.manager.controller;
+package com.changhong.sei.log.controller;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
-import com.changhong.sei.manager.api.LogApi;
-import com.changhong.sei.manager.dto.LogDetailResponse;
-import com.changhong.sei.manager.dto.LogResponse;
-import com.changhong.sei.manager.dto.LogSearch;
-import com.changhong.sei.manager.service.LogService;
+import com.changhong.sei.log.api.LogApi;
+import com.changhong.sei.log.dto.LogDetailResponse;
+import com.changhong.sei.log.dto.LogResponse;
+import com.changhong.sei.log.dto.LogSearch;
+import com.changhong.sei.log.service.LogService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;

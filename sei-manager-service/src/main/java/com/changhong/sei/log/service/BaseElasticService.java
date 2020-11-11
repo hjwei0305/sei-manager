@@ -1,10 +1,9 @@
-package com.changhong.sei.manager.service;
+package com.changhong.sei.log.service;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.*;
-import com.changhong.sei.manager.dto.LogSearch;
+import com.changhong.sei.log.dto.LogSearch;
 import com.changhong.sei.util.ConverterUtils;
-import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.DocWriteResponse;

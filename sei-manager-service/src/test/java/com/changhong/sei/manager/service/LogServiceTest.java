@@ -4,16 +4,15 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.test.BaseUnitTest;
-import com.changhong.sei.manager.dto.LogDetailResponse;
-import com.changhong.sei.manager.dto.LogResponse;
-import com.changhong.sei.manager.dto.LogSearch;
+import com.changhong.sei.log.dto.LogDetailResponse;
+import com.changhong.sei.log.dto.LogResponse;
+import com.changhong.sei.log.dto.LogSearch;
+import com.changhong.sei.log.service.LogService;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * 实现功能：

@@ -1,11 +1,11 @@
-package com.changhong.sei.manager.service;
+package com.changhong.sei.log.service;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.SearchFilter;
-import com.changhong.sei.manager.dto.LogDetailResponse;
-import com.changhong.sei.manager.dto.LogResponse;
-import com.changhong.sei.manager.dto.LogSearch;
+import com.changhong.sei.log.dto.LogDetailResponse;
+import com.changhong.sei.log.dto.LogResponse;
+import com.changhong.sei.log.dto.LogSearch;
 import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

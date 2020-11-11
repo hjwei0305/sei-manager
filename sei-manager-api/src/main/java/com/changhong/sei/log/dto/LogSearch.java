@@ -1,10 +1,9 @@
-package com.changhong.sei.manager.dto;
+package com.changhong.sei.log.dto;
 
 import com.changhong.sei.core.dto.serach.Search;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
