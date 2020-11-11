@@ -2,22 +2,19 @@ package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseRelationDao;
-import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseRelationService;
 import com.changhong.sei.core.service.bo.OperateResult;
-import com.changhong.sei.core.utils.ResultDataUtil;
-import com.changhong.sei.enums.UserType;
 import com.changhong.sei.manager.dao.UserRoleDao;
 import com.changhong.sei.manager.entity.Role;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.entity.UserRole;
-import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 实现功能：用户分配的功能角色的业务逻辑实现

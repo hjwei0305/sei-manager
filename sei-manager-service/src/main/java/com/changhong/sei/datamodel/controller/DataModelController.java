@@ -43,6 +43,7 @@ public class DataModelController extends BaseEntityController<DataModel, DataMod
      * ModelField的转换器
      */
     private static final ModelMapper fieldModelMapper;
+
     // 初始化静态属性
     static {
         // 初始化转换器

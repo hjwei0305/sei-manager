@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * 用户表(SecUser)控制类

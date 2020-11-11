@@ -3,14 +3,7 @@ package com.changhong.sei.manager.service;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.dto.auth.AuthEntityData;
-import com.changhong.sei.core.dto.auth.AuthTreeEntityData;
-import com.changhong.sei.core.dto.serach.PageResult;
-import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
-import com.changhong.sei.core.service.bo.OperateResult;
-import com.changhong.sei.enums.UserAuthorityPolicy;
-import com.changhong.sei.enums.UserType;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.manager.dao.UserDao;
 import com.changhong.sei.manager.entity.Feature;
@@ -28,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.Position;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -307,7 +299,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     /**
      * 查询可分配的功能角色
      *
-     * @param userId             用户id
+     * @param userId 用户id
      * @return 功能角色清单
      */
     public List<Role> getCanAssignedFeatureRoles(String userId) {

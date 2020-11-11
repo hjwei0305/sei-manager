@@ -1,8 +1,6 @@
 package com.changhong.sei.manager.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
-import com.changhong.sei.core.dto.serializer.EnumJsonSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

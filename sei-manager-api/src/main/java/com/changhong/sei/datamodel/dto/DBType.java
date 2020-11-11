@@ -18,13 +18,13 @@ public enum DBType implements Serializable {
     @Remark("PostgreSql")
     POSTGRESQL(5432, "jdbc:postgresql://{host}:{port}/{database}"),
     @Remark("Oracle")
-    ORACLE(1521,"jdbc:oracle:thin:@{host}:{port}:{database}"),
+    ORACLE(1521, "jdbc:oracle:thin:@{host}:{port}:{database}"),
     @Remark("SQL SERVER")
-    SQLSERVER(1433, "jdbc:sqlserver://{host}:{port};database={database}")
-    ;
+    SQLSERVER(1433, "jdbc:sqlserver://{host}:{port};database={database}");
 
     private int port = -1;
     private String urlTemp;
+
     DBType(int port, String urlTemp) {
         this.port = port;
         this.urlTemp = urlTemp;

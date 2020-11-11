@@ -2,7 +2,6 @@ package com.changhong.sei.manager.controller;
 
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.dto.auth.AuthEntityData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
@@ -13,16 +12,12 @@ import com.changhong.sei.manager.entity.Role;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.RoleService;
 import io.swagger.annotations.Api;
-import org.apache.commons.collections.CollectionUtils;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +28,8 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "FeatureRoleApi", tags = "功能角色API服务实现")
-@RequestMapping(path = "featureRole", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class FeatureRoleController extends BaseEntityController<Role, RoleDto>
+@RequestMapping(path = "role", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+public class RoleController extends BaseEntityController<Role, RoleDto>
         implements RoleApi {
     @Autowired
     private RoleService service;

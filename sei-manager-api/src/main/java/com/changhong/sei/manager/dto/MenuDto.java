@@ -58,7 +58,7 @@ public class MenuDto extends BaseEntityDto implements TreeEntity<MenuDto> {
     @NotNull
     @Min(0)
     @ApiModelProperty(value = "排序号")
-    private Integer rank=0;
+    private Integer rank = 0;
 
     /**
      * 父节点id

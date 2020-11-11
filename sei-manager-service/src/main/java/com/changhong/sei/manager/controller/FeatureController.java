@@ -2,7 +2,6 @@ package com.changhong.sei.manager.controller;
 
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.dto.annotation.QueryFieldMappingUtil;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
@@ -11,14 +10,12 @@ import com.changhong.sei.manager.dto.FeatureDto;
 import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.service.FeatureService;
 import io.swagger.annotations.Api;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

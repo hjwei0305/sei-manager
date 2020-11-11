@@ -17,8 +17,9 @@ public interface DatabaseManager {
 
     /**
      * 生产数据库脚本
+     *
      * @param dataSource 数据源信息
-     * @param fields 字段
+     * @param fields     字段
      * @return
      */
     ResultData<String> generateScript(DataSource dataSource, DataModel dataModel, List<DataModelField> fields);
