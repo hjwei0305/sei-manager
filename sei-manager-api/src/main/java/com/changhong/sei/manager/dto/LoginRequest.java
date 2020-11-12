@@ -20,7 +20,7 @@ public class LoginRequest implements Serializable {
      */
     @ApiModelProperty(notes = "用户名或邮箱或手机号")
     @NotBlank(message = "用户名不能为空")
-    private String username;
+    private String account;
 
     /**
      * 密码
@@ -34,12 +34,12 @@ public class LoginRequest implements Serializable {
      */
     private Boolean rememberMe = false;
 
-    public String getUsername() {
-        return username;
+    public String getAccount() {
+        return account;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getPassword() {
