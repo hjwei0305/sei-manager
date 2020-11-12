@@ -7,6 +7,7 @@ import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.enums.UserAuthorityPolicy;
 import com.changhong.sei.manager.api.UserApi;
 import com.changhong.sei.manager.commom.Constants;
 import com.changhong.sei.manager.dto.LoginRequest;
@@ -89,6 +90,10 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
             user.setUserName(userPrincipal.getNickname());
             user.setLoginAccount(loginRequest.getAccount());
             user.setTenantCode("SEI");
+            // 管理员
+            if (userPrincipal.getIsAdmin()) {
+                user.setAuthorityPolicy(UserAuthorityPolicy.GlobalAdmin);
+            }
             ContextUtil.generateToken(user);
 
             String sid = user.getSessionId();
@@ -100,6 +105,8 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
             loginResponse.setUserName(user.getUserName());
             loginResponse.setLoginAccount(user.getLoginAccount());
             loginResponse.setSessionId(sid);
+            // 管理员
+            loginResponse.setAuthorityPolicy(user.getAuthorityPolicy());
             Collection<? extends GrantedAuthority> authorities = userPrincipal.getAuthorities();
             if (CollectionUtils.isNotEmpty(authorities)) {
                 for (GrantedAuthority authority : authorities) {

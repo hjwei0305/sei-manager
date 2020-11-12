@@ -52,6 +52,11 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "status")
     private Boolean status = Boolean.TRUE;
     /**
+     * 是否是管理员
+     */
+    @Column(name = "is_admin")
+    private Boolean isAdmin = Boolean.FALSE;
+    /**
      * 创建时间
      */
     @Column(name = "create_time")
@@ -109,6 +114,14 @@ public class User extends BaseEntity implements Serializable {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     public Long getCreateTime() {

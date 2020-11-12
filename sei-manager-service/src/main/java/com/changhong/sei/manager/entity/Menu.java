@@ -21,7 +21,7 @@ public class Menu extends BaseAuditableEntity implements TreeEntity<Menu> {
     /**
      * 菜单代码
      */
-    @Column(name = "code", unique = true, length = 10, nullable = false)
+    @Column(name = "code", unique = true, length = 20, nullable = false)
     private String code;
     /**
      * 菜单名称

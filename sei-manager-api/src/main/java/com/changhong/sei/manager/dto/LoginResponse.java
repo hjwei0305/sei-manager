@@ -1,5 +1,7 @@
 package com.changhong.sei.manager.dto;
 
+import com.changhong.sei.enums.UserAuthorityPolicy;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,6 +36,11 @@ public class LoginResponse implements Serializable {
      * 用户名
      */
     private String userName;
+
+    /**
+     * 用户权限策略
+     */
+    private UserAuthorityPolicy authorityPolicy = UserAuthorityPolicy.NormalUser;
 
     /**
      * 用户权限列表
@@ -78,6 +85,14 @@ public class LoginResponse implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public UserAuthorityPolicy getAuthorityPolicy() {
+        return authorityPolicy;
+    }
+
+    public void setAuthorityPolicy(UserAuthorityPolicy authorityPolicy) {
+        this.authorityPolicy = authorityPolicy;
     }
 
     public Collection<String> getAuthorities() {

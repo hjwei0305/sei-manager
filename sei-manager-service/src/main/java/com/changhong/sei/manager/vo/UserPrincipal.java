@@ -59,6 +59,11 @@ public class UserPrincipal implements UserDetails {
     private Boolean status;
 
     /**
+     * 是否是管理员
+     */
+    private Boolean isAdmin = Boolean.FALSE;
+
+    /**
      * 创建时间
      */
     private Long createTime;
@@ -88,10 +93,12 @@ public class UserPrincipal implements UserDetails {
                 .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
                 .collect(Collectors.toList());
 
-        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getNickname(), user.getPhone(), user.getEmail(), user.getStatus(), user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
+        UserPrincipal principal = new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getNickname(), user.getPhone(), user.getEmail(), user.getStatus(), user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
+        principal.isAdmin = user.getIsAdmin();
+        return principal;
     }
 
-    public UserPrincipal(String id, String username, String password, String nickname, String phone, String email, boolean status, Long createTime, Long updateTime, List<String> roles, Collection<? extends GrantedAuthority> authorities) {
+    private UserPrincipal(String id, String username, String password, String nickname, String phone, String email, boolean status, Long createTime, Long updateTime, List<String> roles, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -123,6 +130,10 @@ public class UserPrincipal implements UserDetails {
 
     public Boolean getStatus() {
         return status;
+    }
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
     }
 
     public Long getCreateTime() {
