@@ -111,7 +111,7 @@ public class MenuService extends BaseTreeService<Menu> {
     private OperateResult checkFeature(String id, String featureId) {
         if (StringUtils.isBlank(featureId)) {
             // 检查通过！
-            return OperateResult.operationSuccess("00113");
+            return OperateResult.operationSuccess("检查通过！");
         }
         String checkId = id;
         if (StringUtils.isBlank(checkId)) {
@@ -120,10 +120,10 @@ public class MenuService extends BaseTreeService<Menu> {
         Menu otherMenu = menuDao.findFirstByFeatureIdAndIdNot(featureId, checkId);
         if (Objects.nonNull(otherMenu)) {
             // 菜单【{0}】已经配置了功能项【{1}】，不能再次配置！
-            return OperateResult.operationFailure("00116", otherMenu.getName(), otherMenu.getFeature().getName());
+            return OperateResult.operationFailure("菜单【" + otherMenu.getName() + "】已经配置了功能项【" + otherMenu.getFeature().getName() + "】，不能再次配置！");
         }
         // 检查通过！
-        return OperateResult.operationSuccess("00113");
+        return OperateResult.operationSuccess("检查通过！");
     }
 
     /**
@@ -135,19 +135,19 @@ public class MenuService extends BaseTreeService<Menu> {
     private OperateResult checkParentNode(String parentId) {
         if (StringUtils.isBlank(parentId)) {
             // 检查通过！
-            return OperateResult.operationSuccess("00113");
+            return OperateResult.operationSuccess("检查通过！");
         }
         Menu parent = menuDao.findOne(parentId);
         if (Objects.isNull(parent)) {
             // 检查通过！
-            return OperateResult.operationSuccess("00113");
+            return OperateResult.operationSuccess("检查通过！");
         }
         if (StringUtils.isNotBlank(parent.getFeatureId())) {
             // 菜单【{0}】已经配置了功能项，禁止作为父级菜单！
-            return OperateResult.operationFailure("00114", parent.getName());
+            return OperateResult.operationFailure("菜单【"+parent.getName()+"】已经配置了功能项，禁止作为父级菜单！");
         }
         // 检查通过！
-        return OperateResult.operationSuccess("00113");
+        return OperateResult.operationSuccess("检查通过！");
     }
 
     /**

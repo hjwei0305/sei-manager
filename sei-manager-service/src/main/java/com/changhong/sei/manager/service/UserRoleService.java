@@ -54,7 +54,7 @@ public class UserRoleService extends BaseRelationService<UserRole, User, Role> {
     public OperateResult insertRelations(String parentId, List<String> childIds) {
         if (parentId.equals(ContextUtil.getUserId())) {
             //00031 = 不能为当前用户分配功能角色！
-            return OperateResult.operationFailure("00031");
+            return OperateResult.operationFailure("不能为当前用户分配功能角色！");
         }
         OperateResult result = super.insertRelations(parentId, childIds);
         // 清除用户权限缓存
@@ -73,7 +73,7 @@ public class UserRoleService extends BaseRelationService<UserRole, User, Role> {
     public OperateResult removeRelations(String parentId, List<String> childIds) {
         if (parentId.equals(ContextUtil.getUserId())) {
             //00032 = 不能移除当前用户的功能角色！
-            return OperateResult.operationFailure("00032");
+            return OperateResult.operationFailure("不能移除当前用户的功能角色！");
         }
         OperateResult result = super.removeRelations(parentId, childIds);
         // 清除用户权限缓存

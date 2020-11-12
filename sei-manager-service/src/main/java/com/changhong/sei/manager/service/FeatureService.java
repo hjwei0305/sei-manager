@@ -75,24 +75,24 @@ public class FeatureService extends BaseEntityService<Feature> {
         List<Menu> menus = menuService.findByFeatureId(id);
         if (menus != null && menus.size() > 0) {
             //该功能项存在菜单，禁止删除！
-            return OperateResult.operationFailure("00015");
+            return OperateResult.operationFailure("该功能项存在菜单，禁止删除！");
         }
         // 检查是否存在下级功能项，如果存在禁止删除
         Feature feature = dao.findOne(id);
         if (Objects.isNull(feature)) {
             // 需要删除的业务实体不存在！id=【{0}】
-            return OperateResult.operationFailure("00104", id);
+            return OperateResult.operationFailure("需要删除的业务实体不存在！id=【" + id + "】");
         }
         // 获取下级功能项
         List<Feature> childFeatures = dao.findListByProperty(Feature.FIELD_PARENT_ID, id);
         if (CollectionUtils.isNotEmpty(childFeatures)) {
             // 页面【{0}】存在下级功能项，禁止删除！
-            return OperateResult.operationFailure("00105", feature.getName());
+            return OperateResult.operationFailure("页面【" + feature.getName() + "】存在下级功能项，禁止删除！");
         }
         List<Role> roles = roleFeatureService.getParentsFromChildId(id);
         if (roles != null && !roles.isEmpty()) {
             //该功能项已分配功能角色，禁止删除！
-            return OperateResult.operationFailure("00115");
+            return OperateResult.operationFailure("该功能项已分配功能角色，禁止删除！");
         }
         return super.preDelete(id);
     }

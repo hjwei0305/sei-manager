@@ -58,12 +58,12 @@ public class RoleService extends BaseEntityService<Role> {
     protected OperateResult preDelete(String s) {
         if (roleFeatureService.isExistByParent(s)) {
             //功能角色存在已经分配的功能项，禁止删除！
-            return OperateResult.operationFailure("00009");
+            return OperateResult.operationFailure("功能角色存在已经分配的功能项，禁止删除！");
         }
         List<User> list = userRoleService.getParentsFromChildId(s);
         if (list != null && list.size() > 0) {
             // 功能角色存在已经分配的功能项，禁止删除！
-            return OperateResult.operationFailure("00096");
+            return OperateResult.operationFailure("功能角色存在已经分配的功能项，禁止删除！");
         }
         return super.preDelete(s);
     }
