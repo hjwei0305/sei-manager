@@ -29,11 +29,6 @@ public class LoginRequest implements Serializable {
     @NotBlank(message = "密码不能为空")
     private String password;
 
-    /**
-     * 记住我
-     */
-    private Boolean rememberMe = false;
-
     public String getAccount() {
         return account;
     }
@@ -50,11 +45,4 @@ public class LoginRequest implements Serializable {
         this.password = password;
     }
 
-    public Boolean getRememberMe() {
-        return rememberMe;
-    }
-
-    public void setRememberMe(Boolean rememberMe) {
-        this.rememberMe = rememberMe;
-    }
 }

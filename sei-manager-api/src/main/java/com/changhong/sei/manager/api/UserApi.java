@@ -33,6 +33,9 @@ public interface UserApi extends BaseEntityApi<UserDto> {
     @ApiOperation(value = "登录", notes = "登录")
     ResultData<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest);
 
+    /**
+     * 退出登录
+     */
     @PostMapping("/logout")
     @ApiOperation(value = "退出登录", notes = "退出登录")
     ResultData<String> logout();
@@ -49,9 +52,9 @@ public interface UserApi extends BaseEntityApi<UserDto> {
     /**
      * 踢出在线用户
      *
-     * @param name 用户名
+     * @param sid 会话id
      */
-    @DeleteMapping(value = "/kickout/{name}")
+    @DeleteMapping(value = "/kickout/{sid}")
     @ApiOperation(value = "踢出在线用户", notes = "踢出在线用户")
-    ResultData<String> kickoutUser(@PathVariable("name") String name);
+    ResultData<String> kickoutUser(@PathVariable("sid") String sid);
 }

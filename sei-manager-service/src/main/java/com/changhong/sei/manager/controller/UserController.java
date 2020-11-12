@@ -6,6 +6,7 @@ import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.manager.api.UserApi;
 import com.changhong.sei.manager.commom.Constants;
@@ -15,6 +16,7 @@ import com.changhong.sei.manager.dto.UserDto;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.UserService;
 import com.changhong.sei.manager.vo.UserPrincipal;
+import com.changhong.sei.util.EncodeUtil;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +65,10 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      */
     @Override
     public ResultData<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getAccount(), loginRequest.getPassword());
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequest.getAccount(), loginRequest.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authToken);
 
+        // 设置认证
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         LoginResponse loginResponse = new LoginResponse();
@@ -120,18 +123,11 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     /**
      * 批量踢出在线用户
      *
-     * @param name 用户名
+     * @param sid 会话id
      */
     @Override
-    public ResultData<String> kickoutUser(String name) {
-//        if (CollUtil.isEmpty(names)) {
-//            throw new SecurityException(Status.PARAM_NOT_NULL);
-//        }
-//        if (names.contains(SecurityUtil.getCurrentUsername())){
-//            throw new SecurityException(Status.KICKOUT_SELF);
-//        }
-//        monitorService.kickout(names);
-//        return ApiResponse.ofSuccess();
+    public ResultData<String> kickoutUser(String sid) {
+        cacheBuilder.remove(REDIS_JWT_KEY_PREFIX + sid);
         return ResultData.success();
     }
 }

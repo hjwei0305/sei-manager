@@ -36,6 +36,11 @@ public class Feature extends BaseEntity implements Serializable, IRank {
     @Column(name = "url")
     private String url;
     /**
+     * 外部URL或扩展URL
+     */
+    @Column(name = "ext_url")
+    private String extUrl;
+    /**
      * 权限类型，页面-1，按钮-2
      */
     @Column(name = "type")
@@ -75,6 +80,14 @@ public class Feature extends BaseEntity implements Serializable, IRank {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getExtUrl() {
+        return extUrl;
+    }
+
+    public void setExtUrl(String extUrl) {
+        this.extUrl = extUrl;
     }
 
     public Integer getType() {

@@ -19,7 +19,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,6 +49,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     private MenuService menuService;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     protected BaseEntityDao<User> getDao() {
@@ -112,6 +116,29 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //                    log.debug("用户【{}】被用户【{}】手动下线！", name, currentUsername);
 //                });
 //    }
+
+    public void updatePassword(String userId, String oldPassword, String password) {
+
+    }
+
+    /**
+     * 更新密码
+     *
+     * @param userId   用户id
+     * @param password md5散列值
+     * @return 返回更新结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> updatePassword(String userId, String password) {
+        User user = dao.findOne(userId);
+        if (Objects.isNull(user)) {
+            return ResultData.fail("用户不存在.");
+        }
+
+        user.setPassword(passwordEncoder.encode(password));
+        this.save(user);
+        return ResultData.success();
+    }
 
     /**
      * 获取用户有权限的功能项清单
