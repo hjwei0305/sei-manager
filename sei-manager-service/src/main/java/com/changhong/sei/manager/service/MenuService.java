@@ -41,7 +41,6 @@ public class MenuService extends BaseTreeService<Menu> {
      * 基于主键集合查询集合数据对象
      */
     @Override
-    @Cacheable
     public List<Menu> findAll() {
         return super.findAll();
     }
@@ -53,7 +52,6 @@ public class MenuService extends BaseTreeService<Menu> {
      * @return 操作后的结果
      */
     @Override
-    @CacheEvict(allEntries = true)
     public OperateResultWithData<Menu> save(Menu menu) {
         // 检查父节点
         OperateResult checkResult = checkParentNode(menu.getParentId());
@@ -78,7 +76,6 @@ public class MenuService extends BaseTreeService<Menu> {
      * @return 操作结果
      */
     @Override
-    @CacheEvict(allEntries = true)
     public OperateResult delete(String id) {
         return super.delete(id);
     }
@@ -91,7 +88,6 @@ public class MenuService extends BaseTreeService<Menu> {
      * @return 返回操作结果对象
      */
     @Override
-    @CacheEvict(allEntries = true)
     public OperateResult move(String nodeId, String targetParentId) {
         // 检查父节点
         OperateResult checkResult = checkParentNode(targetParentId);

@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,10 @@ public class FeatureController extends BaseEntityController<Feature, FeatureDto>
     @Override
     public ResultData<List<FeatureDto>> findChildByFeatureId(String featureId) {
         List<Feature> features = service.findChildByFeatureId(featureId);
-        List<FeatureDto> dtos = features.stream().map(this::convertToDto).collect(Collectors.toList());
+        List<FeatureDto> dtos = features.stream()
+                .map(this::convertToDto)
+                .sorted(Comparator.comparing(FeatureDto::getRank))
+                .collect(Collectors.toList());
         return ResultData.success(dtos);
     }
 

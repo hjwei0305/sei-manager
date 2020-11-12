@@ -205,7 +205,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param userId 平台用户Id
      * @return 功能项清单
      */
-    @Cacheable(value = "UserAuthorizedFeaturesCache", key = "'UserAuthorizedFeatures:'+#userId")
+//    @Cacheable(value = "UserAuthorizedFeaturesCache", key = "'UserAuthorizedFeatures:'+#userId")
     public List<Feature> getUserAuthorizedFeatures(String userId) {
         List<Feature> result = new ArrayList<>();
         //获取用户
@@ -235,7 +235,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param userId 用户Id
      * @return 操作菜单树
      */
-    @Cacheable(value = "UserAuthorizedMenusCache", key = "'UserAuthorizedMenus:'+#userId")
+//    @Cacheable(value = "UserAuthorizedMenusCache", key = "'UserAuthorizedMenus:'+#userId")
     public List<Menu> getUserAuthorizedMenus(String userId) {
         //获取用户
         User user = findOne(userId);
@@ -274,7 +274,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param userId 用户Id
      * @return 可分配的功能项清单
      */
-    @Cacheable(value = "UserCanAssignFeaturesCache", key = "'UserCanAssignFeatures:'+#userId")
+//    @Cacheable(value = "UserCanAssignFeaturesCache", key = "'UserCanAssignFeatures:'+#userId")
     public List<Feature> getUserCanAssignFeatures(String userId) {
         List<Feature> result = new ArrayList<>();
         //获取用户
@@ -303,7 +303,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param userId 用户Id
      * @return 功能项键值
      */
-    @Cacheable(value = "UserAuthorizedFeatureMapsCache", key = "'UserAuthorizedFeatureMaps:'+#userId")
+//    @Cacheable(value = "UserAuthorizedFeatureMapsCache", key = "'UserAuthorizedFeatureMaps:'+#userId")
     public Map<String, Set<String>> getUserAuthorizedFeatureMaps(String userId) {
         Map<String, Set<String>> result = new HashMap<>();
         // 获取用户有权限的功能项清单
@@ -405,7 +405,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param pageGroupCode 功能项页面分组代码(react页面路由)
      * @return 有权限则data返回有权限的功能项集合
      */
-    @Cacheable(value = "UserAuthorizedFeature", key = "'UserAuthorizedFeature:'+#pageGroupCode+':'+#userId")
+//    @Cacheable(value = "UserAuthorizedFeature", key = "'UserAuthorizedFeature:'+#pageGroupCode+':'+#userId")
     public ResultData<Map<String, String>> getUserAuthorizedFeature(String userId, String pageGroupCode) {
         //判断参数不能为空
         if (StringUtils.isBlank(userId)) {
