@@ -63,7 +63,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      */
     @Override
     public ResultData<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getAccount(), loginRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -77,7 +77,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
             user.setUserId(userPrincipal.getId());
             user.setAccount(userPrincipal.getUsername());
             user.setUserName(userPrincipal.getNickname());
-            user.setLoginAccount(loginRequest.getUsername());
+            user.setLoginAccount(loginRequest.getAccount());
             user.setTenantCode("SEI");
             ContextUtil.generateToken(user);
 
