@@ -8,6 +8,10 @@ package com.changhong.sei.manager.commom;
  */
 public interface Constants {
     /**
+     * 空值
+     */
+    String NULL_EMPTY = "NULL_EMPTY";
+    /**
      * JWT 在 Redis 中保存的key前缀
      */
     String REDIS_JWT_KEY_PREFIX = "sei:manager:jwt:";

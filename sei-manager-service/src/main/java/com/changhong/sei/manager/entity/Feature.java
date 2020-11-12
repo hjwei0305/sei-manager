@@ -62,6 +62,7 @@ public class Feature extends BaseEntity implements Serializable, IRank {
     private Integer rank;
     /**
      * 父级id
+     * 如果是根节点则为0
      */
     @Column(name = "parent_id")
     private String parentId;

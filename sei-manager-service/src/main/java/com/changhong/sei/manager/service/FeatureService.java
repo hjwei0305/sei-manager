@@ -4,6 +4,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
+import com.changhong.sei.manager.commom.Constants;
 import com.changhong.sei.manager.dao.FeatureDao;
 import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.entity.Menu;
@@ -61,6 +62,8 @@ public class FeatureService extends BaseEntityService<Feature> {
             if (Objects.isNull(parentFeature)) {
                 return OperateResultWithData.operationFailure("父级功能项不存在.");
             }
+        } else {
+            entity.setParentId(Constants.NULL_EMPTY);
         }
         return super.save(entity);
     }
@@ -72,11 +75,6 @@ public class FeatureService extends BaseEntityService<Feature> {
      */
     @Override
     protected OperateResult preDelete(String id) {
-        List<Menu> menus = menuService.findByFeatureId(id);
-        if (menus != null && menus.size() > 0) {
-            //该功能项存在菜单，禁止删除！
-            return OperateResult.operationFailure("该功能项存在菜单，禁止删除！");
-        }
         // 检查是否存在下级功能项，如果存在禁止删除
         Feature feature = dao.findOne(id);
         if (Objects.isNull(feature)) {
@@ -88,6 +86,11 @@ public class FeatureService extends BaseEntityService<Feature> {
         if (CollectionUtils.isNotEmpty(childFeatures)) {
             // 页面【{0}】存在下级功能项，禁止删除！
             return OperateResult.operationFailure("页面【" + feature.getName() + "】存在下级功能项，禁止删除！");
+        }
+        List<Menu> menus = menuService.findByFeatureId(id);
+        if (menus != null && menus.size() > 0) {
+            //该功能项存在菜单，禁止删除！
+            return OperateResult.operationFailure("该功能项存在菜单，禁止删除！");
         }
         List<Role> roles = roleFeatureService.getParentsFromChildId(id);
         if (roles != null && !roles.isEmpty()) {
