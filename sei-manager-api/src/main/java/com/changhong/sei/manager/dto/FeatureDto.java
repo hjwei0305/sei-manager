@@ -30,6 +30,11 @@ public class FeatureDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "类型为页面时，代表前端路由地址，类型为按钮时，代表后端接口地址(max = 400)")
     private String url;
+    /**
+     * 外部URL或扩展URL
+     */
+    @ApiModelProperty(value = "外部URL或扩展URL")
+    private String extUrl;
 
     /**
      * 权限类型，页面-1，按钮-2
@@ -74,6 +79,14 @@ public class FeatureDto extends BaseEntityDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getExtUrl() {
+        return extUrl;
+    }
+
+    public void setExtUrl(String extUrl) {
+        this.extUrl = extUrl;
     }
 
     public Integer getType() {

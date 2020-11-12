@@ -37,6 +37,6 @@ public interface RoleApi extends BaseEntityApi<RoleDto>, FindByPageApi<RoleDto> 
      * @return 可以分配的角色
      */
     @GetMapping(path = "getCanAssignedRoles")
-    @ApiOperation(value = "根据角色组Id获取可分配的角色", notes = "根据角色组Id获取用户本人可以分配的角色")
+    @ApiOperation(value = "获取可分配的角色", notes = "获取用户本人可以分配的角色")
     ResultData<List<RoleDto>> getCanAssignedRoles();
 }

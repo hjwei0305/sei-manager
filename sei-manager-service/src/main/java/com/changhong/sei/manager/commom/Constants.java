@@ -11,4 +11,5 @@ public interface Constants {
      * JWT 在 Redis 中保存的key前缀
      */
     String REDIS_JWT_KEY_PREFIX = "sei:manager:jwt:";
+
 }

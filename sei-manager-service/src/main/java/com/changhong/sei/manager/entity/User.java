@@ -50,7 +50,7 @@ public class User extends BaseEntity implements Serializable {
      * 状态，启用-1，禁用-0
      */
     @Column(name = "status")
-    private Boolean status;
+    private Boolean status = Boolean.TRUE;
     /**
      * 创建时间
      */

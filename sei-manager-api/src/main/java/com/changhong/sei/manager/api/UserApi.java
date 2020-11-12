@@ -5,6 +5,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.manager.dto.LoginRequest;
 import com.changhong.sei.manager.dto.LoginResponse;
+import com.changhong.sei.manager.dto.UpdatePasswordRequest;
 import com.changhong.sei.manager.dto.UserDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -25,6 +26,13 @@ import javax.validation.Valid;
 @Valid
 @FeignClient(name = "sei-manager", path = "user")
 public interface UserApi extends BaseEntityApi<UserDto> {
+
+    /**
+     * 修改密码
+     */
+    @PostMapping(value = "/updatePassword")
+    @ApiOperation(value = "修改密码", notes = "修改密码")
+    ResultData<Void> updatePassword(UpdatePasswordRequest updatePasswordRequest);
 
     /**
      * 登录

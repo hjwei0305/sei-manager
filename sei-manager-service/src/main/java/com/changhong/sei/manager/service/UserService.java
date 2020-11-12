@@ -4,6 +4,8 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.manager.dao.UserDao;
 import com.changhong.sei.manager.entity.Feature;
@@ -11,6 +13,7 @@ import com.changhong.sei.manager.entity.Menu;
 import com.changhong.sei.manager.entity.Role;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.vo.UserPrincipal;
+import com.changhong.sei.util.HashUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,8 +120,64 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //                });
 //    }
 
-    public void updatePassword(String userId, String oldPassword, String password) {
 
+    /**
+     * 主键删除
+     *
+     * @param id 主键
+     * @return 返回操作结果对象
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OperateResult delete(String id) {
+        User user = dao.findOne(id);
+        if (Objects.isNull(user)) {
+            return OperateResult.operationFailure("用户不存在.");
+        }
+
+        user.setStatus(Boolean.FALSE);
+
+        OperateResultWithData<User> result = this.save(user);
+        return OperateResultWithData.converterNoneData(result);
+    }
+
+    /**
+     * 数据保存操作
+     *
+     * @param entity 持久化对象
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OperateResultWithData<User> save(User entity) {
+        if (Objects.isNull(entity)) {
+            return OperateResultWithData.operationFailure("用户不能为空.");
+        }
+
+        if (StringUtils.isBlank(entity.getPassword())) {
+            entity.setPassword(passwordEncoder.encode(HashUtil.md5("123456")));
+        }
+
+        long currentTimeMillis = System.currentTimeMillis();
+        if (StringUtils.isBlank(entity.getId())) {
+            entity.setCreateTime(currentTimeMillis);
+        }
+        entity.setUpdateTime(currentTimeMillis);
+        return super.save(entity);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> updatePassword(String usernameOrEmailOrPhone, String oldPassword, String password) {
+        User user = dao.findByUsernameOrEmailOrPhone(usernameOrEmailOrPhone, usernameOrEmailOrPhone, usernameOrEmailOrPhone).orElse(null);
+        if (Objects.isNull(user)) {
+            return ResultData.fail("未找到用户信息 : " + usernameOrEmailOrPhone);
+        }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return ResultData.fail("旧密码不正确,修改失败!");
+        }
+
+        user.setPassword(passwordEncoder.encode(password));
+        this.save(user);
+        return ResultData.success();
     }
 
     /**

@@ -6,17 +6,16 @@ import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.manager.api.UserApi;
 import com.changhong.sei.manager.commom.Constants;
 import com.changhong.sei.manager.dto.LoginRequest;
 import com.changhong.sei.manager.dto.LoginResponse;
+import com.changhong.sei.manager.dto.UpdatePasswordRequest;
 import com.changhong.sei.manager.dto.UserDto;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.UserService;
 import com.changhong.sei.manager.vo.UserPrincipal;
-import com.changhong.sei.util.EncodeUtil;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +58,14 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     private CacheBuilder cacheBuilder;
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    /**
+     * 修改密码
+     */
+    @Override
+    public ResultData<Void> updatePassword(UpdatePasswordRequest request) {
+        return service.updatePassword(request.getAccount(), request.getOldPassword(), request.getPassword());
+    }
 
     /**
      * 登录
