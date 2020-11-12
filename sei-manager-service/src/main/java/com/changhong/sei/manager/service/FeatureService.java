@@ -56,7 +56,7 @@ public class FeatureService extends BaseEntityService<Feature> {
     @Transactional(rollbackFor = Exception.class)
     public OperateResultWithData<Feature> save(Feature entity) {
         String parentId = entity.getParentId();
-        if (StringUtils.isNotBlank(parentId)) {
+        if (StringUtils.isNotBlank(parentId) && !Constants.NULL_EMPTY.equals(parentId)) {
             // 检查父级功能项
             Feature parentFeature = findOne(parentId);
             if (Objects.isNull(parentFeature)) {
