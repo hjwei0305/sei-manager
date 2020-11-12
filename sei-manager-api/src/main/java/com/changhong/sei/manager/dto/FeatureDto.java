@@ -60,7 +60,6 @@ public class FeatureDto extends BaseEntityDto {
     /**
      * 功能项组Id
      */
-    @NotBlank
     @Size(max = 36)
     @ApiModelProperty(value = "功能项组Id(max = 36)")
     private String parentId;
