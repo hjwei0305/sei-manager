@@ -271,36 +271,36 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         });
         return new ArrayList<>(userMenus);
     }
-//
-//    /**
-//     * 获取用户有权限分配的功能项清单
-//     *
-//     * @param userId 用户Id
-//     * @return 可分配的功能项清单
-//     */
-////    @Cacheable(value = "UserCanAssignFeaturesCache", key = "'UserCanAssignFeatures:'+#userId")
-//    public List<Feature> getUserCanAssignFeatures(String userId) {
-//        List<Feature> result = new ArrayList<>();
-//        //获取用户
-//        User user = findOne(userId);
-//        if (user == null) {
-//            return result;
-//        }
-//        //一般用户的可分配功能角色
-//        List<Role> authRoles = userRoleService.getEffectiveChildren(user.getId());
-//        Set<Role> userRoles = new HashSet<>(authRoles);
-//
-//        //获取角色分配的功能项清单
-//        if (userRoles.isEmpty()) {
-//            return result;
-//        }
-//        List<String> userRoleIds = new ArrayList<>();
-//        userRoles.forEach((r) -> userRoleIds.add(r.getId()));
-//        List<Feature> features = roleFeatureService.getChildrenFromParentIds(userRoleIds);
-//        result.addAll(features);
-//        return result;
-//    }
-//
+
+    /**
+     * 获取用户有权限分配的功能项清单
+     *
+     * @param userId 用户Id
+     * @return 可分配的功能项清单
+     */
+//    @Cacheable(value = "UserCanAssignFeaturesCache", key = "'UserCanAssignFeatures:'+#userId")
+    public List<Feature> getUserCanAssignFeatures(String userId) {
+        List<Feature> result = new ArrayList<>();
+        //获取用户
+        User user = findOne(userId);
+        if (user == null) {
+            return result;
+        }
+        //一般用户的可分配功能角色
+        List<Role> authRoles = userRoleService.getChildrenFromParentId(user.getId());
+        Set<Role> userRoles = new HashSet<>(authRoles);
+
+        //获取角色分配的功能项清单
+        if (userRoles.isEmpty()) {
+            return result;
+        }
+        List<String> userRoleIds = new ArrayList<>();
+        userRoles.forEach((r) -> userRoleIds.add(r.getId()));
+        List<Feature> features = roleFeatureService.getChildrenFromParentIds(userRoleIds);
+        result.addAll(features);
+        return result;
+    }
+
 //    /**
 //     * 获取用户前端权限检查的功能项键值
 //     *
