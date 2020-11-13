@@ -12,9 +12,6 @@ sei: # 应用全局配置
     user:
       tenant-code: global
       account: sei
-  http:
-    filter:
-      enable: false
 
 spring:
   boot:
