@@ -134,11 +134,11 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     /**
      * 获取用户有权限的操作菜单树(DTO)
      *
-     * @param userId 用户Id
      * @return 操作菜单树
      */
     @Override
-    public ResultData<UserAuthorizedResponse> getUserAuthorizedData(String userId) {
+    public ResultData<UserAuthorizedResponse> getUserAuthorizedData() {
+        String userId = ContextUtil.getUserId();
         Map<String, Collection<String>> permissions = new HashMap<>();
         // 获取用户有权限的功能项清单
         List<Feature> features = service.getUserAuthorizedFeatures(userId);

@@ -46,12 +46,11 @@ public interface UserApi extends BaseEntityApi<UserDto> {
     /**
      * 获取用户有权限的菜单和功能项
      *
-     * @param userId 用户Id
      * @return 获取用户有权限的菜单和功能项
      */
-    @PostMapping("getUserAuthorizedData")
+    @GetMapping("getUserAuthorizedData")
     @ApiOperation(value = "获取用户有权限的菜单和功能项", notes = "获取用户有权限的菜单和功能项")
-    ResultData<UserAuthorizedResponse> getUserAuthorizedData(@RequestParam("userId") String userId);
+    ResultData<UserAuthorizedResponse> getUserAuthorizedData();
 
     /**
      * 在线用户列表
