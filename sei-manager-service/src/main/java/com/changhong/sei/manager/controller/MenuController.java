@@ -40,6 +40,11 @@ public class MenuController extends BaseTreeController<Menu, MenuDto>
     @Autowired
     private AsyncRunUtil asyncRunUtil;
 
+    @Override
+    public BaseTreeService<Menu> getService() {
+        return menuService;
+    }
+
     /**
      * 获取整个菜单树
      *
@@ -63,11 +68,6 @@ public class MenuController extends BaseTreeController<Menu, MenuDto>
         List<Menu> menus = menuService.findByNameLike(name);
         List<MenuDto> dtos = menus.stream().map(this::convertToDto).collect(Collectors.toList());
         return ResultData.success(dtos);
-    }
-
-    @Override
-    public BaseTreeService<Menu> getService() {
-        return menuService;
     }
 
     /**

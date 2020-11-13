@@ -44,7 +44,7 @@ public class RoleController extends BaseEntityController<Role, RoleDto> implemen
      */
     @Override
     public ResultData<List<UserDto>> getAssignedUsersByeRole(String roleId) {
-        List<User> users = service.getAssignedEmployeesByFeatureRole(roleId);
+        List<User> users = service.getParentsFromChildId(roleId);
         List<UserDto> dtos = users.stream().map(o -> dtoModelMapper.map(o, UserDto.class)).collect(Collectors.toList());
         return ResultData.success(dtos);
     }

@@ -40,7 +40,7 @@ public class UserRoleService extends BaseRelationService<UserRole, User, Role> {
     @Override
     protected List<Role> getCanAssignedChildren(String parentId) {
         // 判断用户权限
-        return featureRoleService.getCanAssignedRoles();
+        return featureRoleService.getChildrenFromParentId(parentId);
     }
 
     /**

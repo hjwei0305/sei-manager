@@ -129,15 +129,9 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     }
 
     /**
-     * 获取用户有权限的操作菜单项
+     * 获取用户有权限的菜单和功能项
      *
-     * @param userId 用户Id
-     * @return 操作菜单树
-     */
-    /**
-     * 获取用户有权限的操作菜单树(DTO)
-     *
-     * @return 操作菜单树
+     * @return 获取用户有权限的菜单和功能项
      */
     @Override
     public ResultData<UserAuthorizedResponse> getUserAuthorizedData() {

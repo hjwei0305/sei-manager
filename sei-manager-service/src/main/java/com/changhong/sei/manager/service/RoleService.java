@@ -71,11 +71,15 @@ public class RoleService extends BaseEntityService<Role> {
     /**
      * 根据功能角色的id获取已分配的用户
      *
-     * @param featureRoleId 功能角色的id
+     * @param roleId 功能角色的id
      * @return 员工用户清单
      */
-    public List<User> getAssignedEmployeesByFeatureRole(String featureRoleId) {
-        return userRoleService.getParentsFromChildId(featureRoleId);
+    public List<User> getParentsFromChildId(String roleId) {
+        return userRoleService.getParentsFromChildId(roleId);
+    }
+
+    public List<Role> getChildrenFromParentId(String userId) {
+        return userRoleService.getChildrenFromParentId(userId);
     }
 
 }
