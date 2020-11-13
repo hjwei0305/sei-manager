@@ -1,6 +1,5 @@
 package com.changhong.sei.manager.service;
 
-import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
@@ -64,7 +63,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     public UserDetails loadUserByUsername(String usernameOrEmailOrPhone) throws UsernameNotFoundException {
         User user = dao.findByUsernameOrEmailOrPhone(usernameOrEmailOrPhone, usernameOrEmailOrPhone, usernameOrEmailOrPhone)
                 .orElseThrow(() -> new UsernameNotFoundException("未找到用户信息 : " + usernameOrEmailOrPhone));
-        List<Role> roles = roleService.selectByUserId(user.getId());
+        List<Role> roles = roleService.getChildrenFromParentId(user.getId());
         List<String> roleIds = roles.stream()
                 .map(Role::getId)
                 .collect(Collectors.toList());

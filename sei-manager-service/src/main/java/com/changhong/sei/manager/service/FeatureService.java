@@ -40,16 +40,6 @@ public class FeatureService extends BaseEntityService<Feature> {
     }
 
     /**
-     * 根据角色列表查询权限列表
-     *
-     * @param ids 角色id列表
-     * @return 权限列表
-     */
-    public List<Feature> selectByRoleIdList(List<String> ids) {
-        return dao.selectByRoleIdList(ids);
-    }
-
-    /**
      * 重写save 保存的时除去首尾的'/'
      */
     @Override
@@ -112,5 +102,15 @@ public class FeatureService extends BaseEntityService<Feature> {
             return new ArrayList<>();
         }
         return dao.findListByProperty(Feature.FIELD_PARENT_ID, featureId);
+    }
+
+    /**
+     * 根据角色列表查询权限列表
+     *
+     * @param roleIds 角色id列表
+     * @return 权限列表
+     */
+    public List<Feature> selectByRoleIdList(List<String> roleIds) {
+        return roleFeatureService.getChildrenFromParentIds(roleIds);
     }
 }

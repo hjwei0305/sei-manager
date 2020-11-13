@@ -3,17 +3,15 @@ package com.changhong.sei.manager.service;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.manager.dao.RoleDao;
 import com.changhong.sei.manager.entity.Role;
 import com.changhong.sei.manager.entity.User;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -31,8 +29,6 @@ public class RoleService extends BaseEntityService<Role> {
     private UserRoleService userRoleService;
     @Autowired
     private RoleFeatureService roleFeatureService;
-    @Autowired
-    private UserService userService;
 
     @Override
     protected BaseEntityDao<Role> getDao() {
@@ -40,13 +36,16 @@ public class RoleService extends BaseEntityService<Role> {
     }
 
     /**
-     * 根据用户id 查询角色列表
-     *
-     * @param userId 用户id
-     * @return 角色列表
+     * 数据保存操作
      */
-    public List<Role> selectByUserId(String userId) {
-        return dao.selectByUserId(userId);
+    @Override
+    public OperateResultWithData<Role> save(Role entity) {
+        long currentTimeMillis = System.currentTimeMillis();
+        if (StringUtils.isBlank(entity.getId())) {
+            entity.setCreateTime(currentTimeMillis);
+        }
+        entity.setUpdateTime(currentTimeMillis);
+        return super.save(entity);
     }
 
     /**
@@ -78,6 +77,12 @@ public class RoleService extends BaseEntityService<Role> {
         return userRoleService.getParentsFromChildId(roleId);
     }
 
+    /**
+     * 根据用户id 查询角色列表
+     *
+     * @param userId 用户id
+     * @return 角色列表
+     */
     public List<Role> getChildrenFromParentId(String userId) {
         return userRoleService.getChildrenFromParentId(userId);
     }
