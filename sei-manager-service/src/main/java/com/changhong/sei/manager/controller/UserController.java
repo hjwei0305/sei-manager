@@ -164,7 +164,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
         List<Menu> menus = service.getUserAuthorizedMenus(userId);
         // 构造菜单树
         List<Menu> menusTrees = MenuService.buildTree(menus);
-        List<MenuDto> menuDtos = menusTrees.stream().map(m -> dtoModelMapper.map(m, MenuDto.class)).collect(Collectors.toList());
+        List<MenuDto> menuDtos = menusTrees.stream().map(m -> entityModelMapper.map(m, MenuDto.class)).collect(Collectors.toList());
 
         return ResultData.success(new UserAuthorizedResponse(menuDtos, permissions));
     }
