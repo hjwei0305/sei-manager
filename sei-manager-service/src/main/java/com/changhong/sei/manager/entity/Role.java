@@ -88,4 +88,26 @@ public class Role extends BaseEntity implements Serializable {
     public void setRelationId(String relationId) {
         this.relationId = relationId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (null == obj) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (!getClass().equals(obj.getClass())) {
+            return false;
+        }
+        Role that = (Role) obj;
+        return null != this.getId() && this.getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode += ((null == getId()) ? 0 : getId().hashCode()) * 31;
+        return hashCode;
+    }
 }

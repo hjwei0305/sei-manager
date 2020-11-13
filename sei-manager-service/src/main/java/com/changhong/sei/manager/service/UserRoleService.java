@@ -102,21 +102,6 @@ public class UserRoleService extends BaseRelationService<UserRole, User, Role> {
     }
 
     /**
-     * 获取当前有效的授权功能角色清单
-     *
-     * @param parentId 用户Id
-     * @return 有效的授权功能角色清单
-     */
-    public List<Role> getEffectiveChildren(String parentId) {
-        // 获取分配的功能项
-        List<Role> roles = getChildrenFromParentId(parentId);
-        if (CollectionUtils.isEmpty(roles)) {
-            return new LinkedList<>();
-        }
-        return roles;
-    }
-
-    /**
      * 通过子实体Id获取父实体清单
      *
      * @param childId 子实体Id

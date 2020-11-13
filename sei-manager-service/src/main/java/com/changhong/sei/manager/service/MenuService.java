@@ -261,7 +261,7 @@ public class MenuService extends BaseTreeService<Menu> {
         Set<Menu> featureMenus = new LinkedHashSet<>();
         features.forEach((f) -> {
             // 页面功能
-            if (f.getType() == 1) {
+            if (Objects.nonNull(f.getType()) && f.getType() == 1) {
                 Optional<Menu> menuOptional = allMenus.stream().filter(m -> StringUtils.equals(f.getId(), m.getFeatureId())).findAny();
                 menuOptional.ifPresent(featureMenus::add);
             }
@@ -275,7 +275,6 @@ public class MenuService extends BaseTreeService<Menu> {
      * @param userMenus 用户的功能项菜单节点
      * @param nodes     功能项菜单节点
      * @param allMenus  所有菜单项
-     * @return 菜单
      */
     public static void generateUserMenuNodes(Set<Menu> userMenus, List<Menu> nodes, List<Menu> allMenus) {
         nodes.forEach(node -> {

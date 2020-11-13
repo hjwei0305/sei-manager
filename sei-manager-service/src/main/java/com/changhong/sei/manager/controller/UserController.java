@@ -10,11 +10,11 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.enums.UserAuthorityPolicy;
 import com.changhong.sei.manager.api.UserApi;
 import com.changhong.sei.manager.commom.Constants;
-import com.changhong.sei.manager.dto.LoginRequest;
-import com.changhong.sei.manager.dto.LoginResponse;
-import com.changhong.sei.manager.dto.UpdatePasswordRequest;
-import com.changhong.sei.manager.dto.UserDto;
+import com.changhong.sei.manager.dto.*;
+import com.changhong.sei.manager.entity.Feature;
+import com.changhong.sei.manager.entity.Menu;
 import com.changhong.sei.manager.entity.User;
+import com.changhong.sei.manager.service.MenuService;
 import com.changhong.sei.manager.service.UserService;
 import com.changhong.sei.manager.vo.UserPrincipal;
 import io.swagger.annotations.Api;
@@ -31,7 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 用户表(SecUser)控制类
@@ -122,6 +123,50 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
         SessionUser sessionUser = ContextUtil.getSessionUser();
         cacheBuilder.remove(REDIS_JWT_KEY_PREFIX + sessionUser.getSessionId());
         return ResultData.success();
+    }
+
+    /**
+     * 获取用户有权限的操作菜单项
+     *
+     * @param userId 用户Id
+     * @return 操作菜单树
+     */
+    /**
+     * 获取用户有权限的操作菜单树(DTO)
+     *
+     * @param userId 用户Id
+     * @return 操作菜单树
+     */
+    @Override
+    public ResultData<UserAuthorizedResponse> getUserAuthorizedData(String userId) {
+        Map<String, Collection<String>> permissions = new HashMap<>();
+        // 获取用户有权限的功能项清单
+        List<Feature> features = service.getUserAuthorizedFeatures(userId);
+        if (CollectionUtils.isNotEmpty(features)) {
+            // 页面功能项
+            List<Feature> pageFeatures = features.stream().filter(f -> f.getType() == 1).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(pageFeatures)) {
+                // 按页面分组的操作功能项
+                Map<String, List<Feature>> featureMap = features.stream().collect(Collectors.groupingBy(Feature::getParentId));
+                for (Feature feature : pageFeatures) {
+                    // 获取指定页面的操作功能项
+                    List<Feature> featureList = featureMap.get(feature.getId());
+                    if (CollectionUtils.isNotEmpty(featureList)) {
+                        permissions.put(feature.getUrl(), featureList.stream().map(Feature::getPermission).collect(Collectors.toSet()));
+                    } else {
+                        permissions.put(feature.getUrl(), new HashSet<>());
+                    }
+                }
+            }
+        }
+
+        // 获取用户有权限的菜单项清单
+        List<Menu> menus = service.getUserAuthorizedMenus(userId);
+        // 构造菜单树
+        List<Menu> menusTrees = MenuService.buildTree(menus);
+        List<MenuDto> menuDtos = menusTrees.stream().map(m -> dtoModelMapper.map(m, MenuDto.class)).collect(Collectors.toList());
+
+        return ResultData.success(new UserAuthorizedResponse(menuDtos, permissions));
     }
 
     /**

@@ -227,4 +227,28 @@ public class Menu extends BaseAuditableEntity implements TreeEntity<Menu> {
     public void setFavorite(Boolean favorite) {
         this.favorite = favorite;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        Menu menu = (Menu) o;
+
+        return id != null ? id.equals(menu.id) : menu.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
+    }
 }
