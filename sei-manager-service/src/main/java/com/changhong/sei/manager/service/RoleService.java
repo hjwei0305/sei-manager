@@ -78,19 +78,4 @@ public class RoleService extends BaseEntityService<Role> {
         return userRoleService.getParentsFromChildId(featureRoleId);
     }
 
-    /**
-     * 获取用户本人可以分配的角色
-     *
-     * @return 可以分配的角色
-     */
-    public List<Role> getCanAssignedRoles() {
-        Set<Role> roles = new LinkedHashSet<>();
-        // 如果是一般分级授权用户，获取有数据权限的角色+本人创建的角色
-        List<Role> authRoles = getUserAuthorizedEntities(null);
-        if (CollectionUtils.isNotEmpty(authRoles)) {
-            roles.addAll(authRoles);
-        }
-        // 排除公共角色
-        return new ArrayList<>(roles);
-    }
 }

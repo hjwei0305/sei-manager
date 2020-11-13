@@ -15,14 +15,8 @@ import javax.validation.constraints.Size;
  */
 @ApiModel(description = "功能角色DTO")
 public class RoleDto extends BaseEntityDto {
+    private static final long serialVersionUID = -682194106083102055L;
 
-    /**
-     * 代码
-     */
-    @NotBlank
-    @Size(max = 50)
-    @ApiModelProperty(value = "代码(max = 50)", required = true)
-    private String code;
     /**
      * 名称
      */
@@ -30,36 +24,15 @@ public class RoleDto extends BaseEntityDto {
     @Size(max = 50)
     @ApiModelProperty(value = "名称(max = 50)", required = true)
     private String name;
-    /**
-     * 功能角色组Id
-     */
-    @NotBlank
-    @Size(max = 36)
-    @ApiModelProperty(value = "功能角色组Id(max = 36)", required = true)
-    private String featureRoleGroupId;
-    /**
-     * 功能角色组代码
-     */
-    @ApiModelProperty(value = "功能角色组代码")
-    private String featureRoleGroupCode;
-    /**
-     * 功能角色组名称
-     */
-    @ApiModelProperty(value = "功能角色组名称")
-    private String featureRoleGroupName;
+    @Size(max = 100)
+    @ApiModelProperty(value = "描述(max = 100)")
+    private String description;
+
     /**
      * 授权分配关系Id
      */
     @ApiModelProperty("授权分配关系Id")
     private String relationId;
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 
     public String getName() {
         return name;
@@ -69,28 +42,12 @@ public class RoleDto extends BaseEntityDto {
         this.name = name;
     }
 
-    public String getFeatureRoleGroupId() {
-        return featureRoleGroupId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setFeatureRoleGroupId(String featureRoleGroupId) {
-        this.featureRoleGroupId = featureRoleGroupId;
-    }
-
-    public String getFeatureRoleGroupCode() {
-        return featureRoleGroupCode;
-    }
-
-    public void setFeatureRoleGroupCode(String featureRoleGroupCode) {
-        this.featureRoleGroupCode = featureRoleGroupCode;
-    }
-
-    public String getFeatureRoleGroupName() {
-        return featureRoleGroupName;
-    }
-
-    public void setFeatureRoleGroupName(String featureRoleGroupName) {
-        this.featureRoleGroupName = featureRoleGroupName;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getRelationId() {

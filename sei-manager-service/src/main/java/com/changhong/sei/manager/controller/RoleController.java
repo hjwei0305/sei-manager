@@ -2,8 +2,6 @@ package com.changhong.sei.manager.controller;
 
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.dto.serach.PageResult;
-import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.manager.api.RoleApi;
 import com.changhong.sei.manager.dto.RoleDto;
@@ -29,8 +27,7 @@ import java.util.stream.Collectors;
 @RestController
 @Api(value = "FeatureRoleApi", tags = "功能角色API服务实现")
 @RequestMapping(path = "role", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class RoleController extends BaseEntityController<Role, RoleDto>
-        implements RoleApi {
+public class RoleController extends BaseEntityController<Role, RoleDto> implements RoleApi {
     @Autowired
     private RoleService service;
 
@@ -53,23 +50,13 @@ public class RoleController extends BaseEntityController<Role, RoleDto>
     }
 
     /**
-     * 分页查询业务实体
+     * 获取所有业务实体
      *
-     * @param search 查询参数
-     * @return 分页查询结果
+     * @return 业务实体清单
      */
     @Override
-    public ResultData<PageResult<RoleDto>> findByPage(Search search) {
-        return convertToDtoPageResult(service.findByPage(search));
+    public ResultData<List<RoleDto>> findAll() {
+        return ResultData.success(convertToDtos(service.findAll()));
     }
 
-    /**
-     * 获取用户本人可以分配的角色
-     *
-     * @return 可以分配的角色
-     */
-    @Override
-    public ResultData<List<RoleDto>> getCanAssignedRoles() {
-        return ResultData.success(convertToDtos(service.getCanAssignedRoles()));
-    }
 }
