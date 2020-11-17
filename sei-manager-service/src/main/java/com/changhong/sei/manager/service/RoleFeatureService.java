@@ -72,19 +72,18 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
      * @return 功能项树清单
      */
     public List<FeatureNode> getFeatureTree(String roleId) {
-        List<FeatureNode> appNodes = new LinkedList<>();
         // 获取所有已分配的功能项
         List<Feature> features = getChildrenFromParentId(roleId);
 
         // 获取所有页面
         List<Feature> pageFeatures = features.stream().filter(feature -> feature.getType() == 1).collect(Collectors.toList());
         // 定义所有页面节点
+        List<FeatureNode> pageNodes = new ArrayList<>();
         pageFeatures.forEach(feature -> {
-            List<FeatureNode> pageNodes = new ArrayList<>();
             // 构造页面的功能项树
             buildFeatureTree(pageNodes, features, feature);
         });
-        return appNodes;
+        return pageNodes;
     }
 
     /**
