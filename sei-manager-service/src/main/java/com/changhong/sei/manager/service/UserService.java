@@ -5,6 +5,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
+import com.changhong.sei.enums.UserAuthorityPolicy;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.manager.dao.UserDao;
 import com.changhong.sei.manager.entity.Feature;
@@ -284,6 +285,10 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         User user = findOne(userId);
         if (user == null) {
             return result;
+        }
+        //判断全局管理员
+        if (user.getIsAdmin()) {
+            return featureService.findAll();
         }
         //一般用户的可分配功能角色
         List<Role> authRoles = userRoleService.getChildrenFromParentId(user.getId());
