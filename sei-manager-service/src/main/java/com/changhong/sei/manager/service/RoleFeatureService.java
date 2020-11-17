@@ -15,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -97,6 +98,7 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
      * @return 操作结果
      */
     @Override
+    @Transactional
     public OperateResult insertRelations(String parentId, List<String> childIds) {
         UserRole userFeatureRole = userFeatureRoleService.getRelation(ContextUtil.getUserId(), parentId);
         if (userFeatureRole != null) {
@@ -117,6 +119,7 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
      * @return 操作结果
      */
     @Override
+    @Transactional
     public OperateResult removeRelations(String parentId, List<String> childIds) {
         UserRole userFeatureRole = userFeatureRoleService.getRelation(ContextUtil.getUserId(), parentId);
         if (userFeatureRole != null) {
@@ -152,12 +155,13 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
      */
     private void buildPageFeatures(List<Feature> pageFeatures, List<Feature> features) {
         features.forEach(feature -> {
-            Optional<Feature> featureOptional = pageFeatures.stream().filter(f -> Objects.equals(f.getId(), feature.getParentId())).findAny();
+            Optional<Feature> featureOptional = pageFeatures.stream().filter(f -> f.getType() != 1
+                    && Objects.equals(f.getId(), feature.getParentId())).findAny();
             if (!featureOptional.isPresent()) {
                 // 获取菜单项，并追加到页面清单中
                 Feature pageFeature = featureService.findOne(feature.getParentId());
                 if (Objects.isNull(pageFeature)) {
-                    throw new ServiceException("功能项【" + feature.getName() + "】配置错误,没有对应的业务功能项.");
+                    throw new ServiceException("功能项【" + feature.getName() + "】配置错误,没有对应的页面功能项.");
                 }
                 pageFeatures.add(pageFeature);
             }
