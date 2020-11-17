@@ -2,19 +2,16 @@ package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseRelationDao;
-import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseRelationService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.manager.dao.RoleFeatureDao;
-import com.changhong.sei.manager.dto.AuthTreeDto;
-import com.changhong.sei.manager.dto.FeatureDto;
+import com.changhong.sei.manager.dto.FeatureNode;
 import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.entity.Role;
 import com.changhong.sei.manager.entity.RoleFeature;
 import com.changhong.sei.manager.entity.UserRole;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +46,45 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
     protected List<Feature> getCanAssignedChildren(String parentId) {
         String userId = ContextUtil.getUserId();
         return userService.getUserCanAssignFeatures(userId);
+    }
+
+    /**
+     * 获取未分配的功能项树
+     *
+     * @param roleId 角色id
+     * @return 功能项树清单
+     */
+    public List<FeatureNode> getUnassignedFeatureTree(String roleId) {
+        List<FeatureNode> pageNodes = new LinkedList<>();
+        // 获取所有未分配的功能项
+        List<Feature> unassignedFeatures = getUnassignedChildren(roleId);
+        // 获取所有页面
+        List<Feature> pageFeatures = unassignedFeatures.stream().filter(feature -> feature.getType() == 1).collect(Collectors.toList());
+        // 定义所有页面节点
+        pageFeatures.forEach(feature -> buildFeatureTree(pageNodes, unassignedFeatures, feature));
+        return pageNodes;
+    }
+
+    /**
+     * 获取角色的功能项树
+     *
+     * @param roleId 角色id
+     * @return 功能项树清单
+     */
+    public List<FeatureNode> getFeatureTree(String roleId) {
+        List<FeatureNode> appNodes = new LinkedList<>();
+        // 获取所有已分配的功能项
+        List<Feature> features = getChildrenFromParentId(roleId);
+
+        // 获取所有页面
+        List<Feature> pageFeatures = features.stream().filter(feature -> feature.getType() == 1).collect(Collectors.toList());
+        // 定义所有页面节点
+        pageFeatures.forEach(feature -> {
+            List<FeatureNode> pageNodes = new ArrayList<>();
+            // 构造页面的功能项树
+            buildFeatureTree(pageNodes, features, feature);
+        });
+        return appNodes;
     }
 
     /**
@@ -104,5 +140,38 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
         // 清除用户权限缓存
         //AuthorityUtil.cleanAuthorizedCachesByFeatureRoleId(parentId);
         return result;
+    }
+
+    /**
+     * 构造页面的功能项树
+     *
+     * @param pageNodes 要构造的页面节点清单
+     * @param features  使用的功能项清单
+     */
+    private void buildFeatureTree(List<FeatureNode> pageNodes, List<Feature> features, Feature pageFeature) {
+        FeatureNode pageNode = constructNode(pageFeature);
+        pageNodes.add(pageNode);
+        // 获取所有非页面的功能项
+        List<Feature> otherFeatures = features.stream()
+                .filter(f -> StringUtils.equals(f.getParentId(), pageFeature.getId())).collect(Collectors.toList());
+        otherFeatures.forEach(f -> {
+            FeatureNode node = constructNode(f);
+            pageNode.getChildren().add(node);
+        });
+    }
+
+    /**
+     * 构造树节点
+     *
+     * @param feature 功能项
+     * @return 功能项节点
+     */
+    private FeatureNode constructNode(Feature feature) {
+        FeatureNode node = new FeatureNode();
+        node.setId(feature.getId());
+        node.setName(feature.getName());
+        node.setType(feature.getType());
+        node.setChildren(new LinkedList<>());
+        return node;
     }
 }

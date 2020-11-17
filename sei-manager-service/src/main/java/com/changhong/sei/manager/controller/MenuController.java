@@ -81,6 +81,7 @@ public class MenuController extends BaseTreeController<Menu, MenuDto>
             protected void configure() {
                 // 使用自定义转换规则确定FeatureId
                 map().setFeatureId(source.getFeatureId());
+                map().setFeatureName(source.getFeature().getName());
                 map().setMenuUrl(source.getFeature().getUrl());
             }
         };
