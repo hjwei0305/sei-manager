@@ -4,6 +4,7 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseRelationDao;
 import com.changhong.sei.core.service.BaseRelationService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.manager.dao.RoleFeatureDao;
 import com.changhong.sei.manager.dto.FeatureNode;
 import com.changhong.sei.manager.entity.Feature;
@@ -60,6 +61,8 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
         List<Feature> unassignedFeatures = getUnassignedChildren(roleId);
         // 获取所有页面
         List<Feature> pageFeatures = unassignedFeatures.stream().filter(feature -> feature.getType() == 1).collect(Collectors.toList());
+        // 检查并生成页面功能项清单
+        buildPageFeatures(pageFeatures, unassignedFeatures);
         // 定义所有页面节点
         pageFeatures.forEach(feature -> buildFeatureTree(pageNodes, unassignedFeatures, feature));
         return pageNodes;
@@ -139,6 +142,26 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
         // 清除用户权限缓存
         //AuthorityUtil.cleanAuthorizedCachesByFeatureRoleId(parentId);
         return result;
+    }
+
+    /**
+     * 检查并生成页面功能项清单
+     *
+     * @param pageFeatures 页面功能项
+     * @param features     需要展示的功能项
+     */
+    private void buildPageFeatures(List<Feature> pageFeatures, List<Feature> features) {
+        features.forEach(feature -> {
+            Optional<Feature> featureOptional = pageFeatures.stream().filter(f -> Objects.equals(f.getId(), feature.getParentId())).findAny();
+            if (!featureOptional.isPresent()) {
+                // 获取菜单项，并追加到页面清单中
+                Feature pageFeature = featureService.findOne(feature.getParentId());
+                if (Objects.isNull(pageFeature)) {
+                    throw new ServiceException("功能项【" + feature.getName() + "】配置错误,没有对应的业务功能项.");
+                }
+                pageFeatures.add(pageFeature);
+            }
+        });
     }
 
     /**
