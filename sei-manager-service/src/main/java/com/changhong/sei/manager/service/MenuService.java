@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,6 +32,8 @@ public class MenuService extends BaseTreeService<Menu> {
 
     @Autowired
     private MenuDao menuDao;
+    @Autowired
+    private FeatureService featureService;
 
     @Override
     protected BaseTreeDao<Menu> getDao() {
@@ -66,7 +69,15 @@ public class MenuService extends BaseTreeService<Menu> {
         if (StringUtils.isBlank(menu.getCode())) {
             menu.setCode(String.valueOf(IdGenerator.nextId()));
         }
-        return super.save(menu);
+        OperateResultWithData<Menu> result = super.save(menu);
+        if (result.successful()) {
+            Menu data = result.getData();
+            if (Objects.nonNull(data) && StringUtils.isNotBlank(data.getFeatureId())) {
+                Feature feature = featureService.findOne(data.getFeatureId());
+                data.setFeature(feature);
+            }
+        }
+        return result;
     }
 
     /**

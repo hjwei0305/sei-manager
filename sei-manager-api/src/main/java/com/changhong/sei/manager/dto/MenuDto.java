@@ -73,12 +73,6 @@ public class MenuDto extends BaseEntityDto implements TreeEntity<MenuDto> {
     private String featureId;
 
     /**
-     * 关联功能项代码
-     */
-    @ApiModelProperty(value = "关联功能项代码")
-    private String featureCode;
-
-    /**
      * 关联功能项名称
      */
     @ApiModelProperty(value = "关联功能项名称")
@@ -187,14 +181,6 @@ public class MenuDto extends BaseEntityDto implements TreeEntity<MenuDto> {
 
     public void setFeatureId(String featureId) {
         this.featureId = featureId;
-    }
-
-    public String getFeatureCode() {
-        return featureCode;
-    }
-
-    public void setFeatureCode(String featureCode) {
-        this.featureCode = featureCode;
     }
 
     public String getFeatureName() {

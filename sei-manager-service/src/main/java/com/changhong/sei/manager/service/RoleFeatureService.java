@@ -155,15 +155,17 @@ public class RoleFeatureService extends BaseRelationService<RoleFeature, Role, F
      */
     private void buildPageFeatures(List<Feature> pageFeatures, List<Feature> features) {
         features.forEach(feature -> {
-            Optional<Feature> featureOptional = pageFeatures.stream().filter(f -> Objects.equals(f.getId(), feature.getParentId())).findAny();
             // 操作功能项检查上级页面功能项是否存在
-            if (feature.getType() == 2 && !featureOptional.isPresent()) {
-                // 获取菜单项，并追加到页面清单中
-                Feature pageFeature = featureService.findOne(feature.getParentId());
-                if (Objects.isNull(pageFeature)) {
-                    throw new ServiceException("功能项【" + feature.getName() + "】配置错误,没有对应的页面功能项.");
+            if (feature.getType() != 1) {
+                Optional<Feature> featureOptional = pageFeatures.stream().filter(f -> Objects.equals(f.getId(), feature.getParentId())).findAny();
+                if (!featureOptional.isPresent()) {
+                    // 获取菜单项，并追加到页面清单中
+                    Feature pageFeature = featureService.findOne(feature.getParentId());
+                    if (Objects.isNull(pageFeature)) {
+                        throw new ServiceException("功能项【" + feature.getName() + "】配置错误,没有对应的页面功能项.");
+                    }
+                    pageFeatures.add(pageFeature);
                 }
-                pageFeatures.add(pageFeature);
             }
         });
     }
