@@ -64,40 +64,6 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     private AuthenticationManager authenticationManager;
 
     /**
-     * 自定义设置Entity转换为DTO的转换器
-     */
-    @Override
-    protected void customConvertToDtoMapper() {
-        // 创建自定义映射规则
-        PropertyMap<User, UserDto> propertyMap = new PropertyMap<User, UserDto>() {
-            @Override
-            protected void configure() {
-                // 使用自定义转换规则
-                map().setAccount(source.getUsername());
-            }
-        };
-        // 添加映射器
-        dtoModelMapper.addMappings(propertyMap);
-    }
-
-    /**
-     * 自定义设置DTO转换为Entity的转换器
-     */
-    @Override
-    protected void customerConvertToEntityMapper() {
-        // 创建自定义映射规则
-        PropertyMap<UserDto, User> propertyMap = new PropertyMap<UserDto,User>() {
-            @Override
-            protected void configure() {
-                // 使用自定义转换规则
-                map().setUsername(source.getAccount());
-            }
-        };
-        // 添加映射器
-        entityModelMapper.addMappings(propertyMap);
-    }
-
-    /**
      * 创建用户
      */
     @Override

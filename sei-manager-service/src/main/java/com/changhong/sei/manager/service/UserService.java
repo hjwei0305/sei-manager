@@ -8,10 +8,7 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.manager.commom.EmailManager;
 import com.changhong.sei.manager.dao.UserDao;
-import com.changhong.sei.manager.entity.Feature;
-import com.changhong.sei.manager.entity.Menu;
-import com.changhong.sei.manager.entity.Role;
-import com.changhong.sei.manager.entity.User;
+import com.changhong.sei.manager.entity.*;
 import com.changhong.sei.manager.vo.UserPrincipal;
 import com.changhong.sei.util.HashUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -58,6 +55,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     private PasswordEncoder passwordEncoder;
     @Autowired
     private EmailManager emailManager;
+    @Autowired
+    private UserGroupUserService userGroupUserService;
 
     @Override
     protected BaseEntityDao<User> getDao() {
@@ -66,7 +65,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmailOrPhone) throws UsernameNotFoundException {
-        User user = dao.findByUsernameOrEmailOrPhone(usernameOrEmailOrPhone, usernameOrEmailOrPhone, usernameOrEmailOrPhone)
+        User user = dao.findByAccountOrEmailOrPhone(usernameOrEmailOrPhone, usernameOrEmailOrPhone, usernameOrEmailOrPhone)
                 .orElseThrow(() -> new UsernameNotFoundException("未找到用户信息 : " + usernameOrEmailOrPhone));
         List<Role> roles = roleService.getChildrenFromParentId(user.getId());
         List<String> roleIds = roles.stream()
@@ -126,19 +125,19 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
     @Transactional
     public ResultData<Void> createUser(User user) {
-        String account = user.getUsername();
+        String account = user.getAccount();
         String email = user.getEmail();
         String phone = user.getPhone();
 
-        User exist = dao.findByUsernameOrEmailOrPhone(account, account, account).orElse(null);
+        User exist = dao.findByAccountOrEmailOrPhone(account, account, account).orElse(null);
         if (Objects.nonNull(exist)) {
             return ResultData.fail(account + "已存在.");
         }
-        exist = dao.findByUsernameOrEmailOrPhone(email, email, email).orElse(null);
+        exist = dao.findByAccountOrEmailOrPhone(email, email, email).orElse(null);
         if (Objects.nonNull(exist)) {
             return ResultData.fail(email + "已存在.");
         }
-        exist = dao.findByUsernameOrEmailOrPhone(phone, phone, phone).orElse(null);
+        exist = dao.findByAccountOrEmailOrPhone(phone, phone, phone).orElse(null);
         if (Objects.nonNull(exist)) {
             return ResultData.fail(phone + "已存在.");
         }
@@ -149,7 +148,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         user.setPassword(passwordEncoder.encode(HashUtil.md5(randomPass)));
         OperateResultWithData<User> result = this.save(user);
         if (result.successful()) {
-            emailManager.sendMail("SEI-Manager账号密码", "账号:  ".concat(user.getUsername()).concat(" 的初始密码为: ").concat(randomPass).concat(" 为了安全,请尽快修改."), result.getData());
+            emailManager.sendMail("SEI-Manager账号密码", "账号:  ".concat(user.getAccount()).concat(" 的初始密码为: ").concat(randomPass).concat(" 为了安全,请尽快修改."), result.getData());
             return ResultData.success();
         } else {
             return ResultData.fail(result.getMessage());
@@ -202,7 +201,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updatePassword(String usernameOrEmailOrPhone, String oldPassword, String password) {
-        User user = dao.findByUsernameOrEmailOrPhone(usernameOrEmailOrPhone, usernameOrEmailOrPhone, usernameOrEmailOrPhone).orElse(null);
+        User user = dao.findByAccountOrEmailOrPhone(usernameOrEmailOrPhone, usernameOrEmailOrPhone, usernameOrEmailOrPhone).orElse(null);
         if (Objects.isNull(user)) {
             return ResultData.fail("未找到用户信息 : " + usernameOrEmailOrPhone);
         }
@@ -410,6 +409,16 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }
+    }
+
+    /**
+     * 根据用户id 查询角色列表
+     *
+     * @param userId 用户id
+     * @return 角色列表
+     */
+    public List<User> getChildrenFromParentId(String userId) {
+        return userGroupUserService.getChildrenFromParentId(userId);
     }
 
 }

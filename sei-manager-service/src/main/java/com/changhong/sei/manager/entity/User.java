@@ -25,7 +25,7 @@ public class User extends BaseEntity implements Serializable {
      * 用户名
      */
     @Column(name = "username")
-    private String username;
+    private String account;
     /**
      * 密码
      */
@@ -67,12 +67,12 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "update_time")
     private Long updateTime;
 
-    public String getUsername() {
-        return username;
+    public String getAccount() {
+        return account;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getPassword() {
