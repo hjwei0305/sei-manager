@@ -124,7 +124,25 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //                });
 //    }
 
+    @Transactional
     public ResultData<Void> createUser(User user) {
+        String account = user.getUsername();
+        String email = user.getEmail();
+        String phone = user.getPhone();
+
+        User exist = dao.findByUsernameOrEmailOrPhone(account, account, account).orElse(null);
+        if (Objects.nonNull(exist)) {
+            return ResultData.fail(account + "已存在.");
+        }
+        exist = dao.findByUsernameOrEmailOrPhone(email, email, email).orElse(null);
+        if (Objects.nonNull(exist)) {
+            return ResultData.fail(email + "已存在.");
+        }
+        exist = dao.findByUsernameOrEmailOrPhone(phone, phone, phone).orElse(null);
+        if (Objects.nonNull(exist)) {
+            return ResultData.fail(phone + "已存在.");
+        }
+
         // 生成8位随机密码
         String randomPass = RandomStringUtils.randomAlphanumeric(8);
 
@@ -137,7 +155,6 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
             return ResultData.fail(result.getMessage());
         }
     }
-
 
     /**
      * 主键删除

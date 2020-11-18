@@ -67,7 +67,6 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "update_time")
     private Long updateTime;
 
-
     public String getUsername() {
         return username;
     }

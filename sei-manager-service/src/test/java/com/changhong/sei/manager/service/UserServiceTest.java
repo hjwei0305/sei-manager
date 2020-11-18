@@ -26,8 +26,8 @@ public class UserServiceTest extends BaseUnitTest {
     @Test
     public void createUser() {
         User user = new User();
-        user.setUsername("20045203");
-        user.setNickname("马超");
+        user.setUsername("200452031");
+        user.setNickname("马超1");
         user.setEmail("chao2.ma@changhong.com");
         user.setPhone("18608081023");
         ResultData<Void> resultData = userService.createUser(user);
