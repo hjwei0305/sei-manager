@@ -81,6 +81,31 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     }
 
     /**
+     * 自定义设置DTO转换为Entity的转换器
+     */
+    @Override
+    protected void customerConvertToEntityMapper() {
+        // 创建自定义映射规则
+        PropertyMap<UserDto, User> propertyMap = new PropertyMap<UserDto,User>() {
+            @Override
+            protected void configure() {
+                // 使用自定义转换规则
+                map().setUsername(source.getAccount());
+            }
+        };
+        // 添加映射器
+        entityModelMapper.addMappings(propertyMap);
+    }
+
+    /**
+     * 创建用户
+     */
+    @Override
+    public ResultData<Void> createUser(CreateUserRequest user) {
+        return service.createUser(entityModelMapper.map(user, User.class));
+    }
+
+    /**
      * 分页查询业务实体
      *
      * @param search 查询参数

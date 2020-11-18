@@ -23,19 +23,19 @@ import java.util.List;
 @FeignClient(name = "sei-manager", path = "user")
 public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> {
 
-//    /**
-//     * 修改密码
-//     */
-//    @PostMapping(value = "createUser")
-//    @ApiOperation(value = "修改密码", notes = "修改密码")
-//    ResultData<Void> createUser(UserDto user);
+    /**
+     * 创建用户
+     */
+    @PostMapping(value = "createUser")
+    @ApiOperation(value = "创建用户", notes = "创建用户")
+    ResultData<Void> createUser(@Valid @RequestBody CreateUserRequest user);
 
     /**
      * 修改密码
      */
     @PostMapping(value = "updatePassword")
     @ApiOperation(value = "修改密码", notes = "修改密码")
-    ResultData<Void> updatePassword(UpdatePasswordRequest updatePasswordRequest);
+    ResultData<Void> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest);
 
     /**
      * 登录

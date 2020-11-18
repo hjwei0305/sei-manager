@@ -5,8 +5,8 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.enums.UserAuthorityPolicy;
 import com.changhong.sei.exception.ServiceException;
+import com.changhong.sei.manager.commom.EmailManager;
 import com.changhong.sei.manager.dao.UserDao;
 import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.entity.Menu;
@@ -15,6 +15,8 @@ import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.vo.UserPrincipal;
 import com.changhong.sei.util.HashUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -54,6 +56,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailManager emailManager;
 
     @Override
     protected BaseEntityDao<User> getDao() {
@@ -119,6 +123,20 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //                    log.debug("用户【{}】被用户【{}】手动下线！", name, currentUsername);
 //                });
 //    }
+
+    public ResultData<Void> createUser(User user) {
+        // 生成8位随机密码
+        String randomPass = RandomStringUtils.randomAlphanumeric(8);
+
+        user.setPassword(passwordEncoder.encode(HashUtil.md5(randomPass)));
+        OperateResultWithData<User> result = this.save(user);
+        if (result.successful()) {
+            emailManager.sendMail("SEI-Manager账号密码", "账号:  ".concat(user.getUsername()).concat(" 的初始密码为: ").concat(randomPass).concat(" 为了安全,请尽快修改."), result.getData());
+            return ResultData.success();
+        } else {
+            return ResultData.fail(result.getMessage());
+        }
+    }
 
 
     /**
