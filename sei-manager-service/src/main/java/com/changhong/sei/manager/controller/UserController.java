@@ -5,6 +5,7 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.enums.UserAuthorityPolicy;
@@ -19,6 +20,7 @@ import com.changhong.sei.manager.service.UserService;
 import com.changhong.sei.manager.vo.UserPrincipal;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,6 +62,34 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     private CacheBuilder cacheBuilder;
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    /**
+     * 自定义设置Entity转换为DTO的转换器
+     */
+    @Override
+    protected void customConvertToDtoMapper() {
+        // 创建自定义映射规则
+        PropertyMap<User, UserDto> propertyMap = new PropertyMap<User, UserDto>() {
+            @Override
+            protected void configure() {
+                // 使用自定义转换规则
+                map().setAccount(source.getUsername());
+            }
+        };
+        // 添加映射器
+        dtoModelMapper.addMappings(propertyMap);
+    }
+
+    /**
+     * 分页查询业务实体
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public ResultData<PageResult<UserDto>> findByPage(Search search) {
+        return convertToDtoPageResult(service.findByPage(search));
+    }
 
     /**
      * 修改密码

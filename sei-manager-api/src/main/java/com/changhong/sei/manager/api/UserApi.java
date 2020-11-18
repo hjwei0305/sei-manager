@@ -1,6 +1,7 @@
 package com.changhong.sei.manager.api;
 
 import com.changhong.sei.core.api.BaseEntityApi;
+import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.manager.dto.*;
@@ -20,7 +21,14 @@ import java.util.List;
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "user")
-public interface UserApi extends BaseEntityApi<UserDto> {
+public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> {
+
+//    /**
+//     * 修改密码
+//     */
+//    @PostMapping(value = "createUser")
+//    @ApiOperation(value = "修改密码", notes = "修改密码")
+//    ResultData<Void> createUser(UserDto user);
 
     /**
      * 修改密码
