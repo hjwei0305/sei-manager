@@ -4,9 +4,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.manager.dao.RoleDao;
 import com.changhong.sei.manager.dao.UserGroupDao;
-import com.changhong.sei.manager.entity.Role;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.entity.UserGroup;
 import org.apache.commons.lang3.StringUtils;
@@ -27,9 +25,7 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
     @Autowired
     private UserGroupDao dao;
     @Autowired
-    private UserService userService;
-    @Autowired
-    private UserGroupService userGroupService;
+    private UserGroupUserService userGroupUserService;
 
     @Override
     protected BaseEntityDao<UserGroup> getDao() {
@@ -56,10 +52,10 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
      */
     @Override
     protected OperateResult preDelete(String s) {
-        List<UserGroup> list = userGroupService.getParentsFromChildId(s);
+        List<UserGroup> list = userGroupUserService.getParentsFromChildId(s);
         if (list != null && list.size() > 0) {
-            // 功能角色存在已经分配的功能项，禁止删除！
-            return OperateResult.operationFailure("功能角色存在已经分配的功能项，禁止删除！");
+            // 用户组存在已经分配的用户，禁止删除！
+            return OperateResult.operationFailure("用户组存在已经分配的用户，禁止删除！");
         }
         return super.preDelete(s);
     }
@@ -71,7 +67,7 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
      * @return 员工用户清单
      */
     public List<UserGroup> getParentsFromChildId(String groupId) {
-        return userGroupService.getParentsFromChildId(groupId);
+        return userGroupUserService.getParentsFromChildId(groupId);
     }
 
     /**
@@ -81,7 +77,7 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
      * @return 角色列表
      */
     public List<User> getChildrenFromParentId(String userId) {
-        return userGroupService.getChildrenFromParentId(userId);
+        return userGroupUserService.getChildrenFromParentId(userId);
     }
 
 }
