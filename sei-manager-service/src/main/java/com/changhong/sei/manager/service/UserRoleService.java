@@ -25,7 +25,7 @@ public class UserRoleService extends BaseRelationService<UserRole, User, Role> {
     private UserRoleDao dao;
 
     @Autowired
-    private RoleService featureRoleService;
+    private RoleService roleService;
 
     @Override
     protected BaseRelationDao<UserRole, User, Role> getDao() {
@@ -39,8 +39,7 @@ public class UserRoleService extends BaseRelationService<UserRole, User, Role> {
      */
     @Override
     protected List<Role> getCanAssignedChildren(String parentId) {
-        // 判断用户权限
-        return featureRoleService.getChildrenFromParentId(parentId);
+        return roleService.findAll();
     }
 
     /**
