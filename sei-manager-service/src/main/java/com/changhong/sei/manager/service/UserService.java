@@ -2,6 +2,8 @@ package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
@@ -412,13 +414,17 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     }
 
     /**
-     * 根据用户id 查询角色列表
+     * 根据用户组id 查询用户列表
      *
-     * @param userId 用户id
-     * @return 角色列表
+     * @param userGroupId 用户组id
+     * @return 用户列表
      */
-    public List<User> getChildrenFromParentId(String userId) {
-        return userGroupUserService.getChildrenFromParentId(userId);
+    public List<User> getChildrenFromParentId(String userGroupId) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(User.FIELD_ADMIN, Boolean.FALSE));
+        search.addFilter(new SearchFilter(User.FIELD_STATUS, Boolean.TRUE));
+        return dao.findByFilters(search);
+//        return userGroupUserService.getChildrenFromParentId(userGroupId);
     }
 
 }

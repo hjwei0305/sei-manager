@@ -2,6 +2,8 @@ package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseRelationDao;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseRelationService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.manager.dao.UserGroupUserDao;
@@ -38,8 +40,10 @@ public class UserGroupUserService extends BaseRelationService<UserGroupUser, Use
      */
     @Override
     protected List<User> getCanAssignedChildren(String parentId) {
-        // 判断用户权限
-        return userService.getChildrenFromParentId(parentId);
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(User.FIELD_ADMIN, Boolean.FALSE));
+        search.addFilter(new SearchFilter(User.FIELD_STATUS, Boolean.TRUE));
+        return userService.findByFilters(search);
     }
 
     /**
@@ -89,14 +93,13 @@ public class UserGroupUserService extends BaseRelationService<UserGroupUser, Use
     @Override
     public List<User> getChildrenFromParentId(String parentId) {
         // 获取分配关系
-        List<UserGroupUser> userFeatureRoles = getRelationsByParentId(parentId);
-        // 设置授权有效期
-        List<User> featureRoles = new LinkedList<>();
-        userFeatureRoles.forEach(r -> {
-            User featureRole = r.getChild();
-            featureRoles.add(featureRole);
+        List<UserGroupUser> groupUsers = getRelationsByParentId(parentId);
+        List<User> users = new LinkedList<>();
+        groupUsers.forEach(r -> {
+            User user = r.getChild();
+            users.add(user);
         });
-        return featureRoles;
+        return users;
     }
 
     /**
