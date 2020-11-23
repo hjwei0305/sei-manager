@@ -89,15 +89,15 @@ public class UserRoleService extends BaseRelationService<UserRole, User, Role> {
     @Override
     public List<Role> getChildrenFromParentId(String parentId) {
         // 获取分配关系
-        List<UserRole> userFeatureRoles = getRelationsByParentId(parentId);
+        List<UserRole> userRoles = getRelationsByParentId(parentId);
         // 设置授权有效期
-        List<Role> featureRoles = new LinkedList<>();
-        userFeatureRoles.forEach(r -> {
-            Role featureRole = r.getChild();
-            featureRole.setRelationId(r.getId());
-            featureRoles.add(featureRole);
+        List<Role> roleList = new LinkedList<>();
+        userRoles.forEach(r -> {
+            Role role = r.getChild();
+            role.setRelationId(r.getId());
+            roleList.add(role);
         });
-        return featureRoles;
+        return roleList;
     }
 
     /**
