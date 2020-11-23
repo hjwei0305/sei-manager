@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -35,8 +36,11 @@ public class DataModelService extends BaseEntityService<DataModel> {
     private DataModelFieldService fieldService;
     @Autowired
     private DataSourceService dataSourceService;
-    //    @Autowired
-    private DatabaseManager databaseManager;
+    private final Map<String, DatabaseManager> databaseHandle = new ConcurrentHashMap<>();
+
+    public DataModelService(Map<String, DatabaseManager> databaseManagerMap) {
+        databaseManagerMap.forEach(this.databaseHandle::put);
+    }
 
     @Override
     protected BaseEntityDao<DataModel> getDao() {
@@ -322,6 +326,7 @@ public class DataModelService extends BaseEntityService<DataModel> {
 
         List<DataModelField> fields = getDataModelFields(dataModel.getId());
 
+        DatabaseManager databaseManager = databaseHandle.get(dataSource.getDbType().name());
         return databaseManager.generateScript(dataSource, dataModel, fields);
     }
 

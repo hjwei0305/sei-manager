@@ -3,9 +3,10 @@ package com.changhong.sei.manager.service;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.core.test.BaseUnitTest;
-import com.changhong.sei.manager.dto.ApplicationDto;
-import com.changhong.sei.manager.dto.ApplicationResponse;
-import com.changhong.sei.manager.entity.Application;
+import com.changhong.sei.deploy.service.ApplicationService;
+import com.changhong.sei.deploy.dto.ApplicationDto;
+import com.changhong.sei.deploy.dto.ApplicationResponse;
+import com.changhong.sei.deploy.entity.Application;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
