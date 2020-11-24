@@ -4,11 +4,15 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.datamodel.dao.DataModelFieldDao;
 import com.changhong.sei.datamodel.entity.DataModelField;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -34,7 +38,10 @@ public class DataModelFieldService extends BaseEntityService<DataModelField> {
      * @return 返回指定模型id的字段清单
      */
     public List<DataModelField> findByDataModelId(String dataModelId) {
-        return dao.findByDataModelIdOrderByRank(dataModelId);
+        if (StringUtils.isBlank(dataModelId)) {
+            return new ArrayList<>();
+        }
+        return dao.findListByProperty(DataModelField.FIELD_DATA_MODEL_ID, dataModelId);
     }
 
     /**
@@ -46,5 +53,33 @@ public class DataModelFieldService extends BaseEntityService<DataModelField> {
     @Transactional(rollbackFor = Exception.class)
     public int deleteByDataModelId(String dataModelId) {
         return dao.deleteByDataModelId(dataModelId);
+    }
+
+    /**
+     * 检查字段是否存在已发布的
+     *
+     * @param dataModelId 数据模型id
+     * @return 存在返回true, 反之false
+     */
+    public boolean checkExistPublished(String dataModelId) {
+        List<DataModelField> fieldList = findByDataModelId(dataModelId);
+        if (CollectionUtils.isEmpty(fieldList)) {
+            return false;
+        }
+        return fieldList.stream().anyMatch(DataModelField::getPublished);
+    }
+
+    /**
+     * 获取未发布的字段清单
+     *
+     * @param dataModelId 数据模型id
+     * @return 未发布的字段清单
+     */
+    public List<DataModelField> getNonPublish(String dataModelId) {
+        List<DataModelField> fieldList = findByDataModelId(dataModelId);
+        if (CollectionUtils.isEmpty(fieldList)) {
+            return fieldList;
+        }
+        return fieldList.stream().filter(f -> !f.getPublished()).collect(Collectors.toList());
     }
 }

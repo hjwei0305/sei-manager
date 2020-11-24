@@ -1,5 +1,6 @@
 package com.changhong.sei.datamodel.entity;
 
+import com.changhong.sei.core.dto.IRank;
 import com.changhong.sei.core.entity.BaseAuditableEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -19,7 +20,7 @@ import java.io.Serializable;
 @Table(name = "data_model_field")
 @DynamicInsert
 @DynamicUpdate
-public class DataModelField extends BaseAuditableEntity implements Serializable {
+public class DataModelField extends BaseAuditableEntity implements IRank, Serializable {
     private static final long serialVersionUID = 635902029091908186L;
 
     public static final String FIELD_DATA_MODEL_ID = "dataModelId";
@@ -180,6 +181,7 @@ public class DataModelField extends BaseAuditableEntity implements Serializable 
         this.foreignKey = foreignKey;
     }
 
+    @Override
     public Integer getRank() {
         return rank;
     }

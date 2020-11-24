@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
  * 模型字段(DataModelField)数据库访问类
  *
@@ -17,14 +15,6 @@ import java.util.List;
  */
 @Repository
 public interface DataModelFieldDao extends BaseEntityDao<DataModelField> {
-
-    /**
-     * 按数据模型id查询模型字段
-     *
-     * @param dataModelId 数据模型id
-     * @return 返回指定模型id的字段清单
-     */
-    List<DataModelField> findByDataModelIdOrderByRank(String dataModelId);
 
     /**
      * 按数据模型id删除模型字段
