@@ -1,6 +1,5 @@
 package com.changhong.sei.filter;
 
-import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
@@ -10,7 +9,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,24 +24,15 @@ public class JwtAuthenticationFilter implements SessionUserAuthenticationHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    /**
-     * JWT 在 Redis 中保存的key前缀
-     */
-    private final static String REDIS_JWT_KEY_PREFIX = "sei:manager:jwt:";
-
-    @Autowired
-    private CacheBuilder cacheBuilder;
-
     @Override
     public ResultData<SessionUser> handler(HttpServletRequest request) {
         if (checkIgnores(request)) {
             return ResultData.success();
         }
 
-        String jwt = null;
-        String sid = request.getHeader("x-sid");
-        if (StringUtils.isNotBlank(sid)) {
-            jwt = cacheBuilder.get(REDIS_JWT_KEY_PREFIX + sid);
+        String jwt = request.getHeader("x-sid");
+        if (StringUtils.isBlank(jwt)) {
+            jwt = request.getHeader(ContextUtil.HEADER_TOKEN_KEY);
         }
 
         if (StringUtils.isNotBlank(jwt)) {

@@ -126,7 +126,9 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
             loginResponse.setAccount(user.getAccount());
             loginResponse.setUserName(user.getUserName());
             loginResponse.setLoginAccount(user.getLoginAccount());
-            loginResponse.setSessionId(sid);
+            // 解耦redis会话存储,实现其他环境下的agent接口认证
+//            loginResponse.setSessionId(sid);
+            loginResponse.setSessionId(user.getToken());
             // 管理员
             loginResponse.setAuthorityPolicy(user.getAuthorityPolicy());
             Collection<? extends GrantedAuthority> authorities = userPrincipal.getAuthorities();

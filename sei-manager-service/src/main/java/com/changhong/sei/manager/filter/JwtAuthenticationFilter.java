@@ -61,30 +61,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
             return;
         }
 
-        String jwt = null;
-        String sid = request.getHeader("x-sid");
-        if (StringUtils.isNotBlank(sid)) {
-            jwt = cacheBuilder.get(REDIS_JWT_KEY_PREFIX + sid);
+        String jwt = request.getHeader("x-sid");
+        if (StringUtils.isBlank(jwt)) {
+            jwt = request.getHeader(ContextUtil.HEADER_TOKEN_KEY);
         }
 
         if (StringUtils.isNotBlank(jwt)) {
             try {
                 SessionUser sessionUser = ContextUtil.getSessionUser(jwt);
-                MDC.put("userId", sessionUser.getUserId());
-                MDC.put("account", sessionUser.getAccount());
-                MDC.put("userName", sessionUser.getUserName());
+                String sid = sessionUser.getSessionId();
+                if (StringUtils.isNotBlank(sid)) {
+                    String token = cacheBuilder.get(REDIS_JWT_KEY_PREFIX + sid);
+                    if (StringUtils.equals(jwt, token)) {
+                        MDC.put("userId", sessionUser.getUserId());
+                        MDC.put("account", sessionUser.getAccount());
+                        MDC.put("userName", sessionUser.getUserName());
 
-                ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
-                // 设置token到可传播的线程全局变量中
-                ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
-                String username = sessionUser.getAccount();
+                        ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
+                        // 设置token到可传播的线程全局变量中
+                        ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
+                        String username = sessionUser.getAccount();
 
-                UserDetails userDetails = userService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        UserDetails userDetails = userService.loadUserByUsername(username);
+                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                securityContext.setAuthentication(authenticationToken);
-                filterChain.doFilter(request, response);
+                        securityContext.setAuthentication(authenticationToken);
+                        filterChain.doFilter(request, response);
+                        return;
+                    } else {
+                        try {
+                            response.setHeader("Access-Control-Allow-Origin", "*");
+                            response.setHeader("Access-Control-Allow-Methods", "*");
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+                            response.getWriter().write(JsonUtils.toJson(ResultData.fail("认证失败,会话不合法.")));
+                        } catch (IOException ioe) {
+                            LogUtil.error("Response写出JSON异常，", ioe);
+                        }
+                        return;
+                    }
+                }
             } catch (Exception e) {
                 try {
                     response.setHeader("Access-Control-Allow-Origin", "*");
@@ -96,18 +114,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
                 } catch (IOException ioe) {
                     LogUtil.error("Response写出JSON异常，", ioe);
                 }
+                return;
             }
-        } else {
-            try {
-                response.setHeader("Access-Control-Allow-Origin", "*");
-                response.setHeader("Access-Control-Allow-Methods", "*");
-                response.setContentType("application/json;charset=UTF-8");
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        }
+        try {
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "*");
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
-                response.getWriter().write(JsonUtils.toJson(ResultData.fail("会话不存在!")));
-            } catch (IOException e) {
-                LogUtil.error("Response写出JSON异常，", e);
-            }
+            response.getWriter().write(JsonUtils.toJson(ResultData.fail("会话不存在!")));
+        } catch (IOException e) {
+            LogUtil.error("Response写出JSON异常，", e);
         }
     }
 
