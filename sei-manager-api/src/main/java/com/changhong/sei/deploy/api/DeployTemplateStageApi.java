@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.api;
 
+import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.api.BaseRelationApi;
 import com.changhong.sei.deploy.dto.DeployStageDto;
 import com.changhong.sei.deploy.dto.DeployTemplateDto;
@@ -17,6 +18,6 @@ import javax.validation.Valid;
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "deployTemplateStage")
-public interface DeployTemplateStageApi extends BaseRelationApi<DeployTemplateStageDto, DeployTemplateDto, DeployStageDto> {
+public interface DeployTemplateStageApi extends BaseEntityApi<DeployTemplateStageDto>, BaseRelationApi<DeployTemplateStageDto, DeployTemplateDto, DeployStageDto> {
 
 }
