@@ -31,8 +31,13 @@ public class NodeDto extends BaseEntityDto {
     /**
      * 环境
      */
-    @ApiModelProperty(value = "环境")
-    private String env;
+    @ApiModelProperty(value = "环境代码")
+    private String envCode;
+    /**
+     * 环境
+     */
+    @ApiModelProperty(value = "环境名称")
+    private String envName;
     /**
      * 描述说明
      */
@@ -64,12 +69,20 @@ public class NodeDto extends BaseEntityDto {
         this.address = address;
     }
 
-    public String getEnv() {
-        return env;
+    public String getEnvCode() {
+        return envCode;
     }
 
-    public void setEnv(String env) {
-        this.env = env;
+    public void setEnvCode(String envCode) {
+        this.envCode = envCode;
+    }
+
+    public String getEnvName() {
+        return envName;
+    }
+
+    public void setEnvName(String envName) {
+        this.envName = envName;
     }
 
     public String getRemark() {

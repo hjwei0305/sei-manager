@@ -22,7 +22,7 @@ import java.util.List;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-10-27 13:29
  */
-@FeignClient(name = "sei-manager", path = "log")
+@FeignClient(name = "sei-agent", path = "log")
 public interface LogApi {
     /**
      * 分页查询

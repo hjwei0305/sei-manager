@@ -40,8 +40,13 @@ public class Node extends BaseAuditableEntity implements IFrozen, Serializable {
     /**
      * 环境
      */
-    @Column(name = "env")
-    private String env;
+    @Column(name = "env_code")
+    private String envCode;
+    /**
+     * 环境
+     */
+    @Column(name = "env_name")
+    private String envName;
     /**
      * 描述说明
      */
@@ -75,12 +80,20 @@ public class Node extends BaseAuditableEntity implements IFrozen, Serializable {
         this.address = address;
     }
 
-    public String getEnv() {
-        return env;
+    public String getEnvCode() {
+        return envCode;
     }
 
-    public void setEnv(String env) {
-        this.env = env;
+    public void setEnvCode(String envCode) {
+        this.envCode = envCode;
+    }
+
+    public String getEnvName() {
+        return envName;
+    }
+
+    public void setEnvName(String envName) {
+        this.envName = envName;
     }
 
     public String getRemark() {
