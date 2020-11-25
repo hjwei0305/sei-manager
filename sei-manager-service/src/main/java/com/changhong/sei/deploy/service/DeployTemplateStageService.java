@@ -58,7 +58,7 @@ public class DeployTemplateStageService extends BaseRelationService<DeployTempla
                 templateStage.setPlayscript(entity.getPlayscript());
                 templateStage.setRank(entity.getRank());
 
-                return super.save(entity);
+                return super.save(templateStage);
             }
         }
         return OperateResultWithData.operationFailure("修改的模板阶段不存在.");
