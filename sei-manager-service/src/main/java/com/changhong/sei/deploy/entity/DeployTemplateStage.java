@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.entity;
 
+import com.changhong.sei.core.dto.IRank;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.RelationEntity;
 import org.hibernate.annotations.DynamicInsert;
@@ -18,7 +19,7 @@ import java.io.Serializable;
 @Table(name = "deploy_template_stage")
 @DynamicInsert
 @DynamicUpdate
-public class DeployTemplateStage extends BaseEntity implements RelationEntity<DeployTemplate, DeployStage>, Serializable {
+public class DeployTemplateStage extends BaseEntity implements IRank, RelationEntity<DeployTemplate, DeployStage>, Serializable {
     private static final long serialVersionUID = 369771080770875655L;
 
     /**
@@ -42,7 +43,7 @@ public class DeployTemplateStage extends BaseEntity implements RelationEntity<De
      * 排序
      */
     @Column(name = "rank")
-    private Long rank = 0L;
+    private Integer rank = 0;
 
     @Override
     public DeployTemplate getParent() {
@@ -72,12 +73,12 @@ public class DeployTemplateStage extends BaseEntity implements RelationEntity<De
         this.playscript = playscript;
     }
 
-    public Long getRank() {
+    @Override
+    public Integer getRank() {
         return rank;
     }
 
-    public void setRank(Long rank) {
+    public void setRank(Integer rank) {
         this.rank = rank;
     }
-
 }

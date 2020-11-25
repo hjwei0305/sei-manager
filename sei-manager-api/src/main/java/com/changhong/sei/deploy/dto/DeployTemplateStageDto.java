@@ -34,7 +34,7 @@ public class DeployTemplateStageDto extends BaseEntityDto implements RelationEnt
      * 排序
      */
     @ApiModelProperty(value = "排序")
-    private Long rank = 0L;
+    private Integer rank = 0;
 
     @Override
     public DeployTemplateDto getParent() {
@@ -64,11 +64,11 @@ public class DeployTemplateStageDto extends BaseEntityDto implements RelationEnt
         this.playscript = playscript;
     }
 
-    public Long getRank() {
+    public Integer getRank() {
         return rank;
     }
 
-    public void setRank(Long rank) {
+    public void setRank(Integer rank) {
         this.rank = rank;
     }
 
