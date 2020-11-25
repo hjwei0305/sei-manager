@@ -11,18 +11,23 @@ import com.changhong.sei.deploy.api.DeployTemplateStageApi;
 import com.changhong.sei.deploy.dto.DeployStageDto;
 import com.changhong.sei.deploy.dto.DeployTemplateDto;
 import com.changhong.sei.deploy.dto.DeployTemplateStageDto;
+import com.changhong.sei.deploy.dto.DeployTemplateStageResponse;
 import com.changhong.sei.deploy.entity.DeployStage;
 import com.changhong.sei.deploy.entity.DeployTemplate;
 import com.changhong.sei.deploy.entity.DeployTemplateStage;
 import com.changhong.sei.deploy.service.DeployTemplateStageService;
 import com.changhong.sei.exception.WebException;
 import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -110,5 +115,38 @@ public class DeployTemplateStageController extends BaseRelationController<Deploy
         // 转换数据 to DTO
         DeployTemplateStageDto dto = convertRelationToDto(entity);
         return ResultData.success(dto);
+    }
+
+    /**
+     * 通过模版Id获取阶段清单
+     *
+     * @param templateId 模版Id
+     * @return 获取阶段清单
+     */
+    @Override
+    public ResultData<List<DeployTemplateStageResponse>> getStageByTemplateId(String templateId) {
+        List<DeployTemplateStageResponse> list = new ArrayList<>();
+        List<DeployTemplateStage> templateStages = service.getRelationsByParentId(templateId);
+        if (CollectionUtils.isNotEmpty(templateStages)) {
+            DeployStage stage;
+            DeployTemplateStageResponse response;
+            for (DeployTemplateStage templateStage : templateStages) {
+                if (Objects.isNull(templateStage)) {
+                    continue;
+                }
+                stage = templateStage.getChild();
+                if (Objects.isNull(stage)) {
+                    continue;
+                }
+                response = new DeployTemplateStageResponse();
+                response.setName(stage.getName());
+                response.setRemark(stage.getRemark());
+                response.setPlayscript(StringUtils.isBlank(templateStage.getPlayscript()) ? stage.getPlayscript() : templateStage.getPlayscript());
+                response.setRank(templateStage.getRank());
+                response.setId(templateStage.getId());
+                list.add(response);
+            }
+        }
+        return ResultData.success(list);
     }
 }
