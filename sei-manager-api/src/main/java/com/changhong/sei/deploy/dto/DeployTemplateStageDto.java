@@ -26,10 +26,15 @@ public class DeployTemplateStageDto extends BaseEntityDto implements RelationEnt
     @ApiModelProperty(value = "阶段DTO", required = true)
     private DeployStageDto child;
     /**
+     * 脚本
+     */
+    @ApiModelProperty(value = "脚本")
+    private String playscript;
+    /**
      * 排序
      */
     @ApiModelProperty(value = "排序")
-    private Long rank;
+    private Long rank = 0L;
 
     @Override
     public DeployTemplateDto getParent() {
@@ -49,6 +54,14 @@ public class DeployTemplateStageDto extends BaseEntityDto implements RelationEnt
     @Override
     public void setChild(DeployStageDto child) {
         this.child = child;
+    }
+
+    public String getPlayscript() {
+        return playscript;
+    }
+
+    public void setPlayscript(String playscript) {
+        this.playscript = playscript;
     }
 
     public Long getRank() {

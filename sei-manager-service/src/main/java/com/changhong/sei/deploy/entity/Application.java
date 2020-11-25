@@ -41,6 +41,11 @@ public class Application extends BaseAuditableEntity implements Serializable {
      */
     @Column(name = "uri")
     private String uri;
+    /**
+     * 是否冻结
+     */
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.FALSE;
 
     public String getCode() {
         return code;
@@ -74,4 +79,11 @@ public class Application extends BaseAuditableEntity implements Serializable {
         this.uri = uri;
     }
 
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
+    }
 }

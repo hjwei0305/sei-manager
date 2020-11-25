@@ -27,10 +27,11 @@ public class DeployStage extends BaseAuditableEntity implements Serializable {
     @Column(name = "name")
     private String name;
     /**
-     * 凭证值
+     * 是否冻结
      */
-    @Column(name = "certificate")
-    private String certificate;
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.FALSE;
+
     /**
      * 脚本
      */
@@ -51,12 +52,12 @@ public class DeployStage extends BaseAuditableEntity implements Serializable {
         this.name = name;
     }
 
-    public String getCertificate() {
-        return certificate;
+    public Boolean getFrozen() {
+        return frozen;
     }
 
-    public void setCertificate(String certificate) {
-        this.certificate = certificate;
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public String getPlayscript() {

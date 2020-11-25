@@ -19,6 +19,11 @@ public class NodeDto extends BaseEntityDto {
     @ApiModelProperty(value = "阶段名称")
     private String name;
     /**
+     * 是否冻结
+     */
+    @ApiModelProperty(value = "是否冻结")
+    private Boolean frozen = Boolean.FALSE;
+    /**
      * 地址
      */
     @ApiModelProperty(value = "地址")
@@ -41,6 +46,14 @@ public class NodeDto extends BaseEntityDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public String getAddress() {

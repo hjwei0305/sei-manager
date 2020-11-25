@@ -19,6 +19,11 @@ public class DeployTemplateDto extends BaseEntityDto {
     @ApiModelProperty(value = "模板名称")
     private String name;
     /**
+     * 是否冻结
+     */
+    @ApiModelProperty(value = "是否冻结")
+    private Boolean frozen = Boolean.FALSE;
+    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
@@ -31,6 +36,14 @@ public class DeployTemplateDto extends BaseEntityDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public String getRemark() {

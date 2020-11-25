@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.api;
 
 import com.changhong.sei.core.api.BaseEntityApi;
+import com.changhong.sei.core.api.FindAllApi;
 import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.deploy.dto.DeployTemplateDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -16,6 +17,6 @@ import javax.validation.Valid;
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "deployTemplate")
-public interface DeployTemplateApi extends BaseEntityApi<DeployTemplateDto>, FindByPageApi<DeployTemplateDto> {
+public interface DeployTemplateApi extends BaseEntityApi<DeployTemplateDto>, FindByPageApi<DeployTemplateDto>, FindAllApi<DeployTemplateDto> {
 
 }

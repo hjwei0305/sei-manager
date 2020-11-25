@@ -27,11 +27,15 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
     @Column(name = "name")
     private String name;
     /**
+     * 是否冻结
+     */
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.FALSE;
+    /**
      * 描述说明
      */
     @Column(name = "remark")
     private String remark;
-
 
     public String getName() {
         return name;
@@ -39,6 +43,14 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public String getRemark() {

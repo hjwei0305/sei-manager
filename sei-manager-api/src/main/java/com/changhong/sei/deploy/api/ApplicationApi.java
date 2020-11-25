@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.api;
 
+import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.dto.ApplicationDto;
 import com.changhong.sei.deploy.dto.ApplicationResponse;
@@ -14,7 +15,7 @@ import java.util.List;
  * 实现功能: 应用API
  */
 @FeignClient(name = "sei-manager", path = "application")
-public interface ApplicationApi {
+public interface ApplicationApi extends FindByPageApi<ApplicationDto> {
     /**
      * 获取当前所有可用应用服务清单
      */

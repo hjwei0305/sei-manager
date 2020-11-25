@@ -22,11 +22,16 @@ public class RuntimeEnvDto extends BaseEntityDto {
      * 环境代码
      */
     @ApiModelProperty(value = "环境代码")
-    private String address;
+    private String code;
     /**
-     * 代理服务
+     * 是否冻结
      */
-    @ApiModelProperty(value = "代理服务")
+    @ApiModelProperty(value = "是否冻结")
+    private Boolean frozen = Boolean.FALSE;
+    /**
+     * 代理服务基地址
+     */
+    @ApiModelProperty(value = "代理服务基地址")
     private String agentServer;
     /**
      * 描述说明
@@ -42,12 +47,20 @@ public class RuntimeEnvDto extends BaseEntityDto {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getCode() {
+        return code;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public String getAgentServer() {

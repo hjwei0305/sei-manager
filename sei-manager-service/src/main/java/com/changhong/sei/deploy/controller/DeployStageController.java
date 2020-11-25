@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 部署阶段(DeployStage)控制类
  *
@@ -45,5 +47,25 @@ public class DeployStageController extends BaseEntityController<DeployStage, Dep
     @Override
     public ResultData<PageResult<DeployStageDto>> findByPage(Search search) {
         return convertToDtoPageResult(service.findByPage(search));
+    }
+
+    /**
+     * 获取所有业务实体
+     *
+     * @return 业务实体清单
+     */
+    @Override
+    public ResultData<List<DeployStageDto>> findAll() {
+        return ResultData.success(convertToDtos(service.findAll()));
+    }
+
+    /**
+     * 获取所有未冻结的业务实体
+     *
+     * @return 业务实体清单
+     */
+    @Override
+    public ResultData<List<DeployStageDto>> findAllUnfrozen() {
+        return ResultData.success(convertToDtos(service.findAllUnfrozen()));
     }
 }

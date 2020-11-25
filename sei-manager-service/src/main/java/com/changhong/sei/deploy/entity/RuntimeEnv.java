@@ -2,6 +2,7 @@ package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.ICodeUnique;
+import com.changhong.sei.core.entity.IFrozen;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -20,7 +21,7 @@ import java.io.Serializable;
 @Table(name = "runtime_env")
 @DynamicInsert
 @DynamicUpdate
-public class RuntimeEnv extends BaseAuditableEntity implements ICodeUnique, Serializable {
+public class RuntimeEnv extends BaseAuditableEntity implements ICodeUnique, IFrozen, Serializable {
     private static final long serialVersionUID = 556644951408263122L;
     /**
      * 环境名称
@@ -33,7 +34,12 @@ public class RuntimeEnv extends BaseAuditableEntity implements ICodeUnique, Seri
     @Column(name = "code")
     private String code;
     /**
-     * 代理服务
+     * 是否冻结
+     */
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.FALSE;
+    /**
+     * 代理服务基地址
      */
     @Column(name = "agent_server")
     private String agentServer;
@@ -60,6 +66,16 @@ public class RuntimeEnv extends BaseAuditableEntity implements ICodeUnique, Seri
     @Override
     public void setCode(String code) {
         this.code = code;
+    }
+
+    @Override
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    @Override
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public String getAgentServer() {

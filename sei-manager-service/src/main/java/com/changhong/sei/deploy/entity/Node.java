@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
+import com.changhong.sei.core.entity.IFrozen;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -19,13 +20,18 @@ import java.io.Serializable;
 @Table(name = "node")
 @DynamicInsert
 @DynamicUpdate
-public class Node extends BaseAuditableEntity implements Serializable {
+public class Node extends BaseAuditableEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = 954549891503436485L;
     /**
      * 阶段名称
      */
     @Column(name = "name")
     private String name;
+    /**
+     * 是否冻结
+     */
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.FALSE;
     /**
      * 地址
      */
@@ -49,6 +55,16 @@ public class Node extends BaseAuditableEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    @Override
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public String getAddress() {

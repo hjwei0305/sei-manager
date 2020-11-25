@@ -24,6 +24,11 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
     private String version;
     @ApiModelProperty(notes = "应用地址")
     private String uri;
+    /**
+     * 是否冻结
+     */
+    @ApiModelProperty(value = "是否冻结")
+    private Boolean frozen = Boolean.FALSE;
 
     public String getCode() {
         return code;
@@ -57,4 +62,11 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
         this.uri = uri;
     }
 
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
+    }
 }

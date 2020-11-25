@@ -22,6 +22,8 @@ import java.util.List;
 public class DeployTemplateStageService extends BaseRelationService<DeployTemplateStage, DeployTemplate, DeployStage> {
     @Autowired
     private DeployTemplateStageDao dao;
+    @Autowired
+    private DeployStageService stageService;
 
     @Override
     protected BaseRelationDao<DeployTemplateStage, DeployTemplate, DeployStage> getDao() {
@@ -36,6 +38,6 @@ public class DeployTemplateStageService extends BaseRelationService<DeployTempla
      */
     @Override
     protected List<DeployStage> getCanAssignedChildren(String parentId) {
-        return null;
+        return stageService.findAllUnfrozen();
     }
 }

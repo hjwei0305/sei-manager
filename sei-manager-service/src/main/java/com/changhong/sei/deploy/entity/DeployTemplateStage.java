@@ -34,10 +34,15 @@ public class DeployTemplateStage extends BaseEntity implements RelationEntity<De
     @JoinColumn(name = "stage_id", nullable = false)
     private DeployStage child;
     /**
+     * 脚本
+     */
+    @Column(name = "playscript")
+    private String playscript;
+    /**
      * 排序
      */
     @Column(name = "rank")
-    private Long rank;
+    private Long rank = 0L;
 
     @Override
     public DeployTemplate getParent() {
@@ -57,6 +62,14 @@ public class DeployTemplateStage extends BaseEntity implements RelationEntity<De
     @Override
     public void setChild(DeployStage child) {
         this.child = child;
+    }
+
+    public String getPlayscript() {
+        return playscript;
+    }
+
+    public void setPlayscript(String playscript) {
+        this.playscript = playscript;
     }
 
     public Long getRank() {
