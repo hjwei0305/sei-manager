@@ -24,6 +24,11 @@ public class RuntimeEnvDto extends BaseEntityDto {
     @ApiModelProperty(value = "环境代码")
     private String code;
     /**
+     * 排序
+     */
+    @ApiModelProperty(value = "排序")
+    private Integer rank = 0;
+    /**
      * 是否冻结
      */
     @ApiModelProperty(value = "是否冻结")
@@ -53,6 +58,14 @@ public class RuntimeEnvDto extends BaseEntityDto {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
     }
 
     public Boolean getFrozen() {

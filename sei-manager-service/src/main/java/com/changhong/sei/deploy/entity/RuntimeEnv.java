@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.entity;
 
+import com.changhong.sei.core.dto.IRank;
 import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.ICodeUnique;
 import com.changhong.sei.core.entity.IFrozen;
@@ -21,7 +22,7 @@ import java.io.Serializable;
 @Table(name = "runtime_env")
 @DynamicInsert
 @DynamicUpdate
-public class RuntimeEnv extends BaseAuditableEntity implements ICodeUnique, IFrozen, Serializable {
+public class RuntimeEnv extends BaseAuditableEntity implements IRank, ICodeUnique, IFrozen, Serializable {
     private static final long serialVersionUID = 556644951408263122L;
     /**
      * 环境名称
@@ -33,6 +34,11 @@ public class RuntimeEnv extends BaseAuditableEntity implements ICodeUnique, IFro
      */
     @Column(name = "code")
     private String code;
+    /**
+     * 排序
+     */
+    @Column(name = "rank")
+    private Integer rank = 0;
     /**
      * 是否冻结
      */
@@ -66,6 +72,15 @@ public class RuntimeEnv extends BaseAuditableEntity implements ICodeUnique, IFro
     @Override
     public void setCode(String code) {
         this.code = code;
+    }
+
+    @Override
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
     }
 
     @Override
