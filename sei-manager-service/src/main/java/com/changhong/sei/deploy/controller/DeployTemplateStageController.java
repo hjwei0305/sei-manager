@@ -125,28 +125,6 @@ public class DeployTemplateStageController extends BaseRelationController<Deploy
      */
     @Override
     public ResultData<List<DeployTemplateStageResponse>> getStageByTemplateId(String templateId) {
-        List<DeployTemplateStageResponse> list = new ArrayList<>();
-        List<DeployTemplateStage> templateStages = service.getRelationsByParentId(templateId);
-        if (CollectionUtils.isNotEmpty(templateStages)) {
-            DeployStage stage;
-            DeployTemplateStageResponse response;
-            for (DeployTemplateStage templateStage : templateStages) {
-                if (Objects.isNull(templateStage)) {
-                    continue;
-                }
-                stage = templateStage.getChild();
-                if (Objects.isNull(stage)) {
-                    continue;
-                }
-                response = new DeployTemplateStageResponse();
-                response.setName(stage.getName());
-                response.setRemark(stage.getRemark());
-                response.setPlayscript(StringUtils.isBlank(templateStage.getPlayscript()) ? stage.getPlayscript() : templateStage.getPlayscript());
-                response.setRank(templateStage.getRank());
-                response.setId(templateStage.getId());
-                list.add(response);
-            }
-        }
-        return ResultData.success(list);
+        return service.getStageByTemplateId(templateId);
     }
 }

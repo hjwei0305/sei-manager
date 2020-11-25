@@ -69,4 +69,12 @@ public class DeployTemplateController extends BaseEntityController<DeployTemplat
     public ResultData<List<DeployTemplateDto>> findAllUnfrozen() {
         return ResultData.success(convertToDtos(service.findAllUnfrozen()));
     }
+
+    /**
+     * 生成xml方法
+     */
+    @Override
+    public ResultData<String> getXml(String templateId) {
+        return service.generateXml(templateId);
+    }
 }

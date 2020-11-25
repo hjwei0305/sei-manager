@@ -7,6 +7,7 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.DeployStageApi;
 import com.changhong.sei.deploy.dto.DeployStageDto;
+import com.changhong.sei.deploy.dto.DeployStageParamDto;
 import com.changhong.sei.deploy.entity.DeployStage;
 import com.changhong.sei.deploy.service.DeployStageService;
 import io.swagger.annotations.Api;
@@ -67,5 +68,16 @@ public class DeployStageController extends BaseEntityController<DeployStage, Dep
     @Override
     public ResultData<List<DeployStageDto>> findAllUnfrozen() {
         return ResultData.success(convertToDtos(service.findAllUnfrozen()));
+    }
+
+    /**
+     * 获取阶段参数
+     *
+     * @param stageId 阶段id
+     * @return 阶段参数
+     */
+    @Override
+    public ResultData<List<DeployStageParamDto>> getStageParameters(String stageId) {
+        return ResultData.success(service.getStageParameters(stageId));
     }
 }

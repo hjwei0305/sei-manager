@@ -16,6 +16,16 @@ public class DeployTemplateStageResponse extends BaseEntityDto {
     private static final long serialVersionUID = -14319293657195114L;
 
     /**
+     * 模板id
+     */
+    @ApiModelProperty(value = "模板id")
+    private String templateId;
+    /**
+     * 阶段id
+     */
+    @ApiModelProperty(value = "阶段id")
+    private String stageId;
+    /**
      * 阶段名称
      */
     @ApiModelProperty(value = "阶段名称")
@@ -35,6 +45,22 @@ public class DeployTemplateStageResponse extends BaseEntityDto {
      */
     @ApiModelProperty(value = "排序")
     private Integer rank = 0;
+
+    public String getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
+    }
+
+    public String getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(String stageId) {
+        this.stageId = stageId;
+    }
 
     public String getName() {
         return name;

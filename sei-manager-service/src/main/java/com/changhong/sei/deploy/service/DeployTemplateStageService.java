@@ -1,16 +1,20 @@
 package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseRelationDao;
+import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseRelationService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.DeployTemplateStageDao;
+import com.changhong.sei.deploy.dto.DeployTemplateStageResponse;
 import com.changhong.sei.deploy.entity.DeployStage;
 import com.changhong.sei.deploy.entity.DeployTemplate;
 import com.changhong.sei.deploy.entity.DeployTemplateStage;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +41,6 @@ public class DeployTemplateStageService extends BaseRelationService<DeployTempla
     /**
      * 获取可以分配的子实体清单
      *
-     * @param parentId
      * @return 子实体清单
      */
     @Override
@@ -82,5 +85,39 @@ public class DeployTemplateStageService extends BaseRelationService<DeployTempla
             }
         }
         super.save(entities);
+    }
+
+    /**
+     * 通过模版Id获取阶段清单
+     *
+     * @param templateId 模版Id
+     * @return 获取阶段清单
+     */
+    public ResultData<List<DeployTemplateStageResponse>> getStageByTemplateId(String templateId) {
+        List<DeployTemplateStageResponse> list = new ArrayList<>();
+        List<DeployTemplateStage> templateStages = this.getRelationsByParentId(templateId);
+        if (CollectionUtils.isNotEmpty(templateStages)) {
+            DeployStage stage;
+            DeployTemplateStageResponse response;
+            for (DeployTemplateStage templateStage : templateStages) {
+                if (Objects.isNull(templateStage)) {
+                    continue;
+                }
+                stage = templateStage.getChild();
+                if (Objects.isNull(stage)) {
+                    continue;
+                }
+                response = new DeployTemplateStageResponse();
+                response.setTemplateId(templateId);
+                response.setStageId(stage.getId());
+                response.setName(stage.getName());
+                response.setRemark(stage.getRemark());
+                response.setPlayscript(templateStage.getPlayscript());
+                response.setRank(templateStage.getRank());
+                response.setId(templateStage.getId());
+                list.add(response);
+            }
+        }
+        return ResultData.success(list);
     }
 }

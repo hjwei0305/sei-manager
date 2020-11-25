@@ -1,12 +1,30 @@
 package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.deploy.common.Constants;
 import com.changhong.sei.deploy.dao.DeployTemplateDao;
+import com.changhong.sei.deploy.dto.DeployStageParamDto;
+import com.changhong.sei.deploy.dto.DeployTemplateStageResponse;
+import com.changhong.sei.deploy.entity.DeployStage;
 import com.changhong.sei.deploy.entity.DeployTemplate;
+import com.changhong.sei.deploy.entity.DeployTemplateStage;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 部署模板(DeployTemplate)业务逻辑实现类
@@ -16,12 +34,111 @@ import org.springframework.stereotype.Service;
  */
 @Service("deployTemplateService")
 public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
+    private static final Logger LOG = LoggerFactory.getLogger(DeployTemplateService.class);
     @Autowired
     private DeployTemplateDao dao;
+    @Autowired
+    private DeployStageService stageService;
+    @Autowired
+    private DeployTemplateStageService templateStageService;
 
     @Override
     protected BaseEntityDao<DeployTemplate> getDao() {
         return dao;
     }
 
+    /**
+     * 生成xml方法
+     */
+    public ResultData<String> generateXml(String templateId) {
+        ResultData<List<DeployTemplateStageResponse>> resultData = templateStageService.getStageByTemplateId(templateId);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        StringBuilder script = new StringBuilder();
+        script.append("\n\r node {\n\r");
+        List<DeployTemplateStageResponse> templateStages = resultData.getData();
+        for (DeployTemplateStageResponse templateStage : templateStages) {
+            script.append("stage('").append(templateStage.getName()).append("') { \n\r");
+            script.append(templateStage.getPlayscript()).append("\n\r } \n\r");
+        }
+        script.append("\n\r} \n\r");
+
+        return generateXml(script.toString(), Constants.DEFAULT_STAGE_PARAMS);
+    }
+
+    /**
+     * 生成xml方法
+     */
+    public ResultData<String> generateXml(String scriptStr, List<DeployStageParamDto> stageParams) {
+        // 创建document对象
+        Document document = DocumentHelper.createDocument();
+        // 创建根节点
+        Element root = document.addElement("flow-definition");
+        // 向根节点添加plugin属性
+        root.addAttribute("plugin", "workflow-job@2.39");
+        // 生成子节点及子节点内容
+        root.addElement("actions");
+        root.addElement("description");
+
+        root.addElement("keepDependencies").setText("false");
+
+        Element properties = root.addElement("properties");
+        Element gitlab = properties.addElement("com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty");
+        gitlab.addAttribute("plugin", "gitlab-plugin@1.5.13");
+        gitlab.addElement("gitLabConnection").addText("rddgit");
+
+        Element hudson = properties.addElement("hudson.model.ParametersDefinitionProperty");
+        Element parameterDefinitions = hudson.addElement("parameterDefinitions");
+        Element parameter;
+        for (DeployStageParamDto stageParam : stageParams) {
+            parameter = parameterDefinitions.addElement("hudson.model.StringParameterDefinition");
+            parameter.addElement("name").addText(stageParam.getCode());
+            parameter.addElement("description").addText(stageParam.getName());
+            parameter.addElement("defaultValue").addText(stageParam.getValue());
+            parameter.addElement("trim").addText(String.valueOf(stageParam.getTrim()));
+        }
+
+        Element definition = root.addElement("definition");
+        definition.addAttribute("class", "org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition");
+        definition.addAttribute("plugin", "workflow-cps@2.80");
+
+        definition.addElement("script");
+//        Element script = definition.addElement("script");
+//        script.addText(scriptStr);
+
+        definition.addElement("sandbox").addText("true");
+
+        root.addElement("triggers");
+        root.addElement("disabled").addText("false");
+
+        // 设置生成xml的格式
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        // 设置编码格式
+        format.setEncoding("UTF-8");
+
+        // 生成xml
+        StringWriter strWriter = new StringWriter();
+        XMLWriter xmlWriter = new XMLWriter(strWriter, format);
+        try {
+            // 设置是否转义，默认使用转义字符
+            xmlWriter.setEscapeText(false);
+            xmlWriter.write(document);
+        } catch (IOException e) {
+            LOG.error("生成xml失败", e);
+            return ResultData.fail("生成xml失败");
+        } finally {
+            try {
+                xmlWriter.close();
+            } catch (IOException ignored) {
+            }
+            try {
+                strWriter.close();
+            } catch (IOException ignored) {
+            }
+        }
+
+//        return ResultData.success(strWriter.toString());
+        return ResultData.success(strWriter.toString().replace("<script/>", "<script>".concat(scriptStr).concat("</script>")));
+    }
 }
