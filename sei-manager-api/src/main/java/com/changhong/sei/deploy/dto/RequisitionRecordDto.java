@@ -1,70 +1,62 @@
-package com.changhong.sei.deploy.entity;
+package com.changhong.sei.deploy.dto;
 
-import com.changhong.sei.core.entity.BaseAuditableEntity;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
+import com.changhong.sei.core.dto.BaseEntityDto;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 应用模块(AppModule)实体类
+ * 申请记录(RequisitionRecord)DTO类
  *
  * @author sei
- * @since 2020-11-26 14:45:20
+ * @since 2020-11-26 14:45:23
  */
-@Entity
-@Table(name = "app_module")
-@DynamicInsert
-@DynamicUpdate
-public class AppModule extends BaseAuditableEntity implements Serializable {
-    private static final long serialVersionUID = -78400014111481829L;
+@ApiModel(description = "申请记录DTO")
+public class RequisitionRecordDto extends BaseEntityDto {
+    private static final long serialVersionUID = -38024625578859016L;
     /**
      * 所属应用id
      */
-    @Column(name = "app_id")
+    @ApiModelProperty(value = "所属应用id")
     private String appId;
     /**
      * 模块代码
      */
-    @Column(name = "code")
+    @ApiModelProperty(value = "模块代码")
     private String code;
     /**
      * 模块名称
      */
-    @Column(name = "name")
+    @ApiModelProperty(value = "模块名称")
     private String name;
     /**
      * 模块版本
      */
-    @Column(name = "version_")
+    @ApiModelProperty(value = "模块版本")
     private String version;
     /**
      * 命名空间(包路径)
      */
-    @Column(name = "name_space")
+    @ApiModelProperty(value = "命名空间(包路径)")
     private String nameSpace;
     /**
-     * gitId
+     * git地址
      */
-    @Column(name = "git_id")
+    @ApiModelProperty(value = "gitId")
     private String gitId;
     /**
      * git地址
      */
-    @Column(name = "git_url")
+    @ApiModelProperty(value = "git地址")
     private String gitUrl;
     /**
      * 描述说明
      */
-    @Column(name = "remark")
+    @ApiModelProperty(value = "描述说明")
     private String remark;
     /**
      * 冻结
      */
-    @Column(name = "frozen")
+    @ApiModelProperty(value = "冻结")
     private Boolean frozen;
 
 

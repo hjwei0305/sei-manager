@@ -41,6 +41,11 @@ public class AppModuleDto extends BaseEntityDto {
     /**
      * git地址
      */
+    @ApiModelProperty(value = "gitId")
+    private String gitId;
+    /**
+     * git地址
+     */
     @ApiModelProperty(value = "git地址")
     private String gitUrl;
     /**
@@ -93,6 +98,14 @@ public class AppModuleDto extends BaseEntityDto {
 
     public void setNameSpace(String nameSpace) {
         this.nameSpace = nameSpace;
+    }
+
+    public String getGitId() {
+        return gitId;
+    }
+
+    public void setGitId(String gitId) {
+        this.gitId = gitId;
     }
 
     public String getGitUrl() {
