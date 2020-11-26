@@ -29,7 +29,7 @@ public class ApplicationServiceTest extends BaseUnitTest {
 //        app.setCode("test");
         app.setName("test测试");
         app.setVersion("test-1.0.1");
-        app.setUri("http://test:8080/test");
+        app.setRemark("http://test:8080/test");
         OperateResultWithData<Application> result = service.save(app);
         System.out.println(result);
     }

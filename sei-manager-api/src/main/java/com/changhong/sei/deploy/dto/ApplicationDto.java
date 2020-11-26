@@ -22,8 +22,18 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
     private String name;
     @ApiModelProperty(notes = "应用版本")
     private String version;
-    @ApiModelProperty(notes = "应用地址")
-    private String uri;
+    @ApiModelProperty(notes = "描述说明")
+    private String remark;
+    /**
+     * 所属组代码
+     */
+    @ApiModelProperty(notes = "所属组代码")
+    private String groupCode;
+    /**
+     * 所属组名称
+     */
+    @ApiModelProperty(notes = "所属组名称")
+    private String groupName;
     /**
      * 是否冻结
      */
@@ -54,12 +64,28 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
         this.version = version;
     }
 
-    public String getUri() {
-        return uri;
+    public String getRemark() {
+        return remark;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public Boolean getFrozen() {

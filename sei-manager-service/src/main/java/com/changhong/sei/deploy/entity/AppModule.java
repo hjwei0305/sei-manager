@@ -10,52 +10,66 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * 应用服务(Application)实体类
+ * 应用模块(AppModule)实体类
  *
  * @author sei
- * @since 2020-10-30 15:20:21
+ * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "application")
+@Table(name = "app_module")
 @DynamicInsert
 @DynamicUpdate
-public class Application extends BaseAuditableEntity implements Serializable {
-    private static final long serialVersionUID = -64497955636689211L;
+public class AppModule extends BaseAuditableEntity implements Serializable {
+    private static final long serialVersionUID = -78400014111481829L;
     /**
-     * 应用代码
+     * 所属应用id
+     */
+    @Column(name = "app_id")
+    private String appId;
+    /**
+     * 模块代码
      */
     @Column(name = "code")
     private String code;
     /**
-     * 应用名称
+     * 模块名称
      */
     @Column(name = "name")
     private String name;
     /**
-     * 应用版本
+     * 模块版本
      */
     @Column(name = "version_")
     private String version;
+    /**
+     * 命名空间(包路径)
+     */
+    @Column(name = "name_space")
+    private String nameSpace;
+    /**
+     * git地址
+     */
+    @Column(name = "git_url")
+    private String gitUrl;
     /**
      * 描述说明
      */
     @Column(name = "remark")
     private String remark;
     /**
-     * 所属组代码
-     */
-    @Column(name = "group_code")
-    private String groupCode;
-    /**
-     * 所属组代码
-     */
-    @Column(name = "group_name")
-    private String groupName;
-    /**
-     * 是否冻结
+     * 冻结
      */
     @Column(name = "frozen")
-    private Boolean frozen = Boolean.FALSE;
+    private Boolean frozen;
+
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
 
     public String getCode() {
         return code;
@@ -81,28 +95,28 @@ public class Application extends BaseAuditableEntity implements Serializable {
         this.version = version;
     }
 
+    public String getNameSpace() {
+        return nameSpace;
+    }
+
+    public void setNameSpace(String nameSpace) {
+        this.nameSpace = nameSpace;
+    }
+
+    public String getGitUrl() {
+        return gitUrl;
+    }
+
+    public void setGitUrl(String gitUrl) {
+        this.gitUrl = gitUrl;
+    }
+
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    public String getGroupCode() {
-        return groupCode;
-    }
-
-    public void setGroupCode(String groupCode) {
-        this.groupCode = groupCode;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
     }
 
     public Boolean getFrozen() {
@@ -112,4 +126,5 @@ public class Application extends BaseAuditableEntity implements Serializable {
     public void setFrozen(Boolean frozen) {
         this.frozen = frozen;
     }
+
 }

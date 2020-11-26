@@ -75,14 +75,7 @@ public class ApplicationService extends BaseEntityService<Application> {
                 app = new ApplicationResponse();
                 app.setId(instance.getInstanceId());
                 app.setCode(instance.getServiceId());
-                URI uri = instance.getUri();
-                if (Objects.nonNull(uri)) {
-                    if (instance.getPort() == -1) {
-                        app.setUri(uri.toString().replace(":-1", ""));
-                    } else {
-                        app.setUri(uri.getHost());
-                    }
-                }
+
                 app.setMetadata(instance.getMetadata());
                 applications.add(app);
             }
