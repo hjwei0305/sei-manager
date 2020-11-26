@@ -32,5 +32,5 @@ public interface DeployStageApi extends BaseEntityApi<DeployStageDto>, FindByPag
      */
     @GetMapping(path = "getStageParameters")
     @ApiOperation(value = "获取阶段参数", notes = "获取阶段参数")
-    ResultData<List<DeployStageParamDto>> getStageParameters(@RequestParam("stageId") String stageId);
+    ResultData<List<DeployStageParamDto>> getStageParameters(@RequestParam(name = "stageId", required = false) String stageId);
 }
