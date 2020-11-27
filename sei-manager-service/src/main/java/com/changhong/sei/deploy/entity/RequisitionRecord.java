@@ -2,12 +2,12 @@ package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.deploy.dto.ApplicationType;
+import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.OperationType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -55,6 +55,7 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
     /**
      * 申请类型
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "application_type")
     private ApplicationType applicationType;
     /**
@@ -63,10 +64,11 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
     @Column(name = "application_time")
     private LocalDateTime applicationTime;
     /**
-     * 是否已处理
+     * 审核状态
      */
-    @Column(name = "is_handle")
-    private Boolean handled = Boolean.FALSE;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status")
+    private ApprovalStatus approvalStatus = ApprovalStatus.initial;
     /**
      * 处理人账号
      */
@@ -144,12 +146,12 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
         this.applicationTime = applicationTime;
     }
 
-    public Boolean getHandled() {
-        return handled;
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
     }
 
-    public void setHandled(Boolean handled) {
-        this.handled = handled;
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
     }
 
     public String getHandleAccount() {

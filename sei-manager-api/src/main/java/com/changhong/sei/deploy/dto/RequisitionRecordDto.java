@@ -1,6 +1,9 @@
 package com.changhong.sei.deploy.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
+import com.changhong.sei.core.dto.serializer.EnumJsonSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -47,18 +50,21 @@ public class RequisitionRecordDto extends BaseEntityDto {
     /**
      * 申请类型
      */
+    @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "申请类型")
     private ApplicationType applicationType;
     /**
      * 申请时间
      */
-    @ApiModelProperty(value = "申请时间")
+    @ApiModelProperty(value = "申请时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime applicationTime;
     /**
-     * 是否已处理
+     * 审核状态
      */
-    @ApiModelProperty(value = "是否已处理")
-    private Boolean handled = Boolean.FALSE;
+    @JsonSerialize(using = EnumJsonSerializer.class)
+    @ApiModelProperty(value = "审核状态")
+    private ApprovalStatus approvalStatus = ApprovalStatus.initial;
     /**
      * 处理人账号
      */
@@ -77,7 +83,8 @@ public class RequisitionRecordDto extends BaseEntityDto {
     /**
      * 处理时间
      */
-    @ApiModelProperty(value = "处理时间")
+    @ApiModelProperty(value = "处理时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime handleTime;
 
     public String getRelationId() {
@@ -136,12 +143,12 @@ public class RequisitionRecordDto extends BaseEntityDto {
         this.applicationTime = applicationTime;
     }
 
-    public Boolean getHandled() {
-        return handled;
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
     }
 
-    public void setHandled(Boolean handled) {
-        this.handled = handled;
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
     }
 
     public String getHandleAccount() {
