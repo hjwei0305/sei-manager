@@ -1,7 +1,7 @@
 sei: # 应用全局配置
   application:
-    code: sei-manager
-    name: SEI平台管理
+    code: sei-agent
+    name: SEI平台代理
     env: DEV
     version: 6.0.1
     swagger:

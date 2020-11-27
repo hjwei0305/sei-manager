@@ -41,33 +41,6 @@ public class ApplicationController extends BaseEntityController<Application, App
     }
 
     /**
-     * 获取当前所有可用应用服务清单
-     */
-    @Override
-    public ResultData<List<String>> getServiceCodes() {
-        return service.getServiceCodes();
-    }
-
-    /**
-     * 获取当前所有可用应用服务清单
-     */
-    @Override
-    public ResultData<List<ApplicationDto>> getServices() {
-        return service.getServices();
-    }
-
-    /**
-     * 获取指定应用的实例清单
-     *
-     * @param serviceCode 应用代码
-     * @return 返回指定应用的实例清单
-     */
-    @Override
-    public ResultData<List<ApplicationResponse>> getServiceInstance(String serviceCode) {
-        return service.getServiceInstance(serviceCode);
-    }
-
-    /**
      * 分页查询业务实体
      *
      * @param search 查询参数

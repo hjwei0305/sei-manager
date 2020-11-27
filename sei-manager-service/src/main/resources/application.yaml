@@ -1,0 +1,65 @@
+spring:
+
+  elasticsearch:
+    rest:
+      uris: http://10.4.208.132:9200
+      password: dsei123456
+      username: elastic
+
+  mail:
+    password: 1plmjvCR
+    protocol: smtp
+    port: 25
+    host: 10.3.15.240
+    properties:
+      mail:
+        smtp:
+          writetimeout: 5000
+          starttls:
+            enable: true
+          auth: true
+          connectiontimeout: 5000
+          ssl:
+            trust: 10.3.15.240
+          timeout: 5000
+    username: seiadmin@changhong.com
+
+  kafka:
+    bootstrap-servers: 10.4.208.132:9092
+
+  datasource:
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.4.208.134:3306/sei_manager?characterEncoding=utf8&useSSL=false&useCompression=true&serverTimezone=Asia/Shanghai
+    username: sei
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      namingStrategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        format_sql: true
+
+  redis:
+    password: ZmkDbgaua3Rso33T
+    database: 0
+    port: 6379
+    host: 10.4.208.132
+
+  boot:
+    admin:
+      client:
+        url: http://dsei.changhong.com/sei-manager
+
+logging:
+  level:
+    root: WARN
+
+feign:
+  client:
+    config:
+      default:
+        readTimeout: 5000
+        connectTimeout: 5000
