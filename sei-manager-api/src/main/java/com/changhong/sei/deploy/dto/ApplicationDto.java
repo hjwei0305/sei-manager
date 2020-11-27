@@ -34,11 +34,6 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
      */
     @ApiModelProperty(notes = "所属组名称")
     private String groupName;
-    /**
-     * 是否冻结
-     */
-    @ApiModelProperty(value = "是否冻结")
-    private Boolean frozen = Boolean.FALSE;
 
     public String getCode() {
         return code;
@@ -88,11 +83,4 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
         this.groupName = groupName;
     }
 
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
-    }
 }

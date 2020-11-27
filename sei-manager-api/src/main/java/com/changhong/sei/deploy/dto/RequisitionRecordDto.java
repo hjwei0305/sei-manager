@@ -4,6 +4,8 @@ import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.time.LocalDateTime;
+
 /**
  * 申请记录(RequisitionRecord)DTO类
  *
@@ -13,123 +15,164 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "申请记录DTO")
 public class RequisitionRecordDto extends BaseEntityDto {
     private static final long serialVersionUID = -38024625578859016L;
+
     /**
-     * 所属应用id
+     * 关联id
+     *
+     * @see ApplicationType
      */
-    @ApiModelProperty(value = "所属应用id")
-    private String appId;
+    @ApiModelProperty(value = "关联id")
+    private String relationId;
     /**
-     * 模块代码
+     * 任务号
+     * 用于需多人处理的事项
      */
-    @ApiModelProperty(value = "模块代码")
-    private String code;
+    @ApiModelProperty(value = "任务号")
+    private String taskNo;
     /**
-     * 模块名称
+     * 任务名称
      */
-    @ApiModelProperty(value = "模块名称")
-    private String name;
+    @ApiModelProperty(value = "任务名称")
+    private String taskName;
     /**
-     * 模块版本
+     * 申请人账号
      */
-    @ApiModelProperty(value = "模块版本")
-    private String version;
+    @ApiModelProperty(value = "申请人账号")
+    private String applicantAccount;
     /**
-     * 命名空间(包路径)
+     * 申请人名称
      */
-    @ApiModelProperty(value = "命名空间(包路径)")
-    private String nameSpace;
+    @ApiModelProperty(value = "申请人名称")
+    private String applicantUserName;
     /**
-     * git地址
+     * 申请类型
      */
-    @ApiModelProperty(value = "gitId")
-    private String gitId;
+    @ApiModelProperty(value = "申请类型")
+    private ApplicationType applicationType;
     /**
-     * git地址
+     * 申请时间
      */
-    @ApiModelProperty(value = "git地址")
-    private String gitUrl;
+    @ApiModelProperty(value = "申请时间")
+    private LocalDateTime applicationTime;
     /**
-     * 描述说明
+     * 是否已处理
      */
-    @ApiModelProperty(value = "描述说明")
-    private String remark;
+    @ApiModelProperty(value = "是否已处理")
+    private Boolean handled = Boolean.FALSE;
     /**
-     * 冻结
+     * 处理人账号
      */
-    @ApiModelProperty(value = "冻结")
-    private Boolean frozen;
+    @ApiModelProperty(value = "处理人账号")
+    private String handleAccount;
+    /**
+     * 处理人
+     */
+    @ApiModelProperty(value = "处理人")
+    private String handleUserName;
+    /**
+     * 处理日志
+     */
+    @ApiModelProperty(value = "处理日志")
+    private String handleLog;
+    /**
+     * 处理时间
+     */
+    @ApiModelProperty(value = "处理时间")
+    private LocalDateTime handleTime;
 
-
-    public String getAppId() {
-        return appId;
+    public String getRelationId() {
+        return relationId;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setRelationId(String relationId) {
+        this.relationId = relationId;
     }
 
-    public String getCode() {
-        return code;
+    public String getTaskNo() {
+        return taskNo;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setTaskNo(String taskNo) {
+        this.taskNo = taskNo;
     }
 
-    public String getName() {
-        return name;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
-    public String getVersion() {
-        return version;
+    public String getApplicantAccount() {
+        return applicantAccount;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setApplicantAccount(String applicantAccount) {
+        this.applicantAccount = applicantAccount;
     }
 
-    public String getNameSpace() {
-        return nameSpace;
+    public String getApplicantUserName() {
+        return applicantUserName;
     }
 
-    public void setNameSpace(String nameSpace) {
-        this.nameSpace = nameSpace;
+    public void setApplicantUserName(String applicantUserName) {
+        this.applicantUserName = applicantUserName;
     }
 
-    public String getGitId() {
-        return gitId;
+    public ApplicationType getApplicationType() {
+        return applicationType;
     }
 
-    public void setGitId(String gitId) {
-        this.gitId = gitId;
+    public void setApplicationType(ApplicationType applicationType) {
+        this.applicationType = applicationType;
     }
 
-    public String getGitUrl() {
-        return gitUrl;
+    public LocalDateTime getApplicationTime() {
+        return applicationTime;
     }
 
-    public void setGitUrl(String gitUrl) {
-        this.gitUrl = gitUrl;
+    public void setApplicationTime(LocalDateTime applicationTime) {
+        this.applicationTime = applicationTime;
     }
 
-    public String getRemark() {
-        return remark;
+    public Boolean getHandled() {
+        return handled;
     }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setHandled(Boolean handled) {
+        this.handled = handled;
     }
 
-    public Boolean getFrozen() {
-        return frozen;
+    public String getHandleAccount() {
+        return handleAccount;
     }
 
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
+    public void setHandleAccount(String handleAccount) {
+        this.handleAccount = handleAccount;
     }
 
+    public String getHandleUserName() {
+        return handleUserName;
+    }
+
+    public void setHandleUserName(String handleUserName) {
+        this.handleUserName = handleUserName;
+    }
+
+    public String getHandleLog() {
+        return handleLog;
+    }
+
+    public void setHandleLog(String handleLog) {
+        this.handleLog = handleLog;
+    }
+
+    public LocalDateTime getHandleTime() {
+        return handleTime;
+    }
+
+    public void setHandleTime(LocalDateTime handleTime) {
+        this.handleTime = handleTime;
+    }
 }

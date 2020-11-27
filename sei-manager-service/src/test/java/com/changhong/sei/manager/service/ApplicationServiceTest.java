@@ -1,16 +1,11 @@
 package com.changhong.sei.manager.service;
 
-import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.core.test.BaseUnitTest;
-import com.changhong.sei.deploy.service.ApplicationService;
-import com.changhong.sei.deploy.dto.ApplicationDto;
-import com.changhong.sei.deploy.dto.ApplicationResponse;
 import com.changhong.sei.deploy.entity.Application;
+import com.changhong.sei.deploy.service.ApplicationService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * 实现功能：
@@ -35,25 +30,9 @@ public class ApplicationServiceTest extends BaseUnitTest {
     }
 
     @Test
-    public void getServiceCodes() {
-         service.getServiceCodes();
-    }
-
-    @Test
     public void findId() {
         Application result = service.findOne("AC708D97-1A82-11EB-9804-B2736CF14622");
         System.out.println(result);
     }
 
-    @Test
-    public void getServices() {
-        ResultData<List<ApplicationDto>> result = service.getServices();
-        System.out.println(result);
-    }
-
-    @Test
-    public void testGetServices() {
-        ResultData<List<ApplicationResponse>> resultData = service.getServiceInstance("edm-service");
-        System.out.println(resultData);
-    }
 }

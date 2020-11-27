@@ -7,8 +7,6 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.ApplicationApi;
 import com.changhong.sei.deploy.dto.ApplicationDto;
-import com.changhong.sei.deploy.dto.ApplicationResponse;
-import com.changhong.sei.deploy.dto.DeployStageDto;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.ApplicationService;
 import io.swagger.annotations.Api;
@@ -17,7 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import javax.validation.Valid;
 
 /**
  * 应用服务(ApplicationService)控制类
@@ -51,4 +49,35 @@ public class ApplicationController extends BaseEntityController<Application, App
         return convertToDtoPageResult(service.findByPage(search));
     }
 
+    /**
+     * 创建应用申请单
+     *
+     * @param dto 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> createRequisition(ApplicationDto dto) {
+        return null;
+    }
+
+    /**
+     * 创建应用申请单
+     *
+     * @param dto 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> modifyRequisition(ApplicationDto dto) {
+        return null;
+    }
+
+    /**
+     * 创建应用申请单
+     *
+     * @param id@return 操作结果
+     */
+    @Override
+    public ResultData<Void> deleteRequisition(String id) {
+        return null;
+    }
 }

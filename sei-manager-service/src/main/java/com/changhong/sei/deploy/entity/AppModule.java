@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
+import com.changhong.sei.core.entity.IFrozen;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -19,7 +20,7 @@ import java.io.Serializable;
 @Table(name = "app_module")
 @DynamicInsert
 @DynamicUpdate
-public class AppModule extends BaseAuditableEntity implements Serializable {
+public class AppModule extends BaseAuditableEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     /**
      * 所属应用id
@@ -61,6 +62,12 @@ public class AppModule extends BaseAuditableEntity implements Serializable {
      */
     @Column(name = "remark")
     private String remark;
+    /**
+     * 冻结
+     */
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.FALSE;
+
 
     public String getAppId() {
         return appId;
@@ -125,4 +132,13 @@ public class AppModule extends BaseAuditableEntity implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
+    }
+
 }

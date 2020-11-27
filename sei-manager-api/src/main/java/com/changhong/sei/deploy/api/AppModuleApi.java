@@ -29,7 +29,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param appId 应用id
      * @return 模块清单
      */
-    @GetMapping(path = "findOne")
+    @GetMapping(path = "findAppId")
     @ApiOperation(value = "通过应用Id获取模块清单", notes = "通过应用Id获取模块清单")
     ResultData<List<AppModuleDto>> findAppId(@RequestParam("appId") String appId);
 }
