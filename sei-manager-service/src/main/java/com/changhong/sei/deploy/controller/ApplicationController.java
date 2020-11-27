@@ -26,9 +26,9 @@ import java.util.List;
  * @since 2020-10-30 15:20:58
  */
 @RestController
-@Api(value = "ApplicationServiceApi", tags = "应用服务")
+@Api(value = "ApplicationApi", tags = "应用服务")
 @RequestMapping(path = "application", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class ApplicationServiceController extends BaseEntityController<Application, ApplicationDto> implements ApplicationApi {
+public class ApplicationController extends BaseEntityController<Application, ApplicationDto> implements ApplicationApi {
     /**
      * 应用服务服务对象
      */
