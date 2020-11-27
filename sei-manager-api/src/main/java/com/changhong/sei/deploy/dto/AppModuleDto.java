@@ -19,6 +19,11 @@ public class AppModuleDto extends BaseEntityDto {
     @ApiModelProperty(value = "所属应用id")
     private String appId;
     /**
+     * 所属应用名称
+     */
+    @ApiModelProperty(value = "所属应用名称")
+    private String appName;
+    /**
      * 模块代码
      */
     @ApiModelProperty(value = "模块代码")
@@ -66,6 +71,14 @@ public class AppModuleDto extends BaseEntityDto {
 
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public String getCode() {

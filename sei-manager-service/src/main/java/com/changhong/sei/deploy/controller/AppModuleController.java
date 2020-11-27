@@ -7,14 +7,19 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.AppModuleApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
-import com.changhong.sei.deploy.dto.ApplicationDto;
 import com.changhong.sei.deploy.entity.AppModule;
+import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
+import com.changhong.sei.deploy.service.ApplicationService;
 import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 应用模块(AppModule)控制类
@@ -31,6 +36,8 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Autowired
     private AppModuleService service;
+    @Autowired
+    private ApplicationService applicationService;
 
     @Override
     public BaseEntityService<AppModule> getService() {
@@ -45,6 +52,56 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<PageResult<AppModuleDto>> findByPage(Search search) {
-        return convertToDtoPageResult(service.findByPage(search));
+        PageResult<AppModule> pageResult = service.findByPage(search);
+        PageResult<AppModuleDto> result = new PageResult<>(pageResult);
+
+        List<AppModule> appModules = pageResult.getRows();
+        if (CollectionUtils.isNotEmpty(appModules)) {
+            Map<String, String> appMap = new HashMap<>();
+            List<Application> applications = applicationService.findAll();
+            if (CollectionUtils.isNotEmpty(applications)) {
+                appMap = applications.stream().collect(Collectors.toMap(Application::getId, Application::getName));
+            }
+
+            AppModuleDto moduleDto;
+            List<AppModuleDto> dtos = new ArrayList<>();
+            for (AppModule module : appModules) {
+                moduleDto = dtoModelMapper.map(module, AppModuleDto.class);
+                moduleDto.setAppName(appMap.get(module.getAppId()));
+
+                dtos.add(moduleDto);
+            }
+            result.setRows(dtos);
+        }
+
+        return ResultData.success(result);
+    }
+
+    /**
+     * 通过应用Id获取模块清单
+     *
+     * @param appId 应用id
+     * @return 模块清单
+     */
+    @Override
+    public ResultData<List<AppModuleDto>> findAppId(String appId) {
+        Application application = applicationService.findOne(appId);
+        if (Objects.isNull(application)) {
+            return ResultData.fail("[" + appId + "]应用不存在");
+        }
+
+        List<AppModuleDto> dtos = new ArrayList<>();
+        List<AppModule> appModules = service.findListByProperty("", appId);
+        if (CollectionUtils.isNotEmpty(appModules)) {
+            String appName = application.getName();
+            AppModuleDto moduleDto;
+            for (AppModule module : appModules) {
+                moduleDto = dtoModelMapper.map(module, AppModuleDto.class);
+                moduleDto.setAppName(appName);
+
+                dtos.add(moduleDto);
+            }
+        }
+        return ResultData.success(dtos);
     }
 }
