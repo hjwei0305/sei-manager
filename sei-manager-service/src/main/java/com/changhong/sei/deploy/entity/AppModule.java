@@ -61,12 +61,6 @@ public class AppModule extends BaseAuditableEntity implements Serializable {
      */
     @Column(name = "remark")
     private String remark;
-    /**
-     * 冻结
-     */
-    @Column(name = "frozen")
-    private Boolean frozen;
-
 
     public String getAppId() {
         return appId;
@@ -131,13 +125,4 @@ public class AppModule extends BaseAuditableEntity implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
-    }
-
 }

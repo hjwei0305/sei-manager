@@ -51,11 +51,6 @@ public class Application extends BaseAuditableEntity implements Serializable {
      */
     @Column(name = "group_name")
     private String groupName;
-    /**
-     * 是否冻结
-     */
-    @Column(name = "frozen")
-    private Boolean frozen = Boolean.FALSE;
 
     public String getCode() {
         return code;
@@ -105,11 +100,4 @@ public class Application extends BaseAuditableEntity implements Serializable {
         this.groupName = groupName;
     }
 
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
-    }
 }

@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.api;
 
 import com.changhong.sei.core.api.BaseEntityApi;
+import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
 import org.springframework.cloud.openfeign.FeignClient;
 
@@ -15,6 +16,6 @@ import javax.validation.Valid;
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "appModule")
-public interface AppModuleApi extends BaseEntityApi<AppModuleDto> {
+public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi<AppModuleDto> {
 
 }

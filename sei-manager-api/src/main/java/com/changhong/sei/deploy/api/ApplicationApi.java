@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.api;
 
+import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.dto.ApplicationDto;
@@ -15,6 +16,6 @@ import java.util.List;
  * 实现功能: 应用API
  */
 @FeignClient(name = "sei-manager", path = "application")
-public interface ApplicationApi extends FindByPageApi<ApplicationDto> {
+public interface ApplicationApi extends BaseEntityApi<ApplicationDto>, FindByPageApi<ApplicationDto> {
 
 }

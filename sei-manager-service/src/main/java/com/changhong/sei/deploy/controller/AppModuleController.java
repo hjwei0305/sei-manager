@@ -1,9 +1,13 @@
 package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.controller.BaseEntityController;
+import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.AppModuleApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
+import com.changhong.sei.deploy.dto.ApplicationDto;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.service.AppModuleService;
 import io.swagger.annotations.Api;
@@ -33,4 +37,14 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
         return service;
     }
 
+    /**
+     * 分页查询业务实体
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public ResultData<PageResult<AppModuleDto>> findByPage(Search search) {
+        return convertToDtoPageResult(service.findByPage(search));
+    }
 }
