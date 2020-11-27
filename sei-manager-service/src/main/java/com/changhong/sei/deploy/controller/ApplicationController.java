@@ -57,7 +57,7 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<Void> createRequisition(ApplicationDto dto) {
-        return null;
+        return service.createRequisition(convertToEntity(dto));
     }
 
     /**
@@ -68,7 +68,7 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<Void> modifyRequisition(ApplicationDto dto) {
-        return null;
+        return service.modifyRequisition(convertToEntity(dto));
     }
 
     /**
@@ -78,6 +78,6 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<Void> deleteRequisition(String id) {
-        return null;
+        return service.deleteRequisition(id);
     }
 }

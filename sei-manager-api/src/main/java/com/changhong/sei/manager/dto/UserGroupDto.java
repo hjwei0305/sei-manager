@@ -22,11 +22,23 @@ public class UserGroupDto extends BaseEntityDto {
      */
     @NotBlank
     @Size(max = 50)
+    @ApiModelProperty(value = "代码(max = 50)", required = true)
+    private String code;
+    @NotBlank
+    @Size(max = 50)
     @ApiModelProperty(value = "名称(max = 50)", required = true)
     private String name;
     @Size(max = 100)
     @ApiModelProperty(value = "描述(max = 100)")
     private String description;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getName() {
         return name;

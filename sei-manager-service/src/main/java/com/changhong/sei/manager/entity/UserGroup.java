@@ -20,8 +20,13 @@ import java.io.Serializable;
 @Table(name = "sec_user_group")
 @DynamicInsert
 @DynamicUpdate
-public class UserGroup extends BaseEntity implements Serializable {
+public class UserGroup extends BaseEntity implements ICodeUnique, Serializable {
     private static final long serialVersionUID = -60933176202135691L;
+    /**
+     * 组名称
+     */
+    @Column(name = "code")
+    private String code;
     /**
      * 组名称
      */
@@ -42,6 +47,16 @@ public class UserGroup extends BaseEntity implements Serializable {
      */
     @Column(name = "update_time")
     private Long updateTime;
+
+    @Override
+    public String getCode() {
+        return code;
+    }
+
+    @Override
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getName() {
         return name;
