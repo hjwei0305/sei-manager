@@ -7,6 +7,7 @@ import com.changhong.sei.deploy.dto.ApplicationDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +46,7 @@ public interface ApplicationApi extends BaseEntityApi<ApplicationDto>, FindByPag
      * @param id 申请单id
      * @return 操作结果
      */
-    @PostMapping(path = "deleteRequisition/{id}")
+    @DeleteMapping(path = "deleteRequisition/{id}")
     @ApiOperation(value = "删除应用申请单", notes = "删除应用申请单")
     ResultData<Void> deleteRequisition(@PathVariable("id") String id);
 }

@@ -1,9 +1,8 @@
 package com.changhong.sei.deploy.entity;
 
-import com.changhong.sei.core.entity.BaseEntity;
+import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.deploy.dto.ApplicationType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.dto.OperationType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -18,10 +17,10 @@ import java.time.LocalDateTime;
  * @version 1.0.00  2020-11-26 19:04
  */
 @Entity
-@Table(name = "requisition_record")
+@Table(name = "requisition_order")
 @DynamicInsert
 @DynamicUpdate
-public class RequisitionRecord extends BaseEntity implements Serializable {
+public class RequisitionOrder extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 8488019354515570494L;
 
     /**
@@ -32,16 +31,16 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
     @Column(name = "relation_id")
     private String relationId;
     /**
-     * 任务号
-     * 用于需多人处理的事项
+     * 摘要
      */
-    @Column(name = "task_no")
-    private String taskNo;
+    @Column(name = "summary")
+    private String summary;
     /**
-     * 任务名称
+     * 申请类型
      */
-    @Column(name = "task_name")
-    private String taskName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "application_type")
+    private ApplicationType applicationType;
     /**
      * 申请人账号
      */
@@ -53,12 +52,6 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
     @Column(name = "applicant_user_name")
     private String applicantUserName;
     /**
-     * 申请类型
-     */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "application_type")
-    private ApplicationType applicationType;
-    /**
      * 申请时间
      */
     @Column(name = "application_time")
@@ -69,26 +62,6 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus = ApprovalStatus.initial;
-    /**
-     * 处理人账号
-     */
-    @Column(name = "handle_account")
-    private String handleAccount;
-    /**
-     * 处理人
-     */
-    @Column(name = "handle_user_name")
-    private String handleUserName;
-    /**
-     * 处理日志
-     */
-    @Column(name = "handle_log")
-    private String handleLog;
-    /**
-     * 处理时间
-     */
-    @Column(name = "handle_time")
-    private LocalDateTime handleTime;
 
     public String getRelationId() {
         return relationId;
@@ -98,20 +71,12 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
         this.relationId = relationId;
     }
 
-    public String getTaskNo() {
-        return taskNo;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setTaskNo(String taskNo) {
-        this.taskNo = taskNo;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public String getApplicantAccount() {
@@ -154,35 +119,4 @@ public class RequisitionRecord extends BaseEntity implements Serializable {
         this.approvalStatus = approvalStatus;
     }
 
-    public String getHandleAccount() {
-        return handleAccount;
-    }
-
-    public void setHandleAccount(String handleAccount) {
-        this.handleAccount = handleAccount;
-    }
-
-    public String getHandleUserName() {
-        return handleUserName;
-    }
-
-    public void setHandleUserName(String handleUserName) {
-        this.handleUserName = handleUserName;
-    }
-
-    public String getHandleLog() {
-        return handleLog;
-    }
-
-    public void setHandleLog(String handleLog) {
-        this.handleLog = handleLog;
-    }
-
-    public LocalDateTime getHandleTime() {
-        return handleTime;
-    }
-
-    public void setHandleTime(LocalDateTime handleTime) {
-        this.handleTime = handleTime;
-    }
 }

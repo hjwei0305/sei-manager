@@ -9,12 +9,12 @@ import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.ApplicationDao;
 import com.changhong.sei.deploy.dto.ApplicationType;
+import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.entity.Application;
-import com.changhong.sei.deploy.entity.RequisitionRecord;
-import com.changhong.sei.util.IdGenerator;
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -30,7 +30,7 @@ public class ApplicationService extends BaseEntityService<Application> {
     @Autowired
     private ApplicationDao dao;
     @Autowired
-    private RequisitionRecordService requisitionRecordService;
+    private RequisitionOrderService requisitionRecordService;
 
     @Override
     protected BaseEntityDao<Application> getDao() {
@@ -61,34 +61,31 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @param application 应用
      * @return 操作结果
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> createRequisition(Application application) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         application.setFrozen(Boolean.TRUE);
         // 保存应用
         OperateResultWithData<Application> resultWithData = this.save(application);
         if (resultWithData.successful()) {
-            RequisitionRecord requisitionRecord = new RequisitionRecord();
+            RequisitionOrder requisitionRecord = new RequisitionOrder();
             // 申请类型:应用申请
             requisitionRecord.setApplicationType(ApplicationType.APPLICATION);
             // 应用id
             requisitionRecord.setRelationId(application.getId());
-            // 任务号
-            requisitionRecord.setTaskNo(String.valueOf(IdGenerator.nextId()));
-            // 任务名称
-            requisitionRecord.setTaskName("申请");
             SessionUser sessionUser = ContextUtil.getSessionUser();
             // 申请人账号
             requisitionRecord.setApplicantAccount(sessionUser.getAccount());
             requisitionRecord.setApplicantUserName(sessionUser.getUserName());
             requisitionRecord.setApplicationTime(LocalDateTime.now());
-            // TODO 处理人
-            requisitionRecord.setHandleAccount("20045203");
-            requisitionRecord.setHandleUserName("马超");
+            // 审核状态:初始
+            requisitionRecord.setApprovalStatus(ApprovalStatus.initial);
 
-            OperateResultWithData<RequisitionRecord> result = requisitionRecordService.save(requisitionRecord);
+            ResultData<Void> result = requisitionRecordService.createRequisition(requisitionRecord);
             if (result.successful()) {
                 return ResultData.success();
             } else {
+                // TODO 事务回滚
                 return ResultData.fail(result.getMessage());
             }
         } else {
@@ -102,6 +99,7 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @param application 应用
      * @return 操作结果
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> modifyRequisition(Application application) {
         return null;
     }
@@ -111,6 +109,7 @@ public class ApplicationService extends BaseEntityService<Application> {
      *
      * @param id@return 操作结果
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> deleteRequisition(String id) {
         return null;
     }

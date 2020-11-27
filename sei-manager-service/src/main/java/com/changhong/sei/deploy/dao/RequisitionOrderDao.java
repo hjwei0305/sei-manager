@@ -1,16 +1,16 @@
 package com.changhong.sei.deploy.dao;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
-import com.changhong.sei.deploy.entity.RequisitionRecord;
+import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.stereotype.Repository;
 
 /**
- * 申请记录(RequisitionRecord)数据库访问类
+ * 申请记录(RequisitionOrder)数据库访问类
  *
  * @author sei
  * @since 2020-10-30 15:20:23
  */
 @Repository
-public interface RequisitionRecordDao extends BaseEntityDao<RequisitionRecord> {
+public interface RequisitionOrderDao extends BaseEntityDao<RequisitionOrder> {
 
 }
