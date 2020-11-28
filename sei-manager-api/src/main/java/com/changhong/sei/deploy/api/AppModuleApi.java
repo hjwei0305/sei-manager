@@ -6,8 +6,8 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.dto.AppModuleDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,7 +17,6 @@ import java.util.List;
  *
  * @author sei
  * @since 2020-11-26 14:45:24
- * TODO @FeignClient(name = "请修改为项目服务名")
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "appModule")
@@ -32,4 +31,34 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
     @GetMapping(path = "findAppId")
     @ApiOperation(value = "通过应用Id获取模块清单", notes = "通过应用Id获取模块清单")
     ResultData<List<AppModuleDto>> findAppId(@RequestParam("appId") String appId);
+
+    /**
+     * 创建应用模块申请单
+     *
+     * @param dto 业务实体DTO
+     * @return 操作结果
+     */
+    @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "创建应用模块申请单", notes = "创建应用模块申请单")
+    ResultData<Void> createRequisition(@RequestBody @Valid AppModuleDto dto);
+
+    /**
+     * 修改编辑应用模块申请单
+     *
+     * @param dto 业务实体DTO
+     * @return 操作结果
+     */
+    @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "修改编辑应用模块申请单", notes = "修改编辑应用模块申请单")
+    ResultData<Void> modifyRequisition(@RequestBody @Valid AppModuleDto dto);
+
+    /**
+     * 删除应用模块申请单
+     *
+     * @param id 申请单id
+     * @return 操作结果
+     */
+    @DeleteMapping(path = "deleteRequisition/{id}")
+    @ApiOperation(value = "删除应用模块申请单", notes = "删除应用模块申请单")
+    ResultData<Void> deleteRequisition(@PathVariable("id") String id);
 }

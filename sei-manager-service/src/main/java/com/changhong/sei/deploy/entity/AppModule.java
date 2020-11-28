@@ -22,6 +22,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class AppModule extends BaseAuditableEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
+    public static final String FIELD_APP_ID = "appId";
     /**
      * 所属应用id
      */

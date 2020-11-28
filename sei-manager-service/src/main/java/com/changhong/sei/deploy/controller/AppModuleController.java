@@ -7,6 +7,7 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.AppModuleApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
+import com.changhong.sei.deploy.dto.ApplicationDto;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
@@ -103,5 +104,37 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
             }
         }
         return ResultData.success(dtos);
+    }
+
+    /**
+     * 创建应用模块申请单
+     *
+     * @param dto 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> createRequisition(AppModuleDto dto) {
+        return service.createRequisition(convertToEntity(dto));
+    }
+
+    /**
+     * 修改编辑应用模块申请单
+     *
+     * @param dto 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> modifyRequisition(AppModuleDto dto) {
+        return service.modifyRequisition(convertToEntity(dto));
+    }
+
+    /**
+     * 删除应用模块申请单
+     *
+     * @param id@return 操作结果
+     */
+    @Override
+    public ResultData<Void> deleteRequisition(String id) {
+        return service.deleteRequisition(id);
     }
 }

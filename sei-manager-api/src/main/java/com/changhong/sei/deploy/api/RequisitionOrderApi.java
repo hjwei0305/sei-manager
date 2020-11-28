@@ -20,7 +20,7 @@ import javax.validation.Valid;
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "requisition")
-public interface RequisitionRecordApi {
+public interface RequisitionOrderApi {
 
     /**
      * 提交申请单

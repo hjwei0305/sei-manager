@@ -5,10 +5,10 @@ import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.entity.ApprovalRecord;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 /**
@@ -34,6 +35,15 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
         return dao;
     }
 
+    /**
+     * 根据关联id获取申请单
+     *
+     * @param relationId 关联id
+     * @return 申请单
+     */
+    public RequisitionOrder getByRelationId(String relationId) {
+        return this.findFirstByProperty(RequisitionOrder.FIELD_RELATIONID, relationId);
+    }
 
     /**
      * 创建申请单
@@ -54,9 +64,6 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
         requisitionRecord.setApplicationTime(LocalDateTime.now());
         // 审核状态:初始
         requisitionRecord.setApprovalStatus(ApprovalStatus.initial);
-        // TODO 处理人
-//            requisitionRecord.setHandleAccount("20045203");
-//            requisitionRecord.setHandleUserName("马超");
 
         OperateResultWithData<RequisitionOrder> result = this.save(requisitionRecord);
         if (result.successful()) {
@@ -77,23 +84,42 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     }
 
     /**
-     * 创建应用申请单
+     * 修改申请单
      *
-     * @param application 应用
+     * @param requisitionRecord 申请单
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> modifyRequisition(Application application) {
-        return null;
+    public ResultData<Void> modifyRequisition(RequisitionOrder requisitionRecord) {
+        OperateResultWithData<RequisitionOrder> result = this.save(requisitionRecord);
+        if (result.successful()) {
+            return ResultData.success();
+        } else {
+            return ResultData.fail(result.getMessage());
+        }
     }
 
     /**
-     * 创建应用申请单
+     * 删除申请单
      *
-     * @param id@return 操作结果
+     * @param relationId 关联id
+     * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> deleteRequisition(String id) {
-        return null;
+    public ResultData<Void> deleteRequisition(String relationId) {
+        RequisitionOrder requisition = this.findFirstByProperty(RequisitionOrder.FIELD_RELATIONID, relationId);
+        if (Objects.nonNull(requisition)) {
+            if (ApprovalStatus.initial == requisition.getApprovalStatus()) {
+                OperateResult result = this.delete(requisition.getId());
+                if (result.successful()) {
+                    return ResultData.success();
+                } else {
+                    return ResultData.fail(result.getMessage());
+                }
+            } else {
+                return ResultData.fail("申请单审核状态非初始状态,禁止删除!");
+            }
+        }
+        return ResultData.fail("申请单不存在!");
     }
 }

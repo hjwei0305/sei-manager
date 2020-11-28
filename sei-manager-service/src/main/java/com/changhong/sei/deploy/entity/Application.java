@@ -106,10 +106,12 @@ public class Application extends BaseAuditableEntity implements IFrozen, Seriali
         this.groupName = groupName;
     }
 
+    @Override
     public Boolean getFrozen() {
         return frozen;
     }
 
+    @Override
     public void setFrozen(Boolean frozen) {
         this.frozen = frozen;
     }

@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 public class RequisitionOrder extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 8488019354515570494L;
 
+    public static final String FIELD_RELATIONID = "relationId";
     /**
      * 关联id
      *

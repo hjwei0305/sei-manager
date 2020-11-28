@@ -1,7 +1,7 @@
 package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.deploy.api.RequisitionRecordApi;
+import com.changhong.sei.deploy.api.RequisitionOrderApi;
 import com.changhong.sei.deploy.dto.ApprovalCancelRequest;
 import com.changhong.sei.deploy.dto.ApprovalRejectRequest;
 import com.changhong.sei.deploy.dto.ApprovalSubmitRequest;
@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @RestController
 @Api(value = "RequisitionRecordApi", tags = "申请审核服务")
 @RequestMapping(path = "requisition", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class RequisitionOrderController implements RequisitionRecordApi {
+public class RequisitionOrderController implements RequisitionOrderApi {
     /**
      * 申请记录服务对象
      */
