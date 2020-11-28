@@ -114,7 +114,7 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<Void> createRequisition(AppModuleDto dto) {
-        return service.createRequisition(convertToEntity(dto));
+        return service.createRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
     }
 
     /**
@@ -125,7 +125,7 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<Void> modifyRequisition(AppModuleDto dto) {
-        return service.modifyRequisition(convertToEntity(dto));
+        return service.modifyRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
     }
 
     /**

@@ -43,11 +43,20 @@ public class ApprovalRecord extends BaseEntity implements Serializable {
     @Column(name = "application_type")
     private ApplicationType applicationType;
     /**
-     * 任务号
-     * 用于需多人处理的事项
+     * 流程实例id
+     */
+    @Column(name = "flow_instance_id")
+    private String flowInstanceId;
+    /**
+     * 流程类型名称
+     */
+    @Column(name = "flow_type_name")
+    private String flowTypeName;
+    /**
+     * 任务号(序号)
      */
     @Column(name = "task_no")
-    private String taskNo;
+    private Integer taskNo;
     /**
      * 任务名称
      */
@@ -98,11 +107,27 @@ public class ApprovalRecord extends BaseEntity implements Serializable {
         this.applicationType = applicationType;
     }
 
-    public String getTaskNo() {
+    public String getFlowTypeName() {
+        return flowTypeName;
+    }
+
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
+    }
+
+    public String getFlowInstanceId() {
+        return flowInstanceId;
+    }
+
+    public void setFlowInstanceId(String flowInstanceId) {
+        this.flowInstanceId = flowInstanceId;
+    }
+
+    public Integer getTaskNo() {
         return taskNo;
     }
 
-    public void setTaskNo(String taskNo) {
+    public void setTaskNo(Integer taskNo) {
         this.taskNo = taskNo;
     }
 

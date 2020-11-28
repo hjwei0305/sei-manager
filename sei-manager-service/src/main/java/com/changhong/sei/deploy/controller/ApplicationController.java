@@ -57,7 +57,7 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<Void> createRequisition(ApplicationDto dto) {
-        return service.createRequisition(convertToEntity(dto));
+        return service.createRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
     }
 
     /**
@@ -68,7 +68,7 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<Void> modifyRequisition(ApplicationDto dto) {
-        return service.modifyRequisition(convertToEntity(dto));
+        return service.modifyRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
     }
 
     /**

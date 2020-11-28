@@ -66,23 +66,25 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> createRequisition(Application application) {
+    public ResultData<Void> createRequisition(String flowTypeId, String flowTypeName, Application application) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         application.setFrozen(Boolean.TRUE);
         // 保存应用
         OperateResultWithData<Application> resultWithData = this.save(application);
         if (resultWithData.successful()) {
-            RequisitionOrder requisitionRecord = new RequisitionOrder();
+            RequisitionOrder requisitionOrder = new RequisitionOrder();
+            // 指定流程类型
+            requisitionOrder.setFlowTypeId(flowTypeId);
             // 申请类型:应用申请
-            requisitionRecord.setApplicationType(ApplicationType.APPLICATION);
+            requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
             // 应用id
-            requisitionRecord.setRelationId(application.getId());
+            requisitionOrder.setRelationId(application.getId());
             // 申请摘要
-            requisitionRecord.setSummary(application.getGroupName().concat("-")
+            requisitionOrder.setSummary(application.getGroupName().concat("-")
                     .concat(application.getName())
                     .concat("[").concat(application.getCode()).concat("]"));
 
-            ResultData<Void> result = requisitionOrderService.createRequisition(requisitionRecord);
+            ResultData<Void> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
                 return ResultData.success();
             } else {
@@ -102,7 +104,7 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> modifyRequisition(Application application) {
+    public ResultData<Void> modifyRequisition(String flowTypeId, String flowTypeName, Application application) {
         Application entity = this.findOne(application.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
@@ -122,29 +124,31 @@ public class ApplicationService extends BaseEntityService<Application> {
         // 保存应用
         OperateResultWithData<Application> resultWithData = this.save(entity);
         if (resultWithData.successful()) {
-            RequisitionOrder requisitionRecord = requisitionOrderService.getByRelationId(entity.getId());
-            if (Objects.isNull(requisitionRecord)) {
+            RequisitionOrder requisitionOrder = requisitionOrderService.getByRelationId(entity.getId());
+            if (Objects.isNull(requisitionOrder)) {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return ResultData.fail("申请单不存在!");
             }
             // 检查申请单是否已审核
-            if (ApprovalStatus.initial != requisitionRecord.getApprovalStatus()) {
+            if (ApprovalStatus.initial != requisitionOrder.getApprovalStatus()) {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return ResultData.fail("申请单不存在!");
             }
 
+            // 类型类型
+            requisitionOrder.setFlowTypeId(flowTypeId);
             // 申请类型:应用申请
-            requisitionRecord.setApplicationType(ApplicationType.APPLICATION);
+            requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
             // 应用id
-            requisitionRecord.setRelationId(entity.getId());
+            requisitionOrder.setRelationId(entity.getId());
             // 申请摘要
-            requisitionRecord.setSummary(entity.getGroupName().concat("-")
+            requisitionOrder.setSummary(entity.getGroupName().concat("-")
                     .concat(entity.getName())
                     .concat("[").concat(entity.getCode()).concat("]"));
 
-            ResultData<Void> result = requisitionOrderService.createRequisition(requisitionRecord);
+            ResultData<Void> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
                 return ResultData.success();
             } else {

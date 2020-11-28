@@ -27,6 +27,16 @@ public class RequisitionRecordDto extends BaseEntityDto {
     @ApiModelProperty(value = "关联id")
     private String relationId;
     /**
+     * 流程实例id
+     */
+    @ApiModelProperty(value = "流程实例id")
+    private String flowInstanceId;
+    /**
+     * 流程类型名称
+     */
+    @ApiModelProperty(value = "流程类型名称")
+    private String flowTypeName;
+    /**
      * 任务号
      * 用于需多人处理的事项
      */
@@ -93,6 +103,22 @@ public class RequisitionRecordDto extends BaseEntityDto {
 
     public void setRelationId(String relationId) {
         this.relationId = relationId;
+    }
+
+    public String getFlowInstanceId() {
+        return flowInstanceId;
+    }
+
+    public void setFlowInstanceId(String flowInstanceId) {
+        this.flowInstanceId = flowInstanceId;
+    }
+
+    public String getFlowTypeName() {
+        return flowTypeName;
+    }
+
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
     }
 
     public String getTaskNo() {

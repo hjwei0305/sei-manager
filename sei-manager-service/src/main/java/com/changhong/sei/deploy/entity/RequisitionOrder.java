@@ -23,7 +23,8 @@ import java.time.LocalDateTime;
 public class RequisitionOrder extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 8488019354515570494L;
 
-    public static final String FIELD_RELATIONID = "relationId";
+    public static final String FIELD_RELATION_ID = "relationId";
+    public static final String FIELD_FLOW_INSTANCE_ID = "flowInstanceId";
     /**
      * 关联id
      *
@@ -63,6 +64,28 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus = ApprovalStatus.initial;
+
+    /**
+     * 流程类型id
+     */
+    @Column(name = "flow_type_id")
+    private String flowTypeId;
+    /**
+     * 流程类型名称
+     */
+    @Column(name = "flow_type_name")
+    private String flowTypeName;
+    /**
+     * 流程版本
+     */
+    @Column(name = "flow_version")
+    private Long flowVersion;
+    /**
+     * 版本乐观锁
+     */
+    @Version
+    @Column(name = "version_")
+    private Long version = 0L;
 
     public String getRelationId() {
         return relationId;
@@ -120,4 +143,35 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
         this.approvalStatus = approvalStatus;
     }
 
+    public String getFlowTypeId() {
+        return flowTypeId;
+    }
+
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
+    }
+
+    public Long getFlowVersion() {
+        return flowVersion;
+    }
+
+    public void setFlowVersion(Long flowVersion) {
+        this.flowVersion = flowVersion;
+    }
+
+    public String getFlowTypeName() {
+        return flowTypeName;
+    }
+
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 }

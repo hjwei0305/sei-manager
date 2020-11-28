@@ -38,7 +38,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<Void> submit(@Valid ApprovalSubmitRequest submitRequest) {
-        return ResultData.success();
+        return service.submit(submitRequest);
     }
 
     /**
@@ -49,7 +49,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<Void> reject(@Valid ApprovalRejectRequest rejectRequest) {
-        return ResultData.success();
+        return service.reject(rejectRequest);
     }
 
     /**
@@ -60,6 +60,6 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<Void> cancel(@Valid ApprovalCancelRequest cancelRequest) {
-        return ResultData.success();
+        return service.cancel(cancelRequest);
     }
 }

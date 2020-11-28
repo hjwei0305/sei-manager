@@ -11,5 +11,28 @@ import java.io.Serializable;
 public class ApprovalSubmitRequest implements Serializable {
     private static final long serialVersionUID = -5619138703809373270L;
 
+    /**
+     * 申请单id
+     */
+    private String requisitionId;
+    /**
+     * 处理日志
+     */
+    private String handleLog;
 
+    public String getRequisitionId() {
+        return requisitionId;
+    }
+
+    public void setRequisitionId(String requisitionId) {
+        this.requisitionId = requisitionId;
+    }
+
+    public String getHandleLog() {
+        return handleLog;
+    }
+
+    public void setHandleLog(String handleLog) {
+        this.handleLog = handleLog;
+    }
 }
