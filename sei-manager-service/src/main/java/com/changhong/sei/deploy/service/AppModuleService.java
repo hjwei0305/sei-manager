@@ -65,15 +65,13 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> createRequisition(String flowTypeId, String flowTypeName, AppModule module) {
+    public ResultData<Void> createRequisition(AppModule module) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         module.setFrozen(Boolean.TRUE);
         // 保存应用模块
         OperateResultWithData<AppModule> resultWithData = this.save(module);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
-            // 指定流程类型
-            requisitionOrder.setFlowTypeId(flowTypeId);
             // 申请类型:应用模块申请
             requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
             // 应用模块id
@@ -101,7 +99,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> modifyRequisition(String flowTypeId, String flowTypeName, AppModule appModule) {
+    public ResultData<Void> modifyRequisition(AppModule appModule) {
         AppModule module = this.findOne(appModule.getId());
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块不存在!");
@@ -133,8 +131,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 return ResultData.fail("申请单不存在!");
             }
 
-            // 类型类型
-            requisitionOrder.setFlowTypeId(flowTypeId);
             // 申请类型:应用模块申请
             requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
             // 应用模块id

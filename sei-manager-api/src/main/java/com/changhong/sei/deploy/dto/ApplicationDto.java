@@ -34,16 +34,6 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
      */
     @ApiModelProperty(notes = "所属组名称")
     private String groupName;
-    /**
-     * 流程类型id
-     */
-    @ApiModelProperty(notes = "流程类型id")
-    private String flowTypeId;
-    /**
-     * 流程类型名称
-     */
-    @ApiModelProperty(notes = "流程类型名称")
-    private String flowTypeName;
 
     public String getCode() {
         return code;
@@ -91,21 +81,5 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
-    }
-
-    public String getFlowTypeId() {
-        return flowTypeId;
-    }
-
-    public void setFlowTypeId(String flowTypeId) {
-        this.flowTypeId = flowTypeId;
-    }
-
-    public String getFlowTypeName() {
-        return flowTypeName;
-    }
-
-    public void setFlowTypeName(String flowTypeName) {
-        this.flowTypeName = flowTypeName;
     }
 }

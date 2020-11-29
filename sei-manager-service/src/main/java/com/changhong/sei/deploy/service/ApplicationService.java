@@ -66,15 +66,13 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> createRequisition(String flowTypeId, String flowTypeName, Application application) {
+    public ResultData<Void> createRequisition(Application application) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         application.setFrozen(Boolean.TRUE);
         // 保存应用
         OperateResultWithData<Application> resultWithData = this.save(application);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
-            // 指定流程类型
-            requisitionOrder.setFlowTypeId(flowTypeId);
             // 申请类型:应用申请
             requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
             // 应用id
@@ -104,7 +102,7 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> modifyRequisition(String flowTypeId, String flowTypeName, Application application) {
+    public ResultData<Void> modifyRequisition(Application application) {
         Application entity = this.findOne(application.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
@@ -137,8 +135,6 @@ public class ApplicationService extends BaseEntityService<Application> {
                 return ResultData.fail("申请单不存在!");
             }
 
-            // 类型类型
-            requisitionOrder.setFlowTypeId(flowTypeId);
             // 申请类型:应用申请
             requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
             // 应用id

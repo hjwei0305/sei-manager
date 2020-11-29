@@ -1,100 +1,139 @@
 package com.changhong.sei.deploy.entity;
 
-import com.changhong.sei.core.dto.IRank;
 import com.changhong.sei.core.entity.BaseEntity;
+import com.changhong.sei.deploy.dto.ApplicationType;
+import com.changhong.sei.deploy.dto.ApprovalStatus;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
- * 实现功能：流程实例
+ * 实现功能：流程任务实例
  *
  * @author 马超(Vision.Mac)
- * @version 1.0.00  2020-11-28 23:11
+ * @version 1.0.00  2020-11-26 19:04
  */
 @Entity
 @Table(name = "flow_task_instance")
 @DynamicInsert
 @DynamicUpdate
-public class FlowTaskInstance extends BaseEntity implements IRank, Serializable {
-    private static final long serialVersionUID = -64497955636689211L;
-    public static final String FIELD_TYPE_ID = "typeId";
-    public static final String FIELD_VERSION = "version";
+public class FlowTaskInstance extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = 8488019354515570494L;
+
     /**
-     * 流程定义版本
+     * 申请单id
      */
-    @Column(name = "version_")
-    private Long version = 0L;
+    @Column(name = "order_id")
+    private String orderId;
+
     /**
-     * 流程类型
+     * 关联id
+     *
+     * @see ApplicationType
      */
-    @Column(name = "type_id", nullable = false)
-    private String typeId;
+    @Column(name = "relation_id")
+    private String relationId;
     /**
-     * 流程类型
+     * 申请类型
      */
-    @Column(name = "type_name", nullable = false)
-    private String typeName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "application_type")
+    private ApplicationType applicationType;
     /**
-     * 流程任务
+     * 流程实例id
      */
-    @Column(name = "task_id", nullable = false)
-    private String taskId;
+    @Column(name = "flow_instance_id")
+    private String flowInstanceId;
     /**
-     * 流程任务
+     * 流程类型名称
      */
-    @Column(name = "task_name", nullable = false)
+    @Column(name = "flow_type_name")
+    private String flowTypeName;
+    /**
+     * 任务号(序号)
+     */
+    @Column(name = "task_no")
+    private Integer taskNo;
+    /**
+     * 任务名称
+     */
+    @Column(name = "task_name")
     private String taskName;
     /**
-     * 排序
+     * 发起人账号
      */
-    @Column(name = "rank")
-    private Integer rank = 0;
+    @Column(name = "initiator_account")
+    private String initiatorAccount;
     /**
-     * 处理人账号
+     * 发起人
      */
-    @Column(name = "handle_account")
-    private String handleAccount;
+    @Column(name = "initiator_user_name")
+    private String initiatorUserName;
     /**
-     * 处理人
+     * 发起时间
      */
-    @Column(name = "handle_user_name")
-    private String handleUserName;
+    @Column(name = "init_time")
+    private LocalDateTime initTime;
+    /**
+     * 待处理人账号
+     */
+    @Column(name = "execute_account")
+    private String executeAccount;
+    /**
+     * 待处理人
+     */
+    @Column(name = "execute_user_name")
+    private String executeUserName;
 
-    public Long getVersion() {
-        return version;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setVersion(Long version) {
-        this.version = version;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
-    public String getTypeId() {
-        return typeId;
+    public String getRelationId() {
+        return relationId;
     }
 
-    public void setTypeId(String typeId) {
-        this.typeId = typeId;
+    public void setRelationId(String relationId) {
+        this.relationId = relationId;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public ApplicationType getApplicationType() {
+        return applicationType;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
+    public void setApplicationType(ApplicationType applicationType) {
+        this.applicationType = applicationType;
     }
 
-    public String getTaskId() {
-        return taskId;
+    public String getFlowTypeName() {
+        return flowTypeName;
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
+    }
+
+    public String getFlowInstanceId() {
+        return flowInstanceId;
+    }
+
+    public void setFlowInstanceId(String flowInstanceId) {
+        this.flowInstanceId = flowInstanceId;
+    }
+
+    public Integer getTaskNo() {
+        return taskNo;
+    }
+
+    public void setTaskNo(Integer taskNo) {
+        this.taskNo = taskNo;
     }
 
     public String getTaskName() {
@@ -105,28 +144,43 @@ public class FlowTaskInstance extends BaseEntity implements IRank, Serializable 
         this.taskName = taskName;
     }
 
-    @Override
-    public Integer getRank() {
-        return rank;
+    public String getInitiatorAccount() {
+        return initiatorAccount;
     }
 
-    public void setRank(Integer rank) {
-        this.rank = rank;
+    public void setInitiatorAccount(String initiatorAccount) {
+        this.initiatorAccount = initiatorAccount;
     }
 
-    public String getHandleAccount() {
-        return handleAccount;
+    public String getInitiatorUserName() {
+        return initiatorUserName;
     }
 
-    public void setHandleAccount(String handleAccount) {
-        this.handleAccount = handleAccount;
+    public void setInitiatorUserName(String initiatorUserName) {
+        this.initiatorUserName = initiatorUserName;
     }
 
-    public String getHandleUserName() {
-        return handleUserName;
+    public LocalDateTime getInitTime() {
+        return initTime;
     }
 
-    public void setHandleUserName(String handleUserName) {
-        this.handleUserName = handleUserName;
+    public void setInitTime(LocalDateTime initTime) {
+        this.initTime = initTime;
+    }
+
+    public String getExecuteAccount() {
+        return executeAccount;
+    }
+
+    public void setExecuteAccount(String executeAccount) {
+        this.executeAccount = executeAccount;
+    }
+
+    public String getExecuteUserName() {
+        return executeUserName;
+    }
+
+    public void setExecuteUserName(String executeUserName) {
+        this.executeUserName = executeUserName;
     }
 }

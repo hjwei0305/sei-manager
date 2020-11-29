@@ -1,7 +1,6 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.dto.IRank;
-import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.RelationEntity;
 import org.hibernate.annotations.DynamicInsert;

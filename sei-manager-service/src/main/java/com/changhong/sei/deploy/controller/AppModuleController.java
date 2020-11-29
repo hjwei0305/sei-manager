@@ -7,7 +7,6 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.AppModuleApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
-import com.changhong.sei.deploy.dto.ApplicationDto;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
@@ -114,7 +113,7 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<Void> createRequisition(AppModuleDto dto) {
-        return service.createRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
+        return service.createRequisition(convertToEntity(dto));
     }
 
     /**
@@ -125,7 +124,7 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<Void> modifyRequisition(AppModuleDto dto) {
-        return service.modifyRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
+        return service.modifyRequisition(convertToEntity(dto));
     }
 
     /**

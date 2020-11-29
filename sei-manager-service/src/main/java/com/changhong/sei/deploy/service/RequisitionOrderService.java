@@ -12,12 +12,13 @@ import com.changhong.sei.deploy.dto.ApprovalCancelRequest;
 import com.changhong.sei.deploy.dto.ApprovalRejectRequest;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.dto.ApprovalSubmitRequest;
-import com.changhong.sei.deploy.entity.ApprovalRecord;
 import com.changhong.sei.deploy.entity.FlowTaskInstance;
+import com.changhong.sei.deploy.entity.FlowPublished;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -33,7 +34,8 @@ import java.util.Objects;
 @Service("requisitionOrderService")
 public class RequisitionOrderService extends BaseEntityService<RequisitionOrder> {
     @Autowired
-    private RequisitionOrderDao dao;@Autowired
+    private RequisitionOrderDao dao;
+    @Autowired
     private FlowTaskInstanceService flowTaskInstanceService;
 
     @Override
@@ -123,37 +125,25 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> submit(@Valid ApprovalSubmitRequest submitRequest) {
+        // 获取申请单
         RequisitionOrder requisition = this.findOne(submitRequest.getRequisitionId());
         if (Objects.isNull(requisition)) {
             return ResultData.fail("申请单不存在!");
         }
-        ApprovalRecord record = new ApprovalRecord();
-        record.setOrderId(requisition.getId());
-        record.setRelationId(requisition.getRelationId());
-        record.setApplicationType(requisition.getApplicationType());
 
-        // 通过流程类型获取最新的流程实例版本
-        Long version = flowTaskInstanceService.getLatestVersion(requisition.getFlowTypeId());
-        requisition.setFlowVersion(version);
-
-        // 通过流程类型,实例版本及任务号,获取下一个任务
-        FlowTaskInstance taskInstance = flowTaskInstanceService.getNextTask(requisition.getFlowTypeId(), version, 0);
-
-        record.setTaskNo(taskInstance.getRank());
-        record.setTaskName(taskInstance.getTaskName());
-        // 处理人
-        record.setHandleAccount(taskInstance.getHandleAccount());
-        record.setHandleUserName(taskInstance.getHandleUserName());
-        // 处理日志
-        record.setHandleLog(submitRequest.getHandleLog());
-        // 处理时间
-        record.setHandleTime(LocalDateTime.now());
-
-        // 更新申请单状态为审核中
-        requisition.setApprovalStatus(ApprovalStatus.processing);
-        this.save(requisition);
-
-        return ResultData.success();
+        ResultData<RequisitionOrder> result = flowTaskInstanceService.submit(submitRequest.getFlowTypeId(), submitRequest.getFlowTypeName(), requisition);
+        if (result.successful()) {
+            OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
+            if (resultWithData.successful()) {
+                return ResultData.success();
+            } else {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultData.fail(resultWithData.getMessage());
+            }
+        } else {
+            return ResultData.fail(result.getMessage());
+        }
     }
 
     /**

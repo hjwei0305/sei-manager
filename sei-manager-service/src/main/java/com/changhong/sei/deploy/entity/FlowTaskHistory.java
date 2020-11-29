@@ -2,7 +2,6 @@ package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.deploy.dto.ApplicationType;
-import com.changhong.sei.deploy.dto.ApprovalStatus;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -11,16 +10,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 实现功能： 审核记录
+ * 实现功能： 任务执行历史
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-26 19:04
  */
 @Entity
-@Table(name = "approval_record")
+@Table(name = "flow_task_history")
 @DynamicInsert
 @DynamicUpdate
-public class ApprovalRecord extends BaseEntity implements Serializable {
+public class FlowTaskHistory extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 8488019354515570494L;
 
     /**
@@ -63,25 +62,56 @@ public class ApprovalRecord extends BaseEntity implements Serializable {
     @Column(name = "task_name")
     private String taskName;
     /**
+     * 发起人账号
+     */
+    @Column(name = "initiator_account")
+    private String initiatorAccount;
+    /**
+     * 发起人
+     */
+    @Column(name = "initiator_user_name")
+    private String initiatorUserName;
+    /**
+     * 发起时间
+     */
+    @Column(name = "init_time")
+    private LocalDateTime initTime;
+    /**
      * 处理人账号
      */
-    @Column(name = "handle_account")
-    private String handleAccount;
+    @Column(name = "execute_account")
+    private String executeAccount;
     /**
      * 处理人
      */
-    @Column(name = "handle_user_name")
-    private String handleUserName;
+    @Column(name = "execute_user_name")
+    private String executeUserName;
     /**
-     * 处理日志
+     * 处理结果
      */
-    @Column(name = "handle_log")
-    private String handleLog;
+    @Column(name = "result")
+    private String result;
     /**
      * 处理时间
      */
-    @Column(name = "handle_time")
-    private LocalDateTime handleTime;
+    @Column(name = "execute_time")
+    private LocalDateTime executeTime;
+
+    public FlowTaskHistory() {
+    }
+
+    public FlowTaskHistory(FlowTaskInstance instance) {
+        this.orderId = instance.getOrderId();
+        this.relationId = instance.getRelationId();
+        this.applicationType = instance.getApplicationType();
+        this.flowInstanceId = instance.getFlowInstanceId();
+        this.flowTypeName = instance.getFlowTypeName();
+        this.taskNo = instance.getTaskNo();
+        this.taskName = instance.getTaskName();
+        this.initiatorAccount = instance.getInitiatorAccount();
+        this.initiatorUserName = instance.getInitiatorUserName();
+        this.initTime = instance.getInitTime();
+    }
 
     public String getOrderId() {
         return orderId;
@@ -139,35 +169,59 @@ public class ApprovalRecord extends BaseEntity implements Serializable {
         this.taskName = taskName;
     }
 
-    public String getHandleAccount() {
-        return handleAccount;
+    public String getInitiatorAccount() {
+        return initiatorAccount;
     }
 
-    public void setHandleAccount(String handleAccount) {
-        this.handleAccount = handleAccount;
+    public void setInitiatorAccount(String initiatorAccount) {
+        this.initiatorAccount = initiatorAccount;
     }
 
-    public String getHandleUserName() {
-        return handleUserName;
+    public String getInitiatorUserName() {
+        return initiatorUserName;
     }
 
-    public void setHandleUserName(String handleUserName) {
-        this.handleUserName = handleUserName;
+    public void setInitiatorUserName(String initiatorUserName) {
+        this.initiatorUserName = initiatorUserName;
     }
 
-    public String getHandleLog() {
-        return handleLog;
+    public LocalDateTime getInitTime() {
+        return initTime;
     }
 
-    public void setHandleLog(String handleLog) {
-        this.handleLog = handleLog;
+    public void setInitTime(LocalDateTime initTime) {
+        this.initTime = initTime;
     }
 
-    public LocalDateTime getHandleTime() {
-        return handleTime;
+    public String getExecuteAccount() {
+        return executeAccount;
     }
 
-    public void setHandleTime(LocalDateTime handleTime) {
-        this.handleTime = handleTime;
+    public void setExecuteAccount(String executeAccount) {
+        this.executeAccount = executeAccount;
+    }
+
+    public String getExecuteUserName() {
+        return executeUserName;
+    }
+
+    public void setExecuteUserName(String executeUserName) {
+        this.executeUserName = executeUserName;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public LocalDateTime getExecuteTime() {
+        return executeTime;
+    }
+
+    public void setExecuteTime(LocalDateTime executeTime) {
+        this.executeTime = executeTime;
     }
 }

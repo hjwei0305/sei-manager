@@ -63,16 +63,6 @@ public class AppModuleDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "冻结")
     private Boolean frozen;
-    /**
-     * 流程类型id
-     */
-    @ApiModelProperty(notes = "流程类型id")
-    private String flowTypeId;
-    /**
-     * 流程类型名称
-     */
-    @ApiModelProperty(notes = "流程类型名称")
-    private String flowTypeName;
 
     public String getAppId() {
         return appId;
@@ -154,19 +144,4 @@ public class AppModuleDto extends BaseEntityDto {
         this.frozen = frozen;
     }
 
-    public String getFlowTypeId() {
-        return flowTypeId;
-    }
-
-    public void setFlowTypeId(String flowTypeId) {
-        this.flowTypeId = flowTypeId;
-    }
-
-    public String getFlowTypeName() {
-        return flowTypeName;
-    }
-
-    public void setFlowTypeName(String flowTypeName) {
-        this.flowTypeName = flowTypeName;
-    }
 }

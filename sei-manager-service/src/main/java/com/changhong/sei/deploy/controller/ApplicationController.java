@@ -15,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
 /**
  * 应用服务(ApplicationService)控制类
  *
@@ -57,7 +55,7 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<Void> createRequisition(ApplicationDto dto) {
-        return service.createRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
+        return service.createRequisition(convertToEntity(dto));
     }
 
     /**
@@ -68,7 +66,7 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<Void> modifyRequisition(ApplicationDto dto) {
-        return service.modifyRequisition(dto.getFlowTypeId(), dto.getFlowTypeName(), convertToEntity(dto));
+        return service.modifyRequisition(convertToEntity(dto));
     }
 
     /**
