@@ -29,7 +29,7 @@ public interface ApplicationApi extends BaseEntityApi<ApplicationDto>, FindByPag
      * @param search 查询参数
      * @return 分页查询结果
      */
-    @PostMapping(path = "findByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "分页查询应用申请单", notes = "分页查询应用申请单")
     ResultData<PageResult<ApplicationRequisitionDto>> findRequisitionByPage(@RequestBody Search search);
 
