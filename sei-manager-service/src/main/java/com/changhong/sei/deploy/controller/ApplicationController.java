@@ -7,13 +7,19 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.ApplicationApi;
 import com.changhong.sei.deploy.dto.ApplicationDto;
+import com.changhong.sei.deploy.dto.ApplicationRequisitionDto;
 import com.changhong.sei.deploy.entity.Application;
+import com.changhong.sei.deploy.entity.ApplicationRequisition;
 import com.changhong.sei.deploy.service.ApplicationService;
 import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 应用服务(ApplicationService)控制类
@@ -45,6 +51,24 @@ public class ApplicationController extends BaseEntityController<Application, App
     @Override
     public ResultData<PageResult<ApplicationDto>> findByPage(Search search) {
         return convertToDtoPageResult(service.findByPage(search));
+    }
+
+    /**
+     * 分页查询应用申请单
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public ResultData<PageResult<ApplicationRequisitionDto>> findRequisitionByPage(Search search) {
+        PageResult<ApplicationRequisition> pageResult = service.findRequisitionByPage(search);
+        PageResult<ApplicationRequisitionDto> result = new PageResult<>(pageResult);
+        List<ApplicationRequisition> requisitions = pageResult.getRows();
+        if (CollectionUtils.isNotEmpty(requisitions)) {
+            List<ApplicationRequisitionDto> dtos = requisitions.stream().map(e -> dtoModelMapper.map(e, ApplicationRequisitionDto.class)).collect(Collectors.toList());
+            result.setRows(dtos);
+        }
+        return ResultData.success(result);
     }
 
     /**

@@ -6,10 +6,9 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.AppModuleDao;
-import com.changhong.sei.deploy.dto.ApplicationType;
+import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.entity.AppModule;
-import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,7 +72,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用模块申请
-            requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
+            requisitionOrder.setApplicationType(ApplyType.APPLICATION);
             // 应用模块id
             requisitionOrder.setRelationId(module.getId());
             // 申请摘要
@@ -132,7 +131,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             }
 
             // 申请类型:应用模块申请
-            requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
+            requisitionOrder.setApplicationType(ApplyType.APPLICATION);
             // 应用模块id
             requisitionOrder.setRelationId(module.getId());
             // 申请摘要

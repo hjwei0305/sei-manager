@@ -1,8 +1,7 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.deploy.dto.ApplicationType;
-import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.ApplyType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -32,7 +31,7 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
     /**
      * 关联id
      *
-     * @see ApplicationType
+     * @see ApplyType
      */
     @Column(name = "relation_id")
     private String relationId;
@@ -41,7 +40,7 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "application_type")
-    private ApplicationType applicationType;
+    private ApplyType applicationType;
     /**
      * 流程实例id
      */
@@ -104,11 +103,11 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
         this.relationId = relationId;
     }
 
-    public ApplicationType getApplicationType() {
+    public ApplyType getApplicationType() {
         return applicationType;
     }
 
-    public void setApplicationType(ApplicationType applicationType) {
+    public void setApplicationType(ApplyType applicationType) {
         this.applicationType = applicationType;
     }
 

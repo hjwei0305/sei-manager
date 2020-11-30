@@ -10,19 +10,19 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 
 /**
- * 申请记录(RequisitionRecord)DTO类
+ * 申请记录(Requisition)DTO类
  *
  * @author sei
  * @since 2020-11-26 14:45:23
  */
 @ApiModel(description = "申请记录DTO")
-public class RequisitionRecordDto extends BaseEntityDto {
+public class RequisitionDto extends BaseEntityDto {
     private static final long serialVersionUID = -38024625578859016L;
 
     /**
      * 关联id
      *
-     * @see ApplicationType
+     * @see ApplyType
      */
     @ApiModelProperty(value = "关联id")
     private String relationId;
@@ -62,7 +62,7 @@ public class RequisitionRecordDto extends BaseEntityDto {
      */
     @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "申请类型")
-    private ApplicationType applicationType;
+    private ApplyType applyType;
     /**
      * 申请时间
      */
@@ -75,27 +75,27 @@ public class RequisitionRecordDto extends BaseEntityDto {
     @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "审核状态")
     private ApprovalStatus approvalStatus = ApprovalStatus.initial;
-    /**
-     * 处理人账号
-     */
-    @ApiModelProperty(value = "处理人账号")
-    private String handleAccount;
-    /**
-     * 处理人
-     */
-    @ApiModelProperty(value = "处理人")
-    private String handleUserName;
-    /**
-     * 处理日志
-     */
-    @ApiModelProperty(value = "处理日志")
-    private String handleLog;
-    /**
-     * 处理时间
-     */
-    @ApiModelProperty(value = "处理时间", example = "2020-01-14 22:18:48")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime handleTime;
+//    /**
+//     * 处理人账号
+//     */
+//    @ApiModelProperty(value = "处理人账号")
+//    private String handleAccount;
+//    /**
+//     * 处理人
+//     */
+//    @ApiModelProperty(value = "处理人")
+//    private String handleUserName;
+//    /**
+//     * 处理日志
+//     */
+//    @ApiModelProperty(value = "处理日志")
+//    private String handleLog;
+//    /**
+//     * 处理时间
+//     */
+//    @ApiModelProperty(value = "处理时间", example = "2020-01-14 22:18:48")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    private LocalDateTime handleTime;
 
     public String getRelationId() {
         return relationId;
@@ -153,12 +153,12 @@ public class RequisitionRecordDto extends BaseEntityDto {
         this.applicantUserName = applicantUserName;
     }
 
-    public ApplicationType getApplicationType() {
-        return applicationType;
+    public ApplyType getApplyType() {
+        return applyType;
     }
 
-    public void setApplicationType(ApplicationType applicationType) {
-        this.applicationType = applicationType;
+    public void setApplyType(ApplyType applyType) {
+        this.applyType = applyType;
     }
 
     public LocalDateTime getApplicationTime() {
@@ -177,35 +177,4 @@ public class RequisitionRecordDto extends BaseEntityDto {
         this.approvalStatus = approvalStatus;
     }
 
-    public String getHandleAccount() {
-        return handleAccount;
-    }
-
-    public void setHandleAccount(String handleAccount) {
-        this.handleAccount = handleAccount;
-    }
-
-    public String getHandleUserName() {
-        return handleUserName;
-    }
-
-    public void setHandleUserName(String handleUserName) {
-        this.handleUserName = handleUserName;
-    }
-
-    public String getHandleLog() {
-        return handleLog;
-    }
-
-    public void setHandleLog(String handleLog) {
-        this.handleLog = handleLog;
-    }
-
-    public LocalDateTime getHandleTime() {
-        return handleTime;
-    }
-
-    public void setHandleTime(LocalDateTime handleTime) {
-        this.handleTime = handleTime;
-    }
 }

@@ -1,7 +1,7 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
-import com.changhong.sei.deploy.dto.ApplicationType;
+import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -28,7 +28,7 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
     /**
      * 关联id
      *
-     * @see ApplicationType
+     * @see ApplyType
      */
     @Column(name = "relation_id")
     private String relationId;
@@ -42,7 +42,7 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "application_type")
-    private ApplicationType applicationType;
+    private ApplyType applicationType;
     /**
      * 申请人账号
      */
@@ -119,11 +119,11 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
         this.applicantUserName = applicantUserName;
     }
 
-    public ApplicationType getApplicationType() {
+    public ApplyType getApplicationType() {
         return applicationType;
     }
 
-    public void setApplicationType(ApplicationType applicationType) {
+    public void setApplicationType(ApplyType applicationType) {
         this.applicationType = applicationType;
     }
 

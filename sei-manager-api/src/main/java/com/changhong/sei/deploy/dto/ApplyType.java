@@ -1,12 +1,12 @@
 package com.changhong.sei.deploy.dto;
 
 /**
- * 实现功能：
+ * 实现功能：申请单类型
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-26 18:43
  */
-public enum ApplicationType {
+public enum ApplyType {
     /**
      * 应用(新建应用申请)
      */

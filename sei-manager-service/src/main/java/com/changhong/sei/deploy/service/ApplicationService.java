@@ -2,14 +2,19 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.ApplicationDao;
-import com.changhong.sei.deploy.dto.ApplicationType;
+import com.changhong.sei.deploy.dao.ApplicationRequisitionDao;
+import com.changhong.sei.deploy.dto.ApplicationRequisitionDto;
+import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.Application;
+import com.changhong.sei.deploy.entity.ApplicationRequisition;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,8 @@ import java.util.Objects;
 public class ApplicationService extends BaseEntityService<Application> {
     @Autowired
     private ApplicationDao dao;
+    @Autowired
+    private ApplicationRequisitionDao applicationRequisitionDao;
     @Autowired
     private AppModuleService appModuleService;
     @Autowired
@@ -60,6 +67,16 @@ public class ApplicationService extends BaseEntityService<Application> {
     }
 
     /**
+     * 分页查询应用申请单
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    public PageResult<ApplicationRequisition> findRequisitionByPage(Search search) {
+        return applicationRequisitionDao.findByPage(search);
+    }
+
+    /**
      * 创建应用申请单
      *
      * @param application 应用
@@ -74,7 +91,7 @@ public class ApplicationService extends BaseEntityService<Application> {
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用申请
-            requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
+            requisitionOrder.setApplicationType(ApplyType.APPLICATION);
             // 应用id
             requisitionOrder.setRelationId(application.getId());
             // 申请摘要
@@ -136,7 +153,7 @@ public class ApplicationService extends BaseEntityService<Application> {
             }
 
             // 申请类型:应用申请
-            requisitionOrder.setApplicationType(ApplicationType.APPLICATION);
+            requisitionOrder.setApplicationType(ApplyType.APPLICATION);
             // 应用id
             requisitionOrder.setRelationId(entity.getId());
             // 申请摘要
