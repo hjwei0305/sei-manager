@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -288,6 +289,12 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         if (recordResult.failed()) {
             return ResultData.fail(recordResult.getMessage());
         } else {
+            // 更新所有任务为已处理
+            List<FlowTaskInstance> tasks = this.findListByProperty(FlowTaskInstance.FIELD_ORDER_ID, requisition.getId());
+            for (FlowTaskInstance taskInstance : tasks) {
+                taskInstance.setPending(Boolean.FALSE);
+            }
+            this.save(tasks);
             // 取消申请单状态: 初始
             requisition.setApprovalStatus(ApprovalStatus.INITIAL);
             return ResultData.success(requisition);

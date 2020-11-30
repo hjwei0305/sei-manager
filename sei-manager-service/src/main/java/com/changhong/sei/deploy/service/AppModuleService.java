@@ -13,10 +13,7 @@ import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplicationRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.entity.AppModule;
-import com.changhong.sei.deploy.entity.AppModuleRequisition;
-import com.changhong.sei.deploy.entity.ApplicationRequisition;
-import com.changhong.sei.deploy.entity.RequisitionOrder;
+import com.changhong.sei.deploy.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -226,5 +223,17 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             }
         }
         return ResultData.fail("应用模块不存在!");
+    }
+
+    /**
+     * 流程审核完成,更新冻结状态为:启用
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateFrozen(String id) {
+        AppModule module = this.findOne(id);
+        if (Objects.nonNull(module)) {
+            module.setFrozen(Boolean.FALSE);
+        }
+        this.save(module);
     }
 }

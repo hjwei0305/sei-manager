@@ -232,4 +232,16 @@ public class ApplicationService extends BaseEntityService<Application> {
         }
         return ResultData.fail("应用不存在!");
     }
+
+    /**
+     * 流程审核完成,更新冻结状态为:启用
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateFrozen(String id) {
+        Application application = this.findOne(id);
+        if (Objects.nonNull(application)) {
+            application.setFrozen(Boolean.FALSE);
+        }
+        this.save(application);
+    }
 }

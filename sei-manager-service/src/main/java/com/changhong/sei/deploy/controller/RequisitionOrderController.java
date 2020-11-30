@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.controller;
 
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -39,7 +40,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<Map<ApplyType, Integer>> getTodoTaskNum() {
-        return null;
+        return service.getTodoTaskNum(ContextUtil.getUserAccount());
     }
 
     /**
@@ -49,7 +50,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<List<FlowToDoTask>> getTodoTasks() {
-        return null;
+        return service.getTodoTasks(ContextUtil.getUserAccount());
     }
 
     /**

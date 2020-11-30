@@ -67,8 +67,7 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
      * 冻结
      */
     @Column(name = "frozen")
-    private Boolean frozen = Boolean.FALSE;
-
+    private Boolean frozen = Boolean.TRUE;
 
     public String getAppId() {
         return appId;

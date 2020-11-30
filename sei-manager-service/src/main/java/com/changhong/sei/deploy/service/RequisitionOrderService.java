@@ -4,13 +4,12 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
-import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.dto.TaskHandleRequest;
-import com.changhong.sei.deploy.dto.TaskSubmitRequest;
+import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -34,6 +35,11 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     private RequisitionOrderDao dao;
     @Autowired
     private FlowTaskInstanceService flowTaskInstanceService;
+
+    @Autowired
+    private ApplicationService applicationService;
+    @Autowired
+    private AppModuleService appModuleService;
 
     @Override
     protected BaseEntityDao<RequisitionOrder> getDao() {
@@ -159,8 +165,31 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
 
         ResultData<RequisitionOrder> result = flowTaskInstanceService.handleTask(requisition, handleRequest.getOperationType(), handleRequest.getTaskId(), handleRequest.getMessage());
         if (result.successful()) {
-            OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
+            RequisitionOrder order = result.getData();
+            OperateResultWithData<RequisitionOrder> resultWithData = this.save(order);
             if (resultWithData.successful()) {
+                // 如果审核通过,更新关联单据状态
+                if (ApprovalStatus.PASSED == order.getApprovalStatus()) {
+                    switch (order.getApplicationType()) {
+                        case APPLICATION:
+                            applicationService.updateFrozen(order.getRelationId());
+                            break;
+                        case MODULE:
+                            appModuleService.updateFrozen(order.getRelationId());
+                            break;
+                        case VERSION:
+                            // TODO VERSION
+                            break;
+                        case PUBLISH:
+                            // TODO PUBLISH
+                            break;
+                        case DEPLOY:
+                            // TODO DEPLOY
+                            break;
+                        default:
+                            LogUtil.error("错误的申请类型.");
+                    }
+                }
                 return ResultData.success();
             } else {
                 // 事务回滚
@@ -170,5 +199,25 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
         } else {
             return ResultData.fail(result.getMessage());
         }
+    }
+
+    /**
+     * 获取待办任务数
+     *
+     * @return 操作结果
+     */
+    public ResultData<Map<ApplyType, Integer>> getTodoTaskNum(String account) {
+
+        return null;
+    }
+
+    /**
+     * 获取待办任务
+     *
+     * @return 操作结果
+     */
+    public ResultData<List<FlowToDoTask>> getTodoTasks(String account) {
+
+        return null;
     }
 }

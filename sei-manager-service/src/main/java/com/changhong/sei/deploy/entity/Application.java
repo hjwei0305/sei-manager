@@ -56,7 +56,7 @@ public class Application extends BaseAuditableEntity implements IFrozen, Seriali
      * 是否冻结
      */
     @Column(name = "frozen")
-    private Boolean frozen = Boolean.FALSE;
+    private Boolean frozen = Boolean.TRUE;
 
     public String getCode() {
         return code;

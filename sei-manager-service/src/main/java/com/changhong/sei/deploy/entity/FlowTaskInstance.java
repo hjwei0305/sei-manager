@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 public class FlowTaskInstance extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 8488019354515570494L;
 
+    public static final String FIELD_ORDER_ID = "orderId";
+
     /**
      * 申请单id
      */
