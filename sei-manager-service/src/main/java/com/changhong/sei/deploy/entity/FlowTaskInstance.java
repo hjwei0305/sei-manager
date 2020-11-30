@@ -86,6 +86,11 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
      */
     @Column(name = "execute_user_name")
     private String executeUserName;
+    /**
+     * 待处理
+     */
+    @Column(name = "is_pending")
+    private Boolean pending = Boolean.TRUE;
 
     public String getOrderId() {
         return orderId;
@@ -181,5 +186,13 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
 
     public void setExecuteUserName(String executeUserName) {
         this.executeUserName = executeUserName;
+    }
+
+    public Boolean getPending() {
+        return pending;
+    }
+
+    public void setPending(Boolean pending) {
+        this.pending = pending;
     }
 }

@@ -53,6 +53,10 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             return ResultData.fail("申请单不存在!");
         }
 
+        if (ApprovalStatus.INITIAL != requisition.getApprovalStatus()) {
+            return ResultData.fail("申请单当前状态[" + requisition.getApprovalStatus() + "], 不是初始状态");
+        }
+
         // 通过流程类型获取最新的流程实例版本
         Long version = publishedService.getLatestVersion(flowTypeId);
 
@@ -106,28 +110,20 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         if (Objects.isNull(requisition)) {
             return ResultData.fail("申请单不存在!");
         }
+        if (ApprovalStatus.PROCESSING != requisition.getApprovalStatus()) {
+            return ResultData.fail("申请单当前状态[" + requisition.getApprovalStatus() + "], 不在审核中");
+        }
 
-        FlowTaskInstance currentTask;
         ResultData<RequisitionOrder> result;
         // 操作类型
         switch (operationType) {
             case PASSED:
-                // 获取当前任务
-                currentTask = this.findOne(taskInstanceId);
-                if (Objects.isNull(currentTask)) {
-                    return ResultData.fail("任务不存在!");
-                }
                 // 审核通过
-                result = this.passed(requisition, currentTask, message);
+                result = this.passed(requisition, taskInstanceId, message);
                 break;
             case REJECT:
-                // 获取当前任务
-                currentTask = this.findOne(taskInstanceId);
-                if (Objects.isNull(currentTask)) {
-                    return ResultData.fail("任务不存在!");
-                }
                 // 驳回
-                result = this.reject(requisition, currentTask, message);
+                result = this.reject(requisition, taskInstanceId, message);
                 break;
             case CANCEL:
                 // 取消
@@ -144,12 +140,27 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      * 审核通过申请单
      *
      * @param requisition 申请单
-     * @param currentTask 当前任务
+     * @param taskId      当前任务id
      * @param message     处理消息
      * @return 操作结果
      */
-    private ResultData<RequisitionOrder> passed(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
-        SessionUser sessionUser = ContextUtil.getSessionUser();
+    private ResultData<RequisitionOrder> passed(RequisitionOrder requisition, String taskId, String message) {
+        // 获取当前任务
+        FlowTaskInstance currentTask = this.findOne(taskId);
+        if (Objects.isNull(currentTask)) {
+            return ResultData.fail("任务不存在!");
+        }
+
+        if (!currentTask.getPending()) {
+            return ResultData.fail("任务已被他人处理!");
+        }
+        // 当前任务待办状态更新为已处理
+        currentTask.setPending(Boolean.FALSE);
+        OperateResultWithData<FlowTaskInstance> updateResult = this.save(currentTask);
+        if (updateResult.notSuccessful()) {
+            LogUtil.error("任务待办状态更新失败: " + updateResult.getMessage());
+            return ResultData.fail("任务待办状态更新失败!");
+        }
 
         // 通过流程类型,实例版本及任务号,获取下一个任务
         ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getVersion(), currentTask.getTaskNo());
@@ -158,6 +169,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             return ResultData.fail("不存在下个任务!");
         }
 
+        SessionUser sessionUser = ContextUtil.getSessionUser();
         // 如果通过类型及版本找到有对应的任务,但通过任务号没有匹配上,则认为当前任务是最后一个任务,流程应结束
         FlowPublished nextTask = resultData.getData();
         if (Objects.isNull(nextTask)) {
@@ -193,11 +205,28 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      * 审核通过申请单
      *
      * @param requisition 申请单
-     * @param currentTask 当前任务
+     * @param taskId      当前任务id
      * @param message     处理消息
      * @return 操作结果
      */
-    private ResultData<RequisitionOrder> reject(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
+    private ResultData<RequisitionOrder> reject(RequisitionOrder requisition, String taskId, String message) {
+        // 获取当前任务
+        FlowTaskInstance currentTask = this.findOne(taskId);
+        if (Objects.isNull(currentTask)) {
+            return ResultData.fail("任务不存在!");
+        }
+
+        if (!currentTask.getPending()) {
+            return ResultData.fail("任务已被他人处理!");
+        }
+        // 当前任务待办状态更新为已处理
+        currentTask.setPending(Boolean.FALSE);
+        OperateResultWithData<FlowTaskInstance> updateResult = this.save(currentTask);
+        if (updateResult.notSuccessful()) {
+            LogUtil.error("任务待办状态更新失败: " + updateResult.getMessage());
+            return ResultData.fail("任务待办状态更新失败!");
+        }
+
         SessionUser sessionUser = ContextUtil.getSessionUser();
         // 记录任务执行历史
         ResultData<Void> recordResult = historyService.record(currentTask, OperationType.REJECT, sessionUser.getAccount(), sessionUser.getUserName(), message);
