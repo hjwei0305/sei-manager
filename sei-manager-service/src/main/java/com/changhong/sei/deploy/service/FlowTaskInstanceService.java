@@ -147,6 +147,20 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     }
 
     /**
+     * 按申请单id删除任务
+     *
+     * @param orderId 申请单id
+     * @return 操作状态
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteTaskByOrderId(String orderId) {
+        // 删除任务历史
+        historyService.deleteByOrderId(orderId);
+        // 删除待办任务
+        dao.deleteByOrderId(orderId);
+    }
+
+    /**
      * 审核通过申请单
      *
      * @param requisition 申请单

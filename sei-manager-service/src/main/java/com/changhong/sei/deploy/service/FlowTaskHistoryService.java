@@ -10,6 +10,7 @@ import com.changhong.sei.deploy.entity.FlowTaskHistory;
 import com.changhong.sei.deploy.entity.FlowTaskInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -61,6 +62,16 @@ public class FlowTaskHistoryService extends BaseEntityService<FlowTaskHistory> {
         } else {
             return ResultData.fail(result.getMessage());
         }
+    }
+
+    /**
+     * 按申请单id删除任务
+     *
+     * @param orderId 申请单id
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByOrderId(String orderId) {
+        dao.deleteByOrderId(orderId);
     }
 
 }

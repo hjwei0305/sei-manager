@@ -118,6 +118,9 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
             if (ApprovalStatus.INITIAL == requisition.getApprovalStatus()) {
                 OperateResult result = this.delete(requisition.getId());
                 if (result.successful()) {
+                    // 删除待办任务
+                    flowTaskInstanceService.deleteTaskByOrderId(requisition.getId());
+
                     return ResultData.success();
                 } else {
                     return ResultData.fail(result.getMessage());

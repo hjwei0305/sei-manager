@@ -2,6 +2,7 @@ package com.changhong.sei.deploy.dao;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.deploy.entity.FlowTaskInstance;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -13,4 +14,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FlowTaskInstanceDao extends BaseEntityDao<FlowTaskInstance> {
 
+    /**
+     * 按申请单id删除任务
+     *
+     * @param orderId 申请单id
+     * @return 删除记录数
+     */
+    @Modifying
+    int deleteByOrderId(String orderId);
 }
