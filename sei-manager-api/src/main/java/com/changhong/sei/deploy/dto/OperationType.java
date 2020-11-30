@@ -13,20 +13,20 @@ public enum OperationType {
      * 提交
      */
     @Remark("提交")
-    submit,
+    SUBMIT,
     /**
      * 通过
      */
     @Remark("通过")
-    passed,
+    PASSED,
     /**
      * 驳回
      */
     @Remark("驳回")
-    reject,
+    REJECT,
     /**
      * 取消
      */
     @Remark("取消")
-    cancel
+    CANCEL
 }

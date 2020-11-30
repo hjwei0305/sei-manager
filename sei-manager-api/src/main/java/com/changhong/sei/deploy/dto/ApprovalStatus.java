@@ -10,17 +10,17 @@ public enum ApprovalStatus {
     /**
      * 初始
      */
-    initial,
+    INITIAL,
     /**
      * 审核中
      */
-    processing,
+    PROCESSING,
     /**
      * 未通过
      */
-    unpassed,
+    UNPASSED,
     /**
      * 已通过
      */
-    passed
+    PASSED
 }

@@ -63,7 +63,7 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status")
-    private ApprovalStatus approvalStatus = ApprovalStatus.initial;
+    private ApprovalStatus approvalStatus = ApprovalStatus.INITIAL;
 
     /**
      * 流程类型id

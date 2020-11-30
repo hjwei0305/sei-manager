@@ -60,7 +60,7 @@ public class RequisitionDto extends BaseEntityDto {
     /**
      * 申请类型
      */
-    @JsonSerialize(using = EnumJsonSerializer.class)
+//    @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "申请类型")
     private ApplyType applyType;
     /**
@@ -72,9 +72,9 @@ public class RequisitionDto extends BaseEntityDto {
     /**
      * 审核状态
      */
-    @JsonSerialize(using = EnumJsonSerializer.class)
+//    @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "审核状态")
-    private ApprovalStatus approvalStatus = ApprovalStatus.initial;
+    private ApprovalStatus approvalStatus = ApprovalStatus.INITIAL;
 //    /**
 //     * 处理人账号
 //     */

@@ -59,7 +59,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> createRequisition(RequisitionOrder requisitionRecord) {
         // 审核状态:初始
-        requisitionRecord.setApprovalStatus(ApprovalStatus.initial);
+        requisitionRecord.setApprovalStatus(ApprovalStatus.INITIAL);
         SessionUser sessionUser = ContextUtil.getSessionUser();
         // 申请人账号
         requisitionRecord.setApplicantAccount(sessionUser.getAccount());
@@ -100,7 +100,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     public ResultData<Void> deleteRequisition(String relationId) {
         RequisitionOrder requisition = this.findFirstByProperty(RequisitionOrder.FIELD_RELATION_ID, relationId);
         if (Objects.nonNull(requisition)) {
-            if (ApprovalStatus.initial == requisition.getApprovalStatus()) {
+            if (ApprovalStatus.INITIAL == requisition.getApprovalStatus()) {
                 OperateResult result = this.delete(requisition.getId());
                 if (result.successful()) {
                     return ResultData.success();

@@ -74,7 +74,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         if (result.successful()) {
             String msg = "提交任务";
             // 记录任务执行历史
-            ResultData<Void> recordResult = historyService.record(result.getData(), OperationType.submit, sessionUser.getAccount(), sessionUser.getUserName(), msg);
+            ResultData<Void> recordResult = historyService.record(result.getData(), OperationType.SUBMIT, sessionUser.getAccount(), sessionUser.getUserName(), msg);
             if (recordResult.successful()) {
                 // 指定流程类型
                 requisition.setFlowTypeId(flowTypeId);
@@ -82,7 +82,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
                 // 记录流程版本
                 requisition.setFlowVersion(version);
                 // 更新申请单状态为审核中
-                requisition.setApprovalStatus(ApprovalStatus.processing);
+                requisition.setApprovalStatus(ApprovalStatus.PROCESSING);
 
                 return ResultData.success(requisition);
             } else {
@@ -116,15 +116,15 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         ResultData<RequisitionOrder> result;
         // 操作类型
         switch (operationType) {
-            case passed:
+            case PASSED:
                 // 审核通过
                 result = this.passed(requisition, currentTask, message);
                 break;
-            case reject:
+            case REJECT:
                 // 驳回
                 result = this.reject(requisition, currentTask, message);
                 break;
-            case cancel:
+            case CANCEL:
                 // 取消
                 result = this.cancel(requisition, currentTask, message);
                 break;
@@ -157,12 +157,12 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         FlowPublished nextTask = resultData.getData();
         if (Objects.isNull(nextTask)) {
             // 记录任务执行历史
-            ResultData<Void> recordResult = historyService.record(currentTask, OperationType.passed, sessionUser.getAccount(), sessionUser.getUserName(), message);
+            ResultData<Void> recordResult = historyService.record(currentTask, OperationType.PASSED, sessionUser.getAccount(), sessionUser.getUserName(), message);
             if (recordResult.failed()) {
                 return ResultData.fail(recordResult.getMessage());
             } else {
                 // 更新申请单状态为通过
-                requisition.setApprovalStatus(ApprovalStatus.passed);
+                requisition.setApprovalStatus(ApprovalStatus.PASSED);
                 return ResultData.success(requisition);
             }
         } else {
@@ -170,12 +170,12 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             ResultData<FlowTaskInstance> result = this.createToDoTask(requisition, sessionUser, nextTask);
             if (result.successful()) {
                 // 记录任务执行历史
-                ResultData<Void> recordResult = historyService.record(currentTask, OperationType.passed, sessionUser.getAccount(), sessionUser.getUserName(), message);
+                ResultData<Void> recordResult = historyService.record(currentTask, OperationType.PASSED, sessionUser.getAccount(), sessionUser.getUserName(), message);
                 if (recordResult.failed()) {
                     return ResultData.fail(recordResult.getMessage());
                 } else {
                     // 更新申请单状态为通过
-                    requisition.setApprovalStatus(ApprovalStatus.processing);
+                    requisition.setApprovalStatus(ApprovalStatus.PROCESSING);
                     return ResultData.success(requisition);
                 }
             } else {
@@ -195,12 +195,12 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     private ResultData<RequisitionOrder> reject(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
         SessionUser sessionUser = ContextUtil.getSessionUser();
         // 记录任务执行历史
-        ResultData<Void> recordResult = historyService.record(currentTask, OperationType.reject, sessionUser.getAccount(), sessionUser.getUserName(), message);
+        ResultData<Void> recordResult = historyService.record(currentTask, OperationType.REJECT, sessionUser.getAccount(), sessionUser.getUserName(), message);
         if (recordResult.failed()) {
             return ResultData.fail(recordResult.getMessage());
         } else {
             // 驳回申请单状态: 未通过
-            requisition.setApprovalStatus(ApprovalStatus.unpassed);
+            requisition.setApprovalStatus(ApprovalStatus.UNPASSED);
             return ResultData.success(requisition);
         }
     }
@@ -216,12 +216,12 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     private ResultData<RequisitionOrder> cancel(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
         SessionUser sessionUser = ContextUtil.getSessionUser();
         // 记录任务执行历史
-        ResultData<Void> recordResult = historyService.record(currentTask, OperationType.cancel, sessionUser.getAccount(), sessionUser.getUserName(), message);
+        ResultData<Void> recordResult = historyService.record(currentTask, OperationType.CANCEL, sessionUser.getAccount(), sessionUser.getUserName(), message);
         if (recordResult.failed()) {
             return ResultData.fail(recordResult.getMessage());
         } else {
             // 取消申请单状态: 未通过
-            requisition.setApprovalStatus(ApprovalStatus.unpassed);
+            requisition.setApprovalStatus(ApprovalStatus.UNPASSED);
             return ResultData.success(requisition);
         }
     }

@@ -124,7 +124,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 return ResultData.fail("申请单不存在!");
             }
             // 检查申请单是否已审核
-            if (ApprovalStatus.initial != requisitionOrder.getApprovalStatus()) {
+            if (ApprovalStatus.INITIAL != requisitionOrder.getApprovalStatus()) {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return ResultData.fail("申请单不存在!");

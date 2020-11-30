@@ -9,7 +9,6 @@ import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.ApplicationDao;
 import com.changhong.sei.deploy.dao.ApplicationRequisitionDao;
-import com.changhong.sei.deploy.dto.ApplicationRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.entity.AppModule;
@@ -146,7 +145,7 @@ public class ApplicationService extends BaseEntityService<Application> {
                 return ResultData.fail("申请单不存在!");
             }
             // 检查申请单是否已审核
-            if (ApprovalStatus.initial != requisitionOrder.getApprovalStatus()) {
+            if (ApprovalStatus.INITIAL != requisitionOrder.getApprovalStatus()) {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return ResultData.fail("申请单不存在!");
