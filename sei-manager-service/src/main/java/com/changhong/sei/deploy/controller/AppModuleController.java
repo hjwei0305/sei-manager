@@ -7,7 +7,9 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.AppModuleApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
+import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
 import com.changhong.sei.deploy.entity.AppModule;
+import com.changhong.sei.deploy.entity.AppModuleRequisition;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
 import com.changhong.sei.deploy.service.ApplicationService;
@@ -103,6 +105,24 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
             }
         }
         return ResultData.success(dtos);
+    }
+
+    /**
+     * 分页查询应用模块申请单
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public ResultData<PageResult<AppModuleRequisitionDto>> findRequisitionByPage(Search search) {
+        PageResult<AppModuleRequisition> pageResult = service.findRequisitionByPage(search);
+        PageResult<AppModuleRequisitionDto> result = new PageResult<>(pageResult);
+        List<AppModuleRequisition> requisitions = pageResult.getRows();
+        if (CollectionUtils.isNotEmpty(requisitions)) {
+            List<AppModuleRequisitionDto> dtos = requisitions.stream().map(e -> dtoModelMapper.map(e, AppModuleRequisitionDto.class)).collect(Collectors.toList());
+            result.setRows(dtos);
+        }
+        return ResultData.success(result);
     }
 
     /**

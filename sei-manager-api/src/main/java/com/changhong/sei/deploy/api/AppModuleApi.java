@@ -3,7 +3,11 @@ package com.changhong.sei.deploy.api;
 import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.dto.AppModuleDto;
+import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
+import com.changhong.sei.deploy.dto.ApplicationRequisitionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -21,6 +25,16 @@ import java.util.List;
 @Valid
 @FeignClient(name = "sei-manager", path = "appModule")
 public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi<AppModuleDto> {
+
+    /**
+     * 分页查询应用模块申请单
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "分页查询应用模块申请单", notes = "分页查询应用模块申请单")
+    ResultData<PageResult<AppModuleRequisitionDto>> findRequisitionByPage(@RequestBody Search search);
 
     /**
      * 通过应用Id获取模块清单

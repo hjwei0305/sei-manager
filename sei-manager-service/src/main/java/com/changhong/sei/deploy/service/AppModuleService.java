@@ -2,13 +2,18 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.AppModuleDao;
+import com.changhong.sei.deploy.dao.AppModuleRequisitionDao;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.entity.AppModule;
+import com.changhong.sei.deploy.entity.AppModuleRequisition;
+import com.changhong.sei.deploy.entity.ApplicationRequisition;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,8 @@ import java.util.Objects;
 public class AppModuleService extends BaseEntityService<AppModule> {
     @Autowired
     private AppModuleDao dao;
+    @Autowired
+    private AppModuleRequisitionDao appModuleRequisitionDao;
     @Autowired
     private RequisitionOrderService requisitionOrderService;
 
@@ -55,6 +62,16 @@ public class AppModuleService extends BaseEntityService<AppModule> {
 //            return OperateResult.operationFailure("[" + id + "]应用存在应用模块,不允许删除!");
 //        }
         return super.preDelete(id);
+    }
+
+    /**
+     * 分页查询应用模块申请单
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    public PageResult<AppModuleRequisition> findRequisitionByPage(Search search) {
+        return appModuleRequisitionDao.findByPage(search);
     }
 
     /**
