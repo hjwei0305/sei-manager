@@ -110,22 +110,28 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         if (Objects.isNull(requisition)) {
             return ResultData.fail("申请单不存在!");
         }
-        if (ApprovalStatus.PROCESSING != requisition.getApprovalStatus()) {
-            return ResultData.fail("申请单当前状态[" + requisition.getApprovalStatus() + "], 不在审核中");
-        }
 
         ResultData<RequisitionOrder> result;
         // 操作类型
         switch (operationType) {
             case PASSED:
+                if (ApprovalStatus.PROCESSING != requisition.getApprovalStatus()) {
+                    return ResultData.fail("申请单当前状态[" + requisition.getApprovalStatus() + "], 不在审核中");
+                }
                 // 审核通过
                 result = this.passed(requisition, taskInstanceId, message);
                 break;
             case REJECT:
+                if (ApprovalStatus.PROCESSING != requisition.getApprovalStatus()) {
+                    return ResultData.fail("申请单当前状态[" + requisition.getApprovalStatus() + "], 不在审核中");
+                }
                 // 驳回
                 result = this.reject(requisition, taskInstanceId, message);
                 break;
             case CANCEL:
+                if (ApprovalStatus.PASSED == requisition.getApprovalStatus()) {
+                    return ResultData.fail("申请单当前状态[" + requisition.getApprovalStatus() + "], 不允许撤销");
+                }
                 // 取消
                 result = this.cancel(requisition, message);
                 break;
