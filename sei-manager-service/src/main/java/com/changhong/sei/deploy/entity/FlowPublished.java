@@ -25,6 +25,7 @@ public class FlowPublished extends BaseEntity implements IRank, Serializable {
     private static final long serialVersionUID = -64497955636689211L;
     public static final String FIELD_TYPE_ID = "typeId";
     public static final String FIELD_VERSION = "version";
+    public static final String FIELD_TASK_ID = "taskId";
     /**
      * 流程定义版本
      */

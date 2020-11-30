@@ -8,12 +8,9 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
-import com.changhong.sei.deploy.dto.ApprovalCancelRequest;
-import com.changhong.sei.deploy.dto.ApprovalRejectRequest;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.dto.ApprovalSubmitRequest;
-import com.changhong.sei.deploy.entity.FlowTaskInstance;
-import com.changhong.sei.deploy.entity.FlowPublished;
+import com.changhong.sei.deploy.dto.TaskHandleRequest;
+import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,7 +121,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> submit(@Valid ApprovalSubmitRequest submitRequest) {
+    public ResultData<Void> submit(@Valid TaskSubmitRequest submitRequest) {
         // 获取申请单
         RequisitionOrder requisition = this.findOne(submitRequest.getRequisitionId());
         if (Objects.isNull(requisition)) {
@@ -147,24 +144,31 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     }
 
     /**
-     * 驳回申请单
+     * 申请单待办任务处理
      *
-     * @param rejectRequest 驳回请求
+     * @param handleRequest 任务处理请求
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> reject(@Valid ApprovalRejectRequest rejectRequest) {
-        return ResultData.success();
-    }
+    public ResultData<Void> handleTask(@Valid TaskHandleRequest handleRequest) {
+        // 获取申请单
+        RequisitionOrder requisition = this.findOne(handleRequest.getRequisitionId());
+        if (Objects.isNull(requisition)) {
+            return ResultData.fail("申请单不存在!");
+        }
 
-    /**
-     * 取消(终止)申请单
-     *
-     * @param cancelRequest 取消(终止)请求
-     * @return 操作结果
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> cancel(@Valid ApprovalCancelRequest cancelRequest) {
-        return ResultData.success();
+        ResultData<RequisitionOrder> result = flowTaskInstanceService.handleTask(requisition, handleRequest.getOperationType(), handleRequest.getTaskId(), handleRequest.getMessage());
+        if (result.successful()) {
+            OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
+            if (resultWithData.successful()) {
+                return ResultData.success();
+            } else {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultData.fail(resultWithData.getMessage());
+            }
+        } else {
+            return ResultData.fail(result.getMessage());
+        }
     }
 }

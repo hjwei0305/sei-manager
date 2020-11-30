@@ -5,6 +5,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.FlowTaskHistoryDao;
+import com.changhong.sei.deploy.dto.OperationType;
 import com.changhong.sei.deploy.entity.FlowTaskHistory;
 import com.changhong.sei.deploy.entity.FlowTaskInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,14 @@ public class FlowTaskHistoryService extends BaseEntityService<FlowTaskHistory> {
      * @param message         任务执行消息
      * @return 历史记录结果
      */
-    public ResultData<Void> record(FlowTaskInstance taskInstance, String executeAccount, String executeUserName, String message) {
+    public ResultData<Void> record(FlowTaskInstance taskInstance, OperationType type, String executeAccount, String executeUserName, String message) {
         if (Objects.isNull(taskInstance)) {
             return ResultData.fail("流程任务实例不能为空!");
         }
 
         FlowTaskHistory history = new FlowTaskHistory(taskInstance);
+        // 操作类型
+        history.setOperationType(type);
         // 执行人
         history.setExecuteAccount(executeAccount);
         history.setExecuteUserName(executeUserName);

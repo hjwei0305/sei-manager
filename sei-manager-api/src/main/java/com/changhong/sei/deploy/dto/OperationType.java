@@ -1,5 +1,7 @@
 package com.changhong.sei.deploy.dto;
 
+import com.changhong.sei.annotation.Remark;
+
 /**
  * 实现功能：流程操作
  *
@@ -10,13 +12,21 @@ public enum OperationType {
     /**
      * 提交
      */
+    @Remark("提交")
     submit,
+    /**
+     * 通过
+     */
+    @Remark("通过")
+    passed,
     /**
      * 驳回
      */
+    @Remark("驳回")
     reject,
     /**
-     * 终止
+     * 取消
      */
+    @Remark("取消")
     cancel
 }

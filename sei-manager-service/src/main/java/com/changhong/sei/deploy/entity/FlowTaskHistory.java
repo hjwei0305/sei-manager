@@ -2,6 +2,8 @@ package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.deploy.dto.ApplicationType;
+import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.OperationType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -86,6 +88,12 @@ public class FlowTaskHistory extends BaseEntity implements Serializable {
      */
     @Column(name = "execute_user_name")
     private String executeUserName;
+    /**
+     * 操作类型
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "operation_type")
+    private OperationType operationType;
     /**
      * 处理结果
      */
@@ -207,6 +215,14 @@ public class FlowTaskHistory extends BaseEntity implements Serializable {
 
     public void setExecuteUserName(String executeUserName) {
         this.executeUserName = executeUserName;
+    }
+
+    public OperationType getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
     }
 
     public String getResult() {

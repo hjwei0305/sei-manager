@@ -1,9 +1,8 @@
 package com.changhong.sei.deploy.api;
 
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.deploy.dto.ApprovalCancelRequest;
-import com.changhong.sei.deploy.dto.ApprovalRejectRequest;
-import com.changhong.sei.deploy.dto.ApprovalSubmitRequest;
+import com.changhong.sei.deploy.dto.TaskHandleRequest;
+import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -30,25 +29,15 @@ public interface RequisitionOrderApi {
      */
     @PostMapping(path = "submit", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "提交申请单", notes = "提交申请单")
-    ResultData<Void> submit(@RequestBody @Valid ApprovalSubmitRequest submitRequest);
+    ResultData<Void> submit(@RequestBody @Valid TaskSubmitRequest submitRequest);
 
     /**
-     * 驳回申请单
+     * 申请单待办任务处理
      *
-     * @param rejectRequest 驳回请求
+     * @param handleRequest 任务处理请求
      * @return 操作结果
      */
-    @PostMapping(path = "reject", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "驳回申请单", notes = "驳回申请单")
-    ResultData<Void> reject(@RequestBody @Valid ApprovalRejectRequest rejectRequest);
-
-    /**
-     * 取消(终止)申请单
-     *
-     * @param cancelRequest 取消(终止)请求
-     * @return 操作结果
-     */
-    @PostMapping(path = "cancel", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "取消(终止)申请单", notes = "取消(终止)申请单")
-    ResultData<Void> cancel(@RequestBody @Valid ApprovalCancelRequest cancelRequest);
+    @PostMapping(path = "handle", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "处理申请单待办任务", notes = "处理申请单待办任务")
+    ResultData<Void> handle(@RequestBody @Valid TaskHandleRequest handleRequest);
 }

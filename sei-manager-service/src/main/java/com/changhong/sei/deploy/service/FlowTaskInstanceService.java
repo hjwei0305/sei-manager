@@ -4,12 +4,12 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.FlowTaskInstanceDao;
-import com.changhong.sei.deploy.dto.ApprovalCancelRequest;
-import com.changhong.sei.deploy.dto.ApprovalRejectRequest;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.OperationType;
 import com.changhong.sei.deploy.entity.FlowPublished;
 import com.changhong.sei.deploy.entity.FlowTaskInstance;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -58,34 +57,24 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         Long version = publishedService.getLatestVersion(flowTypeId);
 
         // 通过流程类型,实例版本及任务号,获取下一个任务
-        FlowPublished nextTask = publishedService.getNextTask(flowTypeId, version, 0);
+        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(flowTypeId, version, Integer.MIN_VALUE);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
 
-        FlowTaskInstance taskInstance = new FlowTaskInstance();
-        // 申请单id
-        taskInstance.setOrderId(requisition.getId());
-        // 业务关联id
-        taskInstance.setRelationId(requisition.getRelationId());
-        // 申请类型
-        taskInstance.setApplicationType(requisition.getApplicationType());
-        // 发起人
+        FlowPublished nextTask = resultData.getData();
+        if (Objects.isNull(nextTask)) {
+            // 提交流程,不应该存在没有下个任务的情况
+            return ResultData.fail("流程任务配置错误.");
+        }
+
         SessionUser sessionUser = ContextUtil.getSessionUser();
-        taskInstance.setInitiatorAccount(sessionUser.getAccount());
-        taskInstance.setInitiatorUserName(sessionUser.getUserName());
-        // 发起时间
-        taskInstance.setInitTime(LocalDateTime.now());
-        // 任务
-        taskInstance.setTaskNo(nextTask.getRank());
-        taskInstance.setTaskName(nextTask.getTaskName());
-        // 处理人
-        taskInstance.setExecuteAccount(nextTask.getHandleAccount());
-        taskInstance.setExecuteUserName(nextTask.getHandleUserName());
-
-        // 保存
-        OperateResultWithData<FlowTaskInstance> result = this.save(taskInstance);
+        // 存在下个任务,则创建下个任务的待办任务
+        ResultData<FlowTaskInstance> result = this.createToDoTask(requisition, sessionUser, nextTask);
         if (result.successful()) {
             String msg = "提交任务";
             // 记录任务执行历史
-            ResultData<Void> recordResult = historyService.record(taskInstance, sessionUser.getAccount(), sessionUser.getUserName(), msg);
+            ResultData<Void> recordResult = historyService.record(result.getData(), OperationType.submit, sessionUser.getAccount(), sessionUser.getUserName(), msg);
             if (recordResult.successful()) {
                 // 指定流程类型
                 requisition.setFlowTypeId(flowTypeId);
@@ -105,24 +94,173 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     }
 
     /**
-     * 驳回申请单
+     * 审核通过申请单
      *
-     * @param rejectRequest 驳回请求
+     * @param requisition 申请单
+     * @param message     处理消息
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> reject(@Valid ApprovalRejectRequest rejectRequest) {
-        return ResultData.success();
+    public ResultData<RequisitionOrder> handleTask(RequisitionOrder requisition, OperationType operationType, String taskInstanceId, String message) {
+        // 获取申请单
+        if (Objects.isNull(requisition)) {
+            return ResultData.fail("申请单不存在!");
+        }
+
+        // 获取当前任务
+        FlowTaskInstance currentTask = this.findOne(taskInstanceId);
+        if (Objects.isNull(currentTask)) {
+            return ResultData.fail("任务不存在!");
+        }
+
+        ResultData<RequisitionOrder> result;
+        // 操作类型
+        switch (operationType) {
+            case passed:
+                // 审核通过
+                result = this.passed(requisition, currentTask, message);
+                break;
+            case reject:
+                // 驳回
+                result = this.reject(requisition, currentTask, message);
+                break;
+            case cancel:
+                // 取消
+                result = this.cancel(requisition, currentTask, message);
+                break;
+            default:
+                result = ResultData.fail("任务处理类型错误.");
+        }
+
+        return result;
     }
 
     /**
-     * 取消(终止)申请单
+     * 审核通过申请单
      *
-     * @param cancelRequest 取消(终止)请求
+     * @param requisition 申请单
+     * @param currentTask 当前任务
+     * @param message     处理消息
      * @return 操作结果
      */
-    @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> cancel(@Valid ApprovalCancelRequest cancelRequest) {
-        return ResultData.success();
+    private ResultData<RequisitionOrder> passed(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+
+        // 通过流程类型,实例版本及任务号,获取下一个任务
+        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getVersion(), currentTask.getTaskNo());
+        if (resultData.failed()) {
+            LogUtil.error(resultData.getMessage());
+            return ResultData.fail("不存在下个任务!");
+        }
+
+        // 如果通过类型及版本找到有对应的任务,但通过任务号没有匹配上,则认为当前任务是最后一个任务,流程应结束
+        FlowPublished nextTask = resultData.getData();
+        if (Objects.isNull(nextTask)) {
+            // 记录任务执行历史
+            ResultData<Void> recordResult = historyService.record(currentTask, OperationType.passed, sessionUser.getAccount(), sessionUser.getUserName(), message);
+            if (recordResult.failed()) {
+                return ResultData.fail(recordResult.getMessage());
+            } else {
+                // 更新申请单状态为通过
+                requisition.setApprovalStatus(ApprovalStatus.passed);
+                return ResultData.success(requisition);
+            }
+        } else {
+            // 存在下个任务,则创建下个任务的待办任务
+            ResultData<FlowTaskInstance> result = this.createToDoTask(requisition, sessionUser, nextTask);
+            if (result.successful()) {
+                // 记录任务执行历史
+                ResultData<Void> recordResult = historyService.record(currentTask, OperationType.passed, sessionUser.getAccount(), sessionUser.getUserName(), message);
+                if (recordResult.failed()) {
+                    return ResultData.fail(recordResult.getMessage());
+                } else {
+                    // 更新申请单状态为通过
+                    requisition.setApprovalStatus(ApprovalStatus.processing);
+                    return ResultData.success(requisition);
+                }
+            } else {
+                return ResultData.fail(result.getMessage());
+            }
+        }
+    }
+
+    /**
+     * 审核通过申请单
+     *
+     * @param requisition 申请单
+     * @param currentTask 当前任务
+     * @param message     处理消息
+     * @return 操作结果
+     */
+    private ResultData<RequisitionOrder> reject(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+        // 记录任务执行历史
+        ResultData<Void> recordResult = historyService.record(currentTask, OperationType.reject, sessionUser.getAccount(), sessionUser.getUserName(), message);
+        if (recordResult.failed()) {
+            return ResultData.fail(recordResult.getMessage());
+        } else {
+            // 驳回申请单状态: 未通过
+            requisition.setApprovalStatus(ApprovalStatus.unpassed);
+            return ResultData.success(requisition);
+        }
+    }
+
+    /**
+     * 审核通过申请单
+     *
+     * @param requisition 申请单
+     * @param currentTask 当前任务
+     * @param message     处理消息
+     * @return 操作结果
+     */
+    private ResultData<RequisitionOrder> cancel(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+        // 记录任务执行历史
+        ResultData<Void> recordResult = historyService.record(currentTask, OperationType.cancel, sessionUser.getAccount(), sessionUser.getUserName(), message);
+        if (recordResult.failed()) {
+            return ResultData.fail(recordResult.getMessage());
+        } else {
+            // 取消申请单状态: 未通过
+            requisition.setApprovalStatus(ApprovalStatus.unpassed);
+            return ResultData.success(requisition);
+        }
+    }
+
+    /**
+     * 创建待办任务
+     *
+     * @param requisition 申请单
+     * @param sessionUser 当前用户
+     * @param task        任务
+     * @return 创建结果
+     */
+    private ResultData<FlowTaskInstance> createToDoTask(RequisitionOrder requisition, SessionUser sessionUser, FlowPublished task) {
+        // 存在下个任务,则创建下个任务的待办任务
+        FlowTaskInstance taskInstance = new FlowTaskInstance();
+        // 申请单id
+        taskInstance.setOrderId(requisition.getId());
+        // 业务关联id
+        taskInstance.setRelationId(requisition.getRelationId());
+        // 申请类型
+        taskInstance.setApplicationType(requisition.getApplicationType());
+        // 发起人
+        taskInstance.setInitiatorAccount(sessionUser.getAccount());
+        taskInstance.setInitiatorUserName(sessionUser.getUserName());
+        // 发起时间
+        taskInstance.setInitTime(LocalDateTime.now());
+        // 任务
+        taskInstance.setTaskNo(task.getRank());
+        taskInstance.setTaskName(task.getTaskName());
+        // 处理人
+        taskInstance.setExecuteAccount(task.getHandleAccount());
+        taskInstance.setExecuteUserName(task.getHandleUserName());
+
+        // 保存
+        OperateResultWithData<FlowTaskInstance> result = this.save(taskInstance);
+        if (result.successful()) {
+            return ResultData.success(result.getData());
+        } else {
+            return ResultData.fail(result.getMessage());
+        }
     }
 }

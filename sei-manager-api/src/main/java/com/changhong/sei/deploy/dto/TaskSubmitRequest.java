@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @version 1.0.00  2020-11-27 18:05
  */
 @ApiModel(description = "提交申请单请求")
-public class ApprovalSubmitRequest implements Serializable {
+public class TaskSubmitRequest implements Serializable {
     private static final long serialVersionUID = -5619138703809373270L;
 
     /**

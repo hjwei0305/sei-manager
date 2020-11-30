@@ -2,9 +2,8 @@ package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.api.RequisitionOrderApi;
-import com.changhong.sei.deploy.dto.ApprovalCancelRequest;
-import com.changhong.sei.deploy.dto.ApprovalRejectRequest;
-import com.changhong.sei.deploy.dto.ApprovalSubmitRequest;
+import com.changhong.sei.deploy.dto.TaskHandleRequest;
+import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import com.changhong.sei.deploy.service.RequisitionOrderService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,29 +36,18 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> submit(@Valid ApprovalSubmitRequest submitRequest) {
+    public ResultData<Void> submit(@Valid TaskSubmitRequest submitRequest) {
         return service.submit(submitRequest);
     }
 
     /**
-     * 驳回申请单
+     * 申请单待办任务处理
      *
-     * @param rejectRequest 驳回请求
+     * @param handleRequest 任务处理请求
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> reject(@Valid ApprovalRejectRequest rejectRequest) {
-        return service.reject(rejectRequest);
-    }
-
-    /**
-     * 取消(终止)申请单
-     *
-     * @param cancelRequest 取消(终止)请求
-     * @return 操作结果
-     */
-    @Override
-    public ResultData<Void> cancel(@Valid ApprovalCancelRequest cancelRequest) {
-        return service.cancel(cancelRequest);
+    public ResultData<Void> handle(@Valid TaskHandleRequest handleRequest) {
+        return service.handleTask(handleRequest);
     }
 }
