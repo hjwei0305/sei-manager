@@ -279,8 +279,8 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         if (recordResult.failed()) {
             return ResultData.fail(recordResult.getMessage());
         } else {
-            // 取消申请单状态: 未通过
-            requisition.setApprovalStatus(ApprovalStatus.UNPASSED);
+            // 取消申请单状态: 初始
+            requisition.setApprovalStatus(ApprovalStatus.INITIAL);
             return ResultData.success(requisition);
         }
     }
