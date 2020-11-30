@@ -1,7 +1,11 @@
 package com.changhong.sei.manager.commom;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.manager.entity.User;
+import com.changhong.sei.manager.service.UserService;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,22 @@ public class EmailManager {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private UserService userService;
+
+    public ResultData<String> sendMail(String subject, String context, String... accounts) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
+        List<User> users = userService.findByFilters(search);
+        if (CollectionUtils.isNotEmpty(users)) {
+            User[] userArr = users.toArray(new User[0]);
+
+            sendMail(subject, context, userArr);
+        }
+
+        return ResultData.success();
+    }
 
     public ResultData<String> sendMail(String subject, String context, User... users) {
         try {

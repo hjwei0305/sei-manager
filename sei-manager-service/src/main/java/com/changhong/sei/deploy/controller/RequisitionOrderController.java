@@ -4,8 +4,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.api.RequisitionOrderApi;
-import com.changhong.sei.deploy.dto.TaskHandleRequest;
-import com.changhong.sei.deploy.dto.TaskSubmitRequest;
+import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.service.RequisitionOrderService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 申请记录(RequisitionRecord)控制类
@@ -32,13 +33,22 @@ public class RequisitionOrderController implements RequisitionOrderApi {
     private RequisitionOrderService service;
 
     /**
-     * 提交申请单
+     * 获取待办任务数
      *
-     * @param search 分页查询对象
      * @return 操作结果
      */
     @Override
-    public ResultData<PageResult<?>> getTodoTasks(Search search) {
+    public ResultData<Map<ApplyType, Integer>> getTodoTaskNum() {
+        return null;
+    }
+
+    /**
+     * 获取待办任务
+     *
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<List<FlowToDoTask>> getTodoTasks() {
         return null;
     }
 

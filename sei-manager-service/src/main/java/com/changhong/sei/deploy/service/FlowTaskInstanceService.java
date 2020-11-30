@@ -13,6 +13,7 @@ import com.changhong.sei.deploy.dto.OperationType;
 import com.changhong.sei.deploy.entity.FlowPublished;
 import com.changhong.sei.deploy.entity.FlowTaskInstance;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
+import com.changhong.sei.manager.commom.EmailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,8 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     private FlowPublishedService publishedService;
     @Autowired
     private FlowTaskHistoryService historyService;
+    @Autowired
+    private EmailManager emailManager;
 
     @Override
     protected BaseEntityDao<FlowTaskInstance> getDao() {
@@ -314,6 +317,9 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         // 发起时间
         taskInstance.setInitTime(LocalDateTime.now());
         // 任务
+        taskInstance.setFlowTypeId(task.getTypeId());
+        taskInstance.setFlowTypeName(task.getTypeName());
+        // 任务
         taskInstance.setTaskNo(task.getRank());
         taskInstance.setTaskName(task.getTaskName());
         // 处理人
@@ -323,6 +329,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         // 保存
         OperateResultWithData<FlowTaskInstance> result = this.save(taskInstance);
         if (result.successful()) {
+            emailManager.sendMail(task.getTypeName() + " - " + task.getTaskName(), requisition.getSummary(), sessionUser.getAccount());
             return ResultData.success(result.getData());
         } else {
             return ResultData.fail(result.getMessage());

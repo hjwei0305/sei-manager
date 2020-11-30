@@ -111,7 +111,7 @@ public class FlowTaskHistory extends BaseEntity implements Serializable {
         this.orderId = instance.getOrderId();
         this.relationId = instance.getRelationId();
         this.applicationType = instance.getApplicationType();
-        this.flowInstanceId = instance.getFlowInstanceId();
+        this.flowInstanceId = instance.getFlowTypeId();
         this.flowTypeName = instance.getFlowTypeName();
         this.taskNo = instance.getTaskNo();
         this.taskName = instance.getTaskName();
