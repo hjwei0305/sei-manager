@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -32,7 +33,7 @@ public class TaskHandleRequest implements Serializable {
     /**
      * 审核操作类型
      */
-    @NotBlank
+    @NotNull
     @ApiModelProperty(notes = "审核操作类型")
     @JsonSerialize(using = EnumJsonSerializer.class)
     private OperationType operationType;
