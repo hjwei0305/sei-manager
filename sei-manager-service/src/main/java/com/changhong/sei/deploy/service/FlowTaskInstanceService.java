@@ -107,26 +107,31 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             return ResultData.fail("申请单不存在!");
         }
 
-        // 获取当前任务
-        FlowTaskInstance currentTask = this.findOne(taskInstanceId);
-        if (Objects.isNull(currentTask)) {
-            return ResultData.fail("任务不存在!");
-        }
-
+        FlowTaskInstance currentTask;
         ResultData<RequisitionOrder> result;
         // 操作类型
         switch (operationType) {
             case PASSED:
+                // 获取当前任务
+                currentTask = this.findOne(taskInstanceId);
+                if (Objects.isNull(currentTask)) {
+                    return ResultData.fail("任务不存在!");
+                }
                 // 审核通过
                 result = this.passed(requisition, currentTask, message);
                 break;
             case REJECT:
+                // 获取当前任务
+                currentTask = this.findOne(taskInstanceId);
+                if (Objects.isNull(currentTask)) {
+                    return ResultData.fail("任务不存在!");
+                }
                 // 驳回
                 result = this.reject(requisition, currentTask, message);
                 break;
             case CANCEL:
                 // 取消
-                result = this.cancel(requisition, currentTask, message);
+                result = this.cancel(requisition, message);
                 break;
             default:
                 result = ResultData.fail("任务处理类型错误.");
@@ -209,14 +214,39 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      * 审核通过申请单
      *
      * @param requisition 申请单
-     * @param currentTask 当前任务
      * @param message     处理消息
      * @return 操作结果
      */
-    private ResultData<RequisitionOrder> cancel(RequisitionOrder requisition, FlowTaskInstance currentTask, String message) {
+    private ResultData<RequisitionOrder> cancel(RequisitionOrder requisition, String message) {
         SessionUser sessionUser = ContextUtil.getSessionUser();
+        FlowTaskInstance task = new FlowTaskInstance();
+        // 申请单id
+        task.setOrderId(requisition.getId());
+        // 业务关联id
+        task.setRelationId(requisition.getRelationId());
+        // 申请类型
+        task.setApplicationType(requisition.getApplicationType());
+        // 发起人
+        task.setInitiatorAccount(sessionUser.getAccount());
+        task.setInitiatorUserName(sessionUser.getUserName());
+        // 发起时间
+        task.setInitTime(LocalDateTime.now());
+
+        // 通过流程类型,实例版本及任务号,获取下一个任务
+        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getFlowVersion(), Integer.MIN_VALUE);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+
+        // 任务
+        FlowPublished preTask = resultData.getData();
+        if (Objects.nonNull(preTask)) {
+            task.setTaskNo(preTask.getRank());
+            task.setTaskName(preTask.getTaskName());
+        }
+
         // 记录任务执行历史
-        ResultData<Void> recordResult = historyService.record(currentTask, OperationType.CANCEL, sessionUser.getAccount(), sessionUser.getUserName(), message);
+        ResultData<Void> recordResult = historyService.record(task, OperationType.CANCEL, sessionUser.getAccount(), sessionUser.getUserName(), message);
         if (recordResult.failed()) {
             return ResultData.fail(recordResult.getMessage());
         } else {

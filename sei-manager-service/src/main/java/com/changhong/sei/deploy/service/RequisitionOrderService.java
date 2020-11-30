@@ -57,7 +57,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> createRequisition(RequisitionOrder requisitionRecord) {
+    public ResultData<RequisitionOrder> createRequisition(RequisitionOrder requisitionRecord) {
         // 审核状态:初始
         requisitionRecord.setApprovalStatus(ApprovalStatus.INITIAL);
         SessionUser sessionUser = ContextUtil.getSessionUser();
@@ -68,7 +68,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
 
         OperateResultWithData<RequisitionOrder> result = this.save(requisitionRecord);
         if (result.successful()) {
-            return ResultData.success();
+            return ResultData.success(result.getData());
         } else {
             return ResultData.fail(result.getMessage());
         }
@@ -81,10 +81,10 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> modifyRequisition(RequisitionOrder requisitionRecord) {
+    public ResultData<RequisitionOrder> modifyRequisition(RequisitionOrder requisitionRecord) {
         OperateResultWithData<RequisitionOrder> result = this.save(requisitionRecord);
         if (result.successful()) {
-            return ResultData.success();
+            return ResultData.success(result.getData());
         } else {
             return ResultData.fail(result.getMessage());
         }

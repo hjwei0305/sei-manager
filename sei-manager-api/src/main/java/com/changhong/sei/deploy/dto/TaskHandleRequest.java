@@ -21,7 +21,6 @@ public class TaskHandleRequest implements Serializable {
      * 流程任务id
      * taskInstanceId
      */
-    @NotBlank
     @ApiModelProperty(notes = "任务实例id")
     private String taskId;
     /**

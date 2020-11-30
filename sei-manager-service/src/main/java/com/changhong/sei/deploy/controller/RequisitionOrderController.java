@@ -1,6 +1,8 @@
 package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.api.RequisitionOrderApi;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
 import com.changhong.sei.deploy.dto.TaskSubmitRequest;
@@ -28,6 +30,17 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Autowired
     private RequisitionOrderService service;
+
+    /**
+     * 提交申请单
+     *
+     * @param search 分页查询对象
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<PageResult<?>> getTodoTasks(Search search) {
+        return null;
+    }
 
     /**
      * 提交申请单

@@ -1,6 +1,8 @@
 package com.changhong.sei.deploy.api;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
 import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +22,16 @@ import javax.validation.Valid;
 @Valid
 @FeignClient(name = "sei-manager", path = "requisition")
 public interface RequisitionOrderApi {
+
+    /**
+     * 提交申请单
+     *
+     * @param search 分页查询对象
+     * @return 操作结果
+     */
+    @PostMapping(path = "getTodoTasks", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "提交申请单", notes = "提交申请单")
+    ResultData<PageResult<?>> getTodoTasks(@RequestBody Search search);
 
     /**
      * 提交申请单

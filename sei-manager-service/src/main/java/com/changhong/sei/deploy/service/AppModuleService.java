@@ -9,6 +9,8 @@ import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.AppModuleDao;
 import com.changhong.sei.deploy.dao.AppModuleRequisitionDao;
+import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
+import com.changhong.sei.deploy.dto.ApplicationRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.entity.AppModule;
@@ -81,7 +83,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> createRequisition(AppModule module) {
+    public ResultData<AppModuleRequisitionDto> createRequisition(AppModule module) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         module.setFrozen(Boolean.TRUE);
         // 保存应用模块
@@ -95,9 +97,24 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             // 申请摘要
             requisitionOrder.setSummary(module.getName().concat("[").concat(module.getCode()).concat("]"));
 
-            ResultData<Void> result = requisitionOrderService.createRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
-                return ResultData.success();
+                RequisitionOrder requisition = result.getData();
+                AppModuleRequisitionDto dto = new AppModuleRequisitionDto();
+                dto.setId(requisition.getId());
+                dto.setApplicantAccount(requisition.getApplicantAccount());
+                dto.setApplicantUserName(requisition.getApplicantUserName());
+                dto.setApplicationTime(requisition.getApplicationTime());
+                dto.setApplyType(requisition.getApplicationType());
+                dto.setApprovalStatus(requisition.getApprovalStatus());
+                dto.setRelationId(module.getId());
+                dto.setAppId(module.getAppId());
+                dto.setCode(module.getCode());
+                dto.setName(module.getName());
+                dto.setNameSpace(module.getNameSpace());
+                dto.setVersion(module.getVersion());
+                dto.setRemark(module.getRemark());
+                return ResultData.success(dto);
             } else {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -115,7 +132,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> modifyRequisition(AppModule appModule) {
+    public ResultData<AppModuleRequisitionDto> modifyRequisition(AppModule appModule) {
         AppModule module = this.findOne(appModule.getId());
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块不存在!");
@@ -154,9 +171,24 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             // 申请摘要
             requisitionOrder.setSummary(module.getName().concat("[").concat(module.getCode()).concat("]"));
 
-            ResultData<Void> result = requisitionOrderService.createRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
-                return ResultData.success();
+                RequisitionOrder requisition = result.getData();
+                AppModuleRequisitionDto dto = new AppModuleRequisitionDto();
+                dto.setId(requisition.getId());
+                dto.setApplicantAccount(requisition.getApplicantAccount());
+                dto.setApplicantUserName(requisition.getApplicantUserName());
+                dto.setApplicationTime(requisition.getApplicationTime());
+                dto.setApplyType(requisition.getApplicationType());
+                dto.setApprovalStatus(requisition.getApprovalStatus());
+                dto.setRelationId(module.getId());
+                dto.setAppId(module.getAppId());
+                dto.setCode(module.getCode());
+                dto.setName(module.getName());
+                dto.setNameSpace(module.getNameSpace());
+                dto.setVersion(module.getVersion());
+                dto.setRemark(module.getRemark());
+                return ResultData.success(dto);
             } else {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
