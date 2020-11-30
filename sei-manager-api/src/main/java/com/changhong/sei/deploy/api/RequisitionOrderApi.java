@@ -2,7 +2,7 @@ package com.changhong.sei.deploy.api;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.dto.ApplyType;
-import com.changhong.sei.deploy.dto.FlowToDoTask;
+import com.changhong.sei.deploy.dto.FlowToDoTaskDto;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
 import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +42,7 @@ public interface RequisitionOrderApi {
      */
     @GetMapping(path = "getTodoTasks")
     @ApiOperation(value = "获取待办任务", notes = "获取待办任务")
-    ResultData<List<FlowToDoTask>> getTodoTasks();
+    ResultData<List<FlowToDoTaskDto>> getTodoTasks();
 
     /**
      * 提交申请单

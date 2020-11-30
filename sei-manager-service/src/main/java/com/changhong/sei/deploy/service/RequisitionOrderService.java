@@ -8,9 +8,13 @@ import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
+import com.changhong.sei.deploy.dao.FlowToDoTaskDao;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
 import com.changhong.sei.deploy.dto.*;
+import com.changhong.sei.deploy.entity.FlowToDoTask;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
+import org.apache.commons.collections.CollectionUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +22,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -40,6 +43,10 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     private ApplicationService applicationService;
     @Autowired
     private AppModuleService appModuleService;
+    @Autowired
+    private FlowToDoTaskDao toDoTaskDao;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     protected BaseEntityDao<RequisitionOrder> getDao() {
@@ -207,8 +214,15 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     public ResultData<Map<ApplyType, Integer>> getTodoTaskNum(String account) {
-
-        return null;
+        Map<ApplyType, Integer> result = new HashMap<>();
+        List<FlowToDoTask> tasks = toDoTaskDao.findListByProperty(FlowToDoTask.FIELD_EXECUTE_ACCOUNT, account);
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            Map<ApplyType, List<FlowToDoTask>> map = tasks.stream().collect(Collectors.groupingBy(FlowToDoTask::getApplyType));
+            for (Map.Entry<ApplyType, List<FlowToDoTask>> entry : map.entrySet()) {
+                result.put(entry.getKey(), entry.getValue().size());
+            }
+        }
+        return ResultData.success(result);
     }
 
     /**
@@ -216,8 +230,14 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      *
      * @return 操作结果
      */
-    public ResultData<List<FlowToDoTask>> getTodoTasks(String account) {
-
-        return null;
+    public ResultData<List<FlowToDoTaskDto>> getTodoTasks(String account) {
+        List<FlowToDoTaskDto> dtoList;
+        List<FlowToDoTask> tasks = toDoTaskDao.findListByProperty(FlowToDoTask.FIELD_EXECUTE_ACCOUNT, account);
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            dtoList = tasks.stream().map(e -> modelMapper.map(e, FlowToDoTaskDto.class)).collect(Collectors.toList());
+        } else {
+            dtoList = new ArrayList<>();
+        }
+        return ResultData.success(dtoList);
     }
 }

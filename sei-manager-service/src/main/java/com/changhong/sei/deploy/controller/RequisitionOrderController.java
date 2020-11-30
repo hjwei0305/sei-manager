@@ -2,8 +2,6 @@ package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.dto.serach.PageResult;
-import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.api.RequisitionOrderApi;
 import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.service.RequisitionOrderService;
@@ -49,7 +47,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      * @return 操作结果
      */
     @Override
-    public ResultData<List<FlowToDoTask>> getTodoTasks() {
+    public ResultData<List<FlowToDoTaskDto>> getTodoTasks() {
         return service.getTodoTasks(ContextUtil.getUserAccount());
     }
 
