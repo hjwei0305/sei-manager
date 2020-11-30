@@ -176,7 +176,7 @@ public class ApplicationService extends BaseEntityService<Application> {
                     .concat(entity.getName())
                     .concat("[").concat(entity.getCode()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
                 ApplicationRequisitionDto dto = new ApplicationRequisitionDto();

@@ -171,7 +171,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             // 申请摘要
             requisitionOrder.setSummary(module.getName().concat("[").concat(module.getCode()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
                 AppModuleRequisitionDto dto = new AppModuleRequisitionDto();
