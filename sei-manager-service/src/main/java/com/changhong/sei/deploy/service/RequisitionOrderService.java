@@ -4,6 +4,8 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
@@ -230,9 +232,14 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      *
      * @return 操作结果
      */
-    public ResultData<List<FlowToDoTaskDto>> getTodoTasks(String account) {
+    public ResultData<List<FlowToDoTaskDto>> getTodoTasks(String account, ApplyType applyType) {
         List<FlowToDoTaskDto> dtoList;
-        List<FlowToDoTask> tasks = toDoTaskDao.findListByProperty(FlowToDoTask.FIELD_EXECUTE_ACCOUNT, account);
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(FlowToDoTask.FIELD_EXECUTE_ACCOUNT, account));
+        if (Objects.nonNull(applyType)) {
+            search.addFilter(new SearchFilter(FlowToDoTask.FIELD_APPLY_TYPE, applyType));
+        }
+        List<FlowToDoTask> tasks = toDoTaskDao.findByFilters(search);
         if (CollectionUtils.isNotEmpty(tasks)) {
             dtoList = tasks.stream().map(e -> modelMapper.map(e, FlowToDoTaskDto.class)).collect(Collectors.toList());
         } else {

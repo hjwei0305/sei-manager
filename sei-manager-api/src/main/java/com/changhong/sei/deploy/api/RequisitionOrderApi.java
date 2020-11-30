@@ -5,10 +5,12 @@ import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.FlowToDoTaskDto;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
 import com.changhong.sei.deploy.dto.TaskSubmitRequest;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -43,6 +45,18 @@ public interface RequisitionOrderApi {
     @GetMapping(path = "getTodoTasks")
     @ApiOperation(value = "获取待办任务", notes = "获取待办任务")
     ResultData<List<FlowToDoTaskDto>> getTodoTasks();
+
+    /**
+     * 获取待办任务
+     *
+     * @param type 申请类型
+     * @return 操作结果
+     * @see ApplyType
+     */
+    @GetMapping(path = "{type}/getTodoTasks")
+    @ApiImplicitParam(name = "type", value = "申请类型. APPLICATION,MODULE,VERSION,PUBLISH,DEPLOY", paramType = "path")
+    @ApiOperation(value = "获取待办任务", notes = "获取待办任务")
+    ResultData<List<FlowToDoTaskDto>> getTodoTasksByType(@PathVariable("type") String type);
 
     /**
      * 提交申请单

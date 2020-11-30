@@ -3,8 +3,12 @@ package com.changhong.sei.deploy.controller;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.api.RequisitionOrderApi;
-import com.changhong.sei.deploy.dto.*;
+import com.changhong.sei.deploy.dto.ApplyType;
+import com.changhong.sei.deploy.dto.FlowToDoTaskDto;
+import com.changhong.sei.deploy.dto.TaskHandleRequest;
+import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import com.changhong.sei.deploy.service.RequisitionOrderService;
+import com.changhong.sei.util.EnumUtils;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -48,7 +52,20 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<List<FlowToDoTaskDto>> getTodoTasks() {
-        return service.getTodoTasks(ContextUtil.getUserAccount());
+        return service.getTodoTasks(ContextUtil.getUserAccount(), null);
+    }
+
+    /**
+     * 获取待办任务
+     *
+     * @param type 申请类型
+     * @return 操作结果
+     * @see ApplyType
+     */
+    @Override
+    public ResultData<List<FlowToDoTaskDto>> getTodoTasksByType(String type) {
+        ApplyType applyType = EnumUtils.getEnum(ApplyType.class, type);
+        return service.getTodoTasks(ContextUtil.getUserAccount(), applyType);
     }
 
     /**
