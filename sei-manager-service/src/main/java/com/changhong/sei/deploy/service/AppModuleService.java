@@ -229,11 +229,12 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * 流程审核完成,更新冻结状态为:启用
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateFrozen(String id) {
+    public AppModule updateFrozen(String id) {
         AppModule module = this.findOne(id);
         if (Objects.nonNull(module)) {
             module.setFrozen(Boolean.FALSE);
         }
         this.save(module);
+        return module;
     }
 }
