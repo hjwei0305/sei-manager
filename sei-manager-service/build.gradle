@@ -23,7 +23,9 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-thymeleaf"
     )
     // SEI平台依赖包
-    compile("com.changhong.sei:sei-cloud-starter:$sei_version")
+
+    compile("com.changhong.sei:sei-core-service:$sei_version")
+//    compile("com.changhong.sei:sei-cloud-starter:$sei_version")
     // 第三方组件依赖包
     compile("mysql:mysql-connector-java:$mysqlVersion")
 
@@ -33,29 +35,10 @@ dependencies {
 //            "de.codecentric:spring-boot-admin-server-ui:2.1.6"
 //    )
 
-    // elasticsearch
-    // 官方推荐使用REST Client，Client分为两个Low Level REST Client和High Level REST Client，
-    // Low Level REST Client是早期出的API比较简陋了，还需要自己去拼写Query DSL，
-    // High Level REST Client使用起来更好用，更符合面向对象的感觉
-    // Java Low Level REST Client
-    compile("org.elasticsearch.client:elasticsearch-rest-client:$elasticsearchVersion") {
-        exclude group: "org.elasticsearc", module: "elasticsearch"
-        exclude group: "org.elasticsearch.clien", module: "elasticsearch-rest-client"
-    }
-    // Java High Level REST Client
-    compile("org.elasticsearch.client:elasticsearch-rest-high-level-client:$elasticsearchVersion") {
-        exclude group: "org.elasticsearc", module: "elasticsearch"
-        exclude group: "org.elasticsearch.clien", module: "elasticsearch-rest-client"
-    }
-    compile("org.elasticsearch:elasticsearch:$elasticsearchVersion") {
-        force = true
-    }
-
     // gitlab
     compile("org.gitlab:java-gitlab-api:4.1.1")
 
     // 测试依赖包
-    // compile("com.changhong.sei:sei-test-starter:$sei_version")
     testCompile("com.changhong.sei:sei-test-starter:$sei_version")
 }
 

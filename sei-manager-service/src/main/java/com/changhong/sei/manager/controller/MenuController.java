@@ -10,7 +10,6 @@ import com.changhong.sei.manager.dto.MenuDto;
 import com.changhong.sei.manager.entity.Menu;
 import com.changhong.sei.manager.service.MenuService;
 import com.changhong.sei.manager.service.UserService;
-import com.changhong.sei.utils.AsyncRunUtil;
 import io.swagger.annotations.Api;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +36,6 @@ public class MenuController extends BaseTreeController<Menu, MenuDto>
     private MenuService menuService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private AsyncRunUtil asyncRunUtil;
 
     @Override
     public BaseTreeService<Menu> getService() {
@@ -103,7 +100,7 @@ public class MenuController extends BaseTreeController<Menu, MenuDto>
         }
         // 清除当前用户的权限缓存
         String userId = ContextUtil.getUserId();
-        asyncRunUtil.runAsync(() -> userService.clearUserAuthorizedCaches(userId));
+        userService.clearUserAuthorizedCaches(userId);
         return result;
     }
 
@@ -121,7 +118,7 @@ public class MenuController extends BaseTreeController<Menu, MenuDto>
         }
         // 清除当前用户的权限缓存
         String userId = ContextUtil.getUserId();
-        asyncRunUtil.runAsync(() -> userService.clearUserAuthorizedCaches(userId));
+        userService.clearUserAuthorizedCaches(userId);
         return result;
     }
 
@@ -139,7 +136,7 @@ public class MenuController extends BaseTreeController<Menu, MenuDto>
         }
         // 清除当前用户的权限缓存
         String userId = ContextUtil.getUserId();
-        asyncRunUtil.runAsync(() -> userService.clearUserAuthorizedCaches(userId));
+        userService.clearUserAuthorizedCaches(userId);
         return result;
     }
 }
