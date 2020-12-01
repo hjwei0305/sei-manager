@@ -1,4 +1,12 @@
+
 spring:
   config:
     # 服务器上的配置文件路径
     additional-location: /usr/app/
+  cloud:
+    config:
+      # 配置中心地址
+      enabled: false
+    #启用平台注册发现
+    discovery:
+      enabled: false

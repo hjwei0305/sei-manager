@@ -15,14 +15,24 @@ sei: # 应用全局配置
   monitor:
     websocket:
       enable: false
+  jenkins:
+    host: 'http://10.4.208.130:8088/'
+    username: ''
+    password: ''
+  gitlab:
+    host: 'http://10.4.208.130:7001'
+    username: ''
+    password: ''
 
 spring:
   application:
     name: ${sei.application.code}
   cloud:
     config:
+      enabled: false
       #当前环境
       profile: ${sei.application.env}
+      name: ${spring.application.name}
   # mail config
   mail:
     password: 1plmjvCR
@@ -48,7 +58,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://10.4.208.134:3306/sei_manager?characterEncoding=utf8&useSSL=false&useCompression=true&serverTimezone=Asia/Shanghai
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
       namingStrategy: org.hibernate.cfg.ImprovedNamingStrategy

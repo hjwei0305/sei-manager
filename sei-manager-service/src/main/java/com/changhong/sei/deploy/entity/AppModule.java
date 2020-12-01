@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 应用模块(AppModule)实体类
@@ -56,8 +57,14 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
     /**
      * git地址
      */
-    @Column(name = "git_url")
-    private String gitUrl;
+    @Column(name = "git_http_url")
+    private String gitHttpUrl;
+    @Column(name = "git_ssh_url")
+    private String gitSshUrl;
+    @Column(name = "git_web_url")
+    private String gitWebUrl;
+    @Column(name = "git_create_time")
+    private LocalDateTime gitCreateTime;
     /**
      * 描述说明
      */
@@ -117,12 +124,36 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
         this.gitId = gitId;
     }
 
-    public String getGitUrl() {
-        return gitUrl;
+    public String getGitHttpUrl() {
+        return gitHttpUrl;
     }
 
-    public void setGitUrl(String gitUrl) {
-        this.gitUrl = gitUrl;
+    public void setGitHttpUrl(String gitHttpUrl) {
+        this.gitHttpUrl = gitHttpUrl;
+    }
+
+    public String getGitSshUrl() {
+        return gitSshUrl;
+    }
+
+    public void setGitSshUrl(String gitSshUrl) {
+        this.gitSshUrl = gitSshUrl;
+    }
+
+    public String getGitWebUrl() {
+        return gitWebUrl;
+    }
+
+    public void setGitWebUrl(String gitWebUrl) {
+        this.gitWebUrl = gitWebUrl;
+    }
+
+    public LocalDateTime getGitCreateTime() {
+        return gitCreateTime;
+    }
+
+    public void setGitCreateTime(LocalDateTime gitCreateTime) {
+        this.gitCreateTime = gitCreateTime;
     }
 
     public String getRemark() {
@@ -133,12 +164,13 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
         this.remark = remark;
     }
 
+    @Override
     public Boolean getFrozen() {
         return frozen;
     }
 
+    @Override
     public void setFrozen(Boolean frozen) {
         this.frozen = frozen;
     }
-
 }
