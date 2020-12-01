@@ -187,7 +187,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         }
 
         // 通过流程类型,实例版本及任务号,获取下一个任务
-        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getVersion(), currentTask.getTaskNo());
+        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getFlowVersion(), currentTask.getTaskNo());
         if (resultData.failed()) {
             LogUtil.error(resultData.getMessage());
             return ResultData.fail("不存在下个任务!");
