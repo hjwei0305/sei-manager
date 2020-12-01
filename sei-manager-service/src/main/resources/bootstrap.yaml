@@ -1,30 +1,4 @@
-sei: # 应用全局配置
-  application:
-    code: sei-manager
-    name: SEI开发运维平台
-    env: DEV
-    version: 6.0.1
-    swagger:
-      title: "${sei.application.name} API"
-      description: "${sei.application.name} 的API文档，运行环境: ${sei.application.env}"
-      version: ${sei.application.version}
-  # 日志配置,不使用kafka日志
-  log:
-    kafka:
-      enable: false
-  monitor:
-    websocket:
-      enable: false
-
 spring:
-  boot:
-    admin:
-      discovery:
-        enabled: false
-      ui:
-        title: SEI-Manager
-  application:
-    name: ${sei.application.code}
   config:
     # 服务器上的配置文件路径
     additional-location: /usr/app/

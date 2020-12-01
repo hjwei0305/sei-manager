@@ -1,4 +1,28 @@
+sei: # 应用全局配置
+  application:
+    code: sei-manager
+    name: SEI开发运维平台
+    env: DEV
+    version: 6.0.1
+    swagger:
+      title: "${sei.application.name} API"
+      description: "${sei.application.name} 的API文档，运行环境: ${sei.application.env}"
+      version: ${sei.application.version}
+  # 日志配置,不使用kafka日志
+  log:
+    kafka:
+      enable: false
+  monitor:
+    websocket:
+      enable: false
+
 spring:
+  application:
+    name: ${sei.application.code}
+  cloud:
+    config:
+      #当前环境
+      profile: ${sei.application.env}
   # mail config
   mail:
     password: 1plmjvCR
