@@ -22,6 +22,7 @@ import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import com.changhong.sei.util.IdGenerator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -200,13 +201,17 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                             Application application = applicationService.findOne(module.getAppId());
                             // 创建git项目
                             ProjectVo project = new ProjectVo();
-                            project.setType(ProjectType.WEB);
                             project.setProjectId(module.getId());
                             project.setCode(module.getCode());
                             project.setName(module.getName().concat(module.getRemark()));
-                            project.setNameSpace(module.getNameSpace());
                             project.setGroupId(application.getGroupCode());
                             project.setGroupName(application.getGroupName());
+                            if (StringUtils.isBlank(module.getNameSpace())) {
+                                project.setType(ProjectType.WEB);
+                            } else {
+                                project.setType(ProjectType.JAVA);
+                                project.setNameSpace(module.getNameSpace());
+                            }
                             ResultData<ProjectVo> resultData = gitlabService.createProject(project);
                             if (resultData.successful()) {
                                 // 流程审核完成,更新冻结状态为:启用
