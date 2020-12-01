@@ -216,7 +216,12 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                             if (resultData.successful()) {
                                 // 流程审核完成,更新冻结状态为:启用
                                 module.setFrozen(Boolean.FALSE);
-                                appModuleService.save(module);
+                                OperateResultWithData<AppModule> result1 = appModuleService.save(module);
+                                if (result1.notSuccessful()) {
+                                    // 事务回滚
+                                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                                    return ResultData.fail(result1.getMessage());
+                                }
                             } else {
                                 // 事务回滚
                                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
