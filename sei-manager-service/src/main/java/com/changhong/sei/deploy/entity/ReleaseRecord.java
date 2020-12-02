@@ -50,6 +50,11 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "git_id")
     private String gitId;
     /**
+     * 模块代码
+     */
+    @Column(name = "module_code")
+    private String moduleCode;
+    /**
      * 模块名称
      */
     @Column(name = "module_name")
@@ -120,6 +125,14 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
 
     public void setGitId(String gitId) {
         this.gitId = gitId;
+    }
+
+    public String getModuleCode() {
+        return moduleCode;
+    }
+
+    public void setModuleCode(String moduleCode) {
+        this.moduleCode = moduleCode;
     }
 
     public String getModuleName() {

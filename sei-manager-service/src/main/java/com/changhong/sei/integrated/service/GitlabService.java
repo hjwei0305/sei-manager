@@ -4,17 +4,18 @@ import com.changhong.sei.apitemplate.ApiTemplate;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.integrated.vo.ProjectVo;
-import org.gitlab.api.GitlabAPI;
-import org.gitlab.api.models.GitlabProject;
-import org.gitlab.api.models.GitlabRelease;
-import org.gitlab.api.models.GitlabTag;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.ReleasesApi;
+import org.gitlab4j.api.TagsApi;
+import org.gitlab4j.api.models.Release;
+import org.gitlab4j.api.models.ReleaseParams;
+import org.gitlab4j.api.models.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +55,12 @@ public class GitlabService {
     /**
      * 创建gitlab连接
      */
-    private GitlabAPI getGitlabAPI() {
+    private GitLabApi getGitLabApi() {
         String gitlabHost = "http://rddgit.changhong.com";
         try {
 //            GitlabSession session = GitlabAPI.connect(gitlabHost, username, password);
-            GitlabAPI gitlabAPI = GitlabAPI.connect(gitlabHost, "n_DEjjbZxTrSWNf-SKsV");
+//            GitLabApi gitlabAPI = GitLabApi.oauth2Login(gitlabHost, username, password);
+            GitLabApi gitlabAPI = new GitLabApi(gitlabHost, "n_DEjjbZxTrSWNf-SKsV");
             return gitlabAPI;
         } catch (Exception e) {
             throw new RuntimeException("获取Gitlab接口异常", e);
@@ -97,10 +99,10 @@ public class GitlabService {
      * @param gitId git项目id
      * @return 创建结果
      */
-    public ResultData<List<GitlabTag>> getProjectTags(String gitId) {
+    public ResultData<List<Tag>> getProjectTags(String gitId) {
         try {
-            GitlabAPI api = this.getGitlabAPI();
-            List<GitlabTag> tags = api.getTags(gitId);
+            TagsApi api = this.getGitLabApi().getTagsApi();
+            List<Tag> tags = api.getTags(gitId);
             return ResultData.success(tags);
         } catch (Exception e) {
             LOG.error("获取项目标签", e);
@@ -117,11 +119,12 @@ public class GitlabService {
      * @param message 描述
      * @return 创建结果
      */
-    public ResultData<GitlabTag> createProjectTag(String gitId, String tagName, String branch, String message) {
+    public ResultData<Tag> createProjectTag(String gitId, String tagName, String branch, String message) {
         try {
-            GitlabTag tag = this.getGitlabAPI().addTag(gitId, tagName, branch, message, null);
+            TagsApi api = this.getGitLabApi().getTagsApi();
+            Tag tag = api.createTag(gitId, tagName, branch, message, "");
             return ResultData.success(tag);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("创建tag异常", e);
             return ResultData.fail("创建tag异常" + e.getMessage());
         }
@@ -134,12 +137,12 @@ public class GitlabService {
      * @param tagName tag名
      * @return 创建结果
      */
-    public ResultData<Void> deleteProjectRelease(String gitId, String tagName) {
+    public ResultData<Void> deleteProjectTag(String gitId, String tagName) {
         try {
-            GitlabAPI api = this.getGitlabAPI();
+            TagsApi api = this.getGitLabApi().getTagsApi();
             api.deleteTag(gitId, tagName);
             return ResultData.success();
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("创建tag异常", e);
             return ResultData.fail("创建tag异常" + e.getMessage());
         }
@@ -153,16 +156,17 @@ public class GitlabService {
      * @param message 描述
      * @return 创建结果
      */
-    public ResultData<GitlabRelease> createProjectRelease(String gitId, String tagName, String message) {
+    public ResultData<Release> createProjectRelease(String gitId, String name, String tagName, String message) {
         try {
-            GitlabAPI api = this.getGitlabAPI();
-            String tailUrl = GitlabProject.URL + "/" + gitId + GitlabTag.URL + "/" + tagName + "/release";
-            GitlabRelease release = api.dispatch()
-                    .with("description", message)
-                    .to(tailUrl, GitlabRelease.class);
+            ReleasesApi api = this.getGitLabApi().getReleasesApi();
+            ReleaseParams params = new ReleaseParams();
+            params.setName(name);
+            params.setTagName(tagName);
+            params.setDescription(message);
+            Release release = api.createRelease(gitId, params);
 
             return ResultData.success(release);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("创建tag异常", e);
             return ResultData.fail("创建tag异常" + e.getMessage());
         }

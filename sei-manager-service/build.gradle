@@ -35,8 +35,11 @@ dependencies {
 //            "de.codecentric:spring-boot-admin-server-ui:2.1.6"
 //    )
 
-    // gitlab
-    compile("org.gitlab:java-gitlab-api:4.1.1")
+    // gitlab https://github.com/gitlab4j/gitlab4j-api
+    compile("org.gitlab4j:gitlab4j-api:4.15.7")
+//    compile("org.gitlab:java-gitlab-api:4.1.1")
+    // Jenkins https://github.com/jenkinsci/java-client-api
+    compile("com.offbytwo.jenkins:jenkins-client:0.3.8")
 
     // 测试依赖包
     testCompile("com.changhong.sei:sei-test-starter:$sei_version")

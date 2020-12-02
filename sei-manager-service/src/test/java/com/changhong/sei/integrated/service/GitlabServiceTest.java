@@ -5,8 +5,8 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import com.changhong.sei.util.IdGenerator;
-import org.gitlab.api.models.GitlabRelease;
-import org.gitlab.api.models.GitlabTag;
+import org.gitlab4j.api.models.Release;
+import org.gitlab4j.api.models.Tag;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,26 +40,26 @@ public class GitlabServiceTest extends BaseUnitTest {
     @Test
     public void createProjectTag() {
         String gitId = "1423";
-        String tagName = "1.0.3-beta";
+        String tagName = "1.0.4";
         String message = "测试createProject TAG";
         String branch = "master";
-        ResultData<GitlabTag> resultData = service.createProjectTag(gitId, tagName, branch, message);
+        ResultData<Tag> resultData = service.createProjectTag(gitId, tagName, branch, message);
         System.out.println(resultData);
     }
 
     @Test
     public void getProjectTags() {
         String gitId = "1423";
-        ResultData<List<GitlabTag>> resultData = service.getProjectTags(gitId);
+        ResultData<List<Tag>> resultData = service.getProjectTags(gitId);
         System.out.println(resultData);
     }
 
     @Test
     public void createProjectRelease() {
         String gitId = "1423";
-        String tagName = "1.0.3-beta";
+        String tagName = "1.0.4";
         String message = "测试createProject TAG";
-        ResultData<GitlabRelease> resultData = service.createProjectRelease(gitId, tagName, message);
+        ResultData<Release> resultData = service.createProjectRelease(gitId, tagName + "-beta", tagName, message);
         System.out.println(resultData);
     }
 }

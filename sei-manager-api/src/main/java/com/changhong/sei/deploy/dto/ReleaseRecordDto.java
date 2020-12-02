@@ -20,7 +20,7 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 环境
      */
-    @ApiModelProperty(value = "环境代码")
+    @ApiModelProperty(value = "环境代码", required = true)
     private String envCode;
     /**
      * 环境
@@ -30,7 +30,7 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 所属应用id
      */
-    @ApiModelProperty(value = "应用id")
+    @ApiModelProperty(value = "应用id", required = true)
     private String appId;
     /**
      * 所属应用id
@@ -40,8 +40,13 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 模块git id
      */
-    @ApiModelProperty(value = "模块git id")
+    @ApiModelProperty(value = "模块git id", required = true)
     private String gitId;
+    /**
+     * 模块名称
+     */
+    @ApiModelProperty(value = "模块代码", required = true)
+    private String moduleCode;
     /**
      * 模块名称
      */
@@ -50,7 +55,7 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 标签名称
      */
-    @ApiModelProperty(value = "标签名称")
+    @ApiModelProperty(value = "标签名称", required = true)
     private String tagName;
     /**
      * 是否冻结
@@ -60,7 +65,7 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 发布名称
      */
-    @ApiModelProperty(value = "发布名称")
+    @ApiModelProperty(value = "发布名称", required = true)
     private String name;
     /**
      * 描述说明(部署要求,脚本内容等)

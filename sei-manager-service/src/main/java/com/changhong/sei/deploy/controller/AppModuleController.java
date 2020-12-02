@@ -18,7 +18,7 @@ import com.changhong.sei.deploy.service.ApplicationService;
 import com.changhong.sei.integrated.service.GitlabService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
-import org.gitlab.api.models.GitlabTag;
+import org.gitlab4j.api.models.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,11 +175,11 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     @Override
     public ResultData<List<GitlabTagDto>> getTags(String gitId) {
         List<GitlabTagDto> tagList = new ArrayList<>(16);
-        ResultData<List<GitlabTag>> resultData = gitlabService.getProjectTags(gitId);
+        ResultData<List<Tag>> resultData = gitlabService.getProjectTags(gitId);
         if (resultData.successful()) {
             GitlabTagDto dto;
-            List<GitlabTag> tags = resultData.getData();
-            for (GitlabTag tag : tags) {
+            List<Tag> tags = resultData.getData();
+            for (Tag tag : tags) {
                 dto = new GitlabTagDto();
                 dto.setName(tag.getName());
                 dto.setMessage(tag.getMessage());
@@ -198,9 +198,9 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<GitlabTagDto> createTag(CreateTagRequest request) {
-        ResultData<GitlabTag> resultData = gitlabService.createProjectTag(request.getGitId(), request.getTagName(), request.getBranch(), request.getMessage());
+        ResultData<Tag> resultData = gitlabService.createProjectTag(request.getGitId(), request.getTagName(), request.getBranch(), request.getMessage());
         if (resultData.successful()) {
-            GitlabTag tag = resultData.getData();
+            Tag tag = resultData.getData();
             GitlabTagDto dto = new GitlabTagDto();
             dto.setName(tag.getName());
             dto.setMessage(tag.getMessage());
@@ -220,6 +220,6 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<Void> deleteRelease(String gitId, String tagName) {
-        return gitlabService.deleteProjectRelease(gitId, tagName);
+        return gitlabService.deleteProjectTag(gitId, tagName);
     }
 }

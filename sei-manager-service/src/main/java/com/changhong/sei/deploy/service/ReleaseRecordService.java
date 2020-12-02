@@ -9,13 +9,15 @@ import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.ReleaseRecordDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
-import com.changhong.sei.deploy.dao.ReleaseVersionDao;
-import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.entity.*;
+import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
+import com.changhong.sei.deploy.entity.ReleaseRecord;
+import com.changhong.sei.deploy.entity.ReleaseRecordRequisition;
+import com.changhong.sei.deploy.entity.ReleaseVersion;
+import com.changhong.sei.deploy.entity.RequisitionOrder;
 import com.changhong.sei.integrated.service.GitlabService;
-import org.gitlab.api.models.GitlabRelease;
+import org.gitlab4j.api.models.Release;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -260,17 +262,18 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
 
 
         // todo Jenkins构建成功,调用gitlab创建版本
-        ResultData<GitlabRelease> resultData = gitlabService.createProjectRelease(releaseRecord.getGitId(), releaseRecord.getTagName(), releaseRecord.getName());
+        ResultData<Release> resultData = gitlabService.createProjectRelease(releaseRecord.getGitId(), releaseRecord.getName(), releaseRecord.getTagName(), releaseRecord.getName());
         if (resultData.successful()) {
-            GitlabRelease gitlabRelease = resultData.getData();
+            Release gitlabRelease = resultData.getData();
             ReleaseVersion version = new ReleaseVersion();
             version.setAppId(releaseRecord.getAppId());
             version.setAppName(releaseRecord.getAppName());
             version.setGitId(releaseRecord.getGitId());
             version.setModuleName(releaseRecord.getModuleName());
             version.setName(releaseRecord.getName());
-            // TODO version.setCommitId();
-            // TODO version.setImageName("/" + gitlabRelease.getTagName());
+            version.setCommitId(gitlabRelease.getCommit().getId());
+            // 约定镜像命名规范
+            version.setImageName(releaseRecord.getModuleName() + "/" + gitlabRelease.getTagName());
             version.setVersion(gitlabRelease.getTagName());
             version.setRemark(gitlabRelease.getDescription());
             version.setCreateTime(LocalDateTime.now());
