@@ -39,11 +39,20 @@ public class NodeDto extends BaseEntityDto {
     @ApiModelProperty(value = "环境名称")
     private String envName;
     /**
+     * 凭证id
+     */
+    @ApiModelProperty(value = "凭证id")
+    private String certificateId;
+    /**
+     * 凭证名称
+     */
+    @ApiModelProperty(value = "凭证名称")
+    private String certificateName;
+    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
     private String remark;
-
 
     public String getName() {
         return name;
@@ -83,6 +92,22 @@ public class NodeDto extends BaseEntityDto {
 
     public void setEnvName(String envName) {
         this.envName = envName;
+    }
+
+    public String getCertificateId() {
+        return certificateId;
+    }
+
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
+    }
+
+    public String getCertificateName() {
+        return certificateName;
+    }
+
+    public void setCertificateName(String certificateName) {
+        this.certificateName = certificateName;
     }
 
     public String getRemark() {
