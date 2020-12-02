@@ -10,10 +10,16 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.AppModuleDao;
 import com.changhong.sei.deploy.dao.AppModuleRequisitionDao;
 import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
-import com.changhong.sei.deploy.dto.ApplicationRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.entity.*;
+import com.changhong.sei.deploy.entity.AppModule;
+import com.changhong.sei.deploy.entity.AppModuleRequisition;
+import com.changhong.sei.deploy.entity.Application;
+import com.changhong.sei.deploy.entity.RequisitionOrder;
+import com.changhong.sei.integrated.service.GitlabService;
+import com.changhong.sei.integrated.vo.ProjectType;
+import com.changhong.sei.integrated.vo.ProjectVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +42,10 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     private AppModuleRequisitionDao appModuleRequisitionDao;
     @Autowired
     private RequisitionOrderService requisitionOrderService;
+    @Autowired
+    private ApplicationService applicationService;
+    @Autowired
+    private GitlabService gitlabService;
 
     @Override
     protected BaseEntityDao<AppModule> getDao() {
@@ -229,12 +239,44 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * 流程审核完成,更新冻结状态为:启用
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppModule updateFrozen(String id) {
+    public ResultData<Void> updateFrozen(String id) {
         AppModule module = this.findOne(id);
-        if (Objects.nonNull(module)) {
-            module.setFrozen(Boolean.FALSE);
+        Application application = applicationService.findOne(module.getAppId());
+
+        // 创建git项目
+        ProjectVo project = new ProjectVo();
+        project.setProjectId(module.getId());
+        project.setCode(module.getCode());
+        project.setName(module.getName().concat(module.getRemark()));
+        project.setGroupId(application.getGroupCode());
+        project.setGroupName(application.getGroupName());
+        if (StringUtils.isBlank(module.getNameSpace())) {
+            project.setType(ProjectType.WEB);
+        } else {
+            project.setType(ProjectType.JAVA);
+            project.setNameSpace(module.getNameSpace());
         }
-        this.save(module);
-        return module;
+        // 创建gitlab项目
+        ResultData<ProjectVo> resultData = gitlabService.createProject(project);
+        if (resultData.successful()) {
+            // 流程审核完成,更新冻结状态为:启用
+            module.setFrozen(Boolean.FALSE);
+
+            // 回写gitlab数据
+            ProjectVo gitProject = resultData.getData();
+            module.setGitId(gitProject.getGitId());
+            module.setGitHttpUrl(gitProject.getGitHttpUrl());
+            module.setGitSshUrl(gitProject.getGitSshUrl());
+            module.setGitWebUrl(gitProject.getGitWebUrl());
+            module.setGitCreateTime(gitProject.getGitCreateTime());
+            OperateResultWithData<AppModule> result1 = this.save(module);
+            if (result1.notSuccessful()) {
+                return ResultData.fail(result1.getMessage());
+            } else {
+                return ResultData.success();
+            }
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
     }
 }

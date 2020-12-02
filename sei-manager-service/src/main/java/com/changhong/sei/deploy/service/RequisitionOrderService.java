@@ -13,16 +13,9 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.FlowToDoTaskDao;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
 import com.changhong.sei.deploy.dto.*;
-import com.changhong.sei.deploy.entity.AppModule;
-import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.entity.FlowToDoTask;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
-import com.changhong.sei.integrated.service.GitlabService;
-import com.changhong.sei.integrated.vo.ProjectType;
-import com.changhong.sei.integrated.vo.ProjectVo;
-import com.changhong.sei.util.IdGenerator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,8 +49,6 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     private FlowToDoTaskDao toDoTaskDao;
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private GitlabService gitlabService;
 
     @Override
     protected BaseEntityDao<RequisitionOrder> getDao() {
@@ -189,65 +180,43 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
             RequisitionOrder order = result.getData();
             OperateResultWithData<RequisitionOrder> resultWithData = this.save(order);
             if (resultWithData.successful()) {
+                ResultData<Void> resultData = ResultData.success();
                 // 如果审核通过,更新关联单据状态
                 if (ApprovalStatus.PASSED == order.getApprovalStatus()) {
                     String relationId = order.getRelationId();
                     switch (order.getApplicationType()) {
                         case APPLICATION:
-                            applicationService.updateFrozen(relationId);
+                            // 应用申请
+                            resultData = applicationService.updateFrozen(relationId);
                             break;
                         case MODULE:
-                            AppModule module = appModuleService.findOne(relationId);
-                            Application application = applicationService.findOne(module.getAppId());
-                            // 创建git项目
-                            ProjectVo project = new ProjectVo();
-                            project.setProjectId(module.getId());
-                            project.setCode(module.getCode());
-                            project.setName(module.getName().concat(module.getRemark()));
-                            project.setGroupId(application.getGroupCode());
-                            project.setGroupName(application.getGroupName());
-                            if (StringUtils.isBlank(module.getNameSpace())) {
-                                project.setType(ProjectType.WEB);
-                            } else {
-                                project.setType(ProjectType.JAVA);
-                                project.setNameSpace(module.getNameSpace());
-                            }
-                            ResultData<ProjectVo> resultData = gitlabService.createProject(project);
-                            if (resultData.successful()) {
-                                // 流程审核完成,更新冻结状态为:启用
-                                module.setFrozen(Boolean.FALSE);
-                                ProjectVo gitProject = resultData.getData();
-                                module.setGitId(gitProject.getGitId());
-                                module.setGitHttpUrl(gitProject.getGitHttpUrl());
-                                module.setGitSshUrl(gitProject.getGitSshUrl());
-                                module.setGitWebUrl(gitProject.getGitWebUrl());
-                                module.setGitCreateTime(gitProject.getGitCreateTime());
-                                OperateResultWithData<AppModule> result1 = appModuleService.save(module);
-                                if (result1.notSuccessful()) {
-                                    // 事务回滚
-                                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                                    return ResultData.fail(result1.getMessage());
-                                }
-                            } else {
-                                // 事务回滚
-                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                                return ResultData.fail(resultData.getMessage());
-                            }
+                            // 应用模块申请
+                            resultData = appModuleService.updateFrozen(relationId);
                             break;
                         case VERSION:
-                            // TODO VERSION
+                            // TODO 版本修订申请
+                            resultData = ResultData.fail("版本修订申请暂未开发实现");
                             break;
                         case PUBLISH:
-                            // TODO PUBLISH
+                            // TODO 发布申请
+                            resultData = ResultData.fail("发布申请暂未开发实现");
                             break;
                         case DEPLOY:
-                            // TODO DEPLOY
+                            // TODO 项目部署申请
+                            resultData = ResultData.fail("项目部署申请暂未开发实现");
                             break;
                         default:
                             LogUtil.error("错误的申请类型.");
+                            resultData = ResultData.fail("错误的申请类型");
                     }
                 }
-                return ResultData.success();
+                if (resultData.successful()) {
+                    return ResultData.success();
+                } else {
+                    // 事务回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultData.fail(resultWithData.getMessage());
+                }
             } else {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
