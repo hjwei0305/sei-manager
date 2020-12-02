@@ -1,8 +1,11 @@
 package com.changhong.sei.deploy.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.time.LocalDateTime;
 
 /**
  * 应用模块(AppModule)DTO类
@@ -48,11 +51,28 @@ public class AppModuleDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "gitId")
     private String gitId;
+
     /**
      * git地址
      */
-    @ApiModelProperty(value = "git地址")
-    private String gitUrl;
+    @ApiModelProperty(value = "git HTTP 地址")
+    private String gitHttpUrl;
+    /**
+     * git地址
+     */
+    @ApiModelProperty(value = "git SSH 地址")
+    private String gitSshUrl;
+    /**
+     * git项目地址
+     */
+    @ApiModelProperty(value = "git项目地址")
+    private String gitWebUrl;
+    /**
+     * git项目创建时间
+     */
+    @ApiModelProperty(value = "git项目创建时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime gitCreateTime;
     /**
      * 描述说明
      */
@@ -120,12 +140,36 @@ public class AppModuleDto extends BaseEntityDto {
         this.gitId = gitId;
     }
 
-    public String getGitUrl() {
-        return gitUrl;
+    public String getGitHttpUrl() {
+        return gitHttpUrl;
     }
 
-    public void setGitUrl(String gitUrl) {
-        this.gitUrl = gitUrl;
+    public void setGitHttpUrl(String gitHttpUrl) {
+        this.gitHttpUrl = gitHttpUrl;
+    }
+
+    public String getGitSshUrl() {
+        return gitSshUrl;
+    }
+
+    public void setGitSshUrl(String gitSshUrl) {
+        this.gitSshUrl = gitSshUrl;
+    }
+
+    public String getGitWebUrl() {
+        return gitWebUrl;
+    }
+
+    public void setGitWebUrl(String gitWebUrl) {
+        this.gitWebUrl = gitWebUrl;
+    }
+
+    public LocalDateTime getGitCreateTime() {
+        return gitCreateTime;
+    }
+
+    public void setGitCreateTime(LocalDateTime gitCreateTime) {
+        this.gitCreateTime = gitCreateTime;
     }
 
     public String getRemark() {
