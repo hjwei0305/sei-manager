@@ -14,6 +14,7 @@ import com.changhong.sei.deploy.dao.FlowToDoTaskDao;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
 import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.FlowToDoTask;
+import com.changhong.sei.deploy.entity.ReleaseRecord;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -45,6 +46,8 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     private ApplicationService applicationService;
     @Autowired
     private AppModuleService appModuleService;
+    @Autowired
+    private ReleaseRecordService releaseRecordService;
     @Autowired
     private FlowToDoTaskDao toDoTaskDao;
     @Autowired
@@ -199,7 +202,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                             break;
                         case PUBLISH:
                             // TODO 发布申请
-                            resultData = ResultData.fail("发布申请暂未开发实现");
+                            resultData = releaseRecordService.updateFrozen(relationId);
                             break;
                         case DEPLOY:
                             // TODO 项目部署申请

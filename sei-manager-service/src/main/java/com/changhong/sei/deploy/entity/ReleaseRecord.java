@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
+import com.changhong.sei.core.entity.IFrozen;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -11,18 +12,28 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 版本发布记录(ReleaseVersion)实体类
+ * 发布记录(ReleaseRecord)实体类
  *
  * @author sei
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "release_version")
+@Table(name = "release_record")
 @DynamicInsert
 @DynamicUpdate
-public class ReleaseVersion extends BaseEntity implements Serializable {
+public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
+    /**
+     * 环境
+     */
+    @Column(name = "env_code")
+    private String envCode;
+    /**
+     * 环境
+     */
+    @Column(name = "env_name")
+    private String envName;
     /**
      * 所属应用id
      */
@@ -44,35 +55,48 @@ public class ReleaseVersion extends BaseEntity implements Serializable {
     @Column(name = "module_name")
     private String moduleName;
     /**
-     * 版本号
-     */
-    @Column(name = "version_")
-    private String version;
-    /**
      * 标签名称
      */
-    @Column(name = "commit_id")
-    private String commitId;
+    @Column(name = "tag_name")
+    private String tagName;
+
     /**
-     * 镜像名
-     */
-    @Column(name = "image_name")
-    private String imageName;
-    /**
-     * 版本名称
+     * 名称
      */
     @Column(name = "name")
     private String name;
     /**
-     * 描述说明
+     * 描述说明(部署要求,脚本内容等)
      */
     @Column(name = "remark")
     private String remark;
+
     /**
-     * 版本创建时间
+     * 是否冻结
      */
-    @Column(name = "create_time")
-    private LocalDateTime createTime;
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.TRUE;
+    /**
+     * 期望完成时间
+     */
+    @Column(name = "exp_complete_time")
+    private LocalDateTime expCompleteTime;
+
+    public String getEnvCode() {
+        return envCode;
+    }
+
+    public void setEnvCode(String envCode) {
+        this.envCode = envCode;
+    }
+
+    public String getEnvName() {
+        return envName;
+    }
+
+    public void setEnvName(String envName) {
+        this.envName = envName;
+    }
 
     public String getAppId() {
         return appId;
@@ -106,28 +130,12 @@ public class ReleaseVersion extends BaseEntity implements Serializable {
         this.moduleName = moduleName;
     }
 
-    public String getVersion() {
-        return version;
+    public String getTagName() {
+        return tagName;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getCommitId() {
-        return commitId;
-    }
-
-    public void setCommitId(String commitId) {
-        this.commitId = commitId;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 
     public String getName() {
@@ -146,11 +154,21 @@ public class ReleaseVersion extends BaseEntity implements Serializable {
         this.remark = remark;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
+    @Override
+    public Boolean getFrozen() {
+        return frozen;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
+    @Override
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
+    }
+
+    public LocalDateTime getExpCompleteTime() {
+        return expCompleteTime;
+    }
+
+    public void setExpCompleteTime(LocalDateTime expCompleteTime) {
+        this.expCompleteTime = expCompleteTime;
     }
 }
