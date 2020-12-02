@@ -42,7 +42,7 @@ public class RequisitionOrderServiceTest extends BaseUnitTest {
 
     @Test
     public void handleTask() {
-        String json = "{\"requisitionId\":\"849E67B9-3386-11EB-B8CA-0242C0A84603\",\"message\":\"审核通过\",\"operationType\":\"PASSED\",\"taskId\":\"84BB659B-3386-11EB-B8CA-0242C0A84603\"}";
+        String json = "{\"requisitionId\":\"172FAB4F-33B1-11EB-B17B-0242C0A84603\",\"message\":\"审核通过\",\"operationType\":\"PASSED\",\"taskId\":\"1751D951-33B1-11EB-B17B-0242C0A84603\"}";
         TaskHandleRequest request = JsonUtils.fromJson(json, TaskHandleRequest.class);
         ResultData resultData = service.handleTask(request);
         System.out.println(resultData);

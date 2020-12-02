@@ -2,14 +2,15 @@ package com.changhong.sei.integrated.service;
 
 import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.integrated.vo.ProjectTagVo;
 import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import com.changhong.sei.util.IdGenerator;
+import org.gitlab.api.models.GitlabRelease;
+import org.gitlab.api.models.GitlabTag;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.*;
+import java.util.List;
 
 /**
  * 实现功能：
@@ -38,11 +39,27 @@ public class GitlabServiceTest extends BaseUnitTest {
 
     @Test
     public void createProjectTag() {
-        ProjectTagVo project = new ProjectTagVo();
-        project.setProjectId("1423");
-        project.setTagName("1.0.2-beta");
-        project.setMessage("测试createProject TAG");
-        ResultData<ProjectTagVo> resultData = service.createProjectTag(project);
+        String gitId = "1423";
+        String tagName = "1.0.3-beta";
+        String message = "测试createProject TAG";
+        String branch = "master";
+        ResultData<GitlabTag> resultData = service.createProjectTag(gitId, tagName, branch, message);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void getProjectTags() {
+        String gitId = "1423";
+        ResultData<List<GitlabTag>> resultData = service.getProjectTags(gitId);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void createProjectRelease() {
+        String gitId = "1423";
+        String tagName = "1.0.3-beta";
+        String message = "测试createProject TAG";
+        ResultData<GitlabRelease> resultData = service.createProjectRelease(gitId, tagName, message);
         System.out.println(resultData);
     }
 }

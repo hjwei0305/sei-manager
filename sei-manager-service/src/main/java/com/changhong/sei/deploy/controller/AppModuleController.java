@@ -8,13 +8,19 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.AppModuleApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
 import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
+import com.changhong.sei.deploy.dto.CreateTagRequest;
+import com.changhong.sei.deploy.dto.GitlabTagDto;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.AppModuleRequisition;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
 import com.changhong.sei.deploy.service.ApplicationService;
+import com.changhong.sei.integrated.service.GitlabService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
+import org.gitlab.api.models.GitlabTag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +39,7 @@ import java.util.stream.Collectors;
 @Api(value = "AppModuleApi", tags = "应用模块服务")
 @RequestMapping(path = "appModule", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AppModuleController extends BaseEntityController<AppModule, AppModuleDto> implements AppModuleApi {
+    private static final Logger LOG = LoggerFactory.getLogger(AppModuleController.class);
     /**
      * 应用模块服务对象
      */
@@ -40,6 +47,8 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     private AppModuleService service;
     @Autowired
     private ApplicationService applicationService;
+    @Autowired
+    private GitlabService gitlabService;
 
     @Override
     public BaseEntityService<AppModule> getService() {
@@ -155,5 +164,62 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     @Override
     public ResultData<Void> deleteRequisition(String id) {
         return service.deleteRequisition(id);
+    }
+
+    /**
+     * 获取项目标签
+     *
+     * @param gitId git项目id
+     * @return 创建结果
+     */
+    @Override
+    public ResultData<List<GitlabTagDto>> getTags(String gitId) {
+        List<GitlabTagDto> tagList = new ArrayList<>(16);
+        ResultData<List<GitlabTag>> resultData = gitlabService.getProjectTags(gitId);
+        if (resultData.successful()) {
+            GitlabTagDto dto;
+            List<GitlabTag> tags = resultData.getData();
+            for (GitlabTag tag : tags) {
+                dto = new GitlabTagDto();
+                dto.setName(tag.getName());
+                dto.setMessage(tag.getMessage());
+                dto.setRelease(Objects.nonNull(tag.getRelease()));
+                tagList.add(dto);
+            }
+        }
+        return ResultData.success(tagList);
+    }
+
+    /**
+     * 创建标签
+     *
+     * @param request 创建标签请求
+     * @return 创建结果
+     */
+    @Override
+    public ResultData<GitlabTagDto> createTag(CreateTagRequest request) {
+        ResultData<GitlabTag> resultData = gitlabService.createProjectTag(request.getGitId(), request.getTagName(), request.getBranch(), request.getMessage());
+        if (resultData.successful()) {
+            GitlabTag tag = resultData.getData();
+            GitlabTagDto dto = new GitlabTagDto();
+            dto.setName(tag.getName());
+            dto.setMessage(tag.getMessage());
+            dto.setRelease(Objects.nonNull(tag.getRelease()));
+            return ResultData.success(dto);
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
+    }
+
+    /**
+     * 删除项目标签
+     *
+     * @param gitId   git项目id
+     * @param tagName tag名
+     * @return 创建结果
+     */
+    @Override
+    public ResultData<Void> deleteRelease(String gitId, String tagName) {
+        return gitlabService.deleteProjectRelease(gitId, tagName);
     }
 }

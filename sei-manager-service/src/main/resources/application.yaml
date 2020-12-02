@@ -21,8 +21,8 @@ sei: # 应用全局配置
     password: ''
   gitlab:
     host: 'http://10.4.208.130:7001'
-    username: ''
-    password: ''
+    username: 'seiadmin'
+    password: '1q2w3e4r'
 
 spring:
   application:
