@@ -216,6 +216,12 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                             if (resultData.successful()) {
                                 // 流程审核完成,更新冻结状态为:启用
                                 module.setFrozen(Boolean.FALSE);
+                                ProjectVo gitProject = resultData.getData();
+                                module.setGitId(gitProject.getGitId());
+                                module.setGitHttpUrl(gitProject.getGitHttpUrl());
+                                module.setGitSshUrl(gitProject.getGitSshUrl());
+                                module.setGitWebUrl(gitProject.getGitWebUrl());
+                                module.setGitCreateTime(gitProject.getGitCreateTime());
                                 OperateResultWithData<AppModule> result1 = appModuleService.save(module);
                                 if (result1.notSuccessful()) {
                                     // 事务回滚
