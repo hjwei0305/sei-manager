@@ -83,9 +83,9 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param gitId git项目id
      * @return 创建结果
      */
-    @GetMapping(path = "getTags/{gitId}")
+    @GetMapping(path = "getTags")
     @ApiOperation(value = "获取项目标签", notes = "获取项目标签")
-    ResultData<List<GitlabTagDto>> getTags(@PathVariable("gitId") String gitId);
+    ResultData<List<GitlabTagDto>> getTags(@RequestParam("gitId") String gitId);
 
     /**
      * 创建标签
@@ -104,7 +104,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param tagName tag名
      * @return 创建结果
      */
-    @DeleteMapping(path = "deleteRelease/{gitId}/{tagName}")
+    @DeleteMapping(path = "deleteRelease/{gitId}")
     @ApiOperation(value = "删除标签", notes = "删除标签")
-    ResultData<Void> deleteRelease(@PathVariable("gitId") String gitId, @PathVariable("tagName") String tagName);
+    ResultData<Void> deleteRelease(@PathVariable("gitId") String gitId, @RequestParam("tagName") String tagName);
 }
