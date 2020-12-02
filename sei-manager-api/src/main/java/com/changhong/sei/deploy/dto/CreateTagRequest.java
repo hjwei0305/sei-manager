@@ -17,15 +17,15 @@ public class CreateTagRequest implements Serializable {
     private static final long serialVersionUID = -4455924348686616256L;
 
     @NotBlank
-    @ApiModelProperty(notes = "gitId")
+    @ApiModelProperty(notes = "gitId", required = true)
     private String gitId;
     @NotBlank
-    @ApiModelProperty(notes = "tag名")
+    @ApiModelProperty(notes = "tag名", required = true)
     private String tagName;
     @ApiModelProperty(notes = "分支名")
     private String branch = "master";
     @NotBlank
-    @ApiModelProperty(notes = "描述")
+    @ApiModelProperty(notes = "描述", required = true)
     private String message;
 
     public String getGitId() {

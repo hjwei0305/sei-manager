@@ -1,7 +1,6 @@
 package com.changhong.sei.deploy.entity;
 
-import com.changhong.sei.core.entity.BaseAuditableEntity;
-import com.changhong.sei.core.entity.IFrozen;
+import com.changhong.sei.core.entity.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -12,16 +11,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 应用模块(AppModule)实体类
+ * 版本发布记录(ReleaseVersion)实体类
  *
  * @author sei
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "app_module_version")
+@Table(name = "release_version")
 @DynamicInsert
 @DynamicUpdate
-public class AppModuleVersion extends BaseAuditableEntity implements IFrozen, Serializable {
+public class ReleaseVersion extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
     /**
@@ -45,11 +44,6 @@ public class AppModuleVersion extends BaseAuditableEntity implements IFrozen, Se
     @Column(name = "module_name")
     private String moduleName;
     /**
-     * 模块分支
-     */
-    @Column(name = "branch")
-    private String branch;
-    /**
      * 版本号
      */
     @Column(name = "version_")
@@ -57,22 +51,23 @@ public class AppModuleVersion extends BaseAuditableEntity implements IFrozen, Se
     /**
      * 标签名称
      */
-    @Column(name = "tag_name")
-    private String tagName;
-    @Column(name = "target")
-    private String target;
     @Column(name = "commit_id")
     private String commitId;
+    /**
+     * 镜像名
+     */
+    @Column(name = "image_name")
+    private String imageName;
     /**
      * 描述说明
      */
     @Column(name = "remark")
     private String remark;
     /**
-     * 冻结
+     * 版本创建时间
      */
-    @Column(name = "frozen")
-    private Boolean frozen = Boolean.TRUE;
+    @Column(name = "create_time")
+    private LocalDateTime createTime;
 
     public String getAppId() {
         return appId;
@@ -106,36 +101,12 @@ public class AppModuleVersion extends BaseAuditableEntity implements IFrozen, Se
         this.moduleName = moduleName;
     }
 
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-
     public String getVersion() {
         return version;
     }
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
     }
 
     public String getCommitId() {
@@ -146,6 +117,14 @@ public class AppModuleVersion extends BaseAuditableEntity implements IFrozen, Se
         this.commitId = commitId;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
     public String getRemark() {
         return remark;
     }
@@ -154,13 +133,11 @@ public class AppModuleVersion extends BaseAuditableEntity implements IFrozen, Se
         this.remark = remark;
     }
 
-    @Override
-    public Boolean getFrozen() {
-        return frozen;
+    public LocalDateTime getCreateTime() {
+        return createTime;
     }
 
-    @Override
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
     }
 }
