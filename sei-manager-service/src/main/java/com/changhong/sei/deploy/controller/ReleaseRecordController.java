@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "ReleaseRecordApi", tags = "发布记录服务")
-@RequestMapping(path = "releaseVersion", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "releaseRecord", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ReleaseRecordController extends BaseEntityController<ReleaseRecord, ReleaseRecordDto> implements ReleaseRecordApi {
     /**
      * 发布记录服务对象
