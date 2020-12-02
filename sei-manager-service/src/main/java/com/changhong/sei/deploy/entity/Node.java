@@ -48,6 +48,16 @@ public class Node extends BaseAuditableEntity implements IFrozen, Serializable {
     @Column(name = "env_name")
     private String envName;
     /**
+     * 凭证id
+     */
+    @Column(name = "certificate_id")
+    private String certificateId;
+    /**
+     * 凭证名称
+     */
+    @Column(name = "certificate_name")
+    private String certificateName;
+    /**
      * 描述说明
      */
     @Column(name = "remark")
@@ -94,6 +104,22 @@ public class Node extends BaseAuditableEntity implements IFrozen, Serializable {
 
     public void setEnvName(String envName) {
         this.envName = envName;
+    }
+
+    public String getCertificateId() {
+        return certificateId;
+    }
+
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
+    }
+
+    public String getCertificateName() {
+        return certificateName;
+    }
+
+    public void setCertificateName(String certificateName) {
+        this.certificateName = certificateName;
     }
 
     public String getRemark() {
