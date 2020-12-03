@@ -119,6 +119,14 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
         this.gitId = gitId;
     }
 
+    public String getModuleCode() {
+        return moduleCode;
+    }
+
+    public void setModuleCode(String moduleCode) {
+        this.moduleCode = moduleCode;
+    }
+
     public String getModuleName() {
         return moduleName;
     }
