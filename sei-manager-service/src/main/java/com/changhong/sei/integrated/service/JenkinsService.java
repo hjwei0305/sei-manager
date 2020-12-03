@@ -1,6 +1,22 @@
 package com.changhong.sei.integrated.service;
 
+import com.changhong.sei.core.dto.ResultData;
+import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.client.JenkinsHttpClient;
+import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildResult;
+import com.offbytwo.jenkins.model.BuildWithDetails;
+import com.offbytwo.jenkins.model.JobWithDetails;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
 
 /**
  * 实现功能：
@@ -10,4 +26,149 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JenkinsService {
+    private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
+    /**
+     * 认证header
+     */
+    private static final String HEADER_TOKEN_KEY = "PRIVATE-TOKEN";
+    /**
+     * jenkins服务地址
+     */
+    @Value("${sei.jenkins.host}")
+    private String host;
+    /**
+     * jenkins用户名
+     */
+    @Value("${sei.jenkins.username}")
+    private String username;
+    /**
+     * jenkins密码
+     */
+    @Value("${sei.jenkins.password}")
+    private String password;
+
+    /**
+     * 注入jenkinsHttpClient对象
+     */
+    private JenkinsHttpClient getJenkinsHttpClient() throws URISyntaxException {
+        return new JenkinsHttpClient(new URI(host), username, password);
+    }
+
+    /**
+     * 注入jenkinsServer对象
+     */
+    private JenkinsServer getJenkinsServer() {
+        try {
+            JenkinsHttpClient jenkinsHttpClient = getJenkinsHttpClient();
+            return new JenkinsServer(jenkinsHttpClient);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("创建JenkinsServer异常: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
+    }
+
+    /**
+     * 创建Jenkins任务
+     *
+     * @param jobName 任务名
+     * @param jobXml  任务xml配置
+     * @return 返回Jenkins任务
+     */
+    public ResultData<Void> createJob(String jobName, String jobXml) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            server.createJob(jobName, jobXml);
+            return ResultData.success();
+        } catch (IOException e) {
+            LOG.error("获取Jenkins任务异常", e);
+            return ResultData.fail("创建Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    /**
+     * 删除Jenkins任务
+     *
+     * @param jobName 任务名
+     * @return 返回Jenkins任务
+     */
+    public ResultData<Void> deleteJob(String jobName) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            server.deleteJob(jobName, Boolean.TRUE);
+            return ResultData.success();
+        } catch (IOException e) {
+            LOG.error("获取Jenkins任务异常", e);
+            return ResultData.fail("创建Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    /**
+     * 获取Jenkins任务
+     *
+     * @param jobName 任务名
+     * @return 返回Jenkins任务
+     */
+    public JobWithDetails getJob(String jobName) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            return server.getJob(jobName);
+        } catch (IOException e) {
+            throw new RuntimeException("获取Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
+    }
+
+    /**
+     * 构建指定的Jenkins任务
+     *
+     * @param jobName 任务名
+     * @return 返回Jenkins任务
+     */
+    public ResultData<Void> buildJob(String jobName) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            JobWithDetails details = server.getJob(jobName);
+            details.build(Boolean.TRUE);
+            return ResultData.success();
+        } catch (IOException e) {
+            LOG.error("获取Jenkins任务异常", e);
+            return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    /**
+     * 构建指定的Jenkins任务
+     *
+     * @param jobName 任务名
+     * @return 返回Jenkins任务
+     */
+    public ResultData<Void> buildJob(String jobName, Map<String, String> params) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            JobWithDetails details = server.getJob(jobName);
+            details.build(params, Boolean.TRUE);
+            return ResultData.success();
+        } catch (IOException e) {
+            LOG.error("获取Jenkins任务异常", e);
+            return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    /**
+     * 构建指定的Jenkins任务
+     *
+     * @param jobName 任务名
+     * @return 返回Jenkins任务
+     */
+    public ResultData<Void> buildJob(String jobName, int buildNumber) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            JobWithDetails details = server.getJob(jobName);
+            Build build = details.getBuildByNumber(buildNumber);
+            BuildWithDetails buildWithDetails = build.details();
+            // 构建状态枚举
+            BuildResult buildResult = buildWithDetails.getResult();
+            System.out.println(buildResult);
+            // 构建日志
+            String logs = buildWithDetails.getConsoleOutputText();
+            System.out.println(logs);
+            return ResultData.success();
+        } catch (IOException e) {
+            LOG.error("获取Jenkins任务异常", e);
+            return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
 }
