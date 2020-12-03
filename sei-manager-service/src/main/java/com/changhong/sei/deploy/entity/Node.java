@@ -22,6 +22,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class Node extends BaseAuditableEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = 954549891503436485L;
+    public static final String FIELD_ENV_CODE = "envCode";
     /**
      * 阶段名称
      */

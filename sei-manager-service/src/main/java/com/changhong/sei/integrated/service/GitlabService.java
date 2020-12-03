@@ -4,12 +4,8 @@ import com.changhong.sei.apitemplate.ApiTemplate;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.integrated.vo.ProjectVo;
-import org.gitlab4j.api.GitLabApi;
-import org.gitlab4j.api.ReleasesApi;
-import org.gitlab4j.api.TagsApi;
-import org.gitlab4j.api.models.Release;
-import org.gitlab4j.api.models.ReleaseParams;
-import org.gitlab4j.api.models.Tag;
+import org.gitlab4j.api.*;
+import org.gitlab4j.api.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,8 +96,8 @@ public class GitlabService {
      * @return 创建结果
      */
     public ResultData<List<Tag>> getProjectTags(String gitId) {
-        try {
-            TagsApi api = this.getGitLabApi().getTagsApi();
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            TagsApi api = gitLabApi.getTagsApi();
             List<Tag> tags = api.getTags(gitId);
             return ResultData.success(tags);
         } catch (Exception e) {
@@ -120,8 +116,8 @@ public class GitlabService {
      * @return 创建结果
      */
     public ResultData<Tag> createProjectTag(String gitId, String tagName, String branch, String message) {
-        try {
-            TagsApi api = this.getGitLabApi().getTagsApi();
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            TagsApi api = gitLabApi.getTagsApi();
             Tag tag = api.createTag(gitId, tagName, branch, message, "");
             return ResultData.success(tag);
         } catch (Exception e) {
@@ -138,8 +134,8 @@ public class GitlabService {
      * @return 创建结果
      */
     public ResultData<Void> deleteProjectTag(String gitId, String tagName) {
-        try {
-            TagsApi api = this.getGitLabApi().getTagsApi();
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            TagsApi api = gitLabApi.getTagsApi();
             api.deleteTag(gitId, tagName);
             return ResultData.success();
         } catch (Exception e) {
@@ -157,8 +153,8 @@ public class GitlabService {
      * @return 创建结果
      */
     public ResultData<Release> createProjectRelease(String gitId, String name, String tagName, String message) {
-        try {
-            ReleasesApi api = this.getGitLabApi().getReleasesApi();
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            ReleasesApi api = gitLabApi.getReleasesApi();
             ReleaseParams params = new ReleaseParams();
             params.setName(name);
             params.setTagName(tagName);
@@ -169,6 +165,118 @@ public class GitlabService {
         } catch (Exception e) {
             LOG.error("创建tag异常", e);
             return ResultData.fail("创建tag异常" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取gitlab可用用户
+     *
+     * @return 返回gitlab可用用户
+     */
+    public ResultData<List<User>> getUser() {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            UserApi userApi = gitLabApi.getUserApi();
+            List<User> users = userApi.getActiveUsers();
+            return ResultData.success(users);
+        } catch (GitLabApiException e) {
+            LOG.error("获取gitlab用户异常", e);
+            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取gitlab可用用户
+     *
+     * @return 返回gitlab可用用户
+     */
+    public ResultData<User> createUser(String id, String account, String name, String email) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            UserApi userApi = gitLabApi.getUserApi();
+            User user = new User();
+            user.setName(name);
+            user.setUsername(account);
+            user.setEmail(email);
+            user.setExternal(Boolean.TRUE);
+            user.setExternUid(id);
+            user.setProvider("SEI");
+            user = userApi.createUser(user, "123456", true);
+            return ResultData.success(user);
+        } catch (GitLabApiException e) {
+            LOG.error("获取gitlab用户异常", e);
+            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 创建gitlab 组
+     *
+     * @return 返回创建的gitlab的组实例
+     */
+    public ResultData<Group> createGroup(String name, String path) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            GroupApi groupApi = gitLabApi.getGroupApi();
+            Group group = groupApi.addGroup(name, path);
+            return ResultData.success(group);
+        } catch (GitLabApiException e) {
+            LOG.error("获取gitlab用户异常", e);
+            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 创建gitlab 组
+     *
+     * @return 返回创建的gitlab的组实例
+     */
+    public ResultData<Group> updateGroup(String groupId, String name) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            GroupApi groupApi = gitLabApi.getGroupApi();
+            ResultData<Group> resultData = getGroup(groupId);
+            if (resultData.successful()) {
+                Group group = resultData.getData();
+                group.setName(name);
+                group = groupApi.updateGroup(group);
+                return ResultData.success(group);
+            } else {
+                return resultData;
+            }
+        } catch (GitLabApiException e) {
+            LOG.error("获取gitlab用户异常", e);
+            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 创建gitlab 组
+     *
+     * @return 返回创建的gitlab的组实例
+     */
+    public ResultData<Void> deleteGroup(String groupId) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            GroupApi groupApi = gitLabApi.getGroupApi();
+
+            groupApi.deleteGroup(groupId);
+            return ResultData.success();
+        } catch (GitLabApiException e) {
+            LOG.error("获取gitlab用户异常", e);
+            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 创建gitlab 组
+     *
+     * @return 返回创建的gitlab的组实例
+     */
+    public ResultData<Group> getGroup(String groupId) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            GroupApi groupApi = gitLabApi.getGroupApi();
+
+            Group group = groupApi.getGroup(groupId);
+            return ResultData.success(group);
+        } catch (GitLabApiException e) {
+            LOG.error("获取gitlab用户异常", e);
+            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
         }
     }
 }

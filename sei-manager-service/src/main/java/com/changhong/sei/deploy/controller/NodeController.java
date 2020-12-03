@@ -2,6 +2,8 @@ package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.NodeApi;
 import com.changhong.sei.deploy.dto.NodeDto;
@@ -54,5 +56,16 @@ public class NodeController extends BaseEntityController<Node, NodeDto> implemen
     @Override
     public ResultData<List<NodeDto>> findAllUnfrozen() {
         return ResultData.success(convertToDtos(service.findAll()));
+    }
+
+    /**
+     * 根据环境代码获取节点
+     *
+     * @param env 环境代码
+     * @return 返回节点
+     */
+    @Override
+    public ResultData<List<NodeDto>> getNode(String env) {
+        return ResultData.success(convertToDtos(service.getNode(env)));
     }
 }
