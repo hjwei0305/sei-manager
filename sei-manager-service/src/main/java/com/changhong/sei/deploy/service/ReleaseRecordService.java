@@ -151,12 +151,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             return ResultData.fail("应用已审核,不允许编辑!");
         }
 
-
         entity.setEnvCode(releaseRecord.getEnvCode());
         entity.setEnvName(releaseRecord.getEnvName());
         entity.setAppId(releaseRecord.getAppId());
         entity.setAppName(releaseRecord.getAppName());
         entity.setGitId(releaseRecord.getGitId());
+        entity.setModuleCode(releaseRecord.getModuleCode());
         entity.setModuleName(releaseRecord.getModuleName());
         entity.setTagName(releaseRecord.getTagName());
         entity.setName(releaseRecord.getName());
