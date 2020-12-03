@@ -42,6 +42,11 @@ public class ReleaseRecordRequisitionDto extends RequisitionDto implements Seria
     @ApiModelProperty(value = "模块git id")
     private String gitId;
     /**
+     * 模块代码
+     */
+    @ApiModelProperty(value = "模块代码")
+    private String moduleCode;
+    /**
      * 模块名称
      */
     @ApiModelProperty(value = "模块名称")
@@ -106,6 +111,14 @@ public class ReleaseRecordRequisitionDto extends RequisitionDto implements Seria
 
     public void setGitId(String gitId) {
         this.gitId = gitId;
+    }
+
+    public String getModuleCode() {
+        return moduleCode;
+    }
+
+    public void setModuleCode(String moduleCode) {
+        this.moduleCode = moduleCode;
     }
 
     public String getModuleName() {
