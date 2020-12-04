@@ -20,6 +20,7 @@ import java.util.Map;
 
 /**
  * 实现功能：
+ * https://blog.csdn.net/qq_32641153/article/details/94230465
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-12-01 14:31
@@ -84,6 +85,23 @@ public class JenkinsService {
     }
 
     /**
+     * 修改Jenkins任务
+     *
+     * @param jobName 任务名
+     * @param jobXml  任务xml配置
+     * @return 返回Jenkins任务
+     */
+    public ResultData<Void> updateJob(String jobName, String jobXml) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            server.updateJob(jobName, jobXml);
+            return ResultData.success();
+        } catch (IOException e) {
+            LOG.error("获取Jenkins任务异常", e);
+            return ResultData.fail("创建Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    /**
      * 删除Jenkins任务
      *
      * @param jobName 任务名
@@ -105,7 +123,7 @@ public class JenkinsService {
      * @param jobName 任务名
      * @return 返回Jenkins任务
      */
-    public JobWithDetails getJob(String jobName) {
+    private JobWithDetails getJob(String jobName) {
         try (JenkinsServer server = getJenkinsServer()) {
             return server.getJob(jobName);
         } catch (IOException e) {
@@ -114,16 +132,20 @@ public class JenkinsService {
     }
 
     /**
-     * 构建指定的Jenkins任务
+     * 构建指定的无参数Jenkins任务
      *
      * @param jobName 任务名
      * @return 返回Jenkins任务
      */
-    public ResultData<Void> buildJob(String jobName) {
+    public ResultData<Integer> buildJob(String jobName) {
         try (JenkinsServer server = getJenkinsServer()) {
             JobWithDetails details = server.getJob(jobName);
+            // 获取构建任务号
+            int buildNumber = details.getNextBuildNumber();
+            // 构建
             details.build(Boolean.TRUE);
-            return ResultData.success();
+
+            return ResultData.success(buildNumber);
         } catch (IOException e) {
             LOG.error("获取Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
@@ -131,16 +153,20 @@ public class JenkinsService {
     }
 
     /**
-     * 构建指定的Jenkins任务
+     * 构建指定的带参数Jenkins任务
      *
      * @param jobName 任务名
      * @return 返回Jenkins任务
      */
-    public ResultData<Void> buildJob(String jobName, Map<String, String> params) {
+    public ResultData<Integer> buildJob(String jobName, Map<String, String> params) {
         try (JenkinsServer server = getJenkinsServer()) {
             JobWithDetails details = server.getJob(jobName);
+            // 获取构建任务号
+            int buildNumber = details.getNextBuildNumber();
+            // 构建
             details.build(params, Boolean.TRUE);
-            return ResultData.success();
+
+            return ResultData.success(buildNumber);
         } catch (IOException e) {
             LOG.error("获取Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
@@ -148,12 +174,12 @@ public class JenkinsService {
     }
 
     /**
-     * 构建指定的Jenkins任务
+     * 根据构建号指定的Jenkins任务
      *
      * @param jobName 任务名
      * @return 返回Jenkins任务
      */
-    public ResultData<Void> buildJob(String jobName, int buildNumber) {
+    public ResultData<Void> getBuildInfo(String jobName, int buildNumber) {
         try (JenkinsServer server = getJenkinsServer()) {
             JobWithDetails details = server.getJob(jobName);
             Build build = details.getBuildByNumber(buildNumber);

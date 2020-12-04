@@ -201,7 +201,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                             resultData = ResultData.fail("版本修订申请暂未开发实现");
                             break;
                         case PUBLISH:
-                            // TODO 发布申请
+                            // 发布申请
                             resultData = releaseRecordService.updateFrozen(relationId);
                             break;
                         case DEPLOY:

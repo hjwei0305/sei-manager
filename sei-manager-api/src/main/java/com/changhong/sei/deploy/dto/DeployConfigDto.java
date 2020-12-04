@@ -4,6 +4,8 @@ import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 部署配置(DeployConfig)DTO类
  *
@@ -17,6 +19,7 @@ public class DeployConfigDto extends BaseEntityDto {
     /**
      * 环境
      */
+    @NotBlank
     @ApiModelProperty(value = "环境代码", required = true)
     private String envCode;
     /**
@@ -28,6 +31,7 @@ public class DeployConfigDto extends BaseEntityDto {
     /**
      * 所属应用id
      */
+    @NotBlank
     @ApiModelProperty(value = "所属应用id", required = true)
     private String appId;
     /**
@@ -38,8 +42,15 @@ public class DeployConfigDto extends BaseEntityDto {
     /**
      * 模块id
      */
+    @NotBlank
     @ApiModelProperty(value = "模块id", required = true)
     private String moduleId;
+    /**
+     * 模块代码
+     */
+    @NotBlank
+    @ApiModelProperty(value = "模块代码", required = true)
+    private String moduleCode;
     /**
      * 模块名称
      */
@@ -110,6 +121,14 @@ public class DeployConfigDto extends BaseEntityDto {
 
     public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
+    }
+
+    public String getModuleCode() {
+        return moduleCode;
+    }
+
+    public void setModuleCode(String moduleCode) {
+        this.moduleCode = moduleCode;
     }
 
     public String getModuleName() {

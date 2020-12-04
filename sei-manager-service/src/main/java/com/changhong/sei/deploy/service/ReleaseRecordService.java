@@ -11,19 +11,19 @@ import com.changhong.sei.deploy.dao.ReleaseRecordDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.BuildStatus;
 import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
 import com.changhong.sei.deploy.entity.ReleaseRecordRequisition;
-import com.changhong.sei.deploy.entity.ReleaseVersion;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
-import com.changhong.sei.integrated.service.GitlabService;
-import org.gitlab4j.api.models.Release;
+import com.changhong.sei.integrated.service.JenkinsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -44,7 +44,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Autowired
     private RequisitionOrderService requisitionOrderService;
     @Autowired
-    private GitlabService gitlabService;
+    private JenkinsService jenkinsService;
 
     @Override
     protected BaseEntityDao<ReleaseRecord> getDao() {
@@ -250,41 +250,65 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     }
 
     /**
-     * 流程审核完成,更新冻结状态为:启用
+     * 流程审核完成,执行Jenkins构建任务,更新冻结状态为:启用
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updateFrozen(String id) {
-        ReleaseRecord releaseRecord = this.findOne(id);
-        if (Objects.nonNull(releaseRecord)) {
-            releaseRecord.setFrozen(Boolean.FALSE);
-        }
-        // todo 异步调用Jenkins构建
-
-
-        // todo Jenkins构建成功,调用gitlab创建版本
-        ResultData<Release> resultData = gitlabService.createProjectRelease(releaseRecord.getGitId(), releaseRecord.getName(), releaseRecord.getTagName(), releaseRecord.getName());
-        if (resultData.successful()) {
-            Release gitlabRelease = resultData.getData();
-            ReleaseVersion version = new ReleaseVersion();
-            version.setAppId(releaseRecord.getAppId());
-            version.setAppName(releaseRecord.getAppName());
-            version.setGitId(releaseRecord.getGitId());
-            version.setModuleName(releaseRecord.getModuleName());
-            version.setName(releaseRecord.getName());
-            version.setCommitId(gitlabRelease.getCommit().getId());
-            // 约定镜像命名规范
-            version.setImageName(releaseRecord.getModuleName() + "/" + gitlabRelease.getTagName());
-            version.setVersion(gitlabRelease.getTagName());
-            version.setRemark(gitlabRelease.getDescription());
-            version.setCreateTime(LocalDateTime.now());
-            releaseVersionService.save(version);
+        ReleaseRecord releaseRecord = build(id);
+        if (Objects.isNull(releaseRecord)) {
+            return ResultData.fail("发布记录不存在");
         }
 
+        releaseRecord.setFrozen(Boolean.FALSE);
         OperateResultWithData<ReleaseRecord> result = this.save(releaseRecord);
         if (result.successful()) {
             return ResultData.success();
         } else {
             return ResultData.fail(result.getMessage());
         }
+    }
+
+    /**
+     * 构建Jenkins任务
+     *
+     * @param id 发布记录id
+     * @return 返回构建操作
+     */
+    public ResultData<Void> buildJob(String id) {
+        ReleaseRecord releaseRecord = build(id);
+        if (Objects.isNull(releaseRecord)) {
+            return ResultData.fail("发布记录不存在");
+        }
+        OperateResultWithData<ReleaseRecord> result = this.save(releaseRecord);
+        if (result.successful()) {
+            return ResultData.success();
+        } else {
+            return ResultData.fail(result.getMessage());
+        }
+    }
+
+    /**
+     * 构建
+     *
+     * @param recordId 发布记录Id
+     * @return 返回发布记录
+     */
+    private ReleaseRecord build(String recordId) {
+        ReleaseRecord releaseRecord = this.findOne(recordId);
+        if (Objects.nonNull(releaseRecord)) {
+            Map<String, String> params = new HashMap<>();
+            // TODO 参数
+            // 调用Jenkins构建
+            ResultData<Integer> resultData = jenkinsService.buildJob(releaseRecord.getJobName(), params);
+            if (resultData.successful()) {
+                // 设置构建号
+                releaseRecord.setBuildNumber(resultData.getData());
+                // 更新构建状态为构建中
+                releaseRecord.setBuildStatus(BuildStatus.BUILDING);
+            } else {
+                releaseRecord.setBuildStatus(BuildStatus.FAILURE);
+            }
+        }
+        return releaseRecord;
     }
 }

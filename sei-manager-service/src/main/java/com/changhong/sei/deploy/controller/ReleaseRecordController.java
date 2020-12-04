@@ -102,4 +102,15 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
     public ResultData<Void> deleteRequisition(String id) {
         return service.deleteRequisition(id);
     }
+
+    /**
+     * 构建Jenkins任务
+     *
+     * @param id 发布记录id
+     * @return 返回构建操作
+     */
+    @Override
+    public ResultData<Void> buildJob(String id) {
+        return service.buildJob(id);
+    }
 }

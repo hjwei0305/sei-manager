@@ -10,10 +10,7 @@ import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -66,4 +63,14 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
     @DeleteMapping(path = "deleteRequisition/{id}")
     @ApiOperation(value = "删除发布申请单", notes = "删除发布申请单")
     ResultData<Void> deleteRequisition(@PathVariable("id") String id);
+
+    /**
+     * 构建Jenkins任务
+     *
+     * @param id 发布记录id
+     * @return 返回构建操作
+     */
+    @PostMapping(path = "buildJob")
+    @ApiOperation(value = "构建Jenkins任务", notes = "构建Jenkins任务")
+    ResultData<Void> buildJob(@RequestParam("id") String id);
 }

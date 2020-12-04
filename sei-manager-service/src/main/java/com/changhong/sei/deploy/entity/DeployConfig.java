@@ -1,15 +1,14 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
-import com.changhong.sei.core.entity.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * 部署配置(DeployConfig)实体类
@@ -50,6 +49,11 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
      */
     @Column(name = "module_id")
     private String moduleId;
+    /**
+     * 模块代码
+     */
+    @Column(name = "module_code")
+    private String moduleCode;
     /**
      * 模块名称
      */
@@ -122,6 +126,14 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
         this.moduleId = moduleId;
     }
 
+    public String getModuleCode() {
+        return moduleCode;
+    }
+
+    public void setModuleCode(String moduleCode) {
+        this.moduleCode = moduleCode;
+    }
+
     public String getModuleName() {
         return moduleName;
     }
@@ -168,5 +180,15 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    /**
+     * 环境代码+模块代码
+     *
+     * @return Jenkins任务名
+     */
+    @Transient
+    public String getJobName() {
+        return envCode + "_" + moduleCode;
     }
 }

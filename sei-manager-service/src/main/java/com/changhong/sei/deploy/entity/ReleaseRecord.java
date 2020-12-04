@@ -2,12 +2,11 @@ package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.IFrozen;
+import com.changhong.sei.deploy.dto.BuildStatus;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -86,6 +85,17 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
      */
     @Column(name = "exp_complete_time")
     private LocalDateTime expCompleteTime;
+    /**
+     * Jenkins构建号
+     */
+    @Column(name = "build_number")
+    private Integer buildNumber;
+    /**
+     * Jenkins构建状态
+     */
+    @Column(name = "build_status")
+    @Enumerated(EnumType.STRING)
+    private BuildStatus buildStatus;
 
     public String getEnvCode() {
         return envCode;
@@ -183,5 +193,31 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
 
     public void setExpCompleteTime(LocalDateTime expCompleteTime) {
         this.expCompleteTime = expCompleteTime;
+    }
+
+    public Integer getBuildNumber() {
+        return buildNumber;
+    }
+
+    public void setBuildNumber(Integer buildNumber) {
+        this.buildNumber = buildNumber;
+    }
+
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(BuildStatus buildStatus) {
+        this.buildStatus = buildStatus;
+    }
+
+    /**
+     * 环境代码+模块代码
+     *
+     * @return Jenkins任务名
+     */
+    @Transient
+    public String getJobName() {
+        return envCode + "_" + moduleCode;
     }
 }
