@@ -76,7 +76,7 @@ public class JenkinsService {
      */
     public ResultData<Void> createJob(String jobName, String jobXml) {
         try (JenkinsServer server = getJenkinsServer()) {
-            server.createJob(jobName, jobXml);
+            server.createJob(jobName, jobXml, Boolean.TRUE);
             return ResultData.success();
         } catch (IOException e) {
             LOG.error("获取Jenkins任务异常", e);
@@ -93,7 +93,7 @@ public class JenkinsService {
      */
     public ResultData<Void> updateJob(String jobName, String jobXml) {
         try (JenkinsServer server = getJenkinsServer()) {
-            server.updateJob(jobName, jobXml);
+            server.updateJob(jobName, jobXml, Boolean.TRUE);
             return ResultData.success();
         } catch (IOException e) {
             LOG.error("获取Jenkins任务异常", e);
