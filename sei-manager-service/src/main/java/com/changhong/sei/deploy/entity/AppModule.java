@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
+import com.changhong.sei.core.entity.ICodeUnique;
 import com.changhong.sei.core.entity.IFrozen;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @Table(name = "app_module")
 @DynamicInsert
 @DynamicUpdate
-public class AppModule extends BaseAuditableEntity implements IFrozen, Serializable {
+public class AppModule extends BaseAuditableEntity implements ICodeUnique, IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
     /**
@@ -84,10 +85,12 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
         this.appId = appId;
     }
 
+    @Override
     public String getCode() {
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
     }

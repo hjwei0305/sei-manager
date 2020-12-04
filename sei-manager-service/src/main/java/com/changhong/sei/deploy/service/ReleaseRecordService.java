@@ -10,7 +10,11 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.common.Constants;
 import com.changhong.sei.deploy.dao.ReleaseRecordDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
-import com.changhong.sei.deploy.dto.*;
+import com.changhong.sei.deploy.dto.ApplyType;
+import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.BuildStatus;
+import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
+import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
 import com.changhong.sei.deploy.entity.ReleaseRecordRequisition;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
@@ -21,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,7 +42,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Autowired
     private ReleaseRecordRequisitionDao requisitionDao;
     @Autowired
-    private ReleaseVersionService releaseVersionService;
+    private AppModuleService moduleService;
     @Autowired
     private RequisitionOrderService requisitionOrderService;
     @Autowired
@@ -296,16 +299,13 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
             Map<String, String> params = new HashMap<>();
-            // 参数
-            List<DeployStageParamDto> deployStageParams = Constants.DEFAULT_STAGE_PARAMS;
-            for (DeployStageParamDto stageParam : deployStageParams) {
-                if (Constants.DEPLOY_STAGE_PARAM_PROJECT_NAME.equals(stageParam.getCode())) {
-                    params.put(stageParam.getCode(), releaseRecord.getModuleCode());
-                }
-                if (Constants.DEPLOY_STAGE_PARAM_BETA_VERSION.equals(stageParam.getCode())) {
-                    params.put(stageParam.getCode(), releaseRecord.getTagName());
-                }
-            }
+            // 参数:项目名称(模块代码)
+            params.put(Constants.DEPLOY_PARAM_PROJECT_NAME, releaseRecord.getModuleCode());
+            // 参数:应用git仓库地址
+            AppModule module = moduleService.getAppModule(releaseRecord.getModuleCode());
+            params.put(Constants.DEPLOY_PARAM_GIT_PATH, Objects.isNull(module) ? "null" : module.getGitHttpUrl());
+            // 参数:代码分支或者TAG
+            params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
 
             // 调用Jenkins构建
             ResultData<Integer> resultData = jenkinsService.buildJob(releaseRecord.getJobName(), params);

@@ -14,14 +14,14 @@ import java.util.List;
 public final class Constants {
     public static final List<DeployStageParamDto> DEFAULT_STAGE_PARAMS = new ArrayList<>();
 
-    public static final String DEPLOY_STAGE_PARAM_PROJECT_NAME = "PROJECT_NAME";
-    public static final String DEPLOY_STAGE_PARAM_BETA_VERSION = "BETA_VERSION";
-    public static final String DEPLOY_STAGE_PARAM_RELEASE_VERSION = "BETA_VERSION";
+    public static final String DEPLOY_PARAM_PROJECT_NAME = "PROJECT_NAME";
+    public static final String DEPLOY_PARAM_GIT_PATH  = "PROJECT_GIT_PATH";
+    public static final String DEPLOY_PARAM_BRANCH = "BRANCH";
 
     static {
-        DEFAULT_STAGE_PARAMS.add(new DeployStageParamDto(DEPLOY_STAGE_PARAM_PROJECT_NAME, "项目名称"));
-        DEFAULT_STAGE_PARAMS.add(new DeployStageParamDto(DEPLOY_STAGE_PARAM_BETA_VERSION, "参考的测试镜像版本"));
-        DEFAULT_STAGE_PARAMS.add(new DeployStageParamDto(DEPLOY_STAGE_PARAM_RELEASE_VERSION, "部署的生产镜像版本"));
+        DEFAULT_STAGE_PARAMS.add(new DeployStageParamDto(DEPLOY_PARAM_PROJECT_NAME, "项目名称"));
+        DEFAULT_STAGE_PARAMS.add(new DeployStageParamDto(DEPLOY_PARAM_GIT_PATH, "代码仓库地址"));
+        DEFAULT_STAGE_PARAMS.add(new DeployStageParamDto(DEPLOY_PARAM_BRANCH, "代码分支或者TAG"));
     }
 
 

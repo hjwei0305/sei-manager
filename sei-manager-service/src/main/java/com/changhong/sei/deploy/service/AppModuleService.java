@@ -279,4 +279,14 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             return ResultData.fail(resultData.getMessage());
         }
     }
+
+    /**
+     * 根据代码获取应用模块
+     *
+     * @param code 应用模块代码
+     * @return 返回应用模块
+     */
+    public AppModule getAppModule(String code) {
+        return dao.findByProperty(AppModule.CODE_FIELD, code);
+    }
 }
