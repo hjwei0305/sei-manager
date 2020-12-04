@@ -87,44 +87,6 @@ public class DeployTemplateStageService extends BaseRelationService<DeployTempla
     }
 
     /**
-     * 创建分配关系
-     *
-     * @param parentId 父实体Id
-     * @param childIds 子实体Id清单
-     * @return 操作结果
-     */
-    @Override
-    public OperateResult insertRelations(String parentId, List<String> childIds) {
-        if (childIds == null || childIds.size() == 0) {
-            return OperateResult.operationSuccess("core_service_00035", 0);
-        }
-        //排除已经存在的分配关系
-        List<DeployStage> children = getChildrenFromParentId(parentId);
-        Set<String> existChildIds = new HashSet<>();
-        children.forEach((c) -> existChildIds.add(c.getId()));
-        Set<String> addChildIds = new HashSet<>(childIds);
-        addChildIds.removeAll(existChildIds);
-
-        int sort = existChildIds.size();
-        //创建需要创建的分配关系
-        List<DeployTemplateStage> relations = new ArrayList<>();
-        for (String c : addChildIds) {
-            DeployTemplateStage relation = getDao().constructRelation(parentId, c);
-            if (relation != null) {
-                // 追加序号
-                relation.setRank(sort++);
-                relations.add(relation);
-            }
-        }
-        //提交数据库
-        if (relations.size() > 0) {
-            save(relations);
-        }
-        //成功创建{0}个分配关系！
-        return OperateResult.operationSuccess("core_service_00035", relations.size());
-    }
-
-    /**
      * 通过模版Id获取阶段清单
      *
      * @param templateId 模版Id
