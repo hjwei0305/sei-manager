@@ -49,6 +49,21 @@ public class AppModuleRequisitionDto extends RequisitionDto implements Serializa
      */
     @ApiModelProperty(value = "描述说明")
     private String remark;
+    /**
+     * git地址
+     */
+    @ApiModelProperty(value = "git HTTP 地址")
+    private String gitHttpUrl;
+    /**
+     * git地址
+     */
+    @ApiModelProperty(value = "git SSH 地址")
+    private String gitSshUrl;
+    /**
+     * git项目地址
+     */
+    @ApiModelProperty(value = "git项目地址")
+    private String gitWebUrl;
 
     public String getAppId() {
         return appId;
@@ -106,4 +121,27 @@ public class AppModuleRequisitionDto extends RequisitionDto implements Serializa
         this.remark = remark;
     }
 
+    public String getGitHttpUrl() {
+        return gitHttpUrl;
+    }
+
+    public void setGitHttpUrl(String gitHttpUrl) {
+        this.gitHttpUrl = gitHttpUrl;
+    }
+
+    public String getGitSshUrl() {
+        return gitSshUrl;
+    }
+
+    public void setGitSshUrl(String gitSshUrl) {
+        this.gitSshUrl = gitSshUrl;
+    }
+
+    public String getGitWebUrl() {
+        return gitWebUrl;
+    }
+
+    public void setGitWebUrl(String gitWebUrl) {
+        this.gitWebUrl = gitWebUrl;
+    }
 }

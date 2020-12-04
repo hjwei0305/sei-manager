@@ -76,6 +76,22 @@ public class AppModuleRequisition extends BaseEntity implements Serializable {
      */
     @Column(name = "remark")
     private String remark;
+    /**
+     * gitId
+     */
+    @Column(name = "git_id")
+    private String gitId;
+    /**
+     * git地址
+     */
+    @Column(name = "git_http_url")
+    private String gitHttpUrl;
+    @Column(name = "git_ssh_url")
+    private String gitSshUrl;
+    @Column(name = "git_web_url")
+    private String gitWebUrl;
+    @Column(name = "git_create_time")
+    private LocalDateTime gitCreateTime;
 
     public String getRelationId() {
         return relationId;
@@ -163,5 +179,45 @@ public class AppModuleRequisition extends BaseEntity implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getGitId() {
+        return gitId;
+    }
+
+    public void setGitId(String gitId) {
+        this.gitId = gitId;
+    }
+
+    public String getGitHttpUrl() {
+        return gitHttpUrl;
+    }
+
+    public void setGitHttpUrl(String gitHttpUrl) {
+        this.gitHttpUrl = gitHttpUrl;
+    }
+
+    public String getGitSshUrl() {
+        return gitSshUrl;
+    }
+
+    public void setGitSshUrl(String gitSshUrl) {
+        this.gitSshUrl = gitSshUrl;
+    }
+
+    public String getGitWebUrl() {
+        return gitWebUrl;
+    }
+
+    public void setGitWebUrl(String gitWebUrl) {
+        this.gitWebUrl = gitWebUrl;
+    }
+
+    public LocalDateTime getGitCreateTime() {
+        return gitCreateTime;
+    }
+
+    public void setGitCreateTime(LocalDateTime gitCreateTime) {
+        this.gitCreateTime = gitCreateTime;
     }
 }
