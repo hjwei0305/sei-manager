@@ -14,10 +14,7 @@ import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.dto.BuildStatus;
 import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
-import com.changhong.sei.deploy.entity.AppModule;
-import com.changhong.sei.deploy.entity.ReleaseRecord;
-import com.changhong.sei.deploy.entity.ReleaseRecordRequisition;
-import com.changhong.sei.deploy.entity.RequisitionOrder;
+import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.JenkinsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +42,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     private AppModuleService moduleService;
     @Autowired
     private RequisitionOrderService requisitionOrderService;
+    @Autowired
+    private DeployConfigService deployConfigService;
     @Autowired
     private JenkinsService jenkinsService;
 
@@ -256,11 +255,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updateFrozen(String id) {
-        ReleaseRecord releaseRecord = build(id);
-        if (Objects.isNull(releaseRecord)) {
-            return ResultData.fail("发布记录不存在");
+        ResultData<ReleaseRecord> resultData = build(id);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
         }
 
+        ReleaseRecord releaseRecord = resultData.getData();
         releaseRecord.setFrozen(Boolean.FALSE);
         OperateResultWithData<ReleaseRecord> result = this.save(releaseRecord);
         if (result.successful()) {
@@ -277,10 +277,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @return 返回构建操作
      */
     public ResultData<Void> buildJob(String id) {
-        ReleaseRecord releaseRecord = build(id);
-        if (Objects.isNull(releaseRecord)) {
-            return ResultData.fail("发布记录不存在");
+        ResultData<ReleaseRecord> resultData = build(id);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
         }
+        
+        ReleaseRecord releaseRecord = resultData.getData();
         OperateResultWithData<ReleaseRecord> result = this.save(releaseRecord);
         if (result.successful()) {
             return ResultData.success();
@@ -295,9 +297,15 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @param recordId 发布记录Id
      * @return 返回发布记录
      */
-    private ReleaseRecord build(String recordId) {
+    private ResultData<ReleaseRecord> build(String recordId) {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
+            // 检查部署配置是否存在
+            ResultData<DeployConfig> resultData = deployConfigService.checkDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
+            if (resultData.failed()) {
+                return ResultData.fail(resultData.getMessage());
+            }
+
             Map<String, String> params = new HashMap<>();
             // 参数:项目名称(模块代码)
             params.put(Constants.DEPLOY_PARAM_PROJECT_NAME, releaseRecord.getModuleCode());
@@ -308,16 +316,24 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
 
             // 调用Jenkins构建
-            ResultData<Integer> resultData = jenkinsService.buildJob(releaseRecord.getJobName(), params);
-            if (resultData.successful()) {
+            ResultData<Integer> buildResult = jenkinsService.buildJob(releaseRecord.getJobName(), params);
+            if (buildResult.successful()) {
+                int buildNumber = buildResult.getData();
                 // 设置构建号
-                releaseRecord.setBuildNumber(resultData.getData());
+                releaseRecord.setBuildNumber(buildNumber);
                 // 更新构建状态为构建中
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
+
+//                // 异步上传
+//                CompletableFuture.runAsync(() -> {
+//                    buildNumber
+//                });
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
             }
+            return ResultData.success(releaseRecord);
+        } else {
+            return ResultData.fail("发布记录不存在");
         }
-        return releaseRecord;
     }
 }

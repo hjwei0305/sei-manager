@@ -2,6 +2,8 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
@@ -43,6 +45,14 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
     public OperateResultWithData<DeployConfig> save(DeployConfig entity) {
         // 获取是否是新增
         boolean isNew = isNew(entity);
+        if (isNew) {
+            // 新增检查配置是否存在
+            ResultData<DeployConfig> resultData = checkDeployConfig(entity.getEnvCode(), entity.getModuleCode());
+            if (resultData.successful()) {
+                DeployConfig deployConfig = resultData.getData();
+                return OperateResultWithData.operationFailure("已存在ENV[" + deployConfig.getEnvCode() + "]ModuleCode[" + deployConfig.getModuleCode() + "]的部署配置");
+            }
+        }
         OperateResultWithData<DeployConfig> result = super.save(entity);
         if (result.successful()) {
             // 同步Jenkins任务
@@ -103,5 +113,24 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
             }
         }
         return result;
+    }
+
+    /**
+     * 检查部署配置是否存在
+     *
+     * @param envCode    环境代码
+     * @param moduleCode 模块代码
+     * @return 检查结果
+     */
+    public ResultData<DeployConfig> checkDeployConfig(String envCode, String moduleCode) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(DeployConfig.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(DeployConfig.FIELD_MODULE_CODE, moduleCode));
+        DeployConfig config = dao.findFirstByFilters(search);
+        if (Objects.isNull(config)) {
+            return ResultData.fail("不存在ENV[" + envCode + "]ModuleCode[" + moduleCode + "]的部署配置");
+        } else {
+            return ResultData.success(config);
+        }
     }
 }

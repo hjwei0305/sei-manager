@@ -24,6 +24,8 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
     public static final String FIELD_TEMP_ID = "tempId";
+    public static final String FIELD_ENV_CODE = "envCode";
+    public static final String FIELD_MODULE_CODE = "moduleCode";
     /**
      * 环境
      */
