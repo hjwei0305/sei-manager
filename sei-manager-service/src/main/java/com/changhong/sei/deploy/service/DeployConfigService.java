@@ -26,6 +26,8 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
     @Autowired
     private DeployConfigDao dao;
     @Autowired
+    private DeployTemplateService deployTemplateService;
+    @Autowired
     private JenkinsService jenkinsService;
 
     @Override
@@ -47,14 +49,22 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
             // 任务名
             String jobName = entity.getJobName();
             String jobXml;
+            ResultData<String> xmlResult = deployTemplateService.generateXml(entity.getTempId());
+            if (xmlResult.successful()) {
+                // 创建Jenkins任务
+                jobXml = xmlResult.getData();
+            } else {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return OperateResultWithData.operationFailure(xmlResult.getMessage());
+            }
+
             ResultData<Void> resultData;
             if (isNew) {
                 // 创建Jenkins任务
-                jobXml = "";// TODO jobXml
                 resultData = jenkinsService.createJob(jobName, jobXml);
             } else {
                 // 修改Jenkins任务
-                jobXml = "";// TODO jobXml
                 resultData = jenkinsService.updateJob(jobName, jobXml);
             }
             if (resultData.failed()) {

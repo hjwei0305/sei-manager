@@ -3,13 +3,13 @@ package com.changhong.sei.deploy.service;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.deploy.common.Constants;
 import com.changhong.sei.deploy.dao.DeployTemplateDao;
 import com.changhong.sei.deploy.dto.DeployStageParamDto;
 import com.changhong.sei.deploy.dto.DeployTemplateStageResponse;
-import com.changhong.sei.deploy.entity.DeployStage;
+import com.changhong.sei.deploy.entity.DeployConfig;
 import com.changhong.sei.deploy.entity.DeployTemplate;
-import com.changhong.sei.deploy.entity.DeployTemplateStage;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -22,9 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * 部署模板(DeployTemplate)业务逻辑实现类
@@ -38,13 +37,31 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
     @Autowired
     private DeployTemplateDao dao;
     @Autowired
-    private DeployStageService stageService;
-    @Autowired
     private DeployTemplateStageService templateStageService;
+    @Autowired
+    private DeployConfigService deployConfigService;
 
     @Override
     protected BaseEntityDao<DeployTemplate> getDao() {
         return dao;
+    }
+
+    /**
+     * 删除数据保存数据之前额外操作回调方法 子类根据需要覆写添加逻辑即可
+     *
+     * @param id 待删除数据对象主键
+     */
+    @Override
+    protected OperateResult preDelete(String id) {
+        // 检查状态控制删除
+        DeployTemplate app = this.findOne(id);
+        if (Objects.isNull(app)) {
+            return OperateResult.operationFailure("[" + id + "]模版不存在,删除失败!");
+        }
+        if (deployConfigService.isExistsByProperty(DeployConfig.FIELD_TEMP_ID, id)) {
+            return OperateResult.operationFailure("[" + id + "]模版已被部署配置使用,不允许删除!");
+        }
+        return super.preDelete(id);
     }
 
     /**

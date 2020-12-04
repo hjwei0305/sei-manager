@@ -21,6 +21,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class DeployTemplateStage extends BaseEntity implements IRank, RelationEntity<DeployTemplate, DeployStage>, Serializable {
     private static final long serialVersionUID = 369771080770875655L;
+    public static final String FIELD_STAGE_ID = "child.id";
 
     /**
      * 用户组

@@ -2,11 +2,8 @@ package com.changhong.sei.integrated.service;
 
 import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.core.dto.ResultData;
-import com.offbytwo.jenkins.model.JobWithDetails;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.Assert.*;
 
 /**
  * 实现功能：
@@ -19,23 +16,23 @@ public class JenkinsServiceTest extends BaseUnitTest {
     @Autowired
     private JenkinsService service;
 
-    @Test
-    public void getJob() {
-        JobWithDetails details = service.getJob("dsei_auth-6.0");
-
-        System.out.println(details);
-    }
+//    @Test
+//    public void getJob() {
+//        JobWithDetails details = service.getJob("dsei_auth-6.0");
+//
+//        System.out.println(details);
+//    }
 
     @Test
     public void buildJob() {
-        ResultData<Void> resultData = service.buildJob("dsei_auth-6.0");
+        ResultData<Integer> resultData = service.buildJob("dsei_auth-6.0");
 
         System.out.println(resultData);
     }
 
     @Test
-    public void buildJob1() {
-        ResultData<Void> resultData = service.buildJob("dsei_auth-6.0", 3);
+    public void getBuildInfo() {
+        ResultData<Void> resultData = service.getBuildInfo("dsei_auth-6.0", 3);
 
         System.out.println(resultData);
     }
