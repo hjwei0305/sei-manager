@@ -1,7 +1,9 @@
 package com.changhong.sei.deploy.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
+import com.changhong.sei.core.dto.serializer.EnumJsonSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -78,6 +80,17 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "期望完成时间", example = "2020-01-14 22:18:48")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expCompleteTime;
+    /**
+     * Jenkins构建号
+     */
+    @ApiModelProperty(value = "Jenkins构建号")
+    private Integer buildNumber;
+    /**
+     * Jenkins构建状态
+     */
+    @JsonSerialize(using = EnumJsonSerializer.class)
+    @ApiModelProperty(value = "Jenkins构建状态")
+    private BuildStatus buildStatus;
 
     public String getEnvCode() {
         return envCode;
@@ -173,5 +186,21 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
 
     public void setExpCompleteTime(LocalDateTime expCompleteTime) {
         this.expCompleteTime = expCompleteTime;
+    }
+
+    public Integer getBuildNumber() {
+        return buildNumber;
+    }
+
+    public void setBuildNumber(Integer buildNumber) {
+        this.buildNumber = buildNumber;
+    }
+
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(BuildStatus buildStatus) {
+        this.buildStatus = buildStatus;
     }
 }
