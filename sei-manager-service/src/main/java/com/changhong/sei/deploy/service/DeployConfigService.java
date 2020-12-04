@@ -49,7 +49,7 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
             // 任务名
             String jobName = entity.getJobName();
             String jobXml;
-            ResultData<String> xmlResult = deployTemplateService.generateXml(entity.getTempId());
+            ResultData<String> xmlResult = deployTemplateService.generateJobXml(entity.getTempId());
             if (xmlResult.successful()) {
                 // 创建Jenkins任务
                 jobXml = xmlResult.getData();

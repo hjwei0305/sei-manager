@@ -65,9 +65,9 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
     }
 
     /**
-     * 生成xml方法
+     * 生成默认预制参数的Jenkins任务xml
      */
-    public ResultData<String> generateXml(String templateId) {
+    public ResultData<String> generateJobXml(String templateId) {
         ResultData<List<DeployTemplateStageResponse>> resultData = templateStageService.getStageByTemplateId(templateId);
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
@@ -85,9 +85,29 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
     }
 
     /**
+     * 生成自定义参数的Jenkins任务xml
+     */
+    public ResultData<String> generateJobXml(String templateId, List<DeployStageParamDto> stageParams) {
+        ResultData<List<DeployTemplateStageResponse>> resultData = templateStageService.getStageByTemplateId(templateId);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        StringBuilder script = new StringBuilder();
+        script.append("\n\r node {\n\r");
+        List<DeployTemplateStageResponse> templateStages = resultData.getData();
+        for (DeployTemplateStageResponse templateStage : templateStages) {
+            script.append("stage('").append(templateStage.getName()).append("') { \n\r");
+            script.append(templateStage.getPlayscript()).append("\n\r } \n\r");
+        }
+        script.append("\n\r} \n\r");
+
+        return generateXml(script.toString(), stageParams);
+    }
+
+    /**
      * 生成xml方法
      */
-    public ResultData<String> generateXml(String scriptStr, List<DeployStageParamDto> stageParams) {
+    private ResultData<String> generateXml(String scriptStr, List<DeployStageParamDto> stageParams) {
         // 创建document对象
         Document document = DocumentHelper.createDocument();
         // 创建根节点

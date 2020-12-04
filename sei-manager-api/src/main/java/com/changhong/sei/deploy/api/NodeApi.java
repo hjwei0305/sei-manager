@@ -17,7 +17,6 @@ import java.util.List;
  *
  * @author sei
  * @since 2020-11-23 08:34:10
- * TODO @FeignClient(name = "请修改为项目服务名")
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "node")

@@ -12,7 +12,6 @@ import javax.validation.Valid;
  *
  * @author sei
  * @since 2020-11-23 08:33:57
- * TODO @FeignClient(name = "请修改为项目服务名")
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "certificate")

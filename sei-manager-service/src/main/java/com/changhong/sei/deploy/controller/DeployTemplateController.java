@@ -6,7 +6,6 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.DeployTemplateApi;
-import com.changhong.sei.deploy.dto.DeployStageDto;
 import com.changhong.sei.deploy.dto.DeployTemplateDto;
 import com.changhong.sei.deploy.entity.DeployTemplate;
 import com.changhong.sei.deploy.service.DeployTemplateService;
@@ -75,6 +74,6 @@ public class DeployTemplateController extends BaseEntityController<DeployTemplat
      */
     @Override
     public ResultData<String> getXml(String templateId) {
-        return service.generateXml(templateId);
+        return service.generateJobXml(templateId);
     }
 }

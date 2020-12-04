@@ -118,7 +118,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //        String currentUsername = SecurityUtil.getCurrentUsername();
 //        names.parallelStream()
 //                .forEach(name -> {
-//                    // TODO: 通知被踢出的用户已被当前登录用户踢出，
+//                    //  通知被踢出的用户已被当前登录用户踢出，
 //                    //  后期考虑使用 websocket 实现，具体伪代码实现如下。
 //                    //  String message = "您已被用户【" + currentUsername + "】手动下线！";
 //                    log.debug("用户【{}】被用户【{}】手动下线！", name, currentUsername);

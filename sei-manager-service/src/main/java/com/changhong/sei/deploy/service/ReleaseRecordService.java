@@ -7,12 +7,10 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
+import com.changhong.sei.deploy.common.Constants;
 import com.changhong.sei.deploy.dao.ReleaseRecordDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
-import com.changhong.sei.deploy.dto.ApplyType;
-import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.dto.BuildStatus;
-import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
+import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
 import com.changhong.sei.deploy.entity.ReleaseRecordRequisition;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
@@ -23,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -297,7 +296,17 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
             Map<String, String> params = new HashMap<>();
-            // TODO 参数
+            // 参数
+            List<DeployStageParamDto> deployStageParams = Constants.DEFAULT_STAGE_PARAMS;
+            for (DeployStageParamDto stageParam : deployStageParams) {
+                if (Constants.DEPLOY_STAGE_PARAM_PROJECT_NAME.equals(stageParam.getCode())) {
+                    params.put(stageParam.getCode(), releaseRecord.getModuleCode());
+                }
+                if (Constants.DEPLOY_STAGE_PARAM_BETA_VERSION.equals(stageParam.getCode())) {
+                    params.put(stageParam.getCode(), releaseRecord.getTagName());
+                }
+            }
+
             // 调用Jenkins构建
             ResultData<Integer> resultData = jenkinsService.buildJob(releaseRecord.getJobName(), params);
             if (resultData.successful()) {

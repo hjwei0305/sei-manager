@@ -20,7 +20,7 @@ public class DeployTemplateServiceTest extends BaseUnitTest {
 
     @Test
     public void generateXml() {
-        ResultData<String> resultData = service.generateXml("F662AB75-0EAB-11EB-8124-0242C0A8460F");
+        ResultData<String> resultData = service.generateJobXml("F662AB75-0EAB-11EB-8124-0242C0A8460F");
         System.out.println(resultData);
         System.out.println(resultData.getData());
     }
