@@ -81,11 +81,6 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expCompleteTime;
     /**
-     * Jenkins构建号
-     */
-    @ApiModelProperty(value = "Jenkins构建号")
-    private Integer buildNumber;
-    /**
      * Jenkins构建状态
      */
     @JsonSerialize(using = EnumJsonSerializer.class)
@@ -186,14 +181,6 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
 
     public void setExpCompleteTime(LocalDateTime expCompleteTime) {
         this.expCompleteTime = expCompleteTime;
-    }
-
-    public Integer getBuildNumber() {
-        return buildNumber;
-    }
-
-    public void setBuildNumber(Integer buildNumber) {
-        this.buildNumber = buildNumber;
     }
 
     public BuildStatus getBuildStatus() {

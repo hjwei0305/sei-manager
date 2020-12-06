@@ -6,6 +6,7 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.ReleaseRecordApi;
+import com.changhong.sei.deploy.dto.ReleaseRecordDetailDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
@@ -112,5 +113,16 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
     @Override
     public ResultData<Void> buildJob(String id) {
         return service.buildJob(id);
+    }
+
+    /**
+     * 获取构建明细
+     *
+     * @param id 发布记录id
+     * @return 返回构建明细
+     */
+    @Override
+    public ResultData<ReleaseRecordDetailDto> getBuildDetail(String id) {
+        return service.getBuildDetail(id);
     }
 }

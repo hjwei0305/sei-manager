@@ -32,8 +32,8 @@ public class JenkinsServiceTest extends BaseUnitTest {
 
     @Test
     public void getBuildInfo() {
-        ResultData<Void> resultData = service.getBuildInfo("dsei_auth-6.0", 3);
+//        ResultData<JobBuildInfo> resultData = service.getBuildInfo("dsei_auth-6.0", 3);
 
-        System.out.println(resultData);
+//        System.out.println(resultData);
     }
 }

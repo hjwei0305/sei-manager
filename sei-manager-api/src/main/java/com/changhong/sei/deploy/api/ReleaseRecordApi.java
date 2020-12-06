@@ -5,6 +5,7 @@ import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.deploy.dto.ReleaseRecordDetailDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
 import io.swagger.annotations.ApiOperation;
@@ -73,4 +74,14 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
     @PostMapping(path = "buildJob")
     @ApiOperation(value = "构建Jenkins任务", notes = "构建Jenkins任务")
     ResultData<Void> buildJob(@RequestParam("id") String id);
+
+    /**
+     * 获取构建明细
+     *
+     * @param id 发布记录id
+     * @return 返回构建明细
+     */
+    @PostMapping(path = "buildJob")
+    @ApiOperation(value = "获取构建明细", notes = "获取构建明细")
+    ResultData<ReleaseRecordDetailDto> getBuildDetail(@RequestParam("id") String id);
 }

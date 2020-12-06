@@ -4,26 +4,35 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.dto.serach.SearchOrder;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.common.Constants;
+import com.changhong.sei.deploy.dao.ReleaseBuildDetailDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
-import com.changhong.sei.deploy.dto.ApplyType;
-import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.dto.BuildStatus;
-import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
+import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.JenkinsService;
+import com.changhong.sei.util.EnumUtils;
+import com.offbytwo.jenkins.model.BuildWithDetails;
+import com.offbytwo.jenkins.model.ConsoleLog;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -34,10 +43,13 @@ import java.util.Objects;
  */
 @Service("releaseRecordService")
 public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
+    private static final Logger LOG = LoggerFactory.getLogger(ReleaseRecordService.class);
     @Autowired
     private ReleaseRecordDao dao;
     @Autowired
     private ReleaseRecordRequisitionDao requisitionDao;
+    @Autowired
+    private ReleaseBuildDetailDao buildDetailDao;
     @Autowired
     private AppModuleService moduleService;
     @Autowired
@@ -45,7 +57,11 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Autowired
     private DeployConfigService deployConfigService;
     @Autowired
+    private DeployTemplateStageService deployTemplateStageService;
+    @Autowired
     private JenkinsService jenkinsService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     protected BaseEntityDao<ReleaseRecord> getDao() {
@@ -281,7 +297,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
-        
+
         ReleaseRecord releaseRecord = resultData.getData();
         OperateResultWithData<ReleaseRecord> result = this.save(releaseRecord);
         if (result.successful()) {
@@ -289,6 +305,40 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         } else {
             return ResultData.fail(result.getMessage());
         }
+    }
+
+    /**
+     * 获取构建阶段
+     *
+     * @param id 发布记录id
+     * @return 返回构建阶段
+     */
+    public ResultData<ReleaseRecordDetailDto> getBuildDetail(String id) {
+        ReleaseRecord releaseRecord = this.findOne(id);
+        if (Objects.isNull(releaseRecord)) {
+            return ResultData.fail("发布记录不存在");
+        }
+
+        ReleaseRecordDetailDto detailDto = modelMapper.map(releaseRecord, ReleaseRecordDetailDto.class);
+
+        ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
+        if (resultData.successful()) {
+            DeployConfig config = resultData.getData();
+            ResultData<List<DeployTemplateStageResponse>> result = deployTemplateStageService.getStageByTemplateId(config.getTempId());
+            detailDto.setStages(result.getData());
+
+            Search search = Search.createSearch();
+            search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_RECORD_ID, id));
+            search.addSortOrder(new SearchOrder(ReleaseBuildDetail.FIELD_BUILD_NUMBER, SearchOrder.Direction.DESC));
+            ReleaseBuildDetail detail = buildDetailDao.findFirstByFilters(search);
+            if (Objects.nonNull(detail)) {
+                detailDto.setBuildLog(detail.getBuildLog());
+            }
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
+
+        return ResultData.success(detailDto);
     }
 
     /**
@@ -301,7 +351,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
             // 检查部署配置是否存在
-            ResultData<DeployConfig> resultData = deployConfigService.checkDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
+            ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
             if (resultData.failed()) {
                 return ResultData.fail(resultData.getMessage());
             }
@@ -315,19 +365,67 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             // 参数:代码分支或者TAG
             params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
 
+            String jobName = releaseRecord.getJobName();
             // 调用Jenkins构建
-            ResultData<Integer> buildResult = jenkinsService.buildJob(releaseRecord.getJobName(), params);
+            ResultData<Integer> buildResult = jenkinsService.buildJob(jobName, params);
             if (buildResult.successful()) {
                 int buildNumber = buildResult.getData();
-                // 设置构建号
-                releaseRecord.setBuildNumber(buildNumber);
                 // 更新构建状态为构建中
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
-//                // 异步上传
-//                CompletableFuture.runAsync(() -> {
-//                    buildNumber
-//                });
+                // 异步上传
+                CompletableFuture.runAsync(() -> {
+                    jenkinsService.getBuildActiveLog(jobName);
+                    ReleaseBuildDetail detail = new ReleaseBuildDetail();
+                    detail.setRecordId(recordId);
+                    detail.setJobName(jobName);
+                    detail.setBuildNumber(buildNumber);
+
+                    ResultData<BuildWithDetails> buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
+                    if (buildDetailResult.successful()) {
+                        BuildWithDetails buildDetails = buildDetailResult.getData();
+
+                        StringBuilder log = new StringBuilder(32);
+                        try {
+                            // 当前日志
+                            ConsoleLog currentLog = buildDetails.getConsoleOutputText(0);
+                            // 输出当前获取日志信息
+                            log.append(currentLog.getConsoleLog());
+                            // 检测是否还有更多日志,如果是则继续循环获取
+                            while (currentLog.getHasMoreData()) {
+                                // 睡眠30s
+                                //noinspection BusyWait
+                                Thread.sleep(30000);
+                                // 获取最新日志信息
+                                ConsoleLog newLog = buildDetails.getConsoleOutputText(currentLog.getCurrentBufferSize());
+                                // 输出最新日志
+                                log.append(newLog.getConsoleLog());
+                                currentLog = newLog;
+                            }
+
+                            detail.setBuildLog(log.toString());
+                            detail.setStartTime(buildDetails.getTimestamp());
+
+                            buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
+                            detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, buildDetailResult.getData().getResult().name()));
+                        } catch (IOException | InterruptedException e) {
+                            detail.setBuildLog(buildDetailResult.getMessage());
+                            detail.setStartTime(System.currentTimeMillis());
+                            detail.setBuildStatus(BuildStatus.FAILURE);
+
+                            LOG.error(buildDetailResult.getMessage());
+                        }
+                    } else {
+                        detail.setBuildLog(buildDetailResult.getMessage());
+                        detail.setStartTime(System.currentTimeMillis());
+                        detail.setBuildStatus(BuildStatus.FAILURE);
+
+                        LOG.error(buildDetailResult.getMessage());
+                    }
+                    buildDetailDao.save(detail);
+
+                    dao.updateByBuildStatus(recordId, detail.getBuildStatus());
+                });
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
             }

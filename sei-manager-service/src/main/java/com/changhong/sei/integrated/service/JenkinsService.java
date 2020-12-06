@@ -4,7 +4,6 @@ import com.changhong.sei.core.dto.ResultData;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
 import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -17,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 实现功能：
@@ -179,18 +179,35 @@ public class JenkinsService {
      * @param jobName 任务名
      * @return 返回Jenkins任务
      */
-    public ResultData<Void> getBuildInfo(String jobName, int buildNumber) {
+    public ResultData<BuildWithDetails> getBuildDetails(String jobName, int buildNumber) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            JobWithDetails jobDetails = server.getJob(jobName);
+            if (Objects.nonNull(jobDetails)) {
+                Build build = jobDetails.getBuildByNumber(buildNumber);
+                if (Objects.nonNull(build)) {
+                    BuildWithDetails buildDetails = build.details();
+                    return ResultData.success(buildDetails);
+                }
+            }
+            return ResultData.fail("构建任务[" + jobName + "]不存在或存在错误.");
+        } catch (IOException e) {
+            LOG.error("获取Jenkins任务异常", e);
+            return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    /**
+     * 根据构建号指定的Jenkins任务
+     *
+     * @param jobName 任务名
+     * @return 返回Jenkins任务
+     */
+    public ResultData<BuildWithDetails> getBuildActiveLog(String jobName) {
         try (JenkinsServer server = getJenkinsServer()) {
             JobWithDetails details = server.getJob(jobName);
-            Build build = details.getBuildByNumber(buildNumber);
-            BuildWithDetails buildWithDetails = build.details();
-            // 构建状态枚举
-            BuildResult buildResult = buildWithDetails.getResult();
-            System.out.println(buildResult);
-            // 构建日志
-            String logs = buildWithDetails.getConsoleOutputText();
-            System.out.println(logs);
-            return ResultData.success();
+            BuildWithDetails build = details.getLastBuild().details();
+
+            return ResultData.success(build);
         } catch (IOException e) {
             LOG.error("获取Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));

@@ -1,96 +1,98 @@
-package com.changhong.sei.deploy.entity;
+package com.changhong.sei.deploy.dto;
 
-import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.core.entity.IFrozen;
-import com.changhong.sei.deploy.dto.BuildStatus;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import com.changhong.sei.core.dto.BaseEntityDto;
+import com.changhong.sei.core.dto.serializer.EnumJsonSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * 发布记录(ReleaseRecord)实体类
+ * 发布记录(ReleaseRecord)DTO类
  *
  * @author sei
- * @since 2020-11-26 14:45:20
+ * @since 2020-11-23 08:34:10
  */
-@Entity
-@Table(name = "release_record")
-@DynamicInsert
-@DynamicUpdate
-public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
-    private static final long serialVersionUID = -78400014111481829L;
-    public static final String FIELD_APP_ID = "appId";
+@ApiModel(description = "发布记录DTO")
+public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializable {
+    private static final long serialVersionUID = 630890453379821715L;
     /**
      * 环境
      */
-    @Column(name = "env_code")
+    @ApiModelProperty(value = "环境代码", required = true)
     private String envCode;
     /**
      * 环境
      */
-    @Column(name = "env_name")
+    @ApiModelProperty(value = "环境名称")
     private String envName;
     /**
      * 所属应用id
      */
-    @Column(name = "app_id")
+    @ApiModelProperty(value = "应用id", required = true)
     private String appId;
     /**
      * 所属应用id
      */
-    @Column(name = "app_name")
+    @ApiModelProperty(value = "应用名称")
     private String appName;
     /**
      * 模块git id
      */
-    @Column(name = "git_id")
+    @ApiModelProperty(value = "模块git id", required = true)
     private String gitId;
     /**
-     * 模块代码
+     * 模块名称
      */
-    @Column(name = "module_code")
+    @ApiModelProperty(value = "模块代码", required = true)
     private String moduleCode;
     /**
      * 模块名称
      */
-    @Column(name = "module_name")
+    @ApiModelProperty(value = "模块名称")
     private String moduleName;
     /**
      * 标签名称
      */
-    @Column(name = "tag_name")
+    @ApiModelProperty(value = "标签名称", required = true)
     private String tagName;
-
     /**
-     * 名称
+     * 是否冻结
      */
-    @Column(name = "name")
+    @ApiModelProperty(value = "是否可用")
+    private Boolean frozen;
+    /**
+     * 发布名称
+     */
+    @ApiModelProperty(value = "发布名称", required = true)
     private String name;
     /**
      * 描述说明(部署要求,脚本内容等)
      */
-    @Column(name = "remark")
+    @ApiModelProperty(value = "描述说明(部署要求,脚本内容等)")
     private String remark;
-
-    /**
-     * 是否冻结
-     */
-    @Column(name = "frozen")
-    private Boolean frozen = Boolean.TRUE;
     /**
      * 期望完成时间
      */
-    @Column(name = "exp_complete_time")
+    @ApiModelProperty(value = "期望完成时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expCompleteTime;
     /**
      * Jenkins构建状态
      */
-    @Column(name = "build_status")
-    @Enumerated(EnumType.STRING)
+    @JsonSerialize(using = EnumJsonSerializer.class)
+    @ApiModelProperty(value = "Jenkins构建状态")
     private BuildStatus buildStatus;
+
+    @ApiModelProperty(value = "构建阶段清单")
+    private List<DeployTemplateStageResponse> stages;
+
+    @ApiModelProperty(value = "构建日志")
+    private String buildLog;
 
     public String getEnvCode() {
         return envCode;
@@ -156,6 +158,14 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
         this.tagName = tagName;
     }
 
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
+    }
+
     public String getName() {
         return name;
     }
@@ -170,16 +180,6 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    @Override
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    @Override
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
     }
 
     public LocalDateTime getExpCompleteTime() {
@@ -198,13 +198,19 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
         this.buildStatus = buildStatus;
     }
 
-    /**
-     * 环境代码+模块代码
-     *
-     * @return Jenkins任务名
-     */
-    @Transient
-    public String getJobName() {
-        return envCode + "_" + moduleCode;
+    public List<DeployTemplateStageResponse> getStages() {
+        return stages;
+    }
+
+    public void setStages(List<DeployTemplateStageResponse> stages) {
+        this.stages = stages;
+    }
+
+    public String getBuildLog() {
+        return buildLog;
+    }
+
+    public void setBuildLog(String buildLog) {
+        this.buildLog = buildLog;
     }
 }
