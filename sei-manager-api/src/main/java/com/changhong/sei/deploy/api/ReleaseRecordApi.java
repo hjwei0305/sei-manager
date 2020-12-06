@@ -81,7 +81,7 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
      * @param id 发布记录id
      * @return 返回构建明细
      */
-    @PostMapping(path = "buildJob")
+    @GetMapping(path = "getBuildDetail")
     @ApiOperation(value = "获取构建明细", notes = "获取构建明细")
     ResultData<ReleaseRecordDetailDto> getBuildDetail(@RequestParam("id") String id);
 }
