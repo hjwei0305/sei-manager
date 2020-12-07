@@ -3,10 +3,7 @@ package com.changhong.sei.deploy.websocket.config;
 import com.changhong.sei.deploy.websocket.WebsocketServer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 /**
@@ -15,19 +12,11 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-03-08 17:21
  */
-@ComponentScan("com.changhong.sei.deploy.websocket")
+//@ComponentScan("com.changhong.sei.deploy.websocket")
 @Configuration
 // 单元测试排除
 @ConditionalOnProperty(value = "org.springframework.boot.test.context.SpringBootTestContextBootstrapper", havingValue = "false", matchIfMissing = true)
-public class WebsocketAutoConfig implements WebMvcConfigurer {
-    /**
-     * 添加静态资源文件，外部可以直接访问地址
-     */
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-    }
-
+public class WebsocketAutoConfig {
 
     /**
      * 用途：扫描并注册所有携带@ServerEndpoint注解的实例。 @ServerEndpoint("/websocket")
