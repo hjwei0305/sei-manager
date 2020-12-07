@@ -61,27 +61,38 @@ public class WebsocketServer {
         try (JenkinsServer jenkinsServer = jenkinsService.getJenkinsServer()) {
             JobWithDetails details = jenkinsServer.getJob(jobName);
             if (Objects.isNull(details)) {
-                // 输出最新日志
-                send(session, "Jenkins任务[" + jobName + "]不存在.");
-                return;
+                LOG.debug("{}任务不存在,开始循环检查任务.", jobName);
+                boolean isContinue = true;
+                while (isContinue) {
+                    // 睡眠10s
+                    Thread.sleep(10000);
+                    details = jenkinsServer.getJob(jobName);
+                    if (Objects.nonNull(details)) {
+                        isContinue = false;
+                    }
+                }
             }
             BuildWithDetails build = details.getLastBuild().details();
 
             // 当前日志
-            ConsoleLog currentLog = build.getConsoleOutputText(0);
+            ConsoleLog currentLog = jenkinsService.getConsoleOutputText(build, 0);
+
+            LOG.debug("{}任务是否存在更多日志: {}", jobName, currentLog.getHasMoreData());
             // 输出当前获取日志信息
             send(session, currentLog.getConsoleLog());
             // 检测是否还有更多日志,如果是则继续循环获取
             while (currentLog.getHasMoreData()) {
                 // 获取最新日志信息
-                currentLog = build.getConsoleOutputText(currentLog.getCurrentBufferSize());
+                currentLog = jenkinsService.getConsoleOutputText(build, currentLog.getCurrentBufferSize());
+
+                LOG.debug("{}任务是否存在更多日志: {}", jobName, currentLog.getHasMoreData());
                 // 输出最新日志
                 send(session, currentLog.getConsoleLog());
-                // 睡眠1s
+                // 睡眠5s
                 //noinspection BusyWait
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             LOG.error("websocket获取构建实时日志异常:" + ExceptionUtils.getRootCauseMessage(e), e);
             // 输出最新日志
             send(session, "websocket获取构建实时日志异常:" + ExceptionUtils.getRootCauseMessage(e));

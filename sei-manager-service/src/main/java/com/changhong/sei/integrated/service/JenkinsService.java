@@ -5,8 +5,14 @@ import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
+import com.offbytwo.jenkins.model.ConsoleLog;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -58,7 +66,7 @@ public class JenkinsService {
     /**
      * 注入jenkinsServer对象
      */
-    private JenkinsServer getJenkinsServer() {
+    public JenkinsServer getJenkinsServer() {
         try {
             JenkinsHttpClient jenkinsHttpClient = getJenkinsHttpClient();
             return new JenkinsServer(jenkinsHttpClient);
@@ -210,11 +218,39 @@ public class JenkinsService {
             JobWithDetails details = server.getJob(jobName);
             BuildWithDetails build = details.getLastBuild().details();
 
+            ConsoleLog log = getConsoleOutputText(build, 0);
+            System.out.println(log.getConsoleLog());
+
             return ResultData.success(build);
         } catch (IOException e) {
             LOG.error("获取Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
+    }
+
+
+    public ConsoleLog getConsoleOutputText(BuildWithDetails build, int bufferOffset) throws IOException {
+        List<NameValuePair> formData = new ArrayList<>();
+        formData.add(new BasicNameValuePair("start", Integer.toString(bufferOffset)));
+        String path = build.getUrl() + "logText/progressiveText";
+        HttpResponse httpResponse = build.getClient().post_form_with_result(path, formData, true);
+
+        Header moreDataHeader = httpResponse.getFirstHeader(BuildWithDetails.MORE_DATA_HEADER);
+        Header textSizeHeader = httpResponse.getFirstHeader(BuildWithDetails.TEXT_SIZE_HEADER);
+        String response = EntityUtils.toString(httpResponse.getEntity());
+        boolean hasMoreData = false;
+        if (moreDataHeader != null) {
+            hasMoreData = Boolean.TRUE.toString().equals(moreDataHeader.getValue());
+        }
+        int currentBufferSize = bufferOffset;
+        if (textSizeHeader != null) {
+            try {
+                currentBufferSize = Integer.parseInt(textSizeHeader.getValue());
+            } catch (NumberFormatException e) {
+                LOG.warn("Cannot parse buffer size for job {} build {}. Using current offset!", build.getDisplayName(), build.getNumber());
+            }
+        }
+        return new ConsoleLog(response, hasMoreData, currentBufferSize);
     }
 
 }

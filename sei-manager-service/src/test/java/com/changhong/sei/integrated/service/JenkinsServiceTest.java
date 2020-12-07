@@ -2,6 +2,7 @@ package com.changhong.sei.integrated.service;
 
 import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.core.dto.ResultData;
+import com.offbytwo.jenkins.model.BuildWithDetails;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,8 +33,15 @@ public class JenkinsServiceTest extends BaseUnitTest {
 
     @Test
     public void getBuildInfo() {
-//        ResultData<JobBuildInfo> resultData = service.getBuildInfo("dsei_auth-6.0", 3);
+        ResultData<BuildWithDetails> resultData = service.getBuildDetails("dsei_auth-6.0", 3);
 
-//        System.out.println(resultData);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void getBuildActiveLog() {
+        ResultData<BuildWithDetails> resultData = service.getBuildActiveLog("Dev_ops-help-web");
+
+        System.out.println(resultData);
     }
 }

@@ -18,8 +18,11 @@ import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.JenkinsService;
 import com.changhong.sei.util.EnumUtils;
+import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
+import com.offbytwo.jenkins.model.JobWithDetails;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -348,7 +350,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @param recordId 发布记录Id
      * @return 返回发布记录
      */
-    private ResultData<ReleaseRecord> build(String recordId) {
+    public ResultData<ReleaseRecord> build(String recordId) {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
             // 检查部署配置是否存在
@@ -395,51 +397,60 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         detail.setJobName(jobName);
         detail.setBuildNumber(buildNumber);
 
-        ResultData<BuildWithDetails> buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
-        if (buildDetailResult.successful()) {
-            BuildWithDetails buildDetails = buildDetailResult.getData();
-
-            StringBuilder log = new StringBuilder(32);
-            try {
-                // 当前日志
-                ConsoleLog currentLog = buildDetails.getConsoleOutputText(0);
-                // 输出当前获取日志信息
-                log.append(currentLog.getConsoleLog());
-                // 检测是否还有更多日志,如果是则继续循环获取
-                while (currentLog.getHasMoreData()) {
-                    // 睡眠30s
-                    //noinspection BusyWait
-                    Thread.sleep(30000);
-                    // 获取最新日志信息
-                    ConsoleLog newLog = buildDetails.getConsoleOutputText(currentLog.getCurrentBufferSize());
-                    // 输出最新日志
-                    log.append(newLog.getConsoleLog());
-                    currentLog = newLog;
+        StringBuilder log = new StringBuilder(32);
+        try (JenkinsServer jenkinsServer = jenkinsService.getJenkinsServer()) {
+            JobWithDetails details = jenkinsServer.getJob(jobName);
+            if (Objects.isNull(details)) {
+                LOG.debug("{}任务不存在,开始循环检查任务.", jobName);
+                int times = 1;
+                // 睡眠 10秒
+                int sleepTime = 10 * 1000;
+                boolean isContinue = true;
+                while (isContinue && times <= 5) {
+                    // 最长等待20分钟
+                    sleepTime = sleepTime * times;
+                    Thread.sleep(sleepTime);
+                    details = jenkinsServer.getJob(jobName);
+                    if (Objects.nonNull(details)) {
+                        isContinue = false;
+                    } else {
+                        times++;
+                    }
                 }
-
-                detail.setBuildLog(log.toString());
-                detail.setStartTime(buildDetails.getTimestamp());
-
-                buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
-                detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, buildDetailResult.getData().getResult().name()));
-            } catch (IOException | InterruptedException e) {
-                detail.setBuildLog(buildDetailResult.getMessage());
-                detail.setStartTime(System.currentTimeMillis());
-                detail.setBuildStatus(BuildStatus.FAILURE);
-
-                LOG.error(buildDetailResult.getMessage());
             }
 
-            buildDetailDao.save(detail);
-            // 更新发布记录状态
-            dao.updateByBuildStatus(id, detail.getBuildStatus());
-        } else {
-            try {
+            BuildWithDetails build = details.getBuildByNumber(buildNumber).details();
+
+            // 当前日志
+            ConsoleLog currentLog = jenkinsService.getConsoleOutputText(build, 0);
+            // 输出当前获取日志信息
+            log.append(currentLog.getConsoleLog());
+            // 检测是否还有更多日志,如果是则继续循环获取
+            while (currentLog.getHasMoreData()) {
                 // 睡眠30s
-                Thread.sleep(10000);
-            } catch (InterruptedException ignored) {
+                //noinspection BusyWait
+                Thread.sleep(30000);
+                // 获取最新日志信息
+                ConsoleLog newLog = jenkinsService.getConsoleOutputText(build, currentLog.getCurrentBufferSize());
+                // 输出最新日志
+                log.append(newLog.getConsoleLog());
+                currentLog = newLog;
             }
-            runBuild(id, jobName, buildNumber, null);
+
+            detail.setBuildLog(log.toString());
+            detail.setStartTime(build.getTimestamp());
+
+            detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, build.getResult().name()));
+        } catch (Exception e) {
+            detail.setBuildLog("获取Jenkins任务[" + jobName + "]的构建日志异常:" + ExceptionUtils.getRootCauseMessage(e));
+            detail.setStartTime(System.currentTimeMillis());
+            detail.setBuildStatus(BuildStatus.FAILURE);
+
+            LOG.error("获取Jenkins任务[" + jobName + "]的构建日志异常:" + ExceptionUtils.getRootCauseMessage(e));
         }
+
+        buildDetailDao.save(detail);
+        // 更新发布记录状态
+        dao.updateByBuildStatus(id, detail.getBuildStatus());
     }
 }
