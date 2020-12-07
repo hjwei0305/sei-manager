@@ -19,6 +19,7 @@ import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.JenkinsService;
 import com.changhong.sei.util.EnumUtils;
 import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
 import com.offbytwo.jenkins.model.JobWithDetails;
@@ -423,19 +424,21 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             }
 
             LOG.debug("{}任务是否在队列中:{}", jobName, details.isInQueue());
+            Build build = details.getBuildByNumber(buildNumber);
             int times = 0;
             // 睡眠 10秒
             int sleepTime = 10 * 1000;
-            while (details.isInQueue() && times <= 5) {
+            while ((Objects.isNull(build) || details.isInQueue()) && times <= 5) {
                 times++;
                 // 最长等待20分钟
                 sleepTime = sleepTime * times;
                 //noinspection BusyWait
                 Thread.sleep(sleepTime);
                 details = jenkinsServer.getJob(jobName);
+                build = details.getBuildByNumber(buildNumber);
             }
             LOG.debug("{}任务开始构建...", jobName);
-            BuildWithDetails withDetails = details.getBuildByNumber(buildNumber).details();
+            BuildWithDetails withDetails = build.details();
 
             // 当前日志
             ConsoleLog currentLog = jenkinsService.getConsoleOutputText(withDetails, 0);
@@ -454,8 +457,9 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             }
 
             detail.setBuildLog(log.toString());
-            detail.setStartTime(withDetails.getTimestamp());
 
+            withDetails = details.getBuildByNumber(buildNumber).details();
+            detail.setStartTime(withDetails.getTimestamp());
             detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, withDetails.getResult().name()));
         } catch (Exception e) {
             detail.setBuildLog("获取Jenkins任务[" + jobName + "]的构建日志异常:" + ExceptionUtils.getRootCauseMessage(e));
