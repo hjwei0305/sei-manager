@@ -96,6 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers(
                 "/**/v2/api-docs/**", "/**/swagger-*/**",
                 "/webjars/**",
+                "/websocket/**",
                 "/**/*.html", "/**/*.css", "/**/*.js", "/**/*.jpeg", "/**/*.png", "/**/*.jpg", "/**/*.gif", "/**/*.ico"
         );
 
