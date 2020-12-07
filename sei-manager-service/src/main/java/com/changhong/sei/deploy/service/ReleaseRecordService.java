@@ -389,6 +389,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         }
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     public void runBuild(String id, String jobName, int buildNumber, ReleaseBuildDetail detail) {
         if (Objects.isNull(detail)) {
             detail = new ReleaseBuildDetail();
