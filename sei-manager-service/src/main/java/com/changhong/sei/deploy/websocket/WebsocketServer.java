@@ -1,12 +1,13 @@
 package com.changhong.sei.deploy.websocket;
 
-import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
 import com.changhong.sei.deploy.service.ReleaseRecordService;
 import com.changhong.sei.deploy.websocket.config.MyEndpointConfigure;
 import com.changhong.sei.integrated.service.JenkinsService;
+import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
+import com.offbytwo.jenkins.model.JobWithDetails;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,27 +58,28 @@ public class WebsocketServer {
         }
 
         String jobName = releaseRecord.getJobName();
-        try {
-            ResultData<BuildWithDetails> buildDetailResult = jenkinsService.getBuildActiveLog(jobName);
-            if (buildDetailResult.successful()) {
-                BuildWithDetails buildDetails = buildDetailResult.getData();
-                // 当前日志
-                ConsoleLog currentLog = buildDetails.getConsoleOutputText(0);
-                // 输出当前获取日志信息
-                send(session, currentLog.getConsoleLog());
-                // 检测是否还有更多日志,如果是则继续循环获取
-                while (currentLog.getHasMoreData()) {
-                    // 获取最新日志信息
-                    currentLog = buildDetails.getConsoleOutputText(currentLog.getCurrentBufferSize());
-                    // 输出最新日志
-                    send(session, currentLog.getConsoleLog());
-                    // 睡眠1s
-                    //noinspection BusyWait
-                    Thread.sleep(1000);
-                }
-            } else {
+        try (JenkinsServer jenkinsServer = jenkinsService.getJenkinsServer()) {
+            JobWithDetails details = jenkinsServer.getJob(jobName);
+            if (Objects.isNull(details)) {
                 // 输出最新日志
-                send(session, buildDetailResult.getMessage());
+                send(session, "Jenkins任务[" + jobName + "]不存在.");
+                return;
+            }
+            BuildWithDetails build = details.getLastBuild().details();
+
+            // 当前日志
+            ConsoleLog currentLog = build.getConsoleOutputText(0);
+            // 输出当前获取日志信息
+            send(session, currentLog.getConsoleLog());
+            // 检测是否还有更多日志,如果是则继续循环获取
+            while (currentLog.getHasMoreData()) {
+                // 获取最新日志信息
+                currentLog = build.getConsoleOutputText(currentLog.getCurrentBufferSize());
+                // 输出最新日志
+                send(session, currentLog.getConsoleLog());
+                // 睡眠1s
+                //noinspection BusyWait
+                Thread.sleep(1000);
             }
         } catch (IOException | InterruptedException e) {
             LOG.error("websocket获取构建实时日志异常:" + ExceptionUtils.getRootCauseMessage(e), e);
@@ -115,6 +117,9 @@ public class WebsocketServer {
      * 封装一个send方法，发送消息到前端
      */
     private void send(Session session, String message) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("发送消息: {}", message);
+        }
         try {
             session.getBasicRemote().sendText(message);
         } catch (Exception e) {
