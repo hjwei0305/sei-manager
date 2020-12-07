@@ -19,6 +19,12 @@ public class ReleaseRecordServiceTest extends BaseUnitTest {
 
     @Test
     public void build() {
-        service.build("");
+        service.build("C670D133-3609-11EB-8A8C-0242C0A84603");
+
+        try {
+            Thread.sleep(10000000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -295,6 +295,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @param id 发布记录id
      * @return 返回构建操作
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> buildJob(String id) {
         ResultData<ReleaseRecord> resultData = build(id);
         if (resultData.failed()) {
@@ -350,6 +351,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @param recordId 发布记录Id
      * @return 返回发布记录
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseRecord> build(String recordId) {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
@@ -404,27 +406,39 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             JobWithDetails details = jenkinsServer.getJob(jobName);
             if (Objects.isNull(details)) {
                 LOG.debug("{}任务不存在,开始循环检查任务.", jobName);
-                int times = 1;
+                int times = 0;
                 // 睡眠 10秒
                 int sleepTime = 10 * 1000;
                 boolean isContinue = true;
                 while (isContinue && times <= 5) {
+                    times++;
                     // 最长等待20分钟
                     sleepTime = sleepTime * times;
                     Thread.sleep(sleepTime);
                     details = jenkinsServer.getJob(jobName);
                     if (Objects.nonNull(details)) {
                         isContinue = false;
-                    } else {
-                        times++;
                     }
                 }
             }
 
-            BuildWithDetails build = details.getBuildByNumber(buildNumber).details();
+            LOG.debug("{}任务是否在队列中:{}", jobName, details.isInQueue());
+            int times = 0;
+            // 睡眠 10秒
+            int sleepTime = 10 * 1000;
+            while (details.isInQueue() && times <= 5) {
+                times++;
+                // 最长等待20分钟
+                sleepTime = sleepTime * times;
+                //noinspection BusyWait
+                Thread.sleep(sleepTime);
+                details = jenkinsServer.getJob(jobName);
+            }
+            LOG.debug("{}任务开始构建...", jobName);
+            BuildWithDetails withDetails = details.getBuildByNumber(buildNumber).details();
 
             // 当前日志
-            ConsoleLog currentLog = jenkinsService.getConsoleOutputText(build, 0);
+            ConsoleLog currentLog = jenkinsService.getConsoleOutputText(withDetails, 0);
             // 输出当前获取日志信息
             log.append(currentLog.getConsoleLog());
             // 检测是否还有更多日志,如果是则继续循环获取
@@ -433,22 +447,22 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 //noinspection BusyWait
                 Thread.sleep(30000);
                 // 获取最新日志信息
-                ConsoleLog newLog = jenkinsService.getConsoleOutputText(build, currentLog.getCurrentBufferSize());
+                ConsoleLog newLog = jenkinsService.getConsoleOutputText(withDetails, currentLog.getCurrentBufferSize());
                 // 输出最新日志
                 log.append(newLog.getConsoleLog());
                 currentLog = newLog;
             }
 
             detail.setBuildLog(log.toString());
-            detail.setStartTime(build.getTimestamp());
+            detail.setStartTime(withDetails.getTimestamp());
 
-            detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, build.getResult().name()));
+            detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, withDetails.getResult().name()));
         } catch (Exception e) {
             detail.setBuildLog("获取Jenkins任务[" + jobName + "]的构建日志异常:" + ExceptionUtils.getRootCauseMessage(e));
             detail.setStartTime(System.currentTimeMillis());
             detail.setBuildStatus(BuildStatus.FAILURE);
 
-            LOG.error("获取Jenkins任务[" + jobName + "]的构建日志异常:" + ExceptionUtils.getRootCauseMessage(e));
+            LOG.error("获取Jenkins任务[" + jobName + "]的构建日志异常:" + ExceptionUtils.getRootCauseMessage(e), e);
         }
 
         buildDetailDao.save(detail);
