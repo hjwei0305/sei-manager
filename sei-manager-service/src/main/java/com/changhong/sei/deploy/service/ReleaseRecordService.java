@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.service;
 
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
@@ -370,61 +371,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             ResultData<Integer> buildResult = jenkinsService.buildJob(jobName, params);
             if (buildResult.successful()) {
                 int buildNumber = buildResult.getData();
-                // 更新构建状态为构建中
-                releaseRecord.setBuildStatus(BuildStatus.BUILDING);
+                // 更新构建状态为未构建
+                releaseRecord.setBuildStatus(BuildStatus.NOT_BUILT);
 
                 // 异步上传
                 CompletableFuture.runAsync(() -> {
-                    jenkinsService.getBuildActiveLog(jobName);
-                    ReleaseBuildDetail detail = new ReleaseBuildDetail();
-                    detail.setRecordId(recordId);
-                    detail.setJobName(jobName);
-                    detail.setBuildNumber(buildNumber);
-
-                    ResultData<BuildWithDetails> buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
-                    if (buildDetailResult.successful()) {
-                        BuildWithDetails buildDetails = buildDetailResult.getData();
-
-                        StringBuilder log = new StringBuilder(32);
-                        try {
-                            // 当前日志
-                            ConsoleLog currentLog = buildDetails.getConsoleOutputText(0);
-                            // 输出当前获取日志信息
-                            log.append(currentLog.getConsoleLog());
-                            // 检测是否还有更多日志,如果是则继续循环获取
-                            while (currentLog.getHasMoreData()) {
-                                // 睡眠30s
-                                //noinspection BusyWait
-                                Thread.sleep(30000);
-                                // 获取最新日志信息
-                                ConsoleLog newLog = buildDetails.getConsoleOutputText(currentLog.getCurrentBufferSize());
-                                // 输出最新日志
-                                log.append(newLog.getConsoleLog());
-                                currentLog = newLog;
-                            }
-
-                            detail.setBuildLog(log.toString());
-                            detail.setStartTime(buildDetails.getTimestamp());
-
-                            buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
-                            detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, buildDetailResult.getData().getResult().name()));
-                        } catch (IOException | InterruptedException e) {
-                            detail.setBuildLog(buildDetailResult.getMessage());
-                            detail.setStartTime(System.currentTimeMillis());
-                            detail.setBuildStatus(BuildStatus.FAILURE);
-
-                            LOG.error(buildDetailResult.getMessage());
-                        }
-                    } else {
-                        detail.setBuildLog(buildDetailResult.getMessage());
-                        detail.setStartTime(System.currentTimeMillis());
-                        detail.setBuildStatus(BuildStatus.FAILURE);
-
-                        LOG.error(buildDetailResult.getMessage());
-                    }
-                    buildDetailDao.save(detail);
-
-                    dao.updateByBuildStatus(recordId, detail.getBuildStatus());
+                    ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, null);
                 });
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
@@ -432,6 +384,62 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             return ResultData.success(releaseRecord);
         } else {
             return ResultData.fail("发布记录不存在");
+        }
+    }
+
+    public void runBuild(String id, String jobName, int buildNumber, ReleaseBuildDetail detail) {
+        if (Objects.isNull(detail)) {
+            detail = new ReleaseBuildDetail();
+        }
+        detail.setRecordId(id);
+        detail.setJobName(jobName);
+        detail.setBuildNumber(buildNumber);
+
+        ResultData<BuildWithDetails> buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
+        if (buildDetailResult.successful()) {
+            BuildWithDetails buildDetails = buildDetailResult.getData();
+
+            StringBuilder log = new StringBuilder(32);
+            try {
+                // 当前日志
+                ConsoleLog currentLog = buildDetails.getConsoleOutputText(0);
+                // 输出当前获取日志信息
+                log.append(currentLog.getConsoleLog());
+                // 检测是否还有更多日志,如果是则继续循环获取
+                while (currentLog.getHasMoreData()) {
+                    // 睡眠30s
+                    //noinspection BusyWait
+                    Thread.sleep(30000);
+                    // 获取最新日志信息
+                    ConsoleLog newLog = buildDetails.getConsoleOutputText(currentLog.getCurrentBufferSize());
+                    // 输出最新日志
+                    log.append(newLog.getConsoleLog());
+                    currentLog = newLog;
+                }
+
+                detail.setBuildLog(log.toString());
+                detail.setStartTime(buildDetails.getTimestamp());
+
+                buildDetailResult = jenkinsService.getBuildDetails(jobName, buildNumber);
+                detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, buildDetailResult.getData().getResult().name()));
+            } catch (IOException | InterruptedException e) {
+                detail.setBuildLog(buildDetailResult.getMessage());
+                detail.setStartTime(System.currentTimeMillis());
+                detail.setBuildStatus(BuildStatus.FAILURE);
+
+                LOG.error(buildDetailResult.getMessage());
+            }
+
+            buildDetailDao.save(detail);
+            // 更新发布记录状态
+            dao.updateByBuildStatus(id, detail.getBuildStatus());
+        } else {
+            try {
+                // 睡眠30s
+                Thread.sleep(10000);
+            } catch (InterruptedException ignored) {
+            }
+            runBuild(id, jobName, buildNumber, null);
         }
     }
 }

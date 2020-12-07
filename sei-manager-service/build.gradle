@@ -20,7 +20,8 @@ dependencies {
     compile(
             "org.springframework.boot:spring-boot-starter-security",
             "org.springframework.boot:spring-boot-starter-mail",
-            "org.springframework.boot:spring-boot-starter-thymeleaf"
+            "org.springframework.boot:spring-boot-starter-thymeleaf",
+            "org.springframework.boot:spring-boot-starter-websocket"
     )
     // SEI平台依赖包
 

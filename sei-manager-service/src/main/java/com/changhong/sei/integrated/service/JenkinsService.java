@@ -187,9 +187,12 @@ public class JenkinsService {
                 if (Objects.nonNull(build)) {
                     BuildWithDetails buildDetails = build.details();
                     return ResultData.success(buildDetails);
+                } else {
+                    return ResultData.fail("构建任务[" + jobName + "]还未开始构建.");
                 }
+            } else {
+                return ResultData.fail("构建任务[" + jobName + "]不存在");
             }
-            return ResultData.fail("构建任务[" + jobName + "]不存在或存在错误.");
         } catch (IOException e) {
             LOG.error("获取Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
