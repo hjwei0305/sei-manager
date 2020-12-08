@@ -337,12 +337,14 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             ResultData<List<DeployTemplateStageResponse>> result = deployTemplateStageService.getStageByTemplateId(config.getTempId());
             detailDto.setStages(result.getData());
 
-            Search search = Search.createSearch();
-            search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_RECORD_ID, id));
-            search.addSortOrder(new SearchOrder(ReleaseBuildDetail.FIELD_BUILD_NUMBER, SearchOrder.Direction.DESC));
-            ReleaseBuildDetail detail = buildDetailDao.findFirstByFilters(search);
-            if (Objects.nonNull(detail)) {
-                detailDto.setBuildLog(detail.getBuildLog());
+            if (BuildStatus.BUILDING != releaseRecord.getBuildStatus()) {
+                Search search = Search.createSearch();
+                search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_RECORD_ID, id));
+                search.addSortOrder(new SearchOrder(ReleaseBuildDetail.FIELD_BUILD_NUMBER, SearchOrder.Direction.DESC));
+                ReleaseBuildDetail detail = buildDetailDao.findFirstByFilters(search);
+                if (Objects.nonNull(detail)) {
+                    detailDto.setBuildLog(detail.getBuildLog());
+                }
             }
         } else {
             return ResultData.fail(resultData.getMessage());
