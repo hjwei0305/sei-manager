@@ -12,12 +12,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-03-08 17:18
  */
-@Component
 @ServerEndpoint(value = "/websocket/buildLog/{id}", configurator = MyEndpointConfigure.class)
 public class WebsocketServer {
     private final static Logger LOG = LoggerFactory.getLogger(WebsocketServer.class);

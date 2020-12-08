@@ -12,7 +12,6 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-03-08 17:21
  */
-//@ComponentScan("com.changhong.sei.deploy.websocket")
 @Configuration
 // 单元测试排除
 @ConditionalOnProperty(value = "org.springframework.boot.test.context.SpringBootTestContextBootstrapper", havingValue = "false", matchIfMissing = true)
@@ -35,8 +34,8 @@ public class WebsocketAutoConfig {
         return new MyEndpointConfigure();
     }
 
-//    @Bean
-//    public WebsocketServer websocketServer() {
-//        return new WebsocketServer();
-//    }
+    @Bean
+    public WebsocketServer websocketServer() {
+        return new WebsocketServer();
+    }
 }

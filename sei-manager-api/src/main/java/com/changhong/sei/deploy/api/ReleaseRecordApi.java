@@ -5,6 +5,7 @@ import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.deploy.dto.GitlabPushHookRequest;
 import com.changhong.sei.deploy.dto.ReleaseRecordDetailDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
@@ -84,4 +85,14 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
     @GetMapping(path = "getBuildDetail")
     @ApiOperation(value = "获取构建明细", notes = "获取构建明细")
     ResultData<ReleaseRecordDetailDto> getBuildDetail(@RequestParam("id") String id);
+
+    /**
+     * Gitlab Push Hook
+     *
+     * @param request gitlab push hook
+     * @return 返回结果
+     */
+    @PostMapping(path = "webhook")
+    @ApiOperation(value = "Gitlab Push Hook", notes = "Gitlab Push Hook")
+    ResultData<Void> webhook(@RequestBody GitlabPushHookRequest request);
 }

@@ -6,6 +6,7 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.ReleaseRecordApi;
+import com.changhong.sei.deploy.dto.GitlabPushHookRequest;
 import com.changhong.sei.deploy.dto.ReleaseRecordDetailDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordDto;
 import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
@@ -124,5 +125,16 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
     @Override
     public ResultData<ReleaseRecordDetailDto> getBuildDetail(String id) {
         return service.getBuildDetail(id);
+    }
+
+    /**
+     * Gitlab Push Hook
+     *
+     * @param request gitlab push hook
+     * @return 返回结果
+     */
+    @Override
+    public ResultData<Void> webhook(GitlabPushHookRequest request) {
+        return ResultData.success();
     }
 }
