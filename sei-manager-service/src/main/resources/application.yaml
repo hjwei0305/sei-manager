@@ -16,13 +16,25 @@ sei: # 应用全局配置
     websocket:
       enable: false
   jenkins:
-    host: 'http://10.4.208.130:8088/'
-    username: ''
-    password: ''
+    host: 'http://10.4.208.130:8088'
+    username: 'hua.feng'
+    password: 'fenghua1'
   gitlab:
-    host: 'http://10.4.208.130:7001'
-    username: 'seiadmin'
-    password: '1q2w3e4r'
+    host: 'http://rddgit.changhong.com'
+    token: 'n_DEjjbZxTrSWNf-SKsV'
+  # nodejs 服务地址
+  node-server: 'http://10.4.208.130:7001'
+  # 禁用redis缓存
+  cache:
+    enable-redis: false
+  build:
+    # web hook方式构建开发环境
+    hook: true
+    # 定时任务方式构建开发环境
+    timing: false
+  # 开发运维平台的服务端地址(若有代理,配置代理后的地址)
+  server:
+    host: ''
 
 spring:
   application:
@@ -58,7 +70,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://10.4.208.134:3306/sei_manager?characterEncoding=utf8&useSSL=false&useCompression=true&serverTimezone=Asia/Shanghai
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: none
       namingStrategy: org.hibernate.cfg.ImprovedNamingStrategy
@@ -67,11 +79,11 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
         format_sql: true
   # redis config
-  redis:
-    password: ZmkDbgaua3Rso33T
-    database: 0
-    port: 6379
-    host: 10.4.208.132
+#  redis:
+#    password: ZmkDbgaua3Rso33T
+#    database: 0
+#    port: 6379
+#    host: 10.4.208.132
 
 # log config
 logging:

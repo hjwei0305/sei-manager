@@ -25,25 +25,22 @@ import java.util.List;
 @Service
 public class GitlabService {
     private static final Logger LOG = LoggerFactory.getLogger(GitlabService.class);
-    /**
-     * 认证header
-     */
-    private static final String HEADER_TOKEN_KEY = "PRIVATE-TOKEN";
+
     /**
      * gitlab服务地址
      */
     @Value("${sei.gitlab.host}")
     private String host;
     /**
-     * gitlab用户名
+     * gitlab token
      */
-    @Value("${sei.gitlab.username}")
-    private String username;
+    @Value("${sei.gitlab.token}")
+    private String token;
     /**
-     * gitlab密码
+     * nodejs服务
      */
-    @Value("${sei.gitlab.password}")
-    private String password;
+    @Value("${sei.node-server}")
+    private String nodeServer;
 
     @Autowired
     private ApiTemplate restTemplate;
@@ -52,11 +49,10 @@ public class GitlabService {
      * 创建gitlab连接
      */
     private GitLabApi getGitLabApi() {
-        String gitlabHost = "http://rddgit.changhong.com";
         try {
 //            GitlabSession session = GitlabAPI.connect(gitlabHost, username, password);
 //            GitLabApi gitlabAPI = GitLabApi.oauth2Login(gitlabHost, username, password);
-            GitLabApi gitlabAPI = new GitLabApi(gitlabHost, "n_DEjjbZxTrSWNf-SKsV");
+            GitLabApi gitlabAPI = new GitLabApi(host, token);
             return gitlabAPI;
         } catch (Exception e) {
             throw new RuntimeException("获取Gitlab接口异常", e);
@@ -71,7 +67,7 @@ public class GitlabService {
      */
     @SuppressWarnings("unchecked")
     public ResultData<ProjectVo> createProject(ProjectVo project) {
-        String url = host.concat("/project/createGitProject");
+        String url = nodeServer.concat("/project/createGitProject");
         ResultData<HashMap<String, Object>> resultData = restTemplate.postByUrl(url, ResultData.class, project);
         if (LOG.isInfoEnabled()) {
             LOG.info("创建git项目: {}", JsonUtils.toJson(resultData));
