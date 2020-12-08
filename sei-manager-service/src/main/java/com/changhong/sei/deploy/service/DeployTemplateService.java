@@ -88,19 +88,19 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
             return ResultData.fail(resultData.getMessage());
         }
         StringBuilder script = new StringBuilder();
+        script.append("\n\r node {\n\r");
+
         String str = template.getGlobalParam();
         if (StringUtils.isNotBlank(str)) {
-            Map<String, String> params = JsonUtils.fromJson(str, HashMap.class);
+            Map<String, Object> params = JsonUtils.fromJson(str, HashMap.class);
             if (params != null && params.size() > 0) {
                 script.append("\n\r // 全局参数 start  \n\r");
-                for (Map.Entry<String, String> entry : params.entrySet()) {
-                    script.append("\n\r def ").append(entry.getKey()).append(" = '").append(entry.getValue()).append("' \n\r");
+                for (Map.Entry<String, Object> entry : params.entrySet()) {
+                    script.append(" def ").append(entry.getKey()).append(" = '").append(entry.getValue()).append("' \n\r");
                 }
-
                 script.append("\n\r // 全局参数 end  \n\r");
             }
         }
-        script.append("\n\r node {\n\r");
         List<DeployTemplateStageResponse> templateStages = resultData.getData();
         for (DeployTemplateStageResponse templateStage : templateStages) {
             script.append("stage('").append(templateStage.getName()).append("') { \n\r");
