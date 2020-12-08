@@ -5,6 +5,7 @@ import com.changhong.sei.deploy.service.ReleaseRecordService;
 import com.changhong.sei.deploy.websocket.config.MyEndpointConfigure;
 import com.changhong.sei.integrated.service.JenkinsService;
 import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
 import com.offbytwo.jenkins.model.JobWithDetails;
@@ -57,6 +58,7 @@ public class WebsocketServer {
         }
 
         String jobName = releaseRecord.getJobName();
+        int buildNumber = releaseRecord.getBuildNumber();
         try (JenkinsServer jenkinsServer = jenkinsService.getJenkinsServer()) {
             JobWithDetails details = jenkinsServer.getJob(jobName);
             if (Objects.isNull(details)) {
@@ -71,20 +73,33 @@ public class WebsocketServer {
                     }
                 }
             }
-            BuildWithDetails build = details.getLastBuild().details();
+
+            LOG.debug("{}任务是否在队列中:{}", jobName, details.isInQueue());
+            Build build = details.getBuildByNumber(buildNumber);
+            while (Objects.isNull(build)) {
+                //noinspection BusyWait
+                Thread.sleep(10000);
+                details = jenkinsServer.getJob(jobName);
+                build = details.getBuildByNumber(buildNumber);
+            }
+            LOG.debug("{}任务开始构建...", jobName);
+            BuildWithDetails withDetails = build.details();
 
             // 当前日志
-            ConsoleLog currentLog = jenkinsService.getConsoleOutputText(build, 0);
+            ConsoleLog currentLog = jenkinsService.getConsoleOutputText(withDetails, 0);
 
-            LOG.debug("{}任务是否存在更多日志: {}", jobName, currentLog.getHasMoreData());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("{}任务是否存在更多日志: {}", jobName, currentLog.getHasMoreData());
+            }
             // 输出当前获取日志信息
             send(session, currentLog.getConsoleLog());
             // 检测是否还有更多日志,如果是则继续循环获取
             while (currentLog.getHasMoreData()) {
                 // 获取最新日志信息
-                currentLog = jenkinsService.getConsoleOutputText(build, currentLog.getCurrentBufferSize());
-
-                LOG.debug("{}任务是否存在更多日志: {}", jobName, currentLog.getHasMoreData());
+                currentLog = jenkinsService.getConsoleOutputText(withDetails, currentLog.getCurrentBufferSize());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("{}任务是否存在更多日志: {}", jobName, currentLog.getHasMoreData());
+                }
                 // 输出最新日志
                 send(session, currentLog.getConsoleLog());
                 // 睡眠3s

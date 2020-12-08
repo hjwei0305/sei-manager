@@ -10,16 +10,17 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.manager.commom.EmailManager;
 import com.changhong.sei.manager.dao.UserDao;
-import com.changhong.sei.manager.entity.*;
+import com.changhong.sei.manager.entity.Feature;
+import com.changhong.sei.manager.entity.Menu;
+import com.changhong.sei.manager.entity.Role;
+import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.vo.UserPrincipal;
 import com.changhong.sei.util.HashUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -51,8 +52,6 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     private RoleFeatureService roleFeatureService;
     @Autowired
     private MenuService menuService;
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -272,7 +271,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param userId 用户Id
      * @return 操作菜单树
      */
-    @Cacheable(value = "sei:manager:user:authorized:menus", key = "#userId")
+//    @Cacheable(value = "sei:manager:user:authorized:menus", key = "#userId")
     public List<Menu> getUserAuthorizedMenus(String userId) {
         //获取用户
         User user = findOne(userId);
@@ -406,11 +405,11 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         if (StringUtils.isBlank(userId)) {
             return;
         }
-        String pattern = "*" + userId;
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys != null && !keys.isEmpty()) {
-            redisTemplate.delete(keys);
-        }
+//        String pattern = "*" + userId;
+//        Set<String> keys = redisTemplate.keys(pattern);
+//        if (keys != null && !keys.isEmpty()) {
+//            redisTemplate.delete(keys);
+//        }
     }
 
     /**

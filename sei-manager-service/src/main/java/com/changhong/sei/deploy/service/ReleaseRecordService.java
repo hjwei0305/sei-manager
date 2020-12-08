@@ -388,7 +388,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             // 调用Jenkins构建
             ResultData<Integer> buildResult = jenkinsService.buildJob(jobName, params);
             if (buildResult.successful()) {
-                int buildNumber = buildResult.getData();
+                final int buildNumber = buildResult.getData();
+                releaseRecord.setBuildNumber(buildNumber);
                 // 更新构建状态为构建中
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
@@ -513,9 +514,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             this.save(record);
 
             this.build(record.getId());
-
         } catch (Exception e) {
-
+            LOG.error("{} 的Push Hook 异常{}", request, ExceptionUtils.getRootCauseMessage(e));
         }
         return ResultData.success();
     }

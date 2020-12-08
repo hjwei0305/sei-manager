@@ -21,6 +21,7 @@ import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -46,6 +47,12 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     private ApplicationService applicationService;
     @Autowired
     private GitlabService gitlabService;
+
+    /**
+     * 开发运维平台的服务端地址(若有代理,配置代理后的地址)
+     */
+    @Value("${sei.server.host}")
+    private String serverHost;
 
     @Override
     protected BaseEntityDao<AppModule> getDao() {
@@ -273,7 +280,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             if (result1.notSuccessful()) {
                 return ResultData.fail(result1.getMessage());
             } else {
-                gitlabService.addProjectHook(gitProject.getGitId(), "");
+                // @see ReleaseRecordApi#webhook
+                gitlabService.addProjectHook(gitProject.getGitId(), serverHost.concat("/releaseRecord/webhook"));
 
                 return ResultData.success();
             }

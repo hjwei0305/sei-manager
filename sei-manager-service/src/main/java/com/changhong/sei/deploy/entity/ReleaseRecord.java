@@ -86,6 +86,11 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "exp_complete_time")
     private LocalDateTime expCompleteTime;
     /**
+     * Jenkins构建号
+     */
+    @Column(name = "build_number")
+    private Integer buildNumber;
+    /**
      * Jenkins构建状态
      */
     @Column(name = "build_status")
@@ -188,6 +193,14 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
 
     public void setExpCompleteTime(LocalDateTime expCompleteTime) {
         this.expCompleteTime = expCompleteTime;
+    }
+
+    public Integer getBuildNumber() {
+        return buildNumber;
+    }
+
+    public void setBuildNumber(Integer buildNumber) {
+        this.buildNumber = buildNumber;
     }
 
     public BuildStatus getBuildStatus() {

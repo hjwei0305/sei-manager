@@ -3,6 +3,7 @@ package com.changhong.sei.deploy.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 /**
  * 实现功能：
@@ -87,5 +88,14 @@ public class GitlabPushHookRequest implements Serializable {
 
     public void setObjectKind(String objectKind) {
         this.objectKind = objectKind;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", "[", "]")
+                .add("userName='" + userName + "'")
+                .add("projectId='" + projectId + "'")
+                .add("objectKind='" + objectKind + "'")
+                .toString();
     }
 }

@@ -1,6 +1,8 @@
 package com.changhong.sei.integrated.service;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.deploy.dto.BuildStatus;
+import com.changhong.sei.util.EnumUtils;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
 import com.offbytwo.jenkins.model.Build;
@@ -228,6 +230,25 @@ public class JenkinsService {
         }
     }
 
+    /**
+     * 获取最后一次构建的状态
+     *
+     * @param jobName 任务名
+     * @return 返回结果
+     */
+    public ResultData<BuildStatus> getLastBuildStatus(String jobName) {
+        try (JenkinsServer server = getJenkinsServer()) {
+            JobWithDetails details = server.getJob(jobName);
+            BuildWithDetails build = details.getLastBuild().details();
+
+            BuildStatus status = EnumUtils.getEnum(BuildStatus.class, build.getResult().name());
+
+            return ResultData.success(status);
+        } catch (IOException e) {
+            LOG.error("获取Jenkins的[" + jobName + "]任务最后一次构建的状态异常", e);
+            return ResultData.fail("获取Jenkins的[" + jobName + "]任务状态异常: " + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
 
     public ConsoleLog getConsoleOutputText(BuildWithDetails build, int bufferOffset) throws IOException {
         List<NameValuePair> formData = new ArrayList<>();
