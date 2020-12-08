@@ -24,7 +24,6 @@ import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
 import com.offbytwo.jenkins.model.JobWithDetails;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -376,13 +375,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             AppModule module = moduleService.getAppModule(releaseRecord.getModuleCode());
             params.put(Constants.DEPLOY_PARAM_GIT_PATH, Objects.isNull(module) ? "null" : module.getGitHttpUrl());
             // 参数:代码分支或者TAG
-            if (StringUtils.containsIgnoreCase(releaseRecord.getEnvCode(), "dev")) {
-                // 开发环境默认使用dev分支构建
-                params.put(Constants.DEPLOY_PARAM_BRANCH, "dev");
-            } else {
-                // 非开发环境使用指定的tag构建
-                params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
-            }
+            params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
 
             String jobName = releaseRecord.getJobName();
             // 调用Jenkins构建
