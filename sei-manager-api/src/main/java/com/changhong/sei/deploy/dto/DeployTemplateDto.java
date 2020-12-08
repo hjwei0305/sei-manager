@@ -19,6 +19,11 @@ public class DeployTemplateDto extends BaseEntityDto {
     @ApiModelProperty(value = "模板名称")
     private String name;
     /**
+     * 模板全局参数
+     */
+    @ApiModelProperty(value = "模板全局参数")
+    private String globalParam;
+    /**
      * 是否冻结
      */
     @ApiModelProperty(value = "是否冻结")
@@ -36,6 +41,14 @@ public class DeployTemplateDto extends BaseEntityDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGlobalParam() {
+        return globalParam;
+    }
+
+    public void setGlobalParam(String globalParam) {
+        this.globalParam = globalParam;
     }
 
     public Boolean getFrozen() {

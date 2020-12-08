@@ -27,7 +27,7 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
     @Column(name = "name")
     private String name;
     /**
-     * 模板名称
+     * 模板全局参数
      */
     @Column(name = "global_param")
     private String globalParam;
