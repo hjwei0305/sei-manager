@@ -31,6 +31,11 @@ public class AppModule extends BaseAuditableEntity implements ICodeUnique, IFroz
     @Column(name = "app_id")
     private String appId;
     /**
+     * 所属应用id
+     */
+    @Column(name = "app_name")
+    private String appName;
+    /**
      * 模块代码
      */
     @Column(name = "code")
@@ -83,6 +88,14 @@ public class AppModule extends BaseAuditableEntity implements ICodeUnique, IFroz
 
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     @Override

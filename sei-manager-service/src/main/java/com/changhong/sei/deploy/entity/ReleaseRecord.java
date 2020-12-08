@@ -90,7 +90,7 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
      */
     @Column(name = "build_status")
     @Enumerated(EnumType.STRING)
-    private BuildStatus buildStatus;
+    private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
 
     public String getEnvCode() {
         return envCode;

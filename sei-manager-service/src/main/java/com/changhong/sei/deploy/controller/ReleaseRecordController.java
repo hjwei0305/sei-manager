@@ -135,6 +135,6 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      */
     @Override
     public ResultData<Void> webhook(GitlabPushHookRequest request) {
-        return ResultData.success();
+        return service.webhook(request);
     }
 }

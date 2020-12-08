@@ -90,6 +90,23 @@ public class GitlabService {
     }
 
     /**
+     * 添加项目Push Hook
+     *
+     * @param gitId git项目id
+     * @return 创建结果
+     */
+    public ResultData<Void> addProjectHook(String gitId, String url) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            ProjectApi hooksApi = gitLabApi.getProjectApi();
+            hooksApi.addHook(gitId, url, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE);
+            return ResultData.success();
+        } catch (Exception e) {
+            LOG.error("获取项目标签", e);
+            return ResultData.fail("获取项目标签" + e.getMessage());
+        }
+    }
+
+    /**
      * 获取项目标签
      *
      * @param gitId git项目id

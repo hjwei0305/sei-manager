@@ -273,6 +273,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             if (result1.notSuccessful()) {
                 return ResultData.fail(result1.getMessage());
             } else {
+                gitlabService.addProjectHook(gitProject.getGitId(), "");
+
                 return ResultData.success();
             }
         } else {

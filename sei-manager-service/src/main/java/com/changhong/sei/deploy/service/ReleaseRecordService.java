@@ -16,6 +16,7 @@ import com.changhong.sei.deploy.dao.ReleaseRecordDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
 import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.*;
+import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.integrated.service.JenkinsService;
 import com.changhong.sei.util.EnumUtils;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -23,6 +24,7 @@ import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
 import com.offbytwo.jenkins.model.JobWithDetails;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +67,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     private DeployTemplateStageService deployTemplateStageService;
     @Autowired
     private JenkinsService jenkinsService;
+    @Autowired
+    private GitlabService gitlabService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -369,15 +374,21 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             AppModule module = moduleService.getAppModule(releaseRecord.getModuleCode());
             params.put(Constants.DEPLOY_PARAM_GIT_PATH, Objects.isNull(module) ? "null" : module.getGitHttpUrl());
             // 参数:代码分支或者TAG
-            params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
+            if (StringUtils.containsIgnoreCase(releaseRecord.getEnvCode(), "dev")) {
+                // 开发环境默认使用dev分支构建
+                params.put(Constants.DEPLOY_PARAM_BRANCH, "dev");
+            } else {
+                // 非开发环境使用指定的tag构建
+                params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
+            }
 
             String jobName = releaseRecord.getJobName();
             // 调用Jenkins构建
             ResultData<Integer> buildResult = jenkinsService.buildJob(jobName, params);
             if (buildResult.successful()) {
                 int buildNumber = buildResult.getData();
-                // 更新构建状态为未构建
-                releaseRecord.setBuildStatus(BuildStatus.NOT_BUILT);
+                // 更新构建状态为构建中
+                releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
                 CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber));
@@ -472,5 +483,38 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         buildDetailDao.save(detail);
         // 更新发布记录状态
         dao.updateByBuildStatus(id, detail.getBuildStatus());
+    }
+
+    /**
+     * Gitlab Push Hook
+     *
+     * @param request gitlab push hook
+     * @return 返回结果
+     */
+    @Transactional
+    public ResultData<Void> webhook(GitlabPushHookRequest request) {
+        AppModule module = moduleService.findOne(request.getProjectId());
+        try {
+            ReleaseRecord record = new ReleaseRecord();
+            record.setEnvCode("dev");
+            record.setEnvName("开发环境");
+            record.setAppId(module.getAppId());
+            record.setAppName(module.getAppName());
+            record.setGitId(module.getGitId());
+            record.setModuleCode(module.getCode());
+            record.setModuleName(module.getName());
+            record.setTagName("dev");
+            record.setName("开发构建-" + module.getName());
+            record.setRemark("开发构建-" + module.getName());
+            record.setFrozen(Boolean.FALSE);
+            record.setExpCompleteTime(LocalDateTime.now());
+            this.save(record);
+
+            this.build(record.getId());
+
+        } catch (Exception e) {
+
+        }
+        return ResultData.success();
     }
 }

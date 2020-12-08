@@ -63,29 +63,30 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<PageResult<AppModuleDto>> findByPage(Search search) {
-        PageResult<AppModule> pageResult = service.findByPage(search);
-        PageResult<AppModuleDto> result = new PageResult<>(pageResult);
-
-        List<AppModule> appModules = pageResult.getRows();
-        if (CollectionUtils.isNotEmpty(appModules)) {
-            Map<String, String> appMap = new HashMap<>();
-            List<Application> applications = applicationService.findAll();
-            if (CollectionUtils.isNotEmpty(applications)) {
-                appMap = applications.stream().collect(Collectors.toMap(Application::getId, Application::getName));
-            }
-
-            AppModuleDto moduleDto;
-            List<AppModuleDto> dtos = new ArrayList<>();
-            for (AppModule module : appModules) {
-                moduleDto = dtoModelMapper.map(module, AppModuleDto.class);
-                moduleDto.setAppName(appMap.get(module.getAppId()));
-
-                dtos.add(moduleDto);
-            }
-            result.setRows(dtos);
-        }
-
-        return ResultData.success(result);
+        return convertToDtoPageResult(service.findByPage(search));
+//        PageResult<AppModule> pageResult = service.findByPage(search);
+//        PageResult<AppModuleDto> result = new PageResult<>(pageResult);
+//
+//        List<AppModule> appModules = pageResult.getRows();
+//        if (CollectionUtils.isNotEmpty(appModules)) {
+//            Map<String, String> appMap = new HashMap<>();
+//            List<Application> applications = applicationService.findAll();
+//            if (CollectionUtils.isNotEmpty(applications)) {
+//                appMap = applications.stream().collect(Collectors.toMap(Application::getId, Application::getName));
+//            }
+//
+//            AppModuleDto moduleDto;
+//            List<AppModuleDto> dtos = new ArrayList<>();
+//            for (AppModule module : appModules) {
+//                moduleDto = dtoModelMapper.map(module, AppModuleDto.class);
+//                moduleDto.setAppName(appMap.get(module.getAppId()));
+//
+//                dtos.add(moduleDto);
+//            }
+//            result.setRows(dtos);
+//        }
+//
+//        return ResultData.success(result);
     }
 
     /**
@@ -102,13 +103,13 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
         }
 
         List<AppModuleDto> dtos = new ArrayList<>();
-        List<AppModule> appModules = service.findListByProperty("", appId);
+        List<AppModule> appModules = service.findListByProperty(AppModule.FIELD_APP_ID, appId);
         if (CollectionUtils.isNotEmpty(appModules)) {
-            String appName = application.getName();
+//            String appName = application.getName();
             AppModuleDto moduleDto;
             for (AppModule module : appModules) {
                 moduleDto = dtoModelMapper.map(module, AppModuleDto.class);
-                moduleDto.setAppName(appName);
+//                moduleDto.setAppName(appName);
 
                 dtos.add(moduleDto);
             }
