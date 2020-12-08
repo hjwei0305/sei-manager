@@ -1,7 +1,7 @@
 # Docker for java  sei-manager
 
 # 基础镜像
-FROM openjdk:8-jre-alpine
+FROM frolvlad/alpine-java:latest
 
 # 作者
 LABEL maintainer="hua.feng@changhong.com"
