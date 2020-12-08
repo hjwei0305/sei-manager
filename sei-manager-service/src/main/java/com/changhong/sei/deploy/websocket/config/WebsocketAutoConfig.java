@@ -35,8 +35,8 @@ public class WebsocketAutoConfig {
         return new MyEndpointConfigure();
     }
 
-    @Bean
-    public WebsocketServer websocketServer() {
-        return new WebsocketServer();
-    }
+//    @Bean
+//    public WebsocketServer websocketServer() {
+//        return new WebsocketServer();
+//    }
 }

@@ -380,9 +380,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 releaseRecord.setBuildStatus(BuildStatus.NOT_BUILT);
 
                 // 异步上传
-                CompletableFuture.runAsync(() -> {
-                    ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, null);
-                });
+                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber));
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
             }
@@ -394,10 +392,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void runBuild(String id, String jobName, int buildNumber, ReleaseBuildDetail detail) {
-        if (Objects.isNull(detail)) {
-            detail = new ReleaseBuildDetail();
+    public void runBuild(String id, String jobName, int buildNumber) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
         }
+        ReleaseBuildDetail detail = new ReleaseBuildDetail();
         detail.setRecordId(id);
         detail.setJobName(jobName);
         detail.setBuildNumber(buildNumber);
@@ -448,7 +448,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             while (currentLog.getHasMoreData()) {
                 // 睡眠30s
                 //noinspection BusyWait
-                Thread.sleep(30000);
+                Thread.sleep(5000);
                 // 获取最新日志信息
                 ConsoleLog newLog = jenkinsService.getConsoleOutputText(withDetails, currentLog.getCurrentBufferSize());
                 // 输出最新日志

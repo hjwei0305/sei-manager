@@ -218,7 +218,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                 } else {
                     // 事务回滚
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    return ResultData.fail(resultWithData.getMessage());
+                    return ResultData.fail(resultData.getMessage());
                 }
             } else {
                 // 事务回滚
