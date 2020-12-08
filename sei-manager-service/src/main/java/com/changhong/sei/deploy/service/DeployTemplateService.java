@@ -4,12 +4,14 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.deploy.common.Constants;
 import com.changhong.sei.deploy.dao.DeployTemplateDao;
 import com.changhong.sei.deploy.dto.DeployStageParamDto;
 import com.changhong.sei.deploy.dto.DeployTemplateStageResponse;
 import com.changhong.sei.deploy.entity.DeployConfig;
 import com.changhong.sei.deploy.entity.DeployTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -22,7 +24,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -68,31 +72,34 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
      * 生成默认预制参数的Jenkins任务xml
      */
     public ResultData<String> generateJobXml(String templateId) {
-        ResultData<List<DeployTemplateStageResponse>> resultData = templateStageService.getStageByTemplateId(templateId);
-        if (resultData.failed()) {
-            return ResultData.fail(resultData.getMessage());
-        }
-        StringBuilder script = new StringBuilder();
-        script.append("\n\r node {\n\r");
-        List<DeployTemplateStageResponse> templateStages = resultData.getData();
-        for (DeployTemplateStageResponse templateStage : templateStages) {
-            script.append("stage('").append(templateStage.getName()).append("') { \n\r");
-            script.append(templateStage.getPlayscript()).append("\n\r } \n\r");
-        }
-        script.append("\n\r} \n\r");
-
-        return generateXml(script.toString(), Constants.DEFAULT_STAGE_PARAMS);
+        return generateJobXml(templateId, Constants.DEFAULT_STAGE_PARAMS);
     }
 
     /**
      * 生成自定义参数的Jenkins任务xml
      */
     public ResultData<String> generateJobXml(String templateId, List<DeployStageParamDto> stageParams) {
+        DeployTemplate template = this.findOne(templateId);
+        if (Objects.isNull(template)) {
+            return ResultData.fail("模版不存在.");
+        }
         ResultData<List<DeployTemplateStageResponse>> resultData = templateStageService.getStageByTemplateId(templateId);
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
         StringBuilder script = new StringBuilder();
+        String str = template.getGlobalParam();
+        if (StringUtils.isNotBlank(str)) {
+            Map<String, String> params = JsonUtils.fromJson(str, HashMap.class);
+            if (params != null && params.size() > 0) {
+                script.append("\n\r // 全局参数 start  \n\r");
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+                    script.append("\n\r def ").append(entry.getKey()).append(" = '").append(entry.getValue()).append("' \n\r");
+                }
+
+                script.append("\n\r // 全局参数 end  \n\r");
+            }
+        }
         script.append("\n\r node {\n\r");
         List<DeployTemplateStageResponse> templateStages = resultData.getData();
         for (DeployTemplateStageResponse templateStage : templateStages) {
