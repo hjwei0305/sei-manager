@@ -27,6 +27,11 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
     @Column(name = "name")
     private String name;
     /**
+     * 模板名称
+     */
+    @Column(name = "global_param")
+    private String globalParam;
+    /**
      * 是否冻结
      */
     @Column(name = "frozen")
@@ -43,6 +48,14 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGlobalParam() {
+        return globalParam;
+    }
+
+    public void setGlobalParam(String globalParam) {
+        this.globalParam = globalParam;
     }
 
     public Boolean getFrozen() {
