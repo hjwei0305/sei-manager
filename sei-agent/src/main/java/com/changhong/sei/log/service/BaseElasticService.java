@@ -478,9 +478,9 @@ public class BaseElasticService {
                     searchBuilder.sort(sortOrder.getProperty(), SortOrder.ASC);
                 }
             }
+        } else {
+            searchBuilder.sort("timestamp", SortOrder.DESC);
         }
-
-        searchBuilder.sort("timestamp", SortOrder.DESC);
     }
 
     /**
