@@ -53,6 +53,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      */
     @Value("${sei.server.host}")
     private String serverHost;
+    @Value("${sei.build.hook}")
+    private Boolean hook;
 
     @Override
     protected BaseEntityDao<AppModule> getDao() {
@@ -280,9 +282,11 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             if (result1.notSuccessful()) {
                 return ResultData.fail(result1.getMessage());
             } else {
-                // @see ReleaseRecordApi#webhook
-                gitlabService.addProjectHook(gitProject.getGitId(), serverHost.concat("/releaseRecord/webhook"));
-
+                // 开关控制是否添加hook
+                if (Objects.nonNull(hook) && hook) {
+                    // @see ReleaseRecordApi#webhook
+                    gitlabService.addProjectHook(gitProject.getGitId(), serverHost.concat("/releaseRecord/webhook"));
+                }
                 return ResultData.success();
             }
         } else {
