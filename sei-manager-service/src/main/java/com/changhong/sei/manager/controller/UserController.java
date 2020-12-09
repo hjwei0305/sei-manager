@@ -7,15 +7,10 @@ import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.enums.UserAuthorityPolicy;
-import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.manager.api.UserApi;
 import com.changhong.sei.manager.commom.Constants;
-import com.changhong.sei.manager.commom.EmailManager;
-import com.changhong.sei.manager.commom.validatecode.IVerifyCodeGen;
-import com.changhong.sei.manager.commom.validatecode.VerifyCode;
 import com.changhong.sei.manager.dto.*;
 import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.entity.Menu;
@@ -23,13 +18,9 @@ import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.MenuService;
 import com.changhong.sei.manager.service.UserService;
 import com.changhong.sei.manager.vo.UserPrincipal;
-import com.changhong.sei.util.Signature;
 import io.swagger.annotations.Api;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.IOException;
+import javax.validation.constraints.NotBlank;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,18 +62,6 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     private CacheBuilder cacheBuilder;
     @Autowired
     private AuthenticationManager authenticationManager;
-    @Autowired
-    private IVerifyCodeGen verifyCodeGen;
-    @Autowired
-    private EmailManager emailManager;
-    @Autowired
-    private GitlabService gitlabService;
-
-    /**
-     * 开发运维平台的服务端地址(若有代理,配置代理后的地址)
-     */
-    @Value("${sei.server.host}")
-    private String serverHost;
 
     /**
      * 验证码
@@ -91,23 +70,8 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回验证码
      */
     @Override
-    public ResultData<String> generate(String reqId) {
-        try {
-            //设置长宽
-            VerifyCode verifyCode = verifyCodeGen.generate(80, 28);
-            String code = verifyCode.getCode();
-            LogUtil.info("验证码: {}", code);
-
-            // 验证码5分钟有效期
-            cacheBuilder.set(Constants.REDIS_VERIFY_CODE_KEY + Signature.sign(reqId), code, (long) 5 * 60 * 1000);
-
-            // 返回Base64编码过的字节数组字符串
-            String str = Base64.encodeBase64String(verifyCode.getImgBytes());
-            return ResultData.success("data:image/jpeg;base64," + str);
-        } catch (IOException e) {
-            LogUtil.error("验证码错误", e);
-            return ResultData.fail("验证码错误");
-        }
+    public ResultData<String> generate(@NotBlank String reqId) {
+        return service.generate(reqId);
     }
 
     /**
@@ -118,23 +82,8 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回验证码
      */
     @Override
-    public ResultData<Void> check(String reqId, String code) {
-        if (StringUtils.isBlank(code)) {
-            return ResultData.fail("请输入验证码");
-        }
-
-        String cacheKey = Constants.REDIS_VERIFY_CODE_KEY + Signature.sign(reqId);
-        String cacheValue = cacheBuilder.get(cacheKey);
-        // 移除已使用的验证码
-        cacheBuilder.remove(cacheKey);
-
-        if (StringUtils.isBlank(cacheValue)) {
-            return ResultData.fail("验证码已过期");
-        }
-        if (!StringUtils.equalsIgnoreCase(code, cacheValue)) {
-            return ResultData.fail("验证码不正确");
-        }
-        return ResultData.success();
+    public ResultData<Void> check(@NotBlank String reqId, @NotBlank String code) {
+        return service.check(reqId, code);
     }
 
     /**
@@ -144,34 +93,8 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回注册结果
      */
     @Override
-    public ResultData<String> registered(RegisteredUserRequest request) {
-        ResultData<Void> resultData = check(request.getReqId(), request.getVerifyCode());
-        if (resultData.failed()) {
-            return ResultData.fail(resultData.getMessage());
-        }
-
-        String email = request.getEmail();
-        User user = service.getByEmail(email);
-        if (Objects.nonNull(user)) {
-            return ResultData.fail("已存在[" + email + "]的账号");
-        }
-
-        String sign = Signature.sign(email);
-        String cacheKey = Constants.REDIS_VERIFY_CODE_KEY + sign;
-        String cacheValue = cacheBuilder.get(cacheKey);
-        if (StringUtils.isNotBlank(cacheValue)) {
-            return ResultData.fail("[" + email + "]已申请过,请勿重复申请");
-        }
-        // 三天有效期
-        cacheBuilder.set(cacheKey, email, 3600 * 24 * 3);
-
-        String context = "账号激活地址: " + serverHost.concat("/user/activate/") + sign + "  请在三天内完成激活.";
-        ResultData<String> result = emailManager.sendMail("SEI-开发运维平台账号注册申请", context, email);
-        if (result.successful()) {
-            return ResultData.success("账号激活链接已发送到指定邮箱,请尽快完成激活.");
-        } else {
-            return result;
-        }
+    public ResultData<String> registered(@Valid RegisteredUserRequest request) {
+        return service.registered(request);
     }
 
     /**
@@ -182,32 +105,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      */
     @Override
     public ResultData<Void> activate(String sign) {
-        String cacheKey = Constants.REDIS_VERIFY_CODE_KEY + sign;
-        String email = cacheBuilder.get(cacheKey);
-        if (StringUtils.isNotBlank(email)) {
-            User user = service.getByEmail(email);
-            if (Objects.nonNull(user)) {
-                return ResultData.fail("已存在[" + email + "]的账号");
-            }
-            user = new User();
-            ResultData<org.gitlab4j.api.models.User> resultData = gitlabService.getOptionalUserByEmail(email);
-            if (resultData.successful()) {
-                org.gitlab4j.api.models.User gitUser = resultData.getData();
-                user.setAccount(gitUser.getUsername());
-                user.setNickname(gitUser.getName());
-                user.setEmail(gitUser.getEmail());
-                user.setIsAdmin(gitUser.getIsAdmin());
-                user.setCreateTime(System.currentTimeMillis());
-            } else {
-                String account = email.split("@")[0];
-                user.setAccount(account);
-                user.setNickname(account);
-                user.setEmail(email);
-                user.setCreateTime(System.currentTimeMillis());
-            }
-            return service.createUser(user);
-        }
-        return ResultData.fail("激活失败,激活链接已失效.");
+        return service.activate(sign);
     }
 
     /**

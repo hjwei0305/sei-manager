@@ -242,10 +242,14 @@ public class GitlabService {
      *
      * @return 返回创建的gitlab的组实例
      */
-    public ResultData<Group> createGroup(String name, String path) {
+    public ResultData<Group> createGroup(String name, String remark) {
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
             GroupApi groupApi = gitLabApi.getGroupApi();
-            Group group = groupApi.addGroup(name, path);
+            Group group = new Group();
+            group.setName(name);
+            group.setPath(name.toLowerCase());
+            group.setDescription(remark);
+            group = groupApi.addGroup(group);
             return ResultData.success(group);
         } catch (GitLabApiException e) {
             LOG.error("获取gitlab用户异常", e);
@@ -258,13 +262,13 @@ public class GitlabService {
      *
      * @return 返回创建的gitlab的组实例
      */
-    public ResultData<Group> updateGroup(String groupId, String name) {
+    public ResultData<Group> updateGroup(String groupId, String remark) {
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
             GroupApi groupApi = gitLabApi.getGroupApi();
             ResultData<Group> resultData = getGroup(groupId);
             if (resultData.successful()) {
                 Group group = resultData.getData();
-                group.setName(name);
+                group.setDescription(remark);
                 group = groupApi.updateGroup(group);
                 return ResultData.success(group);
             } else {
@@ -305,8 +309,8 @@ public class GitlabService {
             Group group = groupApi.getGroup(groupId);
             return ResultData.success(group);
         } catch (GitLabApiException e) {
-            LOG.error("获取gitlab用户异常", e);
-            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
+            LOG.error("获取gitlab群组异常", e);
+            return ResultData.fail("获取gitlab群组异常:" + e.getMessage());
         }
     }
 }
