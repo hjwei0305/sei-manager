@@ -124,6 +124,16 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //                });
 //    }
 
+    /**
+     * 按邮箱获取用户
+     *
+     * @param email 邮箱
+     * @return 返回用户
+     */
+    public User getByEmail(String email) {
+        return dao.findByProperty(User.FIELD_EMAIL, email);
+    }
+
     @Transactional
     public ResultData<Void> createUser(User user) {
         String account = user.getAccount();

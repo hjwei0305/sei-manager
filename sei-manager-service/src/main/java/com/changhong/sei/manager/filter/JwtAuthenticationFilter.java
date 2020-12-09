@@ -146,6 +146,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         Set<String> ignores = Sets.newHashSet();
         switch (httpMethod) {
             case GET:
+                ignores.add("/**/user/generate/**");
+                ignores.add("/**/user/activate/**");
                 ignores.addAll(customConfig.getIgnores().getGet());
                 break;
             case PUT:
@@ -155,6 +157,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
                 ignores.addAll(customConfig.getIgnores().getHead());
                 break;
             case POST:
+                ignores.add("/**/webhook/**");
+                ignores.add("/**/user/check/**");
+                ignores.add("/**/user/registered/**");
                 ignores.addAll(customConfig.getIgnores().getPost());
                 break;
             case PATCH:
@@ -183,7 +188,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         ignores.add("/**/instances/**");
         ignores.add("/**/applications/**");
         ignores.add("/**/websocket/**");
-        ignores.add("/**/webhook/**");
 
         ignores.add("/**/*.html");
         ignores.add("/**/*.js");

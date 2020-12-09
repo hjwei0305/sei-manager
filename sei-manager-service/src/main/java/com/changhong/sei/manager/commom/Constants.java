@@ -16,4 +16,13 @@ public interface Constants {
      */
     String REDIS_JWT_KEY_PREFIX = "sei:manager:jwt:";
 
+    /**
+     * 认证码缓存key
+     */
+    String REDIS_VERIFY_CODE_KEY = "sei:auth:verify_code:";
+    /**
+     * 注册缓存key
+     */
+    String REDIS_REGISTERED_KEY = "sei:auth:registered:";
+
 }

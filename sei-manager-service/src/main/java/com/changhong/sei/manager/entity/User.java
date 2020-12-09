@@ -22,6 +22,7 @@ import java.io.Serializable;
 public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -57676660477087546L;
     public static final String FIELD_ACCOUNT = "account";
+    public static final String FIELD_EMAIL = "email";
     public static final String FIELD_ADMIN = "isAdmin";
     public static final String FIELD_STATUS = "status";
     /**

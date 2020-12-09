@@ -5,13 +5,15 @@ import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.manager.dto.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 用户表(SecUser)API
@@ -24,16 +26,61 @@ import java.util.List;
 public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> {
 
     /**
+     * 验证码
+     *
+     * @param reqId 请求id
+     * @return 返回验证码
+     */
+    @GetMapping(path = "generate")
+    @ApiOperation(value = "验证码", notes = "验证码5分钟有效期")
+    ResultData<String> generate(@RequestParam("reqId") @NotBlank String reqId);
+
+    /**
+     * 验证码
+     *
+     * @param reqId 请求id
+     * @param code  校验值
+     * @return 返回验证码
+     */
+    @PostMapping(path = "check")
+    @ApiOperation(value = "校验验证码", notes = "校验验证码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "reqId", value = "请求id", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "code", value = "校验值", required = true, paramType = "query")
+    })
+    ResultData<Void> check(@RequestParam("reqId") @NotBlank String reqId, @RequestParam("code") @NotBlank String code);
+
+    /**
+     * 注册用户
+     *
+     * @param request 注册请求
+     * @return 返回注册结果
+     */
+    @PostMapping(path = "registered", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "注册用户", notes = "注册用户")
+    ResultData<String> registered(@Valid @RequestBody RegisteredUserRequest request);
+
+    /**
+     * 账号注册申请激活
+     *
+     * @param sign 签名值
+     * @return 返回结果
+     */
+    @GetMapping(path = "activate/{sign}")
+    @ApiOperation(value = "账号注册申请激活", notes = "账号注册申请激活")
+    ResultData<Void> activate(@PathVariable("sign") String sign);
+
+    /**
      * 创建用户
      */
-    @PostMapping(value = "createUser")
+    @PostMapping(value = "createUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "创建用户", notes = "创建用户")
     ResultData<Void> createUser(@Valid @RequestBody CreateUserRequest user);
 
     /**
      * 修改密码
      */
-    @PostMapping(value = "updatePassword")
+    @PostMapping(value = "updatePassword", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "修改密码", notes = "修改密码")
     ResultData<Void> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest);
 

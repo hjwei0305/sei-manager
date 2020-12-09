@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 实现功能：
@@ -192,6 +193,22 @@ public class GitlabService {
             List<User> users = userApi.getActiveUsers();
             return ResultData.success(users);
         } catch (GitLabApiException e) {
+            LOG.error("获取gitlab用户异常", e);
+            return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取gitlab可用用户
+     *
+     * @return 返回gitlab可用用户
+     */
+    public ResultData<User> getOptionalUserByEmail(String email) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            UserApi userApi = gitLabApi.getUserApi();
+            Optional<User> optionalUser = userApi.getOptionalUserByEmail(email);
+            return optionalUser.map(ResultData::success).orElseGet(() -> ResultData.fail("用户不存在."));
+        } catch (Exception e) {
             LOG.error("获取gitlab用户异常", e);
             return ResultData.fail("获取gitlab用户异常:" + e.getMessage());
         }
