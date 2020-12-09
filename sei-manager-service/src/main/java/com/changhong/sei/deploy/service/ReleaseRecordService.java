@@ -339,7 +339,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             if (BuildStatus.BUILDING != releaseRecord.getBuildStatus()) {
                 Search search = Search.createSearch();
                 search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_RECORD_ID, id));
-                search.addSortOrder(new SearchOrder(ReleaseBuildDetail.FIELD_BUILD_NUMBER, SearchOrder.Direction.DESC));
+                search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_BUILD_NUMBER, releaseRecord.getBuildNumber()));
                 ReleaseBuildDetail detail = buildDetailDao.findFirstByFilters(search);
                 if (Objects.nonNull(detail)) {
                     detailDto.setBuildLog(detail.getBuildLog());
