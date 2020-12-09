@@ -1,12 +1,12 @@
 package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
-import com.changhong.sei.core.dto.serach.SearchOrder;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
@@ -367,6 +367,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             if (resultData.failed()) {
                 return ResultData.fail(resultData.getMessage());
             }
+            SessionUser user = ContextUtil.getSessionUser();
 
             Map<String, String> params = new HashMap<>();
             // 参数:项目名称(模块代码)
@@ -387,19 +388,25 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
-                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber));
+                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, user));
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
             }
+            // 构建时间
+            releaseRecord.setBuildTime(LocalDateTime.now());
+            // 构建人账号
+            releaseRecord.setBuildAccount(user.getAccount());
             return ResultData.success(releaseRecord);
         } else {
             return ResultData.fail("发布记录不存在");
         }
     }
 
-
+    /**
+     * 调用Jenkins构建任务
+     */
     @Transactional(rollbackFor = Exception.class)
-    public void runBuild(String id, String jobName, int buildNumber) {
+    public void runBuild(String id, String jobName, int buildNumber, SessionUser user) {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {
@@ -408,6 +415,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         detail.setRecordId(id);
         detail.setJobName(jobName);
         detail.setBuildNumber(buildNumber);
+        detail.setBuildAccount(user.getAccount());
 
         StringBuilder log = new StringBuilder(32);
         try (JenkinsServer jenkinsServer = jenkinsService.getJenkinsServer()) {
@@ -467,6 +475,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
 
             withDetails = details.getBuildByNumber(buildNumber).details();
             detail.setStartTime(withDetails.getTimestamp());
+            detail.setDuration(withDetails.getDuration());
             detail.setBuildStatus(EnumUtils.getEnum(BuildStatus.class, withDetails.getResult().name()));
         } catch (Exception e) {
             detail.setBuildLog("获取Jenkins任务[" + jobName + "]的构建日志异常:" + ExceptionUtils.getRootCauseMessage(e));

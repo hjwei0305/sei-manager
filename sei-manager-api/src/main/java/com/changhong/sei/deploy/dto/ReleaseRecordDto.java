@@ -86,6 +86,17 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "Jenkins构建状态")
     private BuildStatus buildStatus;
+    /**
+     * Jenkins构建时间
+     */
+    @ApiModelProperty(value = "构建时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime buildTime;
+    /**
+     * Jenkins构建人账号
+     */
+    @ApiModelProperty(value = "构建人账号")
+    private String buildAccount;
 
     public String getEnvCode() {
         return envCode;
@@ -189,5 +200,21 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
 
     public void setBuildStatus(BuildStatus buildStatus) {
         this.buildStatus = buildStatus;
+    }
+
+    public LocalDateTime getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(LocalDateTime buildTime) {
+        this.buildTime = buildTime;
+    }
+
+    public String getBuildAccount() {
+        return buildAccount;
+    }
+
+    public void setBuildAccount(String buildAccount) {
+        this.buildAccount = buildAccount;
     }
 }

@@ -93,6 +93,11 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
 
     @ApiModelProperty(value = "构建日志")
     private String buildLog;
+    /**
+     * Jenkins构建人账号
+     */
+    @ApiModelProperty(value = "构建人账号")
+    private String buildAccount;
 
     public String getEnvCode() {
         return envCode;
@@ -212,5 +217,13 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
 
     public void setBuildLog(String buildLog) {
         this.buildLog = buildLog;
+    }
+
+    public String getBuildAccount() {
+        return buildAccount;
+    }
+
+    public void setBuildAccount(String buildAccount) {
+        this.buildAccount = buildAccount;
     }
 }

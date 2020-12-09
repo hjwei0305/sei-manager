@@ -96,6 +96,16 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "build_status")
     @Enumerated(EnumType.STRING)
     private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
+    /**
+     * Jenkins构建时间
+     */
+    @Column(name = "build_time")
+    private LocalDateTime buildTime;
+    /**
+     * Jenkins构建人账号
+     */
+    @Column(name = "build_account")
+    private String buildAccount;
 
     public String getEnvCode() {
         return envCode;
@@ -209,6 +219,22 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
 
     public void setBuildStatus(BuildStatus buildStatus) {
         this.buildStatus = buildStatus;
+    }
+
+    public LocalDateTime getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(LocalDateTime buildTime) {
+        this.buildTime = buildTime;
+    }
+
+    public String getBuildAccount() {
+        return buildAccount;
+    }
+
+    public void setBuildAccount(String buildAccount) {
+        this.buildAccount = buildAccount;
     }
 
     /**

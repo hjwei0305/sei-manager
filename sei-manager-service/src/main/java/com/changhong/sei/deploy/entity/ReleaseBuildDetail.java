@@ -60,6 +60,11 @@ public class ReleaseBuildDetail extends BaseEntity implements Serializable {
      */
     @Column(name = "duration")
     private Long duration;
+    /**
+     * Jenkins构建人账号
+     */
+    @Column(name = "build_account")
+    private String buildAccount;
 
     public String getRecordId() {
         return recordId;
@@ -115,5 +120,13 @@ public class ReleaseBuildDetail extends BaseEntity implements Serializable {
 
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    public String getBuildAccount() {
+        return buildAccount;
+    }
+
+    public void setBuildAccount(String buildAccount) {
+        this.buildAccount = buildAccount;
     }
 }
