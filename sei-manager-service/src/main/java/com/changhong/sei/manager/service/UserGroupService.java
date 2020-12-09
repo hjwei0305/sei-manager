@@ -9,13 +9,16 @@ import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.ApplicationService;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.manager.dao.UserGroupDao;
+import com.changhong.sei.manager.dto.UserGroupDto;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.entity.UserGroup;
 import org.apache.commons.lang3.StringUtils;
+import org.gitlab4j.api.models.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -125,4 +128,18 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
         return userGroupUserService.getChildrenFromParentId(userId);
     }
 
+    /**
+     * 获取gitlab群组清单
+     */
+    public List<UserGroupDto> getGitlabGroup() {
+        List<UserGroupDto> dtos = new ArrayList<>();
+        ResultData<List<Group>> resultData = gitlabService.getGroups();
+        if (resultData.successful()) {
+            List<Group> groups = resultData.getData();
+            for (Group group : groups) {
+                dtos.add(new UserGroupDto(group.getPath(), group.getName(), group.getDescription()));
+            }
+        }
+        return dtos;
+    }
 }

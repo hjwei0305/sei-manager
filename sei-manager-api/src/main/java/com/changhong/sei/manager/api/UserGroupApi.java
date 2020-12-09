@@ -31,6 +31,15 @@ public interface UserGroupApi extends BaseEntityApi<UserGroupDto> {
     ResultData<List<UserGroupDto>> findAll();
 
     /**
+     * 获取gitlab群组清单
+     *
+     * @return gitlab群组清单
+     */
+    @GetMapping(path = "getGitlabGroup")
+    @ApiOperation(value = "获取gitlab群组清单", notes = "获取gitlab群组清单")
+    List<UserGroupDto> getGitlabGroup();
+
+    /**
      * 根据用户的id获取已分配的用户组
      *
      * @param userId 用户id

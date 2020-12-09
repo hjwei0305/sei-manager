@@ -32,6 +32,15 @@ public class UserGroupDto extends BaseEntityDto {
     @ApiModelProperty(value = "描述(max = 100)")
     private String description;
 
+    public UserGroupDto() {
+
+    }
+    public UserGroupDto(String code, String name, String description) {
+        this.code = code;
+        this.name = name;
+        this.description = description;
+    }
+
     public String getCode() {
         return code;
     }

@@ -298,7 +298,7 @@ public class GitlabService {
     }
 
     /**
-     * 创建gitlab 组
+     * 获取gitlab 组
      *
      * @return 返回创建的gitlab的组实例
      */
@@ -308,6 +308,21 @@ public class GitlabService {
 
             Group group = groupApi.getGroup(groupPath);
             return ResultData.success(group);
+        } catch (GitLabApiException e) {
+            LOG.error("获取gitlab群组异常", e);
+            return ResultData.fail("获取gitlab群组异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取所有gitlab 组
+     *
+     * @return 返回创建的gitlab的组实例
+     */
+    public ResultData<List<Group>> getGroups() {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            GroupApi groupApi = gitLabApi.getGroupApi();
+            return ResultData.success(groupApi.getGroups());
         } catch (GitLabApiException e) {
             LOG.error("获取gitlab群组异常", e);
             return ResultData.fail("获取gitlab群组异常:" + e.getMessage());
