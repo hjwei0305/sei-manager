@@ -1,17 +1,23 @@
 package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
+import com.changhong.sei.deploy.entity.Application;
+import com.changhong.sei.deploy.service.ApplicationService;
+import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.manager.dao.UserGroupDao;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.entity.UserGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -26,6 +32,10 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
     private UserGroupDao dao;
     @Autowired
     private UserGroupUserService userGroupUserService;
+    @Autowired
+    private ApplicationService applicationService;
+    @Autowired
+    private GitlabService gitlabService;
 
     @Override
     protected BaseEntityDao<UserGroup> getDao() {
@@ -37,12 +47,36 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
      */
     @Override
     public OperateResultWithData<UserGroup> save(UserGroup entity) {
+        String name = entity.getName();
+        if (StringUtils.isBlank(name)) {
+            return OperateResultWithData.operationFailure("用户组名称不能为空.");
+        }
         long currentTimeMillis = System.currentTimeMillis();
+
+        String path = name.toLowerCase();
+        entity.setCode(path);
+        entity.setUpdateTime(currentTimeMillis);
         if (StringUtils.isBlank(entity.getId())) {
             entity.setCreateTime(currentTimeMillis);
+
+            ResultData<String> resultData = gitlabService.createGroup(name, path, entity.getDescription());
+            if (resultData.successful()) {
+                return super.save(entity);
+            } else {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return OperateResultWithData.operationFailure(resultData.getMessage());
+            }
+        } else {
+            ResultData<String> resultData = gitlabService.updateGroup(path, entity.getDescription());
+            if (resultData.successful()) {
+                return super.save(entity);
+            } else {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return OperateResultWithData.operationFailure(resultData.getMessage());
+            }
         }
-        entity.setUpdateTime(currentTimeMillis);
-        return super.save(entity);
     }
 
     /**
@@ -52,10 +86,21 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
      */
     @Override
     protected OperateResult preDelete(String s) {
+        UserGroup userGroup = dao.findOne(s);
+        if (Objects.isNull(userGroup)) {
+            return OperateResult.operationFailure("用户组[" + s + "]不存在！");
+        }
         List<UserGroup> list = userGroupUserService.getParentsFromChildId(s);
         if (list != null && list.size() > 0) {
             // 用户组存在已经分配的用户，禁止删除！
             return OperateResult.operationFailure("用户组存在已经分配的用户，禁止删除！");
+        }
+        if (applicationService.isExistsByProperty(Application.FIELD_GROUP_CODE, userGroup.getCode())) {
+            return OperateResult.operationFailure("[" + userGroup.getCode() + "]应用存在应用模块,不允许删除!");
+        }
+        ResultData<Void> resultData = gitlabService.deleteGroup(userGroup.getCode());
+        if (resultData.failed()) {
+            return OperateResult.operationFailure(resultData.getMessage());
         }
         return super.preDelete(s);
     }

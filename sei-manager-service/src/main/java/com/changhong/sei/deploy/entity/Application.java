@@ -22,6 +22,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class Application extends BaseAuditableEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -64497955636689211L;
+    public static final String FIELD_GROUP_CODE = "groupCode";
     /**
      * 应用代码
      */

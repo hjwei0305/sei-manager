@@ -154,7 +154,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         }
 
         String sign = Signature.sign(email);
-        String cacheKey = Constants.REDIS_VERIFY_CODE_KEY + sign;
+        String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
         String cacheValue = cacheBuilder.get(cacheKey);
         if (StringUtils.isNotBlank(cacheValue)) {
             return ResultData.fail("[" + email + "]已申请过,请勿重复申请");
@@ -178,7 +178,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @return 返回结果
      */
     public ResultData<Void> activate(String sign) {
-        String cacheKey = Constants.REDIS_VERIFY_CODE_KEY + sign;
+        String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
         String email = cacheBuilder.get(cacheKey);
         if (StringUtils.isNotBlank(email)) {
             User user = this.getByEmail(email);
