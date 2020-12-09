@@ -24,6 +24,7 @@ import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
 import com.offbytwo.jenkins.model.JobWithDetails;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -506,7 +507,10 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional
     public ResultData<Void> webhook(GitlabPushHookRequest request) {
-        System.out.println("Gitlab Push Hook    "+request);
+        if (!StringUtils.equalsIgnoreCase("refs/heads/dev", request.getRef())) {
+            // 只对dev分支做自动发布,其他分支跳过
+            return ResultData.success();
+        }
         String gitId = request.getGitId();
         AppModule module = moduleService.findByProperty(AppModule.FIELD_GIT_ID, gitId);
         if (Objects.isNull(module)) {
