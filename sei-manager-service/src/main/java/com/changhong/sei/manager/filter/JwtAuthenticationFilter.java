@@ -183,6 +183,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         ignores.add("/**/instances/**");
         ignores.add("/**/applications/**");
         ignores.add("/**/websocket/**");
+        ignores.add("/**/webhook/**");
 
         ignores.add("/**/*.html");
         ignores.add("/**/*.js");
