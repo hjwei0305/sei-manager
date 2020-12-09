@@ -253,7 +253,7 @@ public class BaseElasticService {
         }
         try {
             SearchSourceBuilder searchSourceBuilder = this.initSearchSourceBuilder(buildBoolQueryBuilder(search),
-                    pageInfo.getPage() - 1, pageInfo.getRows(), 120);
+                    (pageInfo.getPage() - 1) * pageInfo.getRows(), pageInfo.getRows(), 120);
 
             // 排序
             buildSort(searchSourceBuilder, search.getSortOrders());
@@ -465,7 +465,7 @@ public class BaseElasticService {
     }
 
     private SearchSourceBuilder initSearchSourceBuilder(QueryBuilder queryBuilder) {
-        return initSearchSourceBuilder(queryBuilder, 0, 10, 60);
+        return initSearchSourceBuilder(queryBuilder, 0, 100, 60);
     }
 
     private void buildSort(SearchSourceBuilder searchBuilder, List<SearchOrder> sortOrders) {
