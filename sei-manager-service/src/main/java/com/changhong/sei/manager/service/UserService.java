@@ -140,26 +140,32 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         String email = user.getEmail();
         String phone = user.getPhone();
 
-        User exist = dao.findByAccountOrEmailOrPhone(account, account, account).orElse(null);
-        if (Objects.nonNull(exist)) {
-            return ResultData.fail(account + "已存在.");
+        User exist;
+        if (StringUtils.isNotBlank(account)) {
+            exist = dao.findByAccountOrEmailOrPhone(account, account, account).orElse(null);
+            if (Objects.nonNull(exist)) {
+                return ResultData.fail(account + "已存在.");
+            }
         }
-        exist = dao.findByAccountOrEmailOrPhone(email, email, email).orElse(null);
-        if (Objects.nonNull(exist)) {
-            return ResultData.fail(email + "已存在.");
+        if (StringUtils.isNotBlank(email)) {
+            exist = dao.findByAccountOrEmailOrPhone(email, email, email).orElse(null);
+            if (Objects.nonNull(exist)) {
+                return ResultData.fail(email + "已存在.");
+            }
         }
-        exist = dao.findByAccountOrEmailOrPhone(phone, phone, phone).orElse(null);
-        if (Objects.nonNull(exist)) {
-            return ResultData.fail(phone + "已存在.");
+        if (StringUtils.isNotBlank(phone)) {
+            exist = dao.findByAccountOrEmailOrPhone(phone, phone, phone).orElse(null);
+            if (Objects.nonNull(exist)) {
+                return ResultData.fail(phone + "已存在.");
+            }
         }
 
         // 生成8位随机密码
         String randomPass = RandomStringUtils.randomAlphanumeric(8);
-
         user.setPassword(passwordEncoder.encode(HashUtil.md5(randomPass)));
         OperateResultWithData<User> result = this.save(user);
         if (result.successful()) {
-            emailManager.sendMail("SEI-Manager账号密码", "账号:  ".concat(user.getAccount()).concat(" 的初始密码为: ").concat(randomPass).concat(" 为了安全,请尽快修改."), result.getData());
+            emailManager.sendMail("SEI开发运维平台账号密码", "账号:  ".concat(user.getAccount()).concat(" 的初始密码为: ").concat(randomPass).concat(" 为了安全,请尽快修改."), result.getData());
             return ResultData.success();
         } else {
             return ResultData.fail(result.getMessage());

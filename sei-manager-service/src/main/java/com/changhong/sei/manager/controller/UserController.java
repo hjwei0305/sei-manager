@@ -185,15 +185,27 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
         String cacheKey = Constants.REDIS_VERIFY_CODE_KEY + sign;
         String email = cacheBuilder.get(cacheKey);
         if (StringUtils.isNotBlank(email)) {
+            User user = service.getByEmail(email);
+            if (Objects.nonNull(user)) {
+                return ResultData.fail("已存在[" + email + "]的账号");
+            }
+            user = new User();
             ResultData<org.gitlab4j.api.models.User> resultData = gitlabService.getOptionalUserByEmail(email);
             if (resultData.successful()) {
                 org.gitlab4j.api.models.User gitUser = resultData.getData();
-                User user = new User();
-
-                service.createUser(user);
+                user.setAccount(gitUser.getUsername());
+                user.setNickname(gitUser.getName());
+                user.setEmail(gitUser.getEmail());
+                user.setIsAdmin(gitUser.getIsAdmin());
+                user.setCreateTime(System.currentTimeMillis());
             } else {
-                // 重定向到填写账号,手机号页面
+                String account = email.split("@")[0];
+                user.setAccount(account);
+                user.setNickname(account);
+                user.setEmail(email);
+                user.setCreateTime(System.currentTimeMillis());
             }
+            return service.createUser(user);
         }
         return ResultData.fail("激活失败,激活链接已失效.");
     }
