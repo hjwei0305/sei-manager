@@ -26,13 +26,16 @@ public class GitlabPushHookRequest implements Serializable {
     private String userEmail;
 
     @JsonProperty("project_id")
-    private String projectId;
+    private String gitId;
 
     @JsonProperty("total_commits_count")
     private Integer totalCommitsCount;
 
     @JsonProperty("object_kind")
     private String objectKind;
+
+    @JsonProperty("ref")
+    private String ref;
 
     public String getUserId() {
         return userId;
@@ -66,12 +69,12 @@ public class GitlabPushHookRequest implements Serializable {
         this.userEmail = userEmail;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getGitId() {
+        return gitId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setGitId(String gitId) {
+        this.gitId = gitId;
     }
 
     public Integer getTotalCommitsCount() {
@@ -90,12 +93,22 @@ public class GitlabPushHookRequest implements Serializable {
         this.objectKind = objectKind;
     }
 
+    public String getRef() {
+        return ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", "[", "]")
                 .add("userName='" + userName + "'")
-                .add("projectId='" + projectId + "'")
+                .add("userUsername='" + userUsername + "'")
+                .add("gitId='" + gitId + "'")
                 .add("objectKind='" + objectKind + "'")
+                .add("ref='" + ref + "'")
                 .toString();
     }
 }

@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 public class AppModule extends BaseAuditableEntity implements ICodeUnique, IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
+    public static final String FIELD_GIT_ID = "gitId";
     /**
      * 所属应用id
      */

@@ -279,7 +279,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updateFrozen(String id) {
-        ResultData<ReleaseRecord> resultData = build(id);
+        SessionUser user = ContextUtil.getSessionUser();
+        ResultData<ReleaseRecord> resultData = build(id, user.getAccount());
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
@@ -302,7 +303,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> buildJob(String id) {
-        ResultData<ReleaseRecord> resultData = build(id);
+        SessionUser user = ContextUtil.getSessionUser();
+        ResultData<ReleaseRecord> resultData = build(id, user.getAccount());
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
@@ -359,7 +361,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @return 返回发布记录
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseRecord> build(String recordId) {
+    public ResultData<ReleaseRecord> build(String recordId, String account) {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
             // 检查部署配置是否存在
@@ -367,7 +369,6 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             if (resultData.failed()) {
                 return ResultData.fail(resultData.getMessage());
             }
-            SessionUser user = ContextUtil.getSessionUser();
 
             Map<String, String> params = new HashMap<>();
             // 参数:项目名称(模块代码)
@@ -388,14 +389,14 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
-                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, user));
+                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, account));
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
             }
             // 构建时间
             releaseRecord.setBuildTime(LocalDateTime.now());
             // 构建人账号
-            releaseRecord.setBuildAccount(user.getAccount());
+            releaseRecord.setBuildAccount(account);
             return ResultData.success(releaseRecord);
         } else {
             return ResultData.fail("发布记录不存在");
@@ -406,7 +407,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * 调用Jenkins构建任务
      */
     @Transactional(rollbackFor = Exception.class)
-    public void runBuild(String id, String jobName, int buildNumber, SessionUser user) {
+    public void runBuild(String id, String jobName, int buildNumber, String account) {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {
@@ -415,7 +416,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         detail.setRecordId(id);
         detail.setJobName(jobName);
         detail.setBuildNumber(buildNumber);
-        detail.setBuildAccount(user.getAccount());
+        detail.setBuildAccount(account);
 
         StringBuilder log = new StringBuilder(32);
         try (JenkinsServer jenkinsServer = jenkinsService.getJenkinsServer()) {
@@ -490,6 +491,13 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         dao.updateByBuildStatus(id, detail.getBuildStatus());
     }
 
+    public ReleaseRecord getByGitIdAndTag(String gitId, String tag) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(ReleaseRecord.FIELD_GIT_ID, gitId));
+        search.addFilter(new SearchFilter(ReleaseRecord.FIELD_TAG_NAME, tag));
+        return dao.findFirstByFilters(search);
+    }
+
     /**
      * Gitlab Push Hook
      *
@@ -498,24 +506,33 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional
     public ResultData<Void> webhook(GitlabPushHookRequest request) {
-        AppModule module = moduleService.findOne(request.getProjectId());
+        System.out.println("Gitlab Push Hook    "+request);
+        String gitId = request.getGitId();
+        AppModule module = moduleService.findByProperty(AppModule.FIELD_GIT_ID, gitId);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("未找到Git Id[" + gitId + "]对应的应用模块");
+        }
+        String tag = "dev";
         try {
-            ReleaseRecord record = new ReleaseRecord();
-            record.setEnvCode("dev");
-            record.setEnvName("开发环境");
-            record.setAppId(module.getAppId());
-            record.setAppName(module.getAppName());
-            record.setGitId(module.getGitId());
-            record.setModuleCode(module.getCode());
-            record.setModuleName(module.getName());
-            record.setTagName("dev");
-            record.setName("开发构建-" + module.getName());
-            record.setRemark("开发构建-" + module.getName());
-            record.setFrozen(Boolean.FALSE);
-            record.setExpCompleteTime(LocalDateTime.now());
-            this.save(record);
+            ReleaseRecord record = getByGitIdAndTag(gitId, tag);
+            if (Objects.isNull(record)) {
+                record = new ReleaseRecord();
+                record.setEnvCode("dev");
+                record.setEnvName("开发环境");
+                record.setAppId(module.getAppId());
+                record.setAppName(module.getAppName());
+                record.setGitId(gitId);
+                record.setModuleCode(module.getCode());
+                record.setModuleName(module.getName());
+                record.setTagName("dev");
+                record.setName("开发构建-" + module.getName());
+                record.setRemark("开发构建-" + module.getName());
+                record.setFrozen(Boolean.FALSE);
+                record.setExpCompleteTime(LocalDateTime.now());
+                this.save(record);
+            }
 
-            this.build(record.getId());
+            this.build(record.getId(), request.getUserUsername());
         } catch (Exception e) {
             LOG.error("{} 的Push Hook 异常{}", request, ExceptionUtils.getRootCauseMessage(e));
         }

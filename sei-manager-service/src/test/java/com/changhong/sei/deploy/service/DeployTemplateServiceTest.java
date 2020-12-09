@@ -1,7 +1,7 @@
 package com.changhong.sei.deploy.service;
 
+import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.test.BaseUnitTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +20,7 @@ public class DeployTemplateServiceTest extends BaseUnitTest {
 
     @Test
     public void generateXml() {
-        ResultData<String> resultData = service.generateJobXml("F662AB75-0EAB-11EB-8124-0242C0A8460F");
+        ResultData<String> resultData = service.generateJobXml("854D0AEA-35DF-11EB-8AB2-0242C0A84603");
         System.out.println(resultData);
         System.out.println(resultData.getData());
     }
