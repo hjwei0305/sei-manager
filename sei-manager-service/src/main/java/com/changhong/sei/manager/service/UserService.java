@@ -141,10 +141,10 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param request 注册请求
      * @return 返回注册结果
      */
-    public ResultData<String> registered(RegisteredUserRequest request) {
+    public ResultData<Void> registered(RegisteredUserRequest request) {
         ResultData<Void> resultData = check(request.getReqId(), request.getVerifyCode());
         if (resultData.failed()) {
-            return ResultData.fail(resultData.getMessage());
+            return resultData;
         }
 
         String email = request.getEmail();
@@ -163,9 +163,9 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         cacheBuilder.set(cacheKey, email, 3600 * 24 * 3);
 
         String context = "账号激活地址: " + serverHost.concat("/user/activate/") + sign + "  请在三天内完成激活.";
-        ResultData<String> result = emailManager.sendMail("SEI-开发运维平台账号注册申请", context, email);
+        ResultData<Void> result = emailManager.sendMail("SEI-开发运维平台账号注册申请", context, email);
         if (result.successful()) {
-            return ResultData.success("账号激活链接已发送到指定邮箱,请尽快完成激活.");
+            return ResultData.success("账号激活链接已发送到指定邮箱,请尽快完成激活.", null);
         } else {
             return result;
         }

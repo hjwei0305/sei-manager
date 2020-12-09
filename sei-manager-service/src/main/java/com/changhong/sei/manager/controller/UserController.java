@@ -93,7 +93,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回注册结果
      */
     @Override
-    public ResultData<String> registered(@Valid RegisteredUserRequest request) {
+    public ResultData<Void> registered(@Valid RegisteredUserRequest request) {
         return service.registered(request);
     }
 

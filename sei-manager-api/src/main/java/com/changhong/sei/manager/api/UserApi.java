@@ -58,7 +58,7 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
      */
     @PostMapping(path = "registered", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "注册用户", notes = "注册用户")
-    ResultData<String> registered(@Valid @RequestBody RegisteredUserRequest request);
+    ResultData<Void> registered(@Valid @RequestBody RegisteredUserRequest request);
 
     /**
      * 账号注册申请激活

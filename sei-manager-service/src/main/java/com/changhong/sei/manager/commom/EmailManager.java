@@ -43,7 +43,7 @@ public class EmailManager {
     @Autowired
     private UserService userService;
 
-    public ResultData<String> sendMail(String subject, String context, String... accounts) {
+    public ResultData<Void> sendMail(String subject, String context, String... accounts) {
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
         List<User> users = userService.findByFilters(search);
@@ -56,7 +56,7 @@ public class EmailManager {
         }
     }
 
-    public ResultData<String> sendMail(String subject, String context, User... users) {
+    public ResultData<Void> sendMail(String subject, String context, User... users) {
         Set<InternetAddress> toSet = new HashSet<>();
         for (User user : users) {
             try {
@@ -68,7 +68,7 @@ public class EmailManager {
         return sendMail(subject, context, toSet);
     }
 
-    public ResultData<String> sendMail(String subject, String context, String email) {
+    public ResultData<Void> sendMail(String subject, String context, String email) {
         Set<InternetAddress> toSet = null;
         try {
             toSet = Sets.newHashSet(new InternetAddress(email));
@@ -79,7 +79,7 @@ public class EmailManager {
         }
     }
 
-    public ResultData<String> sendMail(String subject, String context, Set<InternetAddress> toSet) {
+    public ResultData<Void> sendMail(String subject, String context, Set<InternetAddress> toSet) {
         try {
             //构造MimeMessage并设置相关属性值,MimeMessage就是实际的电子邮件对象.
             MimeMessage mimeMessage = mailSender.createMimeMessage();
