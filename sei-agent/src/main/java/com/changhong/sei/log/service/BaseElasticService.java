@@ -7,6 +7,7 @@ import com.changhong.sei.util.ConverterUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -16,9 +17,11 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.IndicesOptions;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.GetAliasesResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.cluster.metadata.AliasMetadata;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -38,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -195,6 +199,22 @@ public class BaseElasticService {
         } catch (Exception e) {
             LOG.error("按条件删除异常", e);
             return ResultData.fail("[" + idxName + "]按条件删除异常");
+        }
+    }
+
+    /**
+     * 获取所有索引
+     */
+    public ResultData<Set<String>> getAllIndex() {
+        GetAliasesRequest request = new GetAliasesRequest();
+        GetAliasesResponse getAliasesResponse;
+        try {
+            getAliasesResponse = restHighLevelClient.indices().getAlias(request, RequestOptions.DEFAULT);
+            Map<String, Set<AliasMetadata>> map = getAliasesResponse.getAliases();
+            return ResultData.success(map.keySet());
+        } catch (IOException e) {
+            LOG.error("获取所有索引异常", e);
+            return ResultData.fail("获取所有索引异常");
         }
     }
 
