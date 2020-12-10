@@ -78,8 +78,12 @@ public class UserGroupController extends BaseEntityController<UserGroup, UserGro
     @Override
     public ResultData<Void> saveList(@Valid List<UserGroupDto> dtoList) {
         List<UserGroup> groups = new ArrayList<>();
+        UserGroup userGroup;
+        long now = System.currentTimeMillis();
         for (UserGroupDto dto : dtoList) {
-            groups.add(entityModelMapper.map(dto, UserGroup.class));
+            userGroup = entityModelMapper.map(dto, UserGroup.class);
+            userGroup.setCreateTime(now);
+            groups.add(userGroup);
         }
         service.save(groups);
         return ResultData.success();
