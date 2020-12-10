@@ -64,6 +64,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             if (StringUtils.isBlank(versionName)) {
                 remark = versionName;
             }
+            LogUtil.bizLog("创建gitlab版本, gitId:{}, versionName:{}, tag:{}, refTag:{}, remark:{}, ", gitId, versionName, tag, refTag, remark);
             ResultData<Release> resultData = gitlabService.createProjectRelease(gitId, versionName, tag, refTag, remark);
             if (resultData.successful()) {
                 Release gitlabRelease = resultData.getData();
