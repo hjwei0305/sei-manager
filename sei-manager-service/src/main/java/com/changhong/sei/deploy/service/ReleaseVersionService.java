@@ -6,10 +6,10 @@ import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.ReleaseVersionDao;
 import com.changhong.sei.deploy.dto.BuildStatus;
-import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
 import com.changhong.sei.deploy.entity.ReleaseVersion;
 import com.changhong.sei.integrated.service.GitlabService;
+import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.Release;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,8 +53,18 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             return ResultData.fail("发布记录不能为空.");
         }
         if (BuildStatus.SUCCESS == releaseRecord.getBuildStatus()) {
-            String tag = releaseRecord.getTagName();
-            ResultData<Release> resultData = gitlabService.createProjectRelease(releaseRecord.getGitId(), releaseRecord.getName(), tag + "-Release", tag, releaseRecord.getRemark());
+            String gitId = releaseRecord.getGitId();
+            String tag = releaseRecord.getTagName() + "-Release";
+            String refTag = releaseRecord.getTagName();
+            String versionName = releaseRecord.getName();
+            if (StringUtils.isBlank(versionName)) {
+                versionName = tag;
+            }
+            String remark = releaseRecord.getRemark();
+            if (StringUtils.isBlank(versionName)) {
+                remark = versionName;
+            }
+            ResultData<Release> resultData = gitlabService.createProjectRelease(gitId, versionName, tag, refTag, remark);
             if (resultData.successful()) {
                 Release gitlabRelease = resultData.getData();
                 ReleaseVersion version = new ReleaseVersion();
@@ -62,12 +72,12 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 version.setAppName(releaseRecord.getAppName());
                 version.setGitId(releaseRecord.getGitId());
                 version.setModuleName(releaseRecord.getModuleName());
-                version.setName(releaseRecord.getName());
+                version.setName(versionName);
                 version.setCommitId(gitlabRelease.getCommit().getId());
                 // 约定镜像命名规范
-                version.setImageName(releaseRecord.getModuleName() + "/" + gitlabRelease.getTagName());
-                version.setVersion(gitlabRelease.getTagName());
-                version.setRemark(gitlabRelease.getDescription());
+                version.setImageName(releaseRecord.getModuleName() + "/" + refTag);
+                version.setVersion(tag);
+                version.setRemark(remark);
                 version.setCreateTime(LocalDateTime.now());
                 this.save(version);
                 LogUtil.bizLog(releaseRecord.getJobName() + "发版成功[" + releaseRecord.getTagName() + "].");
