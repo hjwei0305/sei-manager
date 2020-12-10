@@ -1,5 +1,6 @@
 package com.changhong.sei.manager.service;
 
+import com.changhong.sei.common.ThymeLeafHelper;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
@@ -36,6 +37,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.context.Context;
 
 import java.io.IOException;
 import java.util.*;
@@ -155,15 +157,18 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
         String sign = Signature.sign(email);
         String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
-        String cacheValue = cacheBuilder.get(cacheKey);
-        if (StringUtils.isNotBlank(cacheValue)) {
-            return ResultData.fail("[" + email + "]已申请过,请勿重复申请");
-        }
+//        String cacheValue = cacheBuilder.get(cacheKey);
+//        if (StringUtils.isNotBlank(cacheValue)) {
+//            return ResultData.fail("[" + email + "]已申请过,请勿重复申请");
+//        }
         // 三天有效期
-        cacheBuilder.set(cacheKey, email, 3600 * 24 * 3);
+        cacheBuilder.set(cacheKey, request, 3600 * 24 * 3);
 
-        String context = "账号激活地址: " + serverHost.concat("/user/activate/") + sign + "  请在三天内完成激活.";
-        ResultData<Void> result = emailManager.sendMail("SEI-开发运维平台账号注册申请", context, email);
+        Context context = new Context();
+        context.setVariable("url", serverHost.concat("/user/activate/") + sign);
+        String content = ThymeLeafHelper.getTemplateEngine().process("RegisteredUser.html", context);
+
+        ResultData<Void> result = emailManager.sendMail("SEI开发运维平台账号注册申请", content, email);
         if (result.successful()) {
             return ResultData.success("账号激活链接已发送到指定邮箱,请尽快完成激活.", null);
         } else {
@@ -178,10 +183,11 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @return 返回结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> activate(String sign) {
+    public ResultData<String> activate(String sign) {
         String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
-        String email = cacheBuilder.get(cacheKey);
-        if (StringUtils.isNotBlank(email)) {
+        RegisteredUserRequest request = cacheBuilder.get(cacheKey);
+        if (Objects.nonNull(request)) {
+            String email = request.getEmail();
             User user = this.getByEmail(email);
             if (Objects.nonNull(user)) {
                 return ResultData.fail("已存在[" + email + "]的账号");
@@ -202,7 +208,12 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
                 user.setEmail(email);
                 user.setCreateTime(System.currentTimeMillis());
             }
-            return this.createUser(user);
+            ResultData<Void> result = this.createUser(user);
+            if (result.successful()) {
+                return ResultData.success(request.getEmail());
+            } else {
+                return ResultData.fail(result.getMessage());
+            }
         }
         return ResultData.fail("激活失败,激活链接已失效.");
     }
@@ -308,7 +319,13 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         user.setPassword(passwordEncoder.encode(HashUtil.md5(randomPass)));
         OperateResultWithData<User> result = this.save(user);
         if (result.successful()) {
-            emailManager.sendMail("SEI开发运维平台账号密码", "账号:  ".concat(user.getAccount()).concat(" 的初始密码为: ").concat(randomPass).concat(" 为了安全,请尽快修改."), result.getData());
+            Context context = new Context();
+            context.setVariable("userName", user.getNickname());
+            context.setVariable("account", user.getAccount());
+            context.setVariable("password", randomPass);
+            String content = ThymeLeafHelper.getTemplateEngine().process("CreateUser.html", context);
+
+            emailManager.sendMail("SEI开发运维平台账号密码", content, user);
             try {
                 ResultData<org.gitlab4j.api.models.User> resultData = gitlabService.getOptionalUserByEmail(email);
                 if (resultData.failed()) {

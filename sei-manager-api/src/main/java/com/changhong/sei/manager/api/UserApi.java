@@ -12,8 +12,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.io.IOException;
 
 /**
  * 用户表(SecUser)API
@@ -25,6 +27,14 @@ import javax.validation.constraints.NotBlank;
 @FeignClient(name = "sei-manager", path = "user")
 public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> {
 
+    /**
+     * 获取支持的邮箱服务
+     *
+     * @return 返回验证码
+     */
+    @GetMapping(path = "getMailServer")
+    @ApiOperation(value = "获取支持的邮箱服务", notes = "获取支持的邮箱服务")
+    ResultData<String[]> getMailServer();
     /**
      * 验证码
      *
@@ -68,7 +78,7 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
      */
     @GetMapping(path = "activate/{sign}")
     @ApiOperation(value = "账号注册申请激活", notes = "账号注册申请激活")
-    ResultData<Void> activate(@PathVariable("sign") String sign);
+    void activate(@PathVariable("sign") String sign, HttpServletResponse response) throws IOException;
 
     /**
      * 创建用户

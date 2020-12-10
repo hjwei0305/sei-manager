@@ -148,6 +148,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
             case GET:
                 ignores.add("/**/user/generate/**");
                 ignores.add("/**/user/activate/**");
+                ignores.add("/**/user/getMailServer/**");
                 ignores.addAll(customConfig.getIgnores().getGet());
                 break;
             case PUT:

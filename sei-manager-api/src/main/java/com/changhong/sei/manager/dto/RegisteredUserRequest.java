@@ -25,6 +25,8 @@ public class RegisteredUserRequest implements Serializable {
     @NotBlank
     @ApiModelProperty(value = "邮箱", required = true)
     private String email;
+    @ApiModelProperty(value = "登录页面地址", required = true)
+    private String loginUrl;
 
     public String getReqId() {
         return reqId;
@@ -48,5 +50,13 @@ public class RegisteredUserRequest implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
     }
 }

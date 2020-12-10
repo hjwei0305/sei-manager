@@ -21,6 +21,7 @@ import com.changhong.sei.manager.vo.UserPrincipal;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,8 +32,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,6 +66,19 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     private CacheBuilder cacheBuilder;
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Value("${sei.email.servers:@changhong.com}")
+    private String[] emailServers;
+
+    /**
+     * 获取支持的邮箱服务
+     *
+     * @return 返回验证码
+     */
+    @Override
+    public ResultData<String[]> getMailServer() {
+        return ResultData.success(emailServers);
+    }
 
     /**
      * 验证码
@@ -104,8 +121,17 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回结果
      */
     @Override
-    public ResultData<Void> activate(String sign) {
-        return service.activate(sign);
+    public void activate(String sign, HttpServletResponse response) throws IOException {
+        ResultData<String> resultData = service.activate(sign);
+        if (resultData.successful()) {
+            response.setContentType("text/html;charset=utf-8");
+            response.sendRedirect(resultData.getData());
+        } else {
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            PrintWriter writer = response.getWriter();
+            writer.write(resultData.getMessage());
+        }
     }
 
     /**
