@@ -16,7 +16,6 @@ import com.changhong.sei.deploy.dao.ReleaseRecordDao;
 import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
 import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.*;
-import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.integrated.service.JenkinsService;
 import com.changhong.sei.util.EnumUtils;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -68,7 +67,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Autowired
     private JenkinsService jenkinsService;
     @Autowired
-    private GitlabService gitlabService;
+    private ReleaseVersionService releaseVersionService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -370,6 +369,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             if (resultData.failed()) {
                 return ResultData.fail(resultData.getMessage());
             }
+            // 部署配置
+            DeployConfig deployConfig = resultData.getData();
 
             Map<String, String> params = new HashMap<>();
             // 参数:项目名称(模块代码)
@@ -390,7 +391,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
-                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, account));
+                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, account, deployConfig));
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
             }
@@ -408,7 +409,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * 调用Jenkins构建任务
      */
     @Transactional(rollbackFor = Exception.class)
-    public void runBuild(String id, String jobName, int buildNumber, String account) {
+    public void runBuild(String id, String jobName, int buildNumber, String account, DeployConfig deployConfig) {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {
@@ -488,8 +489,17 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         }
 
         buildDetailDao.save(detail);
-        // 更新发布记录状态
-        dao.updateByBuildStatus(id, detail.getBuildStatus());
+
+        ReleaseRecord record = dao.findOne(id);
+        if (Objects.nonNull(record)) {
+            BuildStatus status = detail.getBuildStatus();
+            // 更新发布记录状态
+            record.setBuildStatus(status);
+            dao.save(record);
+            if (BuildStatus.SUCCESS == status && deployConfig.getNeedRelease()) {
+                releaseVersionService.releaseVersion(record);
+            }
+        }
     }
 
     public ReleaseRecord getByGitIdAndTag(String gitId, String tag) {

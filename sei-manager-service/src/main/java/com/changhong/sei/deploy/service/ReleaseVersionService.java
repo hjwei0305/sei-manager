@@ -2,6 +2,7 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.ReleaseVersionDao;
 import com.changhong.sei.deploy.dto.BuildStatus;
@@ -64,10 +65,13 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 version.setRemark(gitlabRelease.getDescription());
                 version.setCreateTime(LocalDateTime.now());
                 this.save(version);
+                LogUtil.bizLog(releaseRecord.getJobName() + "发版成功[" + releaseRecord.getTagName() + "].");
+                return ResultData.success();
+            } else {
+                return ResultData.fail(releaseRecord.getJobName() + "发版失败: " + resultData.getMessage());
             }
-            return ResultData.success();
         } else {
-            return ResultData.fail("" + releaseRecord.getBuildStatus().name());
+            return ResultData.fail(releaseRecord.getJobName() + "发版失败,当前构建状态:" + releaseRecord.getBuildStatus().name());
         }
     }
 }

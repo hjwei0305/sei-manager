@@ -88,6 +88,11 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
      */
     @Column(name = "remark")
     private String remark;
+    /**
+     * 是否需要发布版本
+     */
+    @Column(name = "need_release")
+    private Boolean needRelease = Boolean.FALSE;
 
     public String getEnvCode() {
         return envCode;
@@ -183,6 +188,14 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Boolean getNeedRelease() {
+        return needRelease;
+    }
+
+    public void setNeedRelease(Boolean needRelease) {
+        this.needRelease = needRelease;
     }
 
     /**
