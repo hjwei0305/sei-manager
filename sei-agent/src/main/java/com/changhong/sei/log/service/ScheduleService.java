@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class ScheduleService {
      * 0 0/2 * * * ?  每隔2分钟触发一次
      * 0 15 1 * * ?   每天1:15触发
      */
-//    @Scheduled(cron = "0 15 1 * * ?")
+    @Scheduled(cron = "0 40 14 * * ?")
     public void cron() {
         LogUtil.bizLog("启动日志清理");
         ResultData<Set<String>> resultData = elasticService.getAllIndex();
