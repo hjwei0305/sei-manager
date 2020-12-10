@@ -82,6 +82,11 @@ public class DeployConfigDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "描述说明")
     private String remark;
+    /**
+     * 是否需要发布版本
+     */
+    @ApiModelProperty(value = "是否需要发布版本", required = true)
+    private Boolean needRelease = Boolean.FALSE;
 
     public String getEnvCode() {
         return envCode;
@@ -177,5 +182,13 @@ public class DeployConfigDto extends BaseEntityDto {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Boolean getNeedRelease() {
+        return needRelease;
+    }
+
+    public void setNeedRelease(Boolean needRelease) {
+        this.needRelease = needRelease;
     }
 }
