@@ -27,14 +27,24 @@ public class GitlabServiceTest extends BaseUnitTest {
     @Test
     public void createProject() {
         ProjectVo project = new ProjectVo();
-        project.setType(ProjectType.WEB);
-        project.setProjectId(IdGenerator.uuid2());
-        project.setCode("sei-test-mac");
+        project.setType(ProjectType.JAVA);
+//        project.setProjectId(IdGenerator.uuid2());
+        project.setCode("sei-test-mac1");
         project.setName("测试createProject");
         project.setNameSpace("com.changhong.sei.demo");
         project.setGroupId("384");
-        project.setGroupName("TEST");
         ResultData<ProjectVo> resultData = service.createProject(project);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void deleteProject() {
+        service.deleteProject("1436");
+    }
+
+    @Test
+    public void getProject() {
+        ResultData<ProjectVo> resultData = service.getProject("test/ops-java");
         System.out.println(resultData);
     }
 

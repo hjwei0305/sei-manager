@@ -57,29 +57,27 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
         long currentTimeMillis = System.currentTimeMillis();
 
         String path = name.toLowerCase();
-        entity.setCode(path);
         entity.setUpdateTime(currentTimeMillis);
         if (StringUtils.isBlank(entity.getId())) {
             entity.setCreateTime(currentTimeMillis);
 
             ResultData<String> resultData = gitlabService.createGroup(name, path, entity.getDescription());
             if (resultData.successful()) {
-                return super.save(entity);
+                entity.setCode(resultData.getData());
             } else {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return OperateResultWithData.operationFailure(resultData.getMessage());
             }
         } else {
-            ResultData<String> resultData = gitlabService.updateGroup(path, entity.getDescription());
-            if (resultData.successful()) {
-                return super.save(entity);
-            } else {
+            ResultData<Void> resultData = gitlabService.updateGroup(path, entity.getDescription());
+            if (resultData.failed()) {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return OperateResultWithData.operationFailure(resultData.getMessage());
             }
         }
+        return super.save(entity);
     }
 
     /**

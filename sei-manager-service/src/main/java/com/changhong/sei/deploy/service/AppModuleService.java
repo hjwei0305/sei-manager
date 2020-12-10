@@ -254,11 +254,9 @@ public class AppModuleService extends BaseEntityService<AppModule> {
 
         // 创建git项目
         ProjectVo project = new ProjectVo();
-        project.setProjectId(module.getId());
         project.setCode(module.getCode());
         project.setName(module.getName().concat(module.getRemark()));
         project.setGroupId(application.getGroupCode());
-        project.setGroupName(application.getGroupName());
         if (StringUtils.isBlank(module.getNameSpace())) {
             project.setType(ProjectType.WEB);
         } else {

@@ -1,9 +1,5 @@
 package com.changhong.sei.integrated.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import javax.persistence.Column;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -21,11 +17,6 @@ public class ProjectVo implements Serializable {
     private String name;
     private String nameSpace;
     private String groupId;
-    private String groupName;
-    /**
-     * 项目id
-     */
-    private String projectId;
     /**
      * gitId
      */
@@ -76,22 +67,6 @@ public class ProjectVo implements Serializable {
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
     }
 
     public String getGitId() {

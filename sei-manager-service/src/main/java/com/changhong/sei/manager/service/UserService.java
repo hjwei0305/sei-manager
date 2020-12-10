@@ -177,6 +177,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param sign 签名值
      * @return 返回结果
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> activate(String sign) {
         String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
         String email = cacheBuilder.get(cacheKey);
