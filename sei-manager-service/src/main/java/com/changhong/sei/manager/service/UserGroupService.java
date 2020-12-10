@@ -75,13 +75,20 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
                     }
                 }
             } else {
-                ResultData<String> resultData = gitlabService.createGroup(name, path, entity.getDescription());
+                // 检查path是否在gitlab存在
+                ResultData<Group> resultData = gitlabService.getGroup(path);
                 if (resultData.successful()) {
-                    entity.setCode(resultData.getData());
+                    Group gitGroup = resultData.getData();
+                    entity.setCode(String.valueOf(gitGroup.getId()));
                 } else {
-                    // 事务回滚
-                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    return OperateResultWithData.operationFailure(resultData.getMessage());
+                    ResultData<String> result = gitlabService.createGroup(name, path, entity.getDescription());
+                    if (result.successful()) {
+                        entity.setCode(result.getData());
+                    } else {
+                        // 事务回滚
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        return OperateResultWithData.operationFailure(resultData.getMessage());
+                    }
                 }
             }
         } else {

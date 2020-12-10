@@ -83,6 +83,7 @@ public class UserGroupController extends BaseEntityController<UserGroup, UserGro
         for (UserGroupDto dto : dtoList) {
             userGroup = entityModelMapper.map(dto, UserGroup.class);
             userGroup.setCreateTime(now);
+            userGroup.setUpdateTime(now);
             groups.add(userGroup);
         }
         service.save(groups);
