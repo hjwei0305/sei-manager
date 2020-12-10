@@ -302,4 +302,14 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     public AppModule getAppModule(String code) {
         return dao.findByProperty(AppModule.CODE_FIELD, code);
     }
+
+    /**
+     * 更新应用模块版本号
+     *
+     * @param code    模块代码
+     * @param version 版本号
+     */
+    public void updateVersion(String code, String version) {
+        dao.updateVersion(code, version);
+    }
 }

@@ -6,6 +6,7 @@ import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.ReleaseVersionDao;
 import com.changhong.sei.deploy.dto.BuildStatus;
+import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
 import com.changhong.sei.deploy.entity.ReleaseVersion;
 import com.changhong.sei.integrated.service.GitlabService;
@@ -28,6 +29,9 @@ import java.util.Objects;
 public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
     @Autowired
     private ReleaseVersionDao dao;
+
+    @Autowired
+    private AppModuleService moduleService;
 
     @Autowired
     private GitlabService gitlabService;
@@ -66,6 +70,9 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 version.setCreateTime(LocalDateTime.now());
                 this.save(version);
                 LogUtil.bizLog(releaseRecord.getJobName() + "发版成功[" + releaseRecord.getTagName() + "].");
+
+                moduleService.updateVersion(releaseRecord.getModuleCode(), releaseRecord.getTagName());
+
                 return ResultData.success();
             } else {
                 return ResultData.fail(releaseRecord.getJobName() + "发版失败: " + resultData.getMessage());
