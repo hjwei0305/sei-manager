@@ -53,7 +53,8 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             return ResultData.fail("发布记录不能为空.");
         }
         if (BuildStatus.SUCCESS == releaseRecord.getBuildStatus()) {
-            ResultData<Release> resultData = gitlabService.createProjectRelease(releaseRecord.getGitId(), releaseRecord.getName(), releaseRecord.getTagName(), releaseRecord.getName());
+            String tag = releaseRecord.getTagName();
+            ResultData<Release> resultData = gitlabService.createProjectRelease(releaseRecord.getGitId(), releaseRecord.getName(), tag + "-Release", tag, releaseRecord.getRemark());
             if (resultData.successful()) {
                 Release gitlabRelease = resultData.getData();
                 ReleaseVersion version = new ReleaseVersion();

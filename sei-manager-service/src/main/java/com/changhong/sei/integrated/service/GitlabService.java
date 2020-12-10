@@ -291,12 +291,13 @@ public class GitlabService {
      * @param message 描述
      * @return 创建结果
      */
-    public ResultData<Release> createProjectRelease(String gitId, String name, String tagName, String message) {
+    public ResultData<Release> createProjectRelease(String gitId, String name, String tagName, String refTag, String message) {
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
             ReleasesApi api = gitLabApi.getReleasesApi();
             ReleaseParams params = new ReleaseParams();
             params.setName(name);
             params.setTagName(tagName);
+            params.setRef(refTag);
             params.setDescription(message);
             Release release = api.createRelease(gitId, params);
 
