@@ -21,12 +21,15 @@ public class ThymeLeafHelperTest extends BaseUnitTest {
 
     @Test
     public void getTemplateEngine() throws InterruptedException {
-        Context context = new Context();
-        context.setVariable("userName", "马超");
-        context.setVariable("account", "mac");
-        context.setVariable("password", "123");
-        String content = ThymeLeafHelper.getTemplateEngine().process("CreateUser.html", context);
+//        Context context = new Context();
+//        context.setVariable("userName", "马超");
+//        context.setVariable("account", "mac");
+//        context.setVariable("password", "123");
+//        String content = ThymeLeafHelper.getTemplateEngine().process("CreateUser.html", context);
 
+        Context context = new Context();
+        context.setVariable("url", "http://dsei.changhong.com/sei-manager-web");
+        String content = ThymeLeafHelper.getTemplateEngine().process("notify/ActivateUser.html", context);
         emailManager.sendMail("测试", content, "chao2.ma@changhong.com");
 
         Thread.sleep(10000);

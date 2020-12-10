@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,5 +67,21 @@ public class UserGroupController extends BaseEntityController<UserGroup, UserGro
     @Override
     public List<UserGroupDto> getGitlabGroup() {
         return service.getGitlabGroup();
+    }
+
+    /**
+     * 保存多个用户组
+     *
+     * @param dtoList 用户组DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> saveList(@Valid List<UserGroupDto> dtoList) {
+        List<UserGroup> groups = new ArrayList<>();
+        for (UserGroupDto dto : dtoList) {
+            groups.add(entityModelMapper.map(dto, UserGroup.class));
+        }
+        service.save(groups);
+        return ResultData.success();
     }
 }

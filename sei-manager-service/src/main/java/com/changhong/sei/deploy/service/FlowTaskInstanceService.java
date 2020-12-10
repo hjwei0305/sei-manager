@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.service;
 
+import com.changhong.sei.common.ThymeLeafHelper;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
@@ -15,8 +16,10 @@ import com.changhong.sei.deploy.entity.FlowTaskInstance;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
 import com.changhong.sei.manager.commom.EmailManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +41,10 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     private FlowTaskHistoryService historyService;
     @Autowired
     private EmailManager emailManager;
+    @Value("${sei.server.web}")
+    private String serverWeb;
+    @Value("${sei.application.name:SEI开发运维平台}")
+    private String managerName;
 
     @Override
     protected BaseEntityDao<FlowTaskInstance> getDao() {
@@ -350,7 +357,15 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         // 保存
         OperateResultWithData<FlowTaskInstance> result = this.save(taskInstance);
         if (result.successful()) {
-            emailManager.sendMail(task.getTypeName() + " - " + task.getTaskName(), requisition.getSummary(), sessionUser.getAccount());
+            Context context = new Context();
+            context.setVariable("userName", task.getHandleUserName());
+            context.setVariable("flowType", task.getTypeName());
+            context.setVariable("taskName", task.getTaskName());
+            context.setVariable("summary", requisition.getSummary());
+            context.setVariable("url", serverWeb);
+            context.setVariable("sysName", managerName);
+            String content = ThymeLeafHelper.getTemplateEngine().process("notify/FlowTask.html", context);
+            emailManager.sendMail(managerName + "-待办事项", content, sessionUser.getAccount());
             return ResultData.success(result.getData());
         } else {
             return ResultData.fail(result.getMessage());

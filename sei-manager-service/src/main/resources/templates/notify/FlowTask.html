@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>待办事项</title>
+</head>
+<body>
+<p>
+    <span th:text="${userName}"></span>，您好:
+</p>
+<p style="margin: 0 10px; line-height:40px; text-indent:2em;">
+    在<span th:text="${sysName}"></span>中，您有以下待办工作需要处理。
+</p>
+<p style="margin: 0 10px; line-height:40px; text-indent:2em;">
+    <span th:text="${flowType}"></span>-<span th:text="${taskName}"></span>:
+</p>
+<p style="margin: 0 10px; line-height:40px; text-indent:2em;" th:text="${summary}"></p>
+<p style="margin: 0 10px; line-height:40px; text-indent:2em;">
+    <a th:text="${url}" th:href="${url}"></a>
+</p>
+<p style="margin-left: 10px; line-height:40px; text-indent:2em;">
+    祝您工作愉快！
+</p>
+</body>
+</html>

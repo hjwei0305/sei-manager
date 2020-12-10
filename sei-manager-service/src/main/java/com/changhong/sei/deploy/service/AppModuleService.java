@@ -256,6 +256,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         ProjectVo project = new ProjectVo();
         project.setCode(module.getCode());
         project.setName(module.getName().concat(module.getRemark()));
+        // gitlab群组id
         project.setGroupId(application.getGroupCode());
         if (StringUtils.isBlank(module.getNameSpace())) {
             project.setType(ProjectType.WEB);

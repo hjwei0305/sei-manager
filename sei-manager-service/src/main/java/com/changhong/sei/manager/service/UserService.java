@@ -80,6 +80,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      */
     @Value("${sei.server.host}")
     private String serverHost;
+    @Value("${sei.application.name:SEI开发运维平台}")
+    private String managerName;
 
     @Override
     protected BaseEntityDao<User> getDao() {
@@ -166,9 +168,9 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
         Context context = new Context();
         context.setVariable("url", serverHost.concat("/user/activate/") + sign);
-        String content = ThymeLeafHelper.getTemplateEngine().process("RegisteredUser.html", context);
+        String content = ThymeLeafHelper.getTemplateEngine().process("notify/ActivateUser.html", context);
 
-        ResultData<Void> result = emailManager.sendMail("SEI开发运维平台账号注册申请", content, email);
+        ResultData<Void> result = emailManager.sendMail(managerName + "-账号注册申请", content, email);
         if (result.successful()) {
             return ResultData.success("账号激活链接已发送到指定邮箱,请尽快完成激活.", null);
         } else {
@@ -328,8 +330,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         context.setVariable("userName", user.getNickname());
         context.setVariable("account", user.getAccount());
         context.setVariable("password", randomPass);
-        String content = ThymeLeafHelper.getTemplateEngine().process("CreateUser.html", context);
-        emailManager.sendMail("SEI开发运维平台账号密码", content, user);
+        String content = ThymeLeafHelper.getTemplateEngine().process("notify/CreateUser.html", context);
+        emailManager.sendMail(managerName + "-账号密码", content, user);
         try {
             ResultData<org.gitlab4j.api.models.User> resultData = gitlabService.getOptionalUserByEmail(email);
             if (resultData.failed()) {
