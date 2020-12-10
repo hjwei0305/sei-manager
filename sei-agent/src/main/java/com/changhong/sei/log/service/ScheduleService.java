@@ -44,7 +44,7 @@ public class ScheduleService {
      * 0 0/2 * * * ?  每隔2分钟触发一次
      * 0 15 1 * * ?   每天1:15触发
      */
-    @Scheduled(cron = "0 40 14 * * ?")
+    @Scheduled(cron = "0 15 1 * * ?")
     public void cron() {
         LogUtil.bizLog("启动日志清理");
         ResultData<Set<String>> resultData = elasticService.getAllIndex();
