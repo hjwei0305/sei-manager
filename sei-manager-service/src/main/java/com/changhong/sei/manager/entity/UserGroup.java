@@ -23,7 +23,7 @@ import java.io.Serializable;
 public class UserGroup extends BaseEntity implements ICodeUnique, Serializable {
     private static final long serialVersionUID = -60933176202135691L;
     /**
-     * 组名称
+     * gitlab的群组id
      */
     @Column(name = "code")
     private String code;

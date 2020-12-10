@@ -20,9 +20,7 @@ public class UserGroupDto extends BaseEntityDto {
     /**
      * 名称
      */
-    @NotBlank
-    @Size(max = 50)
-    @ApiModelProperty(value = "代码(max = 50)", required = true)
+    @ApiModelProperty(value = "gitlab的群组id")
     private String code;
     @NotBlank
     @Size(max = 50)

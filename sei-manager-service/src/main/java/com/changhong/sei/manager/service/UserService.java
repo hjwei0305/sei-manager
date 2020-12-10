@@ -208,7 +208,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
                 user.setEmail(email);
                 user.setCreateTime(System.currentTimeMillis());
             }
-            ResultData<Void> result = this.createUser(user);
+            ResultData<User> result = this.createUser(user);
             if (result.successful()) {
                 return ResultData.success(request.getEmail());
             } else {
@@ -289,7 +289,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     }
 
     @Transactional
-    public ResultData<Void> createUser(User user) {
+    public ResultData<User> createUser(User user) {
         String account = user.getAccount();
         String email = user.getEmail();
         String phone = user.getPhone();
@@ -317,27 +317,28 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         // 生成8位随机密码
         String randomPass = RandomStringUtils.randomAlphanumeric(8);
         user.setPassword(passwordEncoder.encode(HashUtil.md5(randomPass)));
-        OperateResultWithData<User> result = this.save(user);
-        if (result.successful()) {
-            Context context = new Context();
-            context.setVariable("userName", user.getNickname());
-            context.setVariable("account", user.getAccount());
-            context.setVariable("password", randomPass);
-            String content = ThymeLeafHelper.getTemplateEngine().process("CreateUser.html", context);
-
-            emailManager.sendMail("SEI开发运维平台账号密码", content, user);
-            try {
-                ResultData<org.gitlab4j.api.models.User> resultData = gitlabService.getOptionalUserByEmail(email);
-                if (resultData.failed()) {
-                    gitlabService.createUser(user.getId(), account, user.getNickname(), email);
-                }
-            } catch (Exception e) {
-                LogUtil.error(email + " 创建gitlab账号异常", e);
-            }
-            return ResultData.success();
-        } else {
-            return ResultData.fail(result.getMessage());
+        long currentTimeMillis = System.currentTimeMillis();
+        if (StringUtils.isBlank(user.getId())) {
+            user.setCreateTime(currentTimeMillis);
         }
+        user.setUpdateTime(currentTimeMillis);
+        dao.save(user);
+
+        Context context = new Context();
+        context.setVariable("userName", user.getNickname());
+        context.setVariable("account", user.getAccount());
+        context.setVariable("password", randomPass);
+        String content = ThymeLeafHelper.getTemplateEngine().process("CreateUser.html", context);
+        emailManager.sendMail("SEI开发运维平台账号密码", content, user);
+        try {
+            ResultData<org.gitlab4j.api.models.User> resultData = gitlabService.getOptionalUserByEmail(email);
+            if (resultData.failed()) {
+                gitlabService.createUser(user.getId(), account, user.getNickname(), email);
+            }
+        } catch (Exception e) {
+            LogUtil.error(email + " 创建gitlab账号异常", e);
+        }
+        return ResultData.success();
     }
 
     /**
@@ -356,8 +357,10 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
         user.setStatus(Boolean.FALSE);
 
-        OperateResultWithData<User> result = this.save(user);
-        return OperateResultWithData.converterNoneData(result);
+        long currentTimeMillis = System.currentTimeMillis();
+        user.setUpdateTime(currentTimeMillis);
+        dao.save(user);
+        return OperateResult.operationSuccess();
     }
 
     /**
@@ -371,17 +374,18 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         if (Objects.isNull(entity)) {
             return OperateResultWithData.operationFailure("用户不能为空.");
         }
-
-        if (StringUtils.isBlank(entity.getPassword())) {
-            entity.setPassword(passwordEncoder.encode(HashUtil.md5("123456")));
+        if (entity.isNew()) {
+            ResultData<User> resultData = this.createUser(entity);
+            if (resultData.successful()) {
+                return OperateResultWithData.operationSuccessWithData(resultData.getData());
+            } else {
+                return OperateResultWithData.operationFailure(resultData.getMessage());
+            }
+        } else {
+            long currentTimeMillis = System.currentTimeMillis();
+            entity.setUpdateTime(currentTimeMillis);
+            return super.save(entity);
         }
-
-        long currentTimeMillis = System.currentTimeMillis();
-        if (StringUtils.isBlank(entity.getId())) {
-            entity.setCreateTime(currentTimeMillis);
-        }
-        entity.setUpdateTime(currentTimeMillis);
-        return super.save(entity);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -395,6 +399,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         }
 
         user.setPassword(passwordEncoder.encode(password));
+        long currentTimeMillis = System.currentTimeMillis();
+        user.setUpdateTime(currentTimeMillis);
         this.save(user);
         return ResultData.success();
     }
@@ -414,6 +420,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         }
 
         user.setPassword(passwordEncoder.encode(password));
+        long currentTimeMillis = System.currentTimeMillis();
+        user.setUpdateTime(currentTimeMillis);
         this.save(user);
         return ResultData.success();
     }

@@ -139,7 +139,12 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      */
     @Override
     public ResultData<Void> createUser(CreateUserRequest user) {
-        return service.createUser(entityModelMapper.map(user, User.class));
+        ResultData<User> resultData = service.createUser(entityModelMapper.map(user, User.class));
+        if (resultData.successful()) {
+            return ResultData.success();
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
     }
 
     /**

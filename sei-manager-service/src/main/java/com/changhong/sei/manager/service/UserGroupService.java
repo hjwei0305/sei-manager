@@ -60,14 +60,29 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
         entity.setUpdateTime(currentTimeMillis);
         if (StringUtils.isBlank(entity.getId())) {
             entity.setCreateTime(currentTimeMillis);
-
-            ResultData<String> resultData = gitlabService.createGroup(name, path, entity.getDescription());
-            if (resultData.successful()) {
-                entity.setCode(resultData.getData());
+            // gitlab的群组id
+            String groupId = entity.getCode();
+            if (StringUtils.isNotBlank(groupId)) {
+                ResultData<Group> resultData = gitlabService.getGroup(groupId);
+                if (resultData.failed()) {
+                    ResultData<String> result = gitlabService.createGroup(name, path, entity.getDescription());
+                    if (result.successful()) {
+                        entity.setCode(result.getData());
+                    } else {
+                        // 事务回滚
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        return OperateResultWithData.operationFailure(result.getMessage());
+                    }
+                }
             } else {
-                // 事务回滚
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return OperateResultWithData.operationFailure(resultData.getMessage());
+                ResultData<String> resultData = gitlabService.createGroup(name, path, entity.getDescription());
+                if (resultData.successful()) {
+                    entity.setCode(resultData.getData());
+                } else {
+                    // 事务回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return OperateResultWithData.operationFailure(resultData.getMessage());
+                }
             }
         } else {
             ResultData<Void> resultData = gitlabService.updateGroup(path, entity.getDescription());
@@ -135,7 +150,7 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
         if (resultData.successful()) {
             List<Group> groups = resultData.getData();
             for (Group group : groups) {
-                dtos.add(new UserGroupDto(group.getPath(), group.getName(), group.getDescription()));
+                dtos.add(new UserGroupDto(String.valueOf(group.getId()), group.getName(), group.getDescription()));
             }
         }
         return dtos;
