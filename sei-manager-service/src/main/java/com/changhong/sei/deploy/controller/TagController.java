@@ -2,7 +2,6 @@ package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.api.TagApi;
-import com.changhong.sei.deploy.dto.CreateTagRequest;
 import com.changhong.sei.deploy.dto.TagDto;
 import com.changhong.sei.deploy.service.TagService;
 import io.swagger.annotations.Api;
@@ -67,7 +66,7 @@ public class TagController implements TagApi {
      * @return 创建结果
      */
     @Override
-    public ResultData<TagDto> create(CreateTagRequest request) {
+    public ResultData<Void> create(TagDto request) {
         return service.createTag(request);
     }
 
@@ -78,7 +77,7 @@ public class TagController implements TagApi {
      * @return 操作结果
      */
     @Override
-    public ResultData delete(String id) {
+    public ResultData<Void> delete(String id) {
         return service.deleteTag(id);
     }
 }

@@ -266,6 +266,28 @@ public class GitlabService {
     }
 
     /**
+     * 获取指定tag
+     *
+     * @param gitId   git项目id
+     * @param tagName tag名
+     * @return tag
+     */
+    public ResultData<Tag> getProjectTag(String gitId, String tagName) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            TagsApi api = gitLabApi.getTagsApi();
+            Tag tag = api.getTag(gitId, tagName);
+            if (Objects.nonNull(tag)) {
+                return ResultData.success(tag);
+            } else {
+                return ResultData.fail("不存在标签[" + tagName + "]");
+            }
+        } catch (Exception e) {
+            LOG.error("创建tag异常", e);
+            return ResultData.fail("创建tag异常" + e.getMessage());
+        }
+    }
+
+    /**
      * 删除项目标签
      *
      * @param gitId   git项目id

@@ -4,6 +4,10 @@ import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -19,24 +23,31 @@ public class TagDto extends BaseEntityDto implements Serializable {
     /**
      * 应用模块代码
      */
-    @ApiModelProperty(notes = "应用模块代码")
+    @NotBlank
+    @ApiModelProperty(notes = "应用模块代码", required = true)
     private String moduleCode;
     @ApiModelProperty(notes = "tag名")
-    private String name;
+    private String tagName;
     /**
      * 主版本
      */
-    @ApiModelProperty(notes = "主版本")
+    @Min(0)
+    @Max(99)
+    @ApiModelProperty(notes = "主版本", required = true)
     private Integer major = 0;
     /**
      * 次版本
      */
-    @ApiModelProperty(notes = "次版本")
+    @Min(0)
+    @Max(999)
+    @ApiModelProperty(notes = "次版本", required = true)
     private Integer minor = 0;
     /**
      * 修订版本
      */
-    @ApiModelProperty(notes = "修订版本")
+    @Min(0)
+    @Max(9999)
+    @ApiModelProperty(notes = "修订版本", required = true)
     private Integer revised = 0;
     /**
      * 创建时间
@@ -63,12 +74,12 @@ public class TagDto extends BaseEntityDto implements Serializable {
         this.moduleCode = moduleCode;
     }
 
-    public String getName() {
-        return name;
+    public String getTagName() {
+        return tagName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 
     public Integer getMajor() {

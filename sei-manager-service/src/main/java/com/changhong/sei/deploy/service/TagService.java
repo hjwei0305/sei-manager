@@ -7,7 +7,6 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.dto.serach.SearchOrder;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.TagDao;
-import com.changhong.sei.deploy.dto.CreateTagRequest;
 import com.changhong.sei.deploy.dto.TagDto;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.Tag;
@@ -66,7 +65,9 @@ public class TagService extends BaseEntityService<Tag> {
         search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));
         Tag tag = dao.findFirstByFilters(search);
-        return ResultData.success(convert(tag));
+        TagDto dto = convert(tag);
+        dto.setId(null);
+        return ResultData.success(dto);
     }
 
     /**
@@ -82,23 +83,6 @@ public class TagService extends BaseEntityService<Tag> {
         }
 
         return ResultData.success(convert(tag));
-    }
-
-    private TagDto convert(Tag tag) {
-        TagDto dto = new TagDto();
-        if (Objects.nonNull(tag)) {
-            dto.setModuleCode(tag.getModuleCode());
-            dto.setName(tag.getCode());
-            dto.setMajor(tag.getMajor());
-            dto.setMinor(tag.getMinor());
-            dto.setRevised(tag.getRevised());
-            dto.setRelease(tag.getRelease());
-            dto.setCommitId(tag.getCommitId());
-            dto.setMessage(tag.getMessage());
-            dto.setCreateTime(tag.getCreateTime());
-            dto.setCreateAccount(tag.getCreateAccount());
-        }
-        return dto;
     }
 
     /**
@@ -141,18 +125,47 @@ public class TagService extends BaseEntityService<Tag> {
      * @param request 创建标签请求
      * @return 创建结果
      */
-    public ResultData<TagDto> createTag(CreateTagRequest request) {
-        ResultData<org.gitlab4j.api.models.Tag> resultData = gitlabService.createProjectTag(request.getGitId(), request.getTagName(), request.getBranch(), request.getMessage());
-        if (resultData.successful()) {
-            org.gitlab4j.api.models.Tag tag = resultData.getData();
-            TagDto dto = new TagDto();
-            dto.setName(tag.getName());
-            dto.setMessage(tag.getMessage());
-            dto.setRelease(Objects.nonNull(tag.getRelease()));
-            return ResultData.success(dto);
-        } else {
-            return ResultData.fail(resultData.getMessage());
+    public ResultData<Void> createTag(TagDto request) {
+        String branch = "master";
+        String moduleCode = request.getModuleCode();
+        AppModule module = moduleService.findByProperty(AppModule.CODE_FIELD, moduleCode);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
         }
+
+        Tag tag = new Tag();
+        tag.setModuleCode(moduleCode);
+        tag.setMajor(request.getMajor());
+        tag.setMinor(request.getMinor());
+        tag.setRevised(request.getRevised());
+        tag.setMessage(request.getMessage());
+
+        org.gitlab4j.api.models.Tag gitTag;
+        ResultData<org.gitlab4j.api.models.Tag> resultData = gitlabService.getProjectTag(module.getGitId(), tag.getTagName());
+        if (resultData.successful()) {
+            gitTag = resultData.getData();
+            tag.setRelease(Objects.nonNull(tag.getRelease()));
+            tag.setCommitId(gitTag.getCommit().getId());
+            tag.setMessage(gitTag.getMessage());
+            tag.setCreateTime(gitTag.getCommit().getCreatedAt().getTime());
+            tag.setCreateAccount(gitTag.getCommit().getAuthorName());
+
+            this.save(tag);
+        } else {
+            resultData = gitlabService.createProjectTag(module.getGitId(), tag.getTagName(), branch, tag.getMessage());
+            if (resultData.successful()) {
+                gitTag = resultData.getData();
+                tag.setRelease(Objects.nonNull(tag.getRelease()));
+                tag.setCommitId(gitTag.getCommit().getId());
+                tag.setCreateTime(gitTag.getCommit().getCreatedAt().getTime());
+                tag.setCreateAccount(gitTag.getCommit().getAuthorName());
+
+                this.save(tag);
+            } else {
+                return ResultData.fail(resultData.getMessage());
+            }
+        }
+        return ResultData.success();
     }
 
     /**
@@ -170,6 +183,27 @@ public class TagService extends BaseEntityService<Tag> {
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + tag.getModuleCode() + "]不存在.");
         }
-        return gitlabService.deleteProjectTag(module.getGitId(), tag.getCode());
+        ResultData<Void> resultData = gitlabService.deleteProjectTag(module.getGitId(), tag.getCode());
+        if (resultData.successful()) {
+            this.delete(id);
+        }
+        return ResultData.success();
+    }
+
+    private TagDto convert(Tag tag) {
+        TagDto dto = new TagDto();
+        if (Objects.nonNull(tag)) {
+            dto.setModuleCode(tag.getModuleCode());
+            dto.setTagName(tag.getTagName());
+            dto.setMajor(tag.getMajor());
+            dto.setMinor(tag.getMinor());
+            dto.setRevised(tag.getRevised());
+            dto.setRelease(tag.getRelease());
+            dto.setCommitId(tag.getCommitId());
+            dto.setMessage(tag.getMessage());
+            dto.setCreateTime(tag.getCreateTime());
+            dto.setCreateAccount(tag.getCreateAccount());
+        }
+        return dto;
     }
 }

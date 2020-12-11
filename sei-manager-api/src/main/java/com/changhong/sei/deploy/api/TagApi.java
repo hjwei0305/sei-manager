@@ -1,7 +1,6 @@
 package com.changhong.sei.deploy.api;
 
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.deploy.dto.CreateTagRequest;
 import com.changhong.sei.deploy.dto.TagDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -58,7 +57,7 @@ public interface TagApi {
      */
     @PostMapping(path = "create")
     @ApiOperation(value = "创建标签", notes = "创建标签")
-    ResultData<TagDto> create(@RequestBody CreateTagRequest request);
+    ResultData<Void> create(@RequestBody TagDto request);
 
     /**
      * 删除标签
@@ -68,6 +67,6 @@ public interface TagApi {
      */
     @DeleteMapping(path = "delete/{id}")
     @ApiOperation(value = "删除标签", notes = "删除标签")
-    ResultData delete(@PathVariable("id") String id);
+    ResultData<Void> delete(@PathVariable("id") String id);
 
 }

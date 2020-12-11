@@ -8,7 +8,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 /**
  * 应用标签(Tag)实体类
@@ -158,4 +160,13 @@ public class Tag extends BaseEntity implements ICodeUnique, Serializable {
     public void setCreateAccount(String createAccount) {
         this.createAccount = createAccount;
     }
+
+    @Transient
+    public String getTagName() {
+        return new StringJoiner(".", "", "")
+                .add(String.valueOf(major))
+                .add(String.valueOf(minor))
+                .add(String.valueOf(revised)).toString();
+    }
+
 }
