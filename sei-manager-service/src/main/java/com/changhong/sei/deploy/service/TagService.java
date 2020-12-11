@@ -13,11 +13,13 @@ import com.changhong.sei.deploy.entity.Tag;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -58,15 +60,26 @@ public class TagService extends BaseEntityService<Tag> {
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
         }
-
+        TagDto dto;
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(Tag.FIELD_MODULE_CODE, moduleCode));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MAJOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));
         Tag tag = dao.findFirstByFilters(search);
-        TagDto dto = convert(tag);
-        dto.setId(null);
+        if (Objects.nonNull(tag)) {
+            dto = convert(tag);
+            dto.setId(null);
+        } else {
+            dto = new TagDto();
+            String version = module.getVersion();
+            if (StringUtils.isNotBlank(version)) {
+                String major = version.split("\\.")[0];
+                if (StringUtils.isNumeric(major)) {
+                    dto.setMajor(Integer.valueOf(major));
+                }
+            }
+        }
         return ResultData.success(dto);
     }
 
@@ -103,20 +116,6 @@ public class TagService extends BaseEntityService<Tag> {
         } else {
             return ResultData.success(Lists.newArrayList());
         }
-
-//        List<TagDto> tagList = new ArrayList<>(16);
-//        ResultData<List<org.gitlab4j.api.models.Tag>> resultData = gitlabService.getProjectTags(module.getGitId());
-//        if (resultData.successful()) {
-//            TagDto dto;
-//            List<org.gitlab4j.api.models.Tag> tags = resultData.getData();
-//            for (org.gitlab4j.api.models.Tag tag : tags) {
-//                dto = new TagDto();
-//                dto.setName(tag.getName());
-//                dto.setMessage(tag.getMessage());
-//                dto.setRelease(Objects.nonNull(tag.getRelease()));
-//                tagList.add(dto);
-//            }
-//        }
     }
 
     /**
@@ -187,6 +186,32 @@ public class TagService extends BaseEntityService<Tag> {
         if (resultData.successful()) {
             this.delete(id);
         }
+        return ResultData.success();
+    }
+
+    /**
+     * 同步gitlab项目标签
+     *
+     * @param moduleCode 模块代码
+     * @return 同步结果
+     */
+    public ResultData<Void> syncTag(String moduleCode) {
+        AppModule module = moduleService.findByProperty(AppModule.CODE_FIELD, moduleCode);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
+        }
+        List<Tag> tagList = new ArrayList<>(16);
+        ResultData<List<org.gitlab4j.api.models.Tag>> resultData = gitlabService.getProjectTags(module.getGitId());
+        if (resultData.successful()) {
+            Tag tag;
+            List<org.gitlab4j.api.models.Tag> tags = resultData.getData();
+            for (org.gitlab4j.api.models.Tag gitTag : tags) {
+                tag = new Tag();
+
+                tagList.add(tag);
+            }
+        }
+
         return ResultData.success();
     }
 

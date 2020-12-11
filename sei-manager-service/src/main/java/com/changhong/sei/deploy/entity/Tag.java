@@ -36,7 +36,7 @@ public class Tag extends BaseEntity implements ICodeUnique, Serializable {
     /**
      * 标签名
      */
-    @Column(name = "code")
+    @Column(name = "tag_name")
     private String code;
     /**
      * 主版本
