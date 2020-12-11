@@ -80,6 +80,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      */
     @Value("${sei.server.host}")
     private String serverHost;
+    @Value("${sei.server.web}")
+    private String serverWeb;
     @Value("${sei.application.name:SEI开发运维平台}")
     private String managerName;
 
@@ -164,7 +166,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //            return ResultData.fail("[" + email + "]已申请过,请勿重复申请");
 //        }
         // 三天有效期
-        cacheBuilder.set(cacheKey, request, 3600 * 24 * 3);
+        cacheBuilder.set(cacheKey, email, 3600 * 24 * 3);
 
         Context context = new Context();
         context.setVariable("url", serverHost.concat("/user/activate/") + sign);
@@ -187,9 +189,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     @Transactional(rollbackFor = Exception.class)
     public ResultData<String> activate(String sign) {
         String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
-        RegisteredUserRequest request = cacheBuilder.get(cacheKey);
-        if (Objects.nonNull(request)) {
-            String email = request.getEmail();
+        String email = cacheBuilder.get(cacheKey);
+        if (StringUtils.isNotBlank(email)) {
             User user = this.getByEmail(email);
             if (Objects.nonNull(user)) {
                 return ResultData.fail("已存在[" + email + "]的账号");
@@ -212,7 +213,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
             }
             ResultData<User> result = this.createUser(user);
             if (result.successful()) {
-                return ResultData.success(request.getEmail());
+                return ResultData.success(serverWeb);
             } else {
                 return ResultData.fail(result.getMessage());
             }

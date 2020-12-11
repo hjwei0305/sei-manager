@@ -42,6 +42,11 @@ dependencies {
     // Jenkins https://github.com/jenkinsci/java-client-api
     compile("com.offbytwo.jenkins:jenkins-client:0.3.8")
 
+    // apache.sshd
+    compile("org.apache.sshd:sshd-core:2.5.1")
+    // apache.sftp
+    compile("org.apache.sshd:sshd-sftp:2.5.1")
+
     // 测试依赖包
     testCompile("com.changhong.sei:sei-test-starter:$sei_version")
 }

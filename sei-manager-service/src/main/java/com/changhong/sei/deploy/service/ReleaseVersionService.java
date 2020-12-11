@@ -76,7 +76,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 version.setName(versionName);
                 version.setCommitId(gitlabRelease.getCommit().getId());
                 // 约定镜像命名规范
-                version.setImageName(releaseRecord.getModuleName() + "/" + refTag);
+                version.setImageName(releaseRecord.getModuleName() + ":" + tag);
                 version.setVersion(tag);
                 version.setRemark(remark);
                 version.setCreateTime(LocalDateTime.now());
