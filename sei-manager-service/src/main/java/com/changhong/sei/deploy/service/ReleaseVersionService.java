@@ -128,7 +128,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用版本申请
-            requisitionOrder.setApplicationType(ApplyType.MODULE);
+            requisitionOrder.setApplicationType(ApplyType.PUBLISH);
             // 应用版本id
             requisitionOrder.setRelationId(releaseVersion.getId());
             // 申请摘要
@@ -174,30 +174,30 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(ReleaseVersion releaseVersion) {
-        ReleaseVersion module = this.findOne(releaseVersion.getId());
-        if (Objects.isNull(module)) {
+        ReleaseVersion version = this.findOne(releaseVersion.getId());
+        if (Objects.isNull(version)) {
             return ResultData.fail("应用模块不存在!");
         }
         // 检查应用审核状态
-        if (!module.getFrozen()) {
+        if (!version.getFrozen()) {
             return ResultData.fail("应用模块已审核,不允许编辑!");
         }
 
-        module.setAppId(releaseVersion.getAppId());
-        module.setAppName(releaseVersion.getAppName());
-        module.setGitId(releaseVersion.getGitId());
-        module.setModuleCode(releaseVersion.getModuleCode());
-        module.setModuleName(releaseVersion.getModuleName());
+        version.setAppId(releaseVersion.getAppId());
+        version.setAppName(releaseVersion.getAppName());
+        version.setGitId(releaseVersion.getGitId());
+        version.setModuleCode(releaseVersion.getModuleCode());
+        version.setModuleName(releaseVersion.getModuleName());
 
-        module.setRefTag(releaseVersion.getRefTag());
-        module.setName(releaseVersion.getName());
-        module.setVersion(releaseVersion.getVersion());
-        module.setRemark(releaseVersion.getRemark());
+        version.setRefTag(releaseVersion.getRefTag());
+        version.setName(releaseVersion.getName());
+        version.setVersion(releaseVersion.getVersion());
+        version.setRemark(releaseVersion.getRemark());
 
         // 保存应用模块
-        OperateResultWithData<ReleaseVersion> resultWithData = this.save(module);
+        OperateResultWithData<ReleaseVersion> resultWithData = this.save(version);
         if (resultWithData.successful()) {
-            RequisitionOrder requisitionOrder = requisitionOrderService.getByRelationId(module.getId());
+            RequisitionOrder requisitionOrder = requisitionOrderService.getByRelationId(version.getId());
             if (Objects.isNull(requisitionOrder)) {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -211,11 +211,11 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             }
 
             // 申请类型:应用模块申请
-            requisitionOrder.setApplicationType(ApplyType.MODULE);
+            requisitionOrder.setApplicationType(ApplyType.PUBLISH);
             // 应用模块id
-            requisitionOrder.setRelationId(module.getId());
+            requisitionOrder.setRelationId(version.getId());
             // 申请摘要
-            requisitionOrder.setSummary(module.getName().concat("[").concat(module.getVersion()).concat("]"));
+            requisitionOrder.setSummary(version.getName().concat("[").concat(version.getVersion()).concat("]"));
 
             ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
