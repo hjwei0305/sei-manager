@@ -128,6 +128,22 @@ public class JenkinsService {
     }
 
     /**
+     * 检查Jenkins任务是否存在
+     *
+     * @param jobName 任务名
+     * @return 返回Jenkins任务
+     */
+    public boolean checkJobExist(String jobName) {
+        try {
+            JobWithDetails job = getJob(jobName);
+
+            return Objects.nonNull(job);
+        } catch (Exception e) {
+            throw new RuntimeException("检查Jenkins任务是否存在异常: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
+    }
+
+    /**
      * 获取Jenkins任务
      *
      * @param jobName 任务名

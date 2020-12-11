@@ -76,4 +76,15 @@ public class DeployTemplateController extends BaseEntityController<DeployTemplat
     public ResultData<String> getXml(String templateId) {
         return service.generateJobXml(templateId);
     }
+
+    /**
+     * 同步Jenkins任务
+     *
+     * @param id 模版id
+     * @return 返回结果
+     */
+    @Override
+    public ResultData<Void> syncJenkinsJob(String id) {
+        return service.syncJenkinsJob(id);
+    }
 }

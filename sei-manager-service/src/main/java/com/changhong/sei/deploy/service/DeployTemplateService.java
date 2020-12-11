@@ -2,9 +2,6 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.dto.serach.PageResult;
-import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.util.JsonUtils;
@@ -15,6 +12,7 @@ import com.changhong.sei.deploy.dto.DeployTemplateStageResponse;
 import com.changhong.sei.deploy.dto.TemplateType;
 import com.changhong.sei.deploy.entity.DeployConfig;
 import com.changhong.sei.deploy.entity.DeployTemplate;
+import com.changhong.sei.integrated.service.JenkinsService;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -48,24 +46,12 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
     private DeployTemplateStageService templateStageService;
     @Autowired
     private DeployConfigService deployConfigService;
+    @Autowired
+    private JenkinsService jenkinsService;
 
     @Override
     protected BaseEntityDao<DeployTemplate> getDao() {
         return dao;
-    }
-
-    /**
-     * 基于动态组合条件对象和分页(含排序)对象查询数据集合
-     *
-     * @param search
-     */
-    @Override
-    public PageResult<DeployTemplate> findByPage(Search search) {
-        if (Objects.isNull(search)) {
-            search = Search.createSearch();
-        }
-        search.addFilter(new SearchFilter(DeployTemplate.FIELD_TYPE, TemplateType.DEPLOY));
-        return super.findByPage(search);
     }
 
     /**
@@ -84,6 +70,46 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
             return OperateResult.operationFailure("[" + id + "]模版已被部署配置使用,不允许删除!");
         }
         return super.preDelete(id);
+    }
+
+    /**
+     * 同步Jenkins任务
+     *
+     * @param id 模版id
+     * @return 返回结果
+     */
+    public ResultData<Void> syncJenkinsJob(String id) {
+        DeployTemplate template = findOne(id);
+        if (Objects.isNull(template)) {
+            return ResultData.fail("模版[" + id + "]不存在");
+        }
+
+        if (StringUtils.equals(TemplateType.DEPLOY.name(), template.getTyep())) {
+            return ResultData.fail("模版[" + template.getName() + "]不是发版模版");
+        }
+
+        // 同步Jenkins任务
+        // 任务名
+        String jobName = template.getName();
+        ResultData<String> xmlResult = this.generateJobXml(template.getId());
+        if (xmlResult.failed()) {
+            return ResultData.fail(xmlResult.getMessage());
+        }
+        // 创建Jenkins任务
+        String jobXml = xmlResult.getData();
+        try {
+            boolean exist = jenkinsService.checkJobExist(jobName);
+            if (exist) {
+                // 创建Jenkins任务
+                return jenkinsService.createJob(jobName, jobXml);
+            } else {
+                // 修改Jenkins任务
+                return jenkinsService.updateJob(jobName, jobXml);
+            }
+        } catch (Exception e) {
+            LOG.error("同步Jenkins任务异常", e);
+            return ResultData.fail(e.getMessage());
+        }
     }
 
     /**

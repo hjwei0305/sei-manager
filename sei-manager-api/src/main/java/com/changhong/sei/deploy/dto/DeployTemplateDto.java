@@ -24,7 +24,7 @@ public class DeployTemplateDto extends BaseEntityDto {
      * 发版类模版仅允许一个(前端一个,后端一个)
      */
     @ApiModelProperty(value = "模版类型", example = "PUBLISH_WEB, PUBLISH_JAVA, DEPLOY")
-    private TemplateType tyep = TemplateType.DEPLOY;
+    private String tyep = TemplateType.DEPLOY.name();
     /**
      * 模板全局参数
      */
@@ -41,7 +41,6 @@ public class DeployTemplateDto extends BaseEntityDto {
     @ApiModelProperty(value = "描述说明")
     private String remark;
 
-
     public String getName() {
         return name;
     }
@@ -50,11 +49,11 @@ public class DeployTemplateDto extends BaseEntityDto {
         this.name = name;
     }
 
-    public TemplateType getTyep() {
+    public String getTyep() {
         return tyep;
     }
 
-    public void setTyep(TemplateType tyep) {
+    public void setTyep(String tyep) {
         this.tyep = tyep;
     }
 

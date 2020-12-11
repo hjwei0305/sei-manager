@@ -8,6 +8,7 @@ import com.changhong.sei.deploy.dto.DeployTemplateDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
@@ -31,4 +32,14 @@ public interface DeployTemplateApi extends BaseEntityApi<DeployTemplateDto>, Fin
     @GetMapping(path = "getXml")
     @ApiOperation(value = "获取模板xml内容", notes = "获取模板xml内容")
     ResultData<String> getXml(@RequestParam("templateId") String templateId);
+
+    /**
+     * 同步Jenkins任务
+     *
+     * @param id 模版id
+     * @return 返回结果
+     */
+    @PostMapping(path = "syncJenkinsJob")
+    @ApiOperation(value = "同步Jenkins任务", notes = "同步Jenkins任务")
+    ResultData<Void> syncJenkinsJob(@RequestParam("id") String id);
 }
