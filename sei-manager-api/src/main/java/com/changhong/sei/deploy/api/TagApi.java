@@ -69,4 +69,13 @@ public interface TagApi {
     @ApiOperation(value = "删除标签", notes = "删除标签")
     ResultData<Void> delete(@PathVariable("id") String id);
 
+    /**
+     * 同步gitlab项目标签
+     *
+     * @param moduleCode 模块代码
+     * @return 同步结果
+     */
+    @PostMapping(path = "syncTag")
+    @ApiOperation(value = "同步gitlab项目标签", notes = "同步gitlab项目标签")
+    ResultData<Void> syncTag(@RequestParam("moduleCode") String moduleCode);
 }

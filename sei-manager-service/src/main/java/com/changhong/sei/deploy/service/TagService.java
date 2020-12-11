@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -79,6 +81,7 @@ public class TagService extends BaseEntityService<Tag> {
                     dto.setMajor(Integer.valueOf(major));
                 }
             }
+
         }
         return ResultData.success(dto);
     }
@@ -189,6 +192,8 @@ public class TagService extends BaseEntityService<Tag> {
         return ResultData.success();
     }
 
+    private static final Pattern PATTERN = Pattern.compile("");
+
     /**
      * 同步gitlab项目标签
      *
@@ -206,9 +211,32 @@ public class TagService extends BaseEntityService<Tag> {
             Tag tag;
             List<org.gitlab4j.api.models.Tag> tags = resultData.getData();
             for (org.gitlab4j.api.models.Tag gitTag : tags) {
-                tag = new Tag();
+                String version = gitTag.getName();
+                if (StringUtils.isBlank(version)) {
+                    continue;
+                }
 
-                tagList.add(tag);
+                Matcher m = PATTERN.matcher(version);
+                if (m.find()) {
+                    tag = new Tag();
+                    tag.setModuleCode(moduleCode);
+                    tag.setMajor(Integer.valueOf(m.group(0)));
+                    tag.setMinor(Integer.valueOf(m.group(1)));
+                    tag.setRevised(Integer.valueOf(m.group(2)));
+                    tag.setMessage(gitTag.getMessage());
+
+                    tag.setRelease(Objects.nonNull(tag.getRelease()));
+                    tag.setCommitId(gitTag.getCommit().getId());
+                    tag.setMessage(gitTag.getMessage());
+                    tag.setCreateTime(gitTag.getCommit().getCreatedAt().getTime());
+                    tag.setCreateAccount(gitTag.getCommit().getAuthorName());
+
+                    tagList.add(tag);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(tagList)) {
+                List<Tag> tags1 = dao.findListByProperty(Tag.FIELD_MODULE_CODE, moduleCode);
+
             }
         }
 

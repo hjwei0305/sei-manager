@@ -80,4 +80,15 @@ public class TagController implements TagApi {
     public ResultData<Void> delete(String id) {
         return service.deleteTag(id);
     }
+
+    /**
+     * 同步gitlab项目标签
+     *
+     * @param moduleCode 模块代码
+     * @return 同步结果
+     */
+    @Override
+    public ResultData<Void> syncTag(String moduleCode) {
+        return service.syncTag(moduleCode);
+    }
 }

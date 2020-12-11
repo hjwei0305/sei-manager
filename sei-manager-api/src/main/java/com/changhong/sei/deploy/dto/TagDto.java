@@ -3,12 +3,14 @@ package com.changhong.sei.deploy.dto;
 import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 /**
  * 实现功能：项目tag
@@ -75,6 +77,12 @@ public class TagDto extends BaseEntityDto implements Serializable {
     }
 
     public String getTagName() {
+        if (StringUtils.isBlank(tagName)) {
+            tagName = new StringJoiner(".", "", "")
+                    .add(String.valueOf(major))
+                    .add(String.valueOf(minor))
+                    .add(String.valueOf(revised)).toString();
+        }
         return tagName;
     }
 
