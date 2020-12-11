@@ -5,6 +5,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.dto.serach.SearchOrder;
+import com.changhong.sei.core.limiter.support.lock.SeiLock;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.TagDao;
 import com.changhong.sei.deploy.dto.TagDto;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -193,7 +195,9 @@ public class TagService extends BaseEntityService<Tag> {
         return ResultData.success();
     }
 
-    private static final Pattern PATTERN = Pattern.compile("(\\d+)(?:\\.)(\\d+)(?:\\.)(\\d+)");
+
+    private static final Pattern RULE_PATTERN = Pattern.compile("^[1-9]\\d{0,1}\\.(\\d){1,3}\\.(\\d){1,4}$");
+    private static final Pattern FIND_PATTERN = Pattern.compile("(\\d+)(?:\\.)(\\d+)(?:\\.)(\\d+)");
 
     /**
      * 同步gitlab项目标签
@@ -201,6 +205,8 @@ public class TagService extends BaseEntityService<Tag> {
      * @param moduleCode 模块代码
      * @return 同步结果
      */
+    @SeiLock(key = "'syncTag' + #moduleCode", fallback = "syncTagFallback")
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> syncTag(String moduleCode) {
         AppModule module = moduleService.findByProperty(AppModule.CODE_FIELD, moduleCode);
         if (Objects.isNull(module)) {
@@ -227,7 +233,12 @@ public class TagService extends BaseEntityService<Tag> {
                     continue;
                 }
 
-                Matcher m = PATTERN.matcher(version);
+                // 检查是否符合版本规则
+                if (!RULE_PATTERN.matcher(version).matches()) {
+                    continue;
+                }
+
+                Matcher m = FIND_PATTERN.matcher(version);
                 if (m.find()) {
                     tag = new Tag();
                     tag.setModuleCode(moduleCode);
@@ -250,6 +261,15 @@ public class TagService extends BaseEntityService<Tag> {
             }
         }
         return ResultData.success();
+    }
+
+    /**
+     * 同步标签分布式锁降级处理方法
+     *
+     * @SeiLock(key = "'syncTag' + #moduleCode", fallback = "syncTagFallback")
+     */
+    public ResultData<Void> syncTagFallback(String moduleCode) {
+        return ResultData.fail("正在同步[" + moduleCode + "]的gitlab标签, 请稍后再试...");
     }
 
     private TagDto convert(Tag tag) {
