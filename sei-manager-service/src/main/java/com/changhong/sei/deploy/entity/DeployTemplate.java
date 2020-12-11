@@ -1,12 +1,11 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
+import com.changhong.sei.deploy.dto.TemplateType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -21,11 +20,20 @@ import java.io.Serializable;
 @DynamicUpdate
 public class DeployTemplate extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 520497168789427262L;
+    public static final String FIELD_TYPE = "tyep";
     /**
      * 模板名称
      */
     @Column(name = "name")
     private String name;
+    /**
+     * 模版类型
+     * 部署类模版允许存在多个,前端只允许新增部署类模版
+     * 发版类模版仅允许一个(前端一个,后端一个)
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tyep", updatable = false)
+    private TemplateType tyep = TemplateType.DEPLOY;
     /**
      * 模板全局参数
      */
@@ -48,6 +56,14 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public TemplateType getTyep() {
+        return tyep;
+    }
+
+    public void setTyep(TemplateType tyep) {
+        this.tyep = tyep;
     }
 
     public String getGlobalParam() {

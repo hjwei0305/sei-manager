@@ -2,6 +2,9 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.util.JsonUtils;
@@ -9,6 +12,7 @@ import com.changhong.sei.deploy.common.Constants;
 import com.changhong.sei.deploy.dao.DeployTemplateDao;
 import com.changhong.sei.deploy.dto.DeployStageParamDto;
 import com.changhong.sei.deploy.dto.DeployTemplateStageResponse;
+import com.changhong.sei.deploy.dto.TemplateType;
 import com.changhong.sei.deploy.entity.DeployConfig;
 import com.changhong.sei.deploy.entity.DeployTemplate;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +52,20 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
     @Override
     protected BaseEntityDao<DeployTemplate> getDao() {
         return dao;
+    }
+
+    /**
+     * 基于动态组合条件对象和分页(含排序)对象查询数据集合
+     *
+     * @param search
+     */
+    @Override
+    public PageResult<DeployTemplate> findByPage(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        search.addFilter(new SearchFilter(DeployTemplate.FIELD_TYPE, TemplateType.DEPLOY));
+        return super.findByPage(search);
     }
 
     /**
