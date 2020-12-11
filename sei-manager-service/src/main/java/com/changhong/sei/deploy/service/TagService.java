@@ -19,9 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -152,6 +150,7 @@ public class TagService extends BaseEntityService<Tag> {
             tag.setCreateTime(gitTag.getCommit().getCreatedAt().getTime());
             tag.setCreateAccount(gitTag.getCommit().getAuthorName());
 
+            tag.setCode(tag.getTagName());
             this.save(tag);
         } else {
             resultData = gitlabService.createProjectTag(module.getGitId(), tag.getTagName(), branch, tag.getMessage());
@@ -162,6 +161,7 @@ public class TagService extends BaseEntityService<Tag> {
                 tag.setCreateTime(gitTag.getCommit().getCreatedAt().getTime());
                 tag.setCreateAccount(gitTag.getCommit().getAuthorName());
 
+                tag.setCode(tag.getTagName());
                 this.save(tag);
             } else {
                 return ResultData.fail(resultData.getMessage());
@@ -205,6 +205,16 @@ public class TagService extends BaseEntityService<Tag> {
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
         }
+
+        Set<String> tagNameSet;
+        // 获取所有tag
+        List<Tag> allTags = dao.findListByProperty(Tag.FIELD_MODULE_CODE, moduleCode);
+        if (CollectionUtils.isNotEmpty(allTags)) {
+            tagNameSet = allTags.stream().map(Tag::getCode).collect(Collectors.toSet());
+            allTags.clear();
+        } else {
+            tagNameSet = new HashSet<>();
+        }
         List<Tag> tagList = new ArrayList<>(16);
         ResultData<List<org.gitlab4j.api.models.Tag>> resultData = gitlabService.getProjectTags(module.getGitId());
         if (resultData.successful()) {
@@ -212,7 +222,7 @@ public class TagService extends BaseEntityService<Tag> {
             List<org.gitlab4j.api.models.Tag> tags = resultData.getData();
             for (org.gitlab4j.api.models.Tag gitTag : tags) {
                 String version = gitTag.getName();
-                if (StringUtils.isBlank(version)) {
+                if (StringUtils.isBlank(version) || tagNameSet.contains(version)) {
                     continue;
                 }
 
@@ -235,11 +245,9 @@ public class TagService extends BaseEntityService<Tag> {
                 }
             }
             if (CollectionUtils.isNotEmpty(tagList)) {
-                List<Tag> tags1 = dao.findListByProperty(Tag.FIELD_MODULE_CODE, moduleCode);
-
+                this.save(tagList);
             }
         }
-
         return ResultData.success();
     }
 
