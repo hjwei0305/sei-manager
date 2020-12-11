@@ -28,13 +28,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -87,7 +85,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回验证码
      */
     @Override
-    public ResultData<String> generate(@NotBlank String reqId) {
+    public ResultData<String> generate(String reqId) {
         return service.generate(reqId);
     }
 
@@ -99,7 +97,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回验证码
      */
     @Override
-    public ResultData<Void> check(@NotBlank String reqId, @NotBlank String code) {
+    public ResultData<Void> check(String reqId, String code) {
         return service.check(reqId, code);
     }
 
@@ -110,7 +108,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回注册结果
      */
     @Override
-    public ResultData<Void> registered(@Valid RegisteredUserRequest request) {
+    public ResultData<Void> registered(RegisteredUserRequest request) {
         return service.registered(request);
     }
 
@@ -159,6 +157,16 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     }
 
     /**
+     * 找回密码检查用户
+     *
+     * @param user
+     */
+    @Override
+    public ResultData<Void> checkUser(CheckUserRequest user) {
+        return service.checkUser(user);
+    }
+
+    /**
      * 修改密码
      */
     @Override
@@ -170,7 +178,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * 登录
      */
     @Override
-    public ResultData<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResultData<LoginResponse> login(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequest.getAccount(), loginRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(authToken);
 

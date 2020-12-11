@@ -16,6 +16,7 @@ import com.changhong.sei.manager.commom.EmailManager;
 import com.changhong.sei.manager.commom.validatecode.IVerifyCodeGen;
 import com.changhong.sei.manager.commom.validatecode.VerifyCode;
 import com.changhong.sei.manager.dao.UserDao;
+import com.changhong.sei.manager.dto.CheckUserRequest;
 import com.changhong.sei.manager.dto.RegisteredUserRequest;
 import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.entity.Menu;
@@ -342,6 +343,15 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
             LogUtil.error(email + " 创建gitlab账号异常", e);
         }
         return ResultData.success();
+    }
+
+    /**
+     * 找回密码检查用户
+     *
+     * @param user
+     */
+    public ResultData<Void> checkUser(CheckUserRequest user) {
+        return  ResultData.success();
     }
 
     /**

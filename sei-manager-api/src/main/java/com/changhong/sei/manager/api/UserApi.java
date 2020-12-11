@@ -35,6 +35,7 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     @GetMapping(path = "getMailServer")
     @ApiOperation(value = "获取支持的邮箱服务", notes = "获取支持的邮箱服务")
     ResultData<String[]> getMailServer();
+
     /**
      * 验证码
      *
@@ -86,6 +87,13 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     @PostMapping(value = "createUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "创建用户", notes = "创建用户")
     ResultData<Void> createUser(@Valid @RequestBody CreateUserRequest user);
+
+    /**
+     * 找回密码检查用户
+     */
+    @PostMapping(value = "checkUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "找回密码检查用户", notes = "找回密码检查用户")
+    ResultData<Void> checkUser(@Valid @RequestBody CheckUserRequest user);
 
     /**
      * 修改密码

@@ -32,7 +32,7 @@ sei: # 应用全局配置
   # 开发运维平台的服务端地址(若有代理,配置代理后的地址)
   server:
     host: 'http://dsei.changhong.com/sei-manager'
-    web: 'http://dsei.changhong.com'
+    web: 'http://dsei.changhong.com/sei-manager-web'
   # 支持的邮箱服务(账号注册时用)
   email:
     servers: '@changhong.com, @qq.com'

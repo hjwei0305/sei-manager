@@ -7,8 +7,6 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.dto.AppModuleDto;
 import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
-import com.changhong.sei.deploy.dto.CreateTagRequest;
-import com.changhong.sei.deploy.dto.GitlabTagDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -76,35 +74,4 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
     @DeleteMapping(path = "deleteRequisition/{id}")
     @ApiOperation(value = "删除应用模块申请单", notes = "删除应用模块申请单")
     ResultData<Void> deleteRequisition(@PathVariable("id") String id);
-
-    /**
-     * 获取项目标签
-     *
-     * @param gitId git项目id
-     * @return 创建结果
-     */
-    @GetMapping(path = "getTags")
-    @ApiOperation(value = "获取项目标签", notes = "获取项目标签")
-    ResultData<List<GitlabTagDto>> getTags(@RequestParam("gitId") String gitId);
-
-    /**
-     * 创建标签
-     *
-     * @param request 创建标签请求
-     * @return 创建结果
-     */
-    @PostMapping(path = "createTag")
-    @ApiOperation(value = "创建标签", notes = "创建标签")
-    ResultData<GitlabTagDto> createTag(@RequestBody CreateTagRequest request);
-
-    /**
-     * 删除标签
-     *
-     * @param gitId   git项目id
-     * @param tagName tag名
-     * @return 创建结果
-     */
-    @DeleteMapping(path = "deleteRelease/{gitId}")
-    @ApiOperation(value = "删除标签", notes = "删除标签")
-    ResultData<Void> deleteRelease(@PathVariable("gitId") String gitId, @RequestParam("tagName") String tagName);
 }
