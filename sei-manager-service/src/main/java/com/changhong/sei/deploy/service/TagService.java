@@ -70,6 +70,7 @@ public class TagService extends BaseEntityService<Tag> {
         if (Objects.nonNull(tag)) {
             dto = convert(tag);
             dto.setId(null);
+            dto.setMessage(null);
         } else {
             dto = new TagDto();
             String version = module.getVersion();
@@ -192,7 +193,7 @@ public class TagService extends BaseEntityService<Tag> {
         return ResultData.success();
     }
 
-    private static final Pattern PATTERN = Pattern.compile("");
+    private static final Pattern PATTERN = Pattern.compile("(\\d+)(?:\\.)(\\d+)(?:\\.)(\\d+)");
 
     /**
      * 同步gitlab项目标签
@@ -230,9 +231,9 @@ public class TagService extends BaseEntityService<Tag> {
                 if (m.find()) {
                     tag = new Tag();
                     tag.setModuleCode(moduleCode);
-                    tag.setMajor(Integer.valueOf(m.group(0)));
-                    tag.setMinor(Integer.valueOf(m.group(1)));
-                    tag.setRevised(Integer.valueOf(m.group(2)));
+                    tag.setMajor(Integer.valueOf(m.group(1)));
+                    tag.setMinor(Integer.valueOf(m.group(2)));
+                    tag.setRevised(Integer.valueOf(m.group(3)));
                     tag.setMessage(gitTag.getMessage());
 
                     tag.setRelease(Objects.nonNull(tag.getRelease()));
