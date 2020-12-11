@@ -3,6 +3,7 @@ package com.changhong.sei.deploy.entity;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.IFrozen;
 import com.changhong.sei.deploy.dto.BuildStatus;
+import com.changhong.sei.deploy.dto.TemplateType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -24,6 +25,11 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_GIT_ID = "gitId";
     public static final String FIELD_TAG_NAME = "tagName";
+    /**
+     * 类型
+     */
+    @Column(name = "type")
+    private String type = TemplateType.DEPLOY.name();
     /**
      * 环境
      */
@@ -107,6 +113,14 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
      */
     @Column(name = "build_account")
     private String buildAccount;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getEnvCode() {
         return envCode;

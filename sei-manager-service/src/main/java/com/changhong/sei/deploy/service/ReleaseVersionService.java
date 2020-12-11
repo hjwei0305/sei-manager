@@ -1,5 +1,7 @@
 package com.changhong.sei.deploy.service;
 
+import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
@@ -40,6 +42,8 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
     private AppModuleService moduleService;
     @Autowired
     private RequisitionOrderService requisitionOrderService;
+    @Autowired
+    private ReleaseRecordService recordService;
 
     @Autowired
     private GitlabService gitlabService;
@@ -277,5 +281,63 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             }
         }
         return ResultData.fail("应用版本不存在!");
+    }
+
+    /**
+     * 更新审核状态
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> updateFrozen(String id) {
+        ReleaseVersion version = dao.findOne(id);
+        if (Objects.isNull(version)) {
+            return ResultData.fail("版本申请单[" + id + "]不存在");
+        }
+
+        AppModule module = moduleService.getAppModule(version.getModuleCode());
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + version.getModuleCode() + "]不存在");
+        }
+        // 申请通过,修改为可用
+        version.setFrozen(Boolean.FALSE);
+        this.save(version);
+
+        ReleaseRecord record = recordService.getByGitIdAndTag(version.getGitId(), version.getVersion());
+        if (Objects.isNull(record)) {
+            // 生成一条构建记录
+            record = new ReleaseRecord();
+            if (StringUtils.isBlank(module.getNameSpace())) {
+                // 前端应用
+                record.setType(TemplateType.PUBLISH_WEB.name());
+            } else {
+                // java应用
+                record.setType(TemplateType.PUBLISH_JAVA.name());
+            }
+            record.setAppId(version.getAppId());
+            record.setAppName(version.getAppName());
+            record.setGitId(version.getGitId());
+            record.setModuleCode(version.getModuleCode());
+            record.setModuleName(version.getModuleName());
+            record.setTagName(version.getVersion());
+            record.setName(version.getName());
+            record.setRemark(version.getRemark());
+            record.setFrozen(Boolean.FALSE);
+            record.setExpCompleteTime(LocalDateTime.now());
+            recordService.save(record);
+        }
+
+        // 发起Jenkins构建ø
+        SessionUser user = ContextUtil.getSessionUser();
+        ResultData<ReleaseRecord> resultData = recordService.build(record.getId(), user.getAccount());
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        // 保存构建号及状态
+        ReleaseRecord releaseRecord = resultData.getData();
+        OperateResultWithData<ReleaseRecord> result = recordService.save(releaseRecord);
+        if (result.successful()) {
+            return ResultData.success();
+        } else {
+            return ResultData.fail(result.getMessage());
+        }
     }
 }

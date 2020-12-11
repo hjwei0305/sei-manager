@@ -63,6 +63,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Autowired
     private DeployConfigService deployConfigService;
     @Autowired
+    private DeployTemplateService templateService;
+    @Autowired
     private DeployTemplateStageService deployTemplateStageService;
     @Autowired
     private JenkinsService jenkinsService;
@@ -364,13 +366,22 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     public ResultData<ReleaseRecord> build(String recordId, String account) {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
-            // 检查部署配置是否存在
-            ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
-            if (resultData.failed()) {
-                return ResultData.fail(resultData.getMessage());
+            final boolean needRelease;
+            if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
+                // 检查部署配置是否存在
+                ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
+                if (resultData.failed()) {
+                    return ResultData.fail(resultData.getMessage());
+                }
+                needRelease = false;
+            } else {
+                // 检查
+                ResultData<DeployTemplate> resultData = templateService.getPublishTemplate(releaseRecord.getType());
+                if (resultData.failed()) {
+                    return ResultData.fail(resultData.getMessage());
+                }
+                needRelease = true;
             }
-            // 部署配置
-            DeployConfig deployConfig = resultData.getData();
 
             Map<String, String> params = new HashMap<>();
             // 参数:项目名称(模块代码)
@@ -391,7 +402,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
-                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, account, deployConfig));
+                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, account, needRelease));
             } else {
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
             }
@@ -409,7 +420,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * 调用Jenkins构建任务
      */
     @Transactional(rollbackFor = Exception.class)
-    public void runBuild(String id, String jobName, int buildNumber, String account, DeployConfig deployConfig) {
+    public void runBuild(String id, String jobName, int buildNumber, String account, boolean needRelease) {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {
@@ -496,7 +507,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             // 更新发布记录状态
             record.setBuildStatus(status);
             dao.save(record);
-            if (BuildStatus.SUCCESS == status && deployConfig.getNeedRelease()) {
+            if (BuildStatus.SUCCESS == status && needRelease) {
                 releaseVersionService.releaseVersion(record);
             }
         }

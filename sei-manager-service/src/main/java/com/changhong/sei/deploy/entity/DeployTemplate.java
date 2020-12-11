@@ -20,7 +20,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class DeployTemplate extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 520497168789427262L;
-    public static final String FIELD_TYPE = "tyep";
+    public static final String FIELD_TYPE = "type";
     /**
      * 模板名称
      */

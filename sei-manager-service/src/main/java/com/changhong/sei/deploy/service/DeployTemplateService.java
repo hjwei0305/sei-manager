@@ -73,6 +73,21 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
     }
 
     /**
+     * 按类型获取模版,主要用于Jenkins构建时检查发布类模版是否存在
+     *
+     * @param type 类型
+     * @return 结果
+     */
+    public ResultData<DeployTemplate> getPublishTemplate(String type) {
+        DeployTemplate template = dao.findFirstByProperty(DeployTemplate.FIELD_TYPE, type);
+        if (Objects.nonNull(template)) {
+            return ResultData.success(template);
+        } else {
+            return ResultData.fail("未找到[" + type + "]类型的模版");
+        }
+    }
+
+    /**
      * 同步Jenkins任务
      *
      * @param id 模版id
