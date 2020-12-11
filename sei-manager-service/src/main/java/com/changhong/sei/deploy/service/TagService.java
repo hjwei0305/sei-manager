@@ -245,6 +245,7 @@ public class TagService extends BaseEntityService<Tag> {
                     tag.setMajor(Integer.valueOf(m.group(1)));
                     tag.setMinor(Integer.valueOf(m.group(2)));
                     tag.setRevised(Integer.valueOf(m.group(3)));
+                    tag.setCode(tag.getTagName());
                     tag.setMessage(gitTag.getMessage());
 
                     tag.setRelease(Objects.nonNull(tag.getRelease()));
