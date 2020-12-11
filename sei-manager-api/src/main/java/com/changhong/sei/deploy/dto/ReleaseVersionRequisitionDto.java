@@ -1,22 +1,19 @@
 package com.changhong.sei.deploy.dto;
 
-import com.changhong.sei.core.dto.BaseEntityDto;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
- * 版本发布记录(ReleaseVersion)DTO类
+ * 应用版本申请(ReleaseVersionRequisition)DTO类
  *
  * @author sei
- * @since 2020-11-23 08:34:10
+ * @since 2020-11-26 14:45:23
  */
-@ApiModel(description = "版本发布记录DTO")
-public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
-    private static final long serialVersionUID = 630890453379821715L;
+@ApiModel(description = "应用版本申请单DTO")
+public class ReleaseVersionRequisitionDto extends RequisitionDto implements Serializable {
+    private static final long serialVersionUID = -38024625578859016L;
     /**
      * 所属应用id
      */
@@ -45,7 +42,7 @@ public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
     /**
      * 引用tag
      */
-    @ApiModelProperty(value = "引用tag")
+    @ApiModelProperty(value = "关联tag")
     private String refTag;
     /**
      * 版本号
@@ -53,41 +50,15 @@ public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "版本号")
     private String version;
     /**
-     * commit id
-     */
-    @ApiModelProperty(value = "commit id")
-    private String commitId;
-    /**
-     * 镜像名
-     */
-    @ApiModelProperty(value = "镜像名")
-    private String imageName;
-    /**
      * 版本主题
      */
     @ApiModelProperty(value = "版本主题")
     private String name;
     /**
-     * 版本创建人
-     */
-    @ApiModelProperty(value = "版本创建人")
-    private String createUser;
-    /**
-     * 是否冻结
-     */
-    @ApiModelProperty(value = "是否冻结")
-    private Boolean frozen;
-    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
     private String remark;
-    /**
-     * 版本创建时间
-     */
-    @ApiModelProperty(value = "版本创建时间", example = "2020-01-14 22:18:48")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
 
     public String getAppId() {
         return appId;
@@ -145,22 +116,6 @@ public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
         this.version = version;
     }
 
-    public String getCommitId() {
-        return commitId;
-    }
-
-    public void setCommitId(String commitId) {
-        this.commitId = commitId;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
     public String getName() {
         return name;
     }
@@ -169,35 +124,11 @@ public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
         this.name = name;
     }
 
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
-    }
-
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
     }
 }

@@ -196,17 +196,17 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                             // 应用模块申请
                             resultData = appModuleService.updateFrozen(relationId);
                             break;
-                        case VERSION:
-                            // TODO 版本修订申请
+                        case PUBLISH:
+                            // TODO 发版申请
                             resultData = ResultData.fail("版本修订申请暂未开发实现");
                             break;
-                        case PUBLISH:
-                            // 发布申请
+                        case DEPLOY:
+                            // 部署申请
                             resultData = releaseRecordService.updateFrozen(relationId);
                             break;
-                        case DEPLOY:
-                            // TODO 项目部署申请
-                            resultData = ResultData.fail("项目部署申请暂未开发实现");
+                        case PROJECT:
+                            // TODO 项目应用申请
+                            resultData = ResultData.fail("项目应用申请暂未开发实现");
                             break;
                         default:
                             LogUtil.error("错误的申请类型.");

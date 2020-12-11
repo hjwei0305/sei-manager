@@ -119,7 +119,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:发布申请
-            requisitionOrder.setApplicationType(ApplyType.PUBLISH);
+            requisitionOrder.setApplicationType(ApplyType.DEPLOY);
             // 发布记录id
             requisitionOrder.setRelationId(releaseRecord.getId());
             // 申请摘要
@@ -205,7 +205,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             }
 
             // 申请类型:发布申请
-            requisitionOrder.setApplicationType(ApplyType.PUBLISH);
+            requisitionOrder.setApplicationType(ApplyType.DEPLOY);
             // 发布记录id
             requisitionOrder.setRelationId(entity.getId());
             // 申请摘要

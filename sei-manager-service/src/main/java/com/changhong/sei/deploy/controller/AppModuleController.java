@@ -13,11 +13,8 @@ import com.changhong.sei.deploy.entity.AppModuleRequisition;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
 import com.changhong.sei.deploy.service.ApplicationService;
-import com.changhong.sei.integrated.service.GitlabService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +35,6 @@ import java.util.stream.Collectors;
 @Api(value = "AppModuleApi", tags = "应用模块服务")
 @RequestMapping(path = "appModule", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AppModuleController extends BaseEntityController<AppModule, AppModuleDto> implements AppModuleApi {
-    private static final Logger LOG = LoggerFactory.getLogger(AppModuleController.class);
     /**
      * 应用模块服务对象
      */
@@ -46,8 +42,6 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     private AppModuleService service;
     @Autowired
     private ApplicationService applicationService;
-    @Autowired
-    private GitlabService gitlabService;
 
     @Override
     public BaseEntityService<AppModule> getService() {

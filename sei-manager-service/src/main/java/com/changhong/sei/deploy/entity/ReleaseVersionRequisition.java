@@ -1,29 +1,52 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.core.entity.IFrozen;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import com.changhong.sei.deploy.dto.ApplyType;
+import com.changhong.sei.deploy.dto.ApprovalStatus;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 版本发布记录(ReleaseVersion)实体类
+ * 版本发布记录(ReleaseVersion)(视图)
  *
  * @author sei
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "release_version")
-@DynamicInsert
-@DynamicUpdate
-public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable {
+@Table(name = "v_release_version_requisition")
+public class ReleaseVersionRequisition extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -78400014111481829L;
-    public static final String FIELD_APP_ID = "appId";
+    /**
+     * 关联id
+     *
+     * @see ApplyType
+     */
+    @Column(name = "relation_id")
+    private String relationId;
+    /**
+     * 申请人账号
+     */
+    @Column(name = "applicant_account")
+    private String applicantAccount;
+    /**
+     * 申请人名称
+     */
+    @Column(name = "applicant_user_name")
+    private String applicantUserName;
+    /**
+     * 申请时间
+     */
+    @Column(name = "application_time")
+    private LocalDateTime applicationTime;
+    /**
+     * 审核状态
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status")
+    private ApprovalStatus approvalStatus;
+
     /**
      * 所属应用id
      */
@@ -55,45 +78,61 @@ public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable 
     @Column(name = "ref_tag")
     private String refTag;
     /**
+     * 版本号
+     */
+    @Column(name = "version_")
+    private String version;
+
+    /**
      * 版本名称
      */
     @Column(name = "name")
     private String name;
     /**
-     * 版本号
-     */
-    @Column(name = "version_")
-    private String version;
-    /**
-     * commit id
-     */
-    @Column(name = "commit_id")
-    private String commitId;
-    /**
-     * 镜像名
-     */
-    @Column(name = "image_name")
-    private String imageName;
-    /**
      * 描述说明
      */
     @Column(name = "remark")
     private String remark;
-    /**
-     * 版本创建时间
-     */
-    @Column(name = "create_time")
-    private LocalDateTime createTime;
-    /**
-     * 版本创建时间
-     */
-    @Column(name = "create_user")
-    private String createUser;
-    /**
-     * 是否冻结
-     */
-    @Column(name = "frozen")
-    private Boolean frozen = Boolean.TRUE;
+
+    public String getRelationId() {
+        return relationId;
+    }
+
+    public void setRelationId(String relationId) {
+        this.relationId = relationId;
+    }
+
+    public String getApplicantAccount() {
+        return applicantAccount;
+    }
+
+    public void setApplicantAccount(String applicantAccount) {
+        this.applicantAccount = applicantAccount;
+    }
+
+    public String getApplicantUserName() {
+        return applicantUserName;
+    }
+
+    public void setApplicantUserName(String applicantUserName) {
+        this.applicantUserName = applicantUserName;
+    }
+
+    public LocalDateTime getApplicationTime() {
+        return applicationTime;
+    }
+
+    public void setApplicationTime(LocalDateTime applicationTime) {
+        this.applicationTime = applicationTime;
+    }
+
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
+    }
+
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
 
     public String getAppId() {
         return appId;
@@ -151,22 +190,6 @@ public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable 
         this.version = version;
     }
 
-    public String getCommitId() {
-        return commitId;
-    }
-
-    public void setCommitId(String commitId) {
-        this.commitId = commitId;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
     public String getName() {
         return name;
     }
@@ -181,31 +204,5 @@ public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable 
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    @Override
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    @Override
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
     }
 }

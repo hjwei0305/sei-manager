@@ -22,16 +22,16 @@ public enum ApplyType {
     /**
      * 应用版本(版本申请)
      */
-    @Remark("版本申请")
-    VERSION,
-    /**
-     * 应用发布(申请发布测试/生产环境)
-     */
-    @Remark("发布申请")
+    @Remark("发版申请")
     PUBLISH,
     /**
-     * 应用部署(实施项目申请应用部署)
+     * 应用部署(申请发布测试/生产环境)
      */
     @Remark("部署申请")
-    DEPLOY;
+    DEPLOY,
+    /**
+     * 应用项目(实施项目申请应用部署)
+     */
+    @Remark("项目申请")
+    PROJECT;
 }

@@ -2,18 +2,22 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.ReleaseVersionDao;
-import com.changhong.sei.deploy.dto.BuildStatus;
-import com.changhong.sei.deploy.entity.ReleaseRecord;
-import com.changhong.sei.deploy.entity.ReleaseVersion;
+import com.changhong.sei.deploy.dao.ReleaseVersionRequisitionDao;
+import com.changhong.sei.deploy.dto.*;
+import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.GitlabService;
 import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.Release;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -29,9 +33,13 @@ import java.util.Objects;
 public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
     @Autowired
     private ReleaseVersionDao dao;
+    @Autowired
+    private ReleaseVersionRequisitionDao versionRequisitionDao;
 
     @Autowired
     private AppModuleService moduleService;
+    @Autowired
+    private RequisitionOrderService requisitionOrderService;
 
     @Autowired
     private GitlabService gitlabService;
@@ -92,5 +100,182 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         } else {
             return ResultData.fail(releaseRecord.getJobName() + "发版失败,当前构建状态:" + releaseRecord.getBuildStatus().name());
         }
+    }
+
+
+    /**
+     * 分页查询应用模块申请单
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    public PageResult<ReleaseVersionRequisition> findRequisitionByPage(Search search) {
+        return versionRequisitionDao.findByPage(search);
+    }
+
+    /**
+     * 创建应用模块申请单
+     *
+     * @param releaseVersion 模块
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<ReleaseVersionRequisitionDto> createRequisition(ReleaseVersion releaseVersion) {
+        // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
+        releaseVersion.setFrozen(Boolean.TRUE);
+        // 保存应用模块
+        OperateResultWithData<ReleaseVersion> resultWithData = this.save(releaseVersion);
+        if (resultWithData.successful()) {
+            RequisitionOrder requisitionOrder = new RequisitionOrder();
+            // 申请类型:应用版本申请
+            requisitionOrder.setApplicationType(ApplyType.MODULE);
+            // 应用版本id
+            requisitionOrder.setRelationId(releaseVersion.getId());
+            // 申请摘要
+            requisitionOrder.setSummary(releaseVersion.getName().concat("[").concat(releaseVersion.getVersion()).concat("]"));
+
+            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
+            if (result.successful()) {
+                RequisitionOrder requisition = result.getData();
+                ReleaseVersionRequisitionDto dto = new ReleaseVersionRequisitionDto();
+                dto.setId(requisition.getId());
+                dto.setApplicantAccount(requisition.getApplicantAccount());
+                dto.setApplicantUserName(requisition.getApplicantUserName());
+                dto.setApplicationTime(requisition.getApplicationTime());
+                dto.setApplyType(requisition.getApplicationType());
+                dto.setApprovalStatus(requisition.getApprovalStatus());
+
+                dto.setRelationId(releaseVersion.getId());
+                dto.setAppId(releaseVersion.getAppId());
+                dto.setAppName(releaseVersion.getAppName());
+                dto.setGitId(releaseVersion.getGitId());
+                dto.setModuleCode(releaseVersion.getModuleCode());
+                dto.setModuleName(releaseVersion.getModuleName());
+                dto.setRefTag(releaseVersion.getRefTag());
+                dto.setName(releaseVersion.getName());
+                dto.setVersion(releaseVersion.getVersion());
+                dto.setRemark(releaseVersion.getRemark());
+                return ResultData.success(dto);
+            } else {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultData.fail(result.getMessage());
+            }
+        } else {
+            return ResultData.fail(resultWithData.getMessage());
+        }
+    }
+
+    /**
+     * 编辑修改应用模块申请单
+     *
+     * @param releaseVersion 应用模块
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(ReleaseVersion releaseVersion) {
+        ReleaseVersion module = this.findOne(releaseVersion.getId());
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块不存在!");
+        }
+        // 检查应用审核状态
+        if (!module.getFrozen()) {
+            return ResultData.fail("应用模块已审核,不允许编辑!");
+        }
+
+        module.setAppId(releaseVersion.getAppId());
+        module.setAppName(releaseVersion.getAppName());
+        module.setGitId(releaseVersion.getGitId());
+        module.setModuleCode(releaseVersion.getModuleCode());
+        module.setModuleName(releaseVersion.getModuleName());
+
+        module.setRefTag(releaseVersion.getRefTag());
+        module.setName(releaseVersion.getName());
+        module.setVersion(releaseVersion.getVersion());
+        module.setRemark(releaseVersion.getRemark());
+
+        // 保存应用模块
+        OperateResultWithData<ReleaseVersion> resultWithData = this.save(module);
+        if (resultWithData.successful()) {
+            RequisitionOrder requisitionOrder = requisitionOrderService.getByRelationId(module.getId());
+            if (Objects.isNull(requisitionOrder)) {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultData.fail("申请单不存在!");
+            }
+            // 检查申请单是否已审核
+            if (ApprovalStatus.INITIAL != requisitionOrder.getApprovalStatus()) {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultData.fail("申请单不存在!");
+            }
+
+            // 申请类型:应用模块申请
+            requisitionOrder.setApplicationType(ApplyType.MODULE);
+            // 应用模块id
+            requisitionOrder.setRelationId(module.getId());
+            // 申请摘要
+            requisitionOrder.setSummary(module.getName().concat("[").concat(module.getVersion()).concat("]"));
+
+            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
+            if (result.successful()) {
+                RequisitionOrder requisition = result.getData();
+                ReleaseVersionRequisitionDto dto = new ReleaseVersionRequisitionDto();
+                dto.setId(requisition.getId());
+                dto.setApplicantAccount(requisition.getApplicantAccount());
+                dto.setApplicantUserName(requisition.getApplicantUserName());
+                dto.setApplicationTime(requisition.getApplicationTime());
+                dto.setApplyType(requisition.getApplicationType());
+                dto.setApprovalStatus(requisition.getApprovalStatus());
+
+                dto.setRelationId(releaseVersion.getId());
+                dto.setAppId(releaseVersion.getAppId());
+                dto.setAppName(releaseVersion.getAppName());
+                dto.setGitId(releaseVersion.getGitId());
+                dto.setModuleCode(releaseVersion.getModuleCode());
+                dto.setModuleName(releaseVersion.getModuleName());
+                dto.setRefTag(releaseVersion.getRefTag());
+                dto.setName(releaseVersion.getName());
+                dto.setVersion(releaseVersion.getVersion());
+                dto.setRemark(releaseVersion.getRemark());
+                return ResultData.success(dto);
+            } else {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultData.fail(result.getMessage());
+            }
+        } else {
+            return ResultData.fail(resultWithData.getMessage());
+        }
+    }
+
+    /**
+     * 删除应用版本申请单
+     *
+     * @param id id
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> deleteRequisition(String id) {
+        ReleaseVersion version = this.findOne(id);
+        if (Objects.nonNull(version)) {
+            if (version.getFrozen()) {
+                // 删除应用版本申请
+                this.delete(id);
+
+                // 删除申请单
+                ResultData<Void> resultData = requisitionOrderService.deleteRequisition(id);
+                if (resultData.successful()) {
+                    return ResultData.success();
+                } else {
+                    // 事务回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultData.fail(resultData.getMessage());
+                }
+            } else {
+                return ResultData.fail("应用版本已审核,禁止删除!");
+            }
+        }
+        return ResultData.fail("应用版本不存在!");
     }
 }
