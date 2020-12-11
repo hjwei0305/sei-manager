@@ -32,8 +32,8 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
      * 发版类模版仅允许一个(前端一个,后端一个)
      */
 //    @Enumerated(EnumType.STRING)
-    @Column(name = "tyep", updatable = false)
-    private String tyep = TemplateType.DEPLOY.name();
+    @Column(name = "type", updatable = false)
+    private String type = TemplateType.DEPLOY.name();
     /**
      * 模板全局参数
      */
@@ -58,12 +58,12 @@ public class DeployTemplate extends BaseAuditableEntity implements Serializable 
         this.name = name;
     }
 
-    public String getTyep() {
-        return tyep;
+    public String getType() {
+        return type;
     }
 
-    public void setTyep(String tyep) {
-        this.tyep = tyep;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getGlobalParam() {
