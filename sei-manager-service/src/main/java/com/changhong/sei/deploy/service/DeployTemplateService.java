@@ -84,7 +84,7 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
             return ResultData.fail("模版[" + id + "]不存在");
         }
 
-        if (StringUtils.equals(TemplateType.DEPLOY.name(), template.getTyep())) {
+        if (StringUtils.equals(TemplateType.DEPLOY.name(), template.getType())) {
             return ResultData.fail("模版[" + template.getName() + "]不是发版模版");
         }
 
