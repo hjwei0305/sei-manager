@@ -121,10 +121,10 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
         if (applicationService.isExistsByProperty(Application.FIELD_GROUP_CODE, userGroup.getCode())) {
             return OperateResult.operationFailure("[" + userGroup.getCode() + "]应用存在应用模块,不允许删除!");
         }
-        ResultData<Void> resultData = gitlabService.deleteGroup(userGroup.getCode());
-        if (resultData.failed()) {
-            return OperateResult.operationFailure(resultData.getMessage());
-        }
+//        ResultData<Void> resultData = gitlabService.deleteGroup(userGroup.getCode());
+//        if (resultData.failed()) {
+//            return OperateResult.operationFailure(resultData.getMessage());
+//        }
         return super.preDelete(s);
     }
 
