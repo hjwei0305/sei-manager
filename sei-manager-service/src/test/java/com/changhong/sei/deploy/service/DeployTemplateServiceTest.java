@@ -24,4 +24,11 @@ public class DeployTemplateServiceTest extends BaseUnitTest {
         System.out.println(resultData);
         System.out.println(resultData.getData());
     }
+
+    @Test
+    public void syncJenkinsJob() {
+        ResultData<Void> resultData = service.syncJenkinsJob("F877CF48-3B91-11EB-8E8B-0242C0A84603");
+        System.out.println(resultData);
+        System.out.println(resultData.getData());
+    }
 }

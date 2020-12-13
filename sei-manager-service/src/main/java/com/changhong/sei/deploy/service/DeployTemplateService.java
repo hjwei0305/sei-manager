@@ -114,7 +114,7 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
         String jobXml = xmlResult.getData();
         try {
             boolean exist = jenkinsService.checkJobExist(jobName);
-            if (exist) {
+            if (!exist) {
                 // 创建Jenkins任务
                 return jenkinsService.createJob(jobName, jobXml);
             } else {
