@@ -161,6 +161,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
                 ignores.add("/**/webhook/**");
                 ignores.add("/**/user/check/**");
                 ignores.add("/**/user/registered/**");
+                ignores.add("/**/user/forgetPassword/**");
                 ignores.addAll(customConfig.getIgnores().getPost());
                 break;
             case PATCH:

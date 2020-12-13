@@ -89,11 +89,18 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     ResultData<Void> createUser(@Valid @RequestBody CreateUserRequest user);
 
     /**
-     * 找回密码检查用户
+     * 忘记密码流程检查用户
      */
-    @PostMapping(value = "checkUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "找回密码检查用户", notes = "找回密码检查用户")
-    ResultData<Void> checkUser(@Valid @RequestBody CheckUserRequest user);
+    @PostMapping(value = "forgetPassword/checkUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "忘记密码流程检查用户", notes = "忘记密码流程检查用户")
+    ResultData<ForgetPasswordResponse> checkUser(@Valid @RequestBody ForgetPasswordRequest user);
+
+    /**
+     * 忘记密码
+     */
+    @PostMapping(value = "forgetPassword/{sign}")
+    @ApiOperation(value = "忘记密码流程重置密码", notes = "忘记密码流程重置密码")
+    ResultData<Void> forgetPassword(@PathVariable("sign") String sign);
 
     /**
      * 修改密码

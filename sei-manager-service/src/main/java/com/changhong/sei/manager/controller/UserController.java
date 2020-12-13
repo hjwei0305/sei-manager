@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -162,8 +161,18 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @param user
      */
     @Override
-    public ResultData<Void> checkUser(CheckUserRequest user) {
+    public ResultData<ForgetPasswordResponse> checkUser(ForgetPasswordRequest user) {
         return service.checkUser(user);
+    }
+
+    /**
+     * 忘记密码
+     *
+     * @param sign
+     */
+    @Override
+    public ResultData<Void> forgetPassword(String sign) {
+        return service.forgetPassword(sign);
     }
 
     /**

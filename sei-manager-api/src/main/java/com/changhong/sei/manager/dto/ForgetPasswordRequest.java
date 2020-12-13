@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @version 1.0.00  2020-11-18 16:44
  */
 @ApiModel(description = "忘记密码请求")
-public class CheckUserRequest implements Serializable {
+public class ForgetPasswordRequest implements Serializable {
 
     private static final long serialVersionUID = 3614613734469635633L;
     @NotBlank
@@ -25,12 +25,9 @@ public class CheckUserRequest implements Serializable {
     /**
      * 用户名
      */
-    @NotBlank(message = "账号不能为空")
-    @ApiModelProperty(value = "账号", required = true)
-    private String account;
     @NotBlank
-    @ApiModelProperty(value = "邮箱")
-    private String email;
+    @ApiModelProperty(value = "账号或邮箱或手机号", required = true)
+    private String usernameOrEmailOrPhone;
 
     public String getReqId() {
         return reqId;
@@ -48,19 +45,11 @@ public class CheckUserRequest implements Serializable {
         this.verifyCode = verifyCode;
     }
 
-    public String getAccount() {
-        return account;
+    public String getUsernameOrEmailOrPhone() {
+        return usernameOrEmailOrPhone;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsernameOrEmailOrPhone(String usernameOrEmailOrPhone) {
+        this.usernameOrEmailOrPhone = usernameOrEmailOrPhone;
     }
 }

@@ -24,5 +24,9 @@ public interface Constants {
      * 注册缓存key
      */
     String REDIS_REGISTERED_KEY = "sei:manager:registered:";
+    /**
+     * 忘记密码缓存key
+     */
+    String REDIS_FORGET_KEY = "sei:manager:forget:";
 
 }

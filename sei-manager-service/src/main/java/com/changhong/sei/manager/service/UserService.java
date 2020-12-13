@@ -16,7 +16,8 @@ import com.changhong.sei.manager.commom.EmailManager;
 import com.changhong.sei.manager.commom.validatecode.IVerifyCodeGen;
 import com.changhong.sei.manager.commom.validatecode.VerifyCode;
 import com.changhong.sei.manager.dao.UserDao;
-import com.changhong.sei.manager.dto.CheckUserRequest;
+import com.changhong.sei.manager.dto.ForgetPasswordRequest;
+import com.changhong.sei.manager.dto.ForgetPasswordResponse;
 import com.changhong.sei.manager.dto.RegisteredUserRequest;
 import com.changhong.sei.manager.entity.Feature;
 import com.changhong.sei.manager.entity.Menu;
@@ -167,7 +168,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //            return ResultData.fail("[" + email + "]已申请过,请勿重复申请");
 //        }
         // 三天有效期
-        cacheBuilder.set(cacheKey, email, 3600 * 24 * 3);
+        cacheBuilder.set(cacheKey, email, 3600000 * 24 * 3);
 
         Context context = new Context();
         context.setVariable("url", serverHost.concat("/user/activate/") + sign);
@@ -348,10 +349,63 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     /**
      * 找回密码检查用户
      *
-     * @param user
+     * @param request 请求
      */
-    public ResultData<Void> checkUser(CheckUserRequest user) {
-        return  ResultData.success();
+    public ResultData<ForgetPasswordResponse> checkUser(ForgetPasswordRequest request) {
+        ResultData<Void> resultData = check(request.getReqId(), request.getVerifyCode());
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+
+        String usernameOrEmailOrPhone = request.getUsernameOrEmailOrPhone();
+        User user = dao.findByAccountOrEmailOrPhone(usernameOrEmailOrPhone, usernameOrEmailOrPhone, usernameOrEmailOrPhone).orElse(null);
+        if (Objects.isNull(user)) {
+            return ResultData.fail("不存在账号[" + usernameOrEmailOrPhone + "]的信息");
+        }
+
+        String sign = Signature.sign(request.getReqId());
+        String cacheKey = Constants.REDIS_FORGET_KEY + sign;
+        // 10分钟有效期
+        cacheBuilder.set(cacheKey, user.getId(), 600000);
+
+        return ResultData.success(new ForgetPasswordResponse(sign, user.getEmail()));
+    }
+
+    /**
+     * 忘记密码
+     *
+     * @param sign
+     */
+    public ResultData<Void> forgetPassword(String sign) {
+        String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
+        String cacheValue = cacheBuilder.get(cacheKey);
+        if (StringUtils.isBlank(cacheValue)) {
+            return ResultData.fail("忘记密码验证失败,请重新操作.");
+        }
+        User user = dao.findOne(cacheValue);
+        if (Objects.isNull(user)) {
+            return ResultData.fail("找回密码失败,用户不存在.");
+        }
+        // 生成8位随机密码
+        String password = RandomStringUtils.randomAlphanumeric(8);
+        String email = user.getEmail();
+        user.setPassword(passwordEncoder.encode(HashUtil.md5(password)));
+        long currentTimeMillis = System.currentTimeMillis();
+        user.setUpdateTime(currentTimeMillis);
+        this.save(user);
+
+        Context context = new Context();
+        context.setVariable("userName", user.getNickname());
+        context.setVariable("sysName", managerName);
+        context.setVariable("password", password);
+        String content = ThymeLeafHelper.getTemplateEngine().process("notify/UpdatePassword.html", context);
+
+        ResultData<Void> result = emailManager.sendMail(managerName + "-密码变更", content, email);
+        if (result.successful()) {
+            return ResultData.success("密码更新成功,下次请使用新密码登录.", null);
+        } else {
+            return result;
+        }
     }
 
     /**
