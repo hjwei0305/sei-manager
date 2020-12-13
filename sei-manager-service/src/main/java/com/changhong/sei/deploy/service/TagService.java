@@ -136,6 +136,16 @@ public class TagService extends BaseEntityService<Tag> {
             return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
         }
 
+        // 检查tag是否存在(模块代码+tag唯一)
+        String tagName = request.getTagName();
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_CODE, moduleCode));
+        search.addFilter(new SearchFilter(Tag.FIELD_CODE, tagName));
+        Tag existTag = dao.findFirstByFilters(search);
+        if (Objects.nonNull(existTag)) {
+            return ResultData.fail("模块[" + moduleCode + "]已存在Tag[" + tagName + "].");
+        }
+
         Tag tag = new Tag();
         tag.setModuleCode(moduleCode);
         tag.setMajor(request.getMajor());

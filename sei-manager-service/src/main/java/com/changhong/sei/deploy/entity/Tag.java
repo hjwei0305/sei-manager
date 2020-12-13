@@ -1,7 +1,6 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.core.entity.ICodeUnique;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -22,12 +21,13 @@ import java.util.StringJoiner;
 @Table(name = "tag")
 @DynamicInsert
 @DynamicUpdate
-public class Tag extends BaseEntity implements ICodeUnique, Serializable {
+public class Tag extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 954549891503436485L;
     public static final String FIELD_MODULE_CODE = "moduleCode";
     public static final String FIELD_MAJOR = "major";
     public static final String FIELD_MINOR = "minor";
     public static final String FIELD_REVISED = "revised";
+    public static final String FIELD_CODE = "code";
     /**
      * 应用模块代码
      */
@@ -87,12 +87,10 @@ public class Tag extends BaseEntity implements ICodeUnique, Serializable {
         this.moduleCode = moduleCode;
     }
 
-    @Override
     public String getCode() {
         return code;
     }
 
-    @Override
     public void setCode(String code) {
         this.code = code;
     }
