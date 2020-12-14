@@ -36,6 +36,11 @@ public class UserDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "邮箱")
     private String email;
     /**
+     * 头像
+     */
+    @ApiModelProperty(value = "头像")
+    private String avatar;
+    /**
      * 状态，启用-1，禁用-0
      */
     @ApiModelProperty(value = "状态，启用-1，禁用-0")

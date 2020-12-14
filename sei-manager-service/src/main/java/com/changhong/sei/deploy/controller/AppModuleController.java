@@ -8,6 +8,7 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.api.AppModuleApi;
 import com.changhong.sei.deploy.dto.AppModuleDto;
 import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
+import com.changhong.sei.deploy.dto.ModuleUser;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.AppModuleRequisition;
 import com.changhong.sei.deploy.entity.Application;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -160,4 +162,37 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
         return service.deleteRequisition(id);
     }
 
+    /**
+     * 获取应用模块用户
+     *
+     * @param id 应用模块id
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<List<ModuleUser>> getModuleUsers(String id) {
+        return service.getModuleUsers(id);
+    }
+
+    /**
+     * 添加应用模块用户
+     *
+     * @param users 用户
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> addModuleUser(Set<ModuleUser> users) {
+        return service.addModuleUser(users);
+    }
+
+    /**
+     * 按用户账号清单移除应用模块用户
+     *
+     * @param gitId    git项目id
+     * @param accounts 用户账号清单
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> removeModuleUser(String gitId, Set<String> accounts)  {
+        return service.removeModuleUser(gitId, accounts);
+    }
 }

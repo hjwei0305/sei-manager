@@ -1,6 +1,8 @@
 package com.changhong.sei.manager.dto;
 
 import com.changhong.sei.enums.UserAuthorityPolicy;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -13,38 +15,45 @@ import java.util.Objects;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-10 16:48
  */
+@ApiModel(description = "用户DTO")
 public class LoginResponse implements Serializable {
     private static final long serialVersionUID = 1948851446236640144L;
 
     /**
      * sessionId
      */
+    @ApiModelProperty(value = "sessionId")
     private String sessionId;
     /**
      * 用户id，平台唯一
      */
+    @ApiModelProperty(value = "用户id")
     private String userId;
     /**
      * 用户主账号
      */
+    @ApiModelProperty(value = "用户主账号")
     private String account;
     /**
      * 当前登录账号
      */
+    @ApiModelProperty(value = "当前登录账号")
     private String loginAccount;
     /**
      * 用户名
      */
+    @ApiModelProperty(value = "用户名")
     private String userName;
-
     /**
      * 用户权限策略
      */
+    @ApiModelProperty(value = "用户权限策略")
     private UserAuthorityPolicy authorityPolicy = UserAuthorityPolicy.NormalUser;
 
     /**
      * 用户权限列表
      */
+    @ApiModelProperty(value = "用户权限列表")
     private Collection<String> authorities;
 
     public String getSessionId() {

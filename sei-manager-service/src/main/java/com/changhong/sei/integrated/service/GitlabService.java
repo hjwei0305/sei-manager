@@ -209,13 +209,23 @@ public class GitlabService {
      * 移除项目用户
      *
      * @param projectIdOrPath git项目id
-     * @param userId          用户id
+     * @param account         用户id
      * @return 操作结果
      */
-    public ResultData<Void> removeProjectUser(String projectIdOrPath, Integer userId) {
+    public ResultData<Void> removeProjectUser(String projectIdOrPath, String... accounts) {
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
-            ProjectApi api = gitLabApi.getProjectApi();
-            api.removeMember(projectIdOrPath, userId);
+            UserApi userApi = gitLabApi.getUserApi();
+            Optional<User> optionalUser;
+            for (String account : accounts) {
+                optionalUser = userApi.getOptionalUser(account);
+                if (optionalUser.isPresent()) {
+                    int userId = optionalUser.get().getId();
+                    ProjectApi api = gitLabApi.getProjectApi();
+                    api.removeMember(projectIdOrPath, userId);
+                } else {
+                    return ResultData.fail("用户[" + account + "]不在gitlab中");
+                }
+            }
             return ResultData.success();
         } catch (Exception e) {
             LOG.error("移除项目用户异常", e);
@@ -227,18 +237,26 @@ public class GitlabService {
      * 添加项目用户
      *
      * @param projectIdOrPath git项目id
-     * @param userId          用户id
+     * @param accounts        用户账号
      * @return 操作结果
      */
-    public ResultData<Integer> addProjectUser(String projectIdOrPath, Integer userId) {
+    public ResultData<Integer> addProjectUser(String projectIdOrPath, String... accounts) {
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
-            ProjectApi api = gitLabApi.getProjectApi();
-            Member member = api.addMember(projectIdOrPath, userId, AccessLevel.DEVELOPER);
-            if (Objects.nonNull(member)) {
-                return ResultData.success(member.getId());
-            } else {
-                return ResultData.fail("添加项目用户失败");
+            UserApi userApi = gitLabApi.getUserApi();
+            for (String account : accounts) {
+                Optional<User> optionalUser = userApi.getOptionalUser(account);
+                if (optionalUser.isPresent()) {
+                    int userId = optionalUser.get().getId();
+                    ProjectApi api = gitLabApi.getProjectApi();
+                    Member member = api.addMember(projectIdOrPath, userId, AccessLevel.DEVELOPER);
+                    if (Objects.isNull(member)) {
+                        return ResultData.fail("添加项目用户失败");
+                    }
+                } else {
+                    return ResultData.fail("用户[" + accounts + "]不在gitlab中");
+                }
             }
+            return ResultData.success();
         } catch (Exception e) {
             LOG.error("添加项目用户异常", e);
             return ResultData.fail("添加项目用户异常:" + e.getMessage());

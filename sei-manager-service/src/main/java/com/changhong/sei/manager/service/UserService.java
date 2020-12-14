@@ -377,7 +377,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param sign
      */
     public ResultData<Void> forgetPassword(String sign) {
-        String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
+        String cacheKey = Constants.REDIS_FORGET_KEY + sign;
         String cacheValue = cacheBuilder.get(cacheKey);
         if (StringUtils.isBlank(cacheValue)) {
             return ResultData.fail("忘记密码验证失败,请重新操作.");
@@ -392,7 +392,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         user.setPassword(passwordEncoder.encode(HashUtil.md5(password)));
         long currentTimeMillis = System.currentTimeMillis();
         user.setUpdateTime(currentTimeMillis);
-        this.save(user);
+        dao.save(user);
 
         Context context = new Context();
         context.setVariable("userName", user.getNickname());
@@ -449,10 +449,36 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
                 return OperateResultWithData.operationFailure(resultData.getMessage());
             }
         } else {
+            User user = dao.findOne(entity.getId());
+            if (StringUtils.isNotBlank(entity.getNickname())) {
+                user.setNickname(entity.getNickname());
+            }
+            if (StringUtils.isNotBlank(entity.getPhone())) {
+                user.setPhone(entity.getPhone());
+            }
+            if (StringUtils.isNotBlank(entity.getAvatar())) {
+                user.setAvatar(entity.getAvatar());
+            }
+            if (StringUtils.isNotBlank(entity.getPassword())) {
+                user.setPassword(entity.getPassword());
+            }
             long currentTimeMillis = System.currentTimeMillis();
             entity.setUpdateTime(currentTimeMillis);
             return super.save(entity);
         }
+    }
+
+    /**
+     * 获取用户头像
+     *
+     * @return 获取用户头像
+     */
+    public ResultData<String> getUserAvatar(String userId) {
+        User user = dao.findOne(userId);
+        if (Objects.isNull(user)) {
+            return ResultData.fail("用户[" + userId + "]不存在.");
+        }
+        return ResultData.success(user.getAvatar());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -468,7 +494,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         user.setPassword(passwordEncoder.encode(password));
         long currentTimeMillis = System.currentTimeMillis();
         user.setUpdateTime(currentTimeMillis);
-        this.save(user);
+        dao.save(user);
         return ResultData.success();
     }
 
@@ -489,7 +515,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         user.setPassword(passwordEncoder.encode(password));
         long currentTimeMillis = System.currentTimeMillis();
         user.setUpdateTime(currentTimeMillis);
-        this.save(user);
+        dao.save(user);
         return ResultData.success();
     }
 

@@ -51,6 +51,11 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "email")
     private String email;
     /**
+     * 头像
+     */
+    @Column(name = "avatar")
+    private String avatar;
+    /**
      * 状态，启用-1，禁用-0
      */
     @Column(name = "status")
@@ -109,6 +114,14 @@ public class User extends BaseEntity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Boolean getStatus() {

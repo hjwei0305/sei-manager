@@ -7,6 +7,7 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.dto.AppModuleDto;
 import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
+import com.changhong.sei.deploy.dto.ModuleUser;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 应用模块(AppModule)API
@@ -74,4 +76,35 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
     @DeleteMapping(path = "deleteRequisition/{id}")
     @ApiOperation(value = "删除应用模块申请单", notes = "删除应用模块申请单")
     ResultData<Void> deleteRequisition(@PathVariable("id") String id);
+
+    /**
+     * 获取应用模块用户
+     *
+     * @param id 应用模块id
+     * @return 操作结果
+     */
+    @GetMapping(path = "getModuleUsers")
+    @ApiOperation(value = "获取应用模块用户清单", notes = "获取应用模块用户清单")
+    ResultData<List<ModuleUser>> getModuleUsers(@RequestParam("id") String id);
+
+    /**
+     * 添加应用模块用户
+     *
+     * @param users 用户
+     * @return 操作结果
+     */
+    @PostMapping(path = "addModuleUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "添加应用模块用户", notes = "添加应用模块用户")
+    ResultData<Void> addModuleUser(@RequestBody Set<ModuleUser> users);
+
+    /**
+     * 按用户账号清单移除应用模块用户
+     *
+     * @param gitId    git项目id
+     * @param accounts 用户账号清单
+     * @return 操作结果
+     */
+    @DeleteMapping(path = "removeModuleUser/{gitId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "按用户账号清单移除应用模块用户", notes = "按用户账号清单移除应用模块用户")
+    ResultData<Void> removeModuleUser(@PathVariable("gitId") String gitId, @RequestBody Set<String> accounts);
 }

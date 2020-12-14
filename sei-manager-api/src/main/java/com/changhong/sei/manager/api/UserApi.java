@@ -124,6 +124,15 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     ResultData<String> logout();
 
     /**
+     * 获取用户头像
+     *
+     * @return 获取用户头像
+     */
+    @GetMapping("getUserAvatar")
+    @ApiOperation(value = "获取用户头像", notes = "获取用户头像 base64编码图片")
+    ResultData<String> getUserAvatar();
+
+    /**
      * 获取用户有权限的菜单和功能项
      *
      * @return 获取用户有权限的菜单和功能项

@@ -5,6 +5,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import org.gitlab4j.api.models.Group;
+import org.gitlab4j.api.models.ProjectUser;
 import org.gitlab4j.api.models.Release;
 import org.gitlab4j.api.models.Tag;
 import org.junit.Test;
@@ -70,6 +71,13 @@ public class GitlabServiceTest extends BaseUnitTest {
         String tagName = "1.0.4";
         String message = "测试createProject TAG";
         ResultData<Release> resultData = service.createProjectRelease(gitId, message, tagName + "-beta", tagName, message);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void getProjectUser() {
+        String id = "4";
+        ResultData<List<ProjectUser>> resultData = service.getProjectUser(id);
         System.out.println(resultData);
     }
 

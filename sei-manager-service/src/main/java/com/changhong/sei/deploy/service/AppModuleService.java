@@ -12,6 +12,7 @@ import com.changhong.sei.deploy.dao.AppModuleRequisitionDao;
 import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.ModuleUser;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.AppModuleRequisition;
 import com.changhong.sei.deploy.entity.Application;
@@ -19,14 +20,20 @@ import com.changhong.sei.deploy.entity.RequisitionOrder;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.gitlab4j.api.models.ProjectUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -311,5 +318,64 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      */
     public void updateVersion(String code, String version) {
         dao.updateVersion(code, version);
+    }
+
+    /**
+     * 获取应用模块用户
+     *
+     * @param id 应用模块id
+     * @return 操作结果
+     */
+    public ResultData<List<ModuleUser>> getModuleUsers(String id) {
+        AppModule module = this.findOne(id);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + id + "]不存在.");
+        }
+        final String gitId = module.getGitId();
+        ResultData<List<ProjectUser>> resultData = gitlabService.getProjectUser(gitId);
+        if (resultData.successful()) {
+            List<ProjectUser> list = resultData.getData();
+            List<ModuleUser> moduleUsers = list.stream().map(o -> {
+                ModuleUser user = new ModuleUser();
+                user.setGitProjectId(gitId);
+                user.setAccount(o.getUsername());
+                user.setName(o.getName());
+                user.setGitUserId(o.getId());
+                return user;
+            }).collect(Collectors.toList());
+            return ResultData.success(moduleUsers);
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
+    }
+
+    /**
+     * 添加应用模块用户
+     *
+     * @param users 用户
+     * @return 操作结果
+     */
+    public ResultData<Void> addModuleUser(Set<ModuleUser> users) {
+        if (CollectionUtils.isNotEmpty(users)) {
+            String gitId = null;
+            Set<String> accounts = new HashSet<>();
+            for (ModuleUser user : users) {
+                gitId = user.getGitProjectId();
+                accounts.add(user.getAccount());
+            }
+            gitlabService.addProjectUser(gitId, accounts.toArray(new String[0]));
+        }
+        return null;
+    }
+
+    /**
+     * 按用户账号清单移除应用模块用户
+     *
+     * @param gitId    git项目id
+     * @param accounts 用户账号清单
+     * @return 操作结果
+     */
+    public ResultData<Void> removeModuleUser(String gitId, Set<String> accounts) {
+        return gitlabService.removeProjectUser(gitId, accounts.toArray(new String[0]));
     }
 }

@@ -245,6 +245,16 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     }
 
     /**
+     * 获取用户头像
+     *
+     * @return 获取用户头像
+     */
+    @Override
+    public ResultData<String> getUserAvatar() {
+        return service.getUserAvatar(ContextUtil.getUserId());
+    }
+
+    /**
      * 获取用户有权限的菜单和功能项
      *
      * @return 获取用户有权限的菜单和功能项
