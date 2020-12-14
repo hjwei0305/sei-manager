@@ -366,6 +366,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     public ResultData<ReleaseRecord> build(String recordId, String account) {
         ReleaseRecord releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
+            final String jobName;
             final boolean needRelease;
             if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
                 // 检查部署配置是否存在
@@ -373,6 +374,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 if (resultData.failed()) {
                     return ResultData.fail(resultData.getMessage());
                 }
+                jobName = releaseRecord.getJobName();
                 needRelease = false;
             } else {
                 // 检查
@@ -380,6 +382,9 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 if (resultData.failed()) {
                     return ResultData.fail(resultData.getMessage());
                 }
+                // @see templateService#syncJenkinsJob
+                DeployTemplate deployTemplate = resultData.getData();
+                jobName = deployTemplate.getName();
                 needRelease = true;
             }
 
@@ -392,7 +397,6 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             // 参数:代码分支或者TAG
             params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
 
-            String jobName = releaseRecord.getJobName();
             // 调用Jenkins构建
             ResultData<Integer> buildResult = jenkinsService.buildJob(jobName, params);
             if (buildResult.successful()) {

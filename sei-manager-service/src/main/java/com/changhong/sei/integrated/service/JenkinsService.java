@@ -187,6 +187,9 @@ public class JenkinsService {
     public ResultData<Integer> buildJob(String jobName, Map<String, String> params) {
         try (JenkinsServer server = getJenkinsServer()) {
             JobWithDetails details = server.getJob(jobName);
+            if (Objects.isNull(details)) {
+                return ResultData.fail("Jenkins任务[" + jobName + "]不存在.");
+            }
             // 获取构建任务号
             int buildNumber = details.getNextBuildNumber();
             // 构建
