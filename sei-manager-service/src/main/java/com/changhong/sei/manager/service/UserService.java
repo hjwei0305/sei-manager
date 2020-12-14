@@ -463,8 +463,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
                 user.setPassword(entity.getPassword());
             }
             long currentTimeMillis = System.currentTimeMillis();
-            entity.setUpdateTime(currentTimeMillis);
-            return super.save(entity);
+            user.setUpdateTime(currentTimeMillis);
+            return super.save(user);
         }
     }
 

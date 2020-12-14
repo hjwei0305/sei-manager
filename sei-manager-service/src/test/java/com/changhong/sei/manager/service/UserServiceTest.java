@@ -2,10 +2,13 @@ package com.changhong.sei.manager.service;
 
 import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
+import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.manager.controller.UserController;
 import com.changhong.sei.manager.dto.CreateUserRequest;
 import com.changhong.sei.manager.dto.LoginRequest;
 import com.changhong.sei.manager.dto.LoginResponse;
+import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.util.HashUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,13 @@ public class UserServiceTest extends BaseUnitTest {
         user.setEmail("chao2.ma@changhong.com");
         user.setPhone("18608081023");
         ResultData<Void> resultData = userController.createUser(user);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void save() {
+        User user = JsonUtils.fromJson("{\"id\":\"1072806377661009920\",\"nickname\":\"管理员\",\"phone\":\"17300000000\"}", User.class);
+        OperateResultWithData<User> resultData = userService.save(user);
         System.out.println(resultData);
     }
 
