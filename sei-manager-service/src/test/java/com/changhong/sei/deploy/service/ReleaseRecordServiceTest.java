@@ -30,7 +30,7 @@ public class ReleaseRecordServiceTest extends BaseUnitTest {
 
     @Test
     public void getBuildDetail() {
-        String id = "6551B7B2-3DAE-11EB-9087-3E9632B06CB1";
+        String id = "1132B7E9-3EA3-11EB-8908-0242C0A84603";
         ResultData<ReleaseRecordDetailDto> resultData = service.getBuildDetail(id);
         System.out.println(resultData);
     }

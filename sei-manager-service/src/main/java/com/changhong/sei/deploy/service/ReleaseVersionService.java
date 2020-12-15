@@ -250,6 +250,10 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         }
         Release gitlabRelease = resultData.getData();
         version.setCommitId(gitlabRelease.getCommit().getId());
+        // 创建时间
+        version.setCreateTime(LocalDateTime.now());
+        // 创建人
+        version.setCreateUser(ContextUtil.getUserAccount());
         // 约定镜像命名规范
         version.setImageName(version.getModuleCode() + ":" + version.getVersion());
 
