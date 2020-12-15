@@ -24,6 +24,9 @@ import java.time.LocalDateTime;
 public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
+    public static final String FIELD_MODULE_CODE = "moduleCode";
+    public static final String FIELD_VERSION = "version";
+    public static final String FIELD_AVAILABLE = "available";
     /**
      * 所属应用id
      */
@@ -94,6 +97,11 @@ public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable 
      */
     @Column(name = "frozen")
     private Boolean frozen = Boolean.TRUE;
+    /**
+     * 是否是可用的版本
+     */
+    @Column(name = "available")
+    private Boolean available = Boolean.FALSE;
 
     public String getAppId() {
         return appId;
@@ -207,5 +215,13 @@ public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable 
     @Override
     public void setFrozen(Boolean frozen) {
         this.frozen = frozen;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
     }
 }

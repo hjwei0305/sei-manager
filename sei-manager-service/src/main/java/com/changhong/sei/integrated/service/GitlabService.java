@@ -341,6 +341,24 @@ public class GitlabService {
     }
 
     /**
+     * 删除项目版本
+     *
+     * @param projectIdOrPath git项目id
+     * @param tagName         tag名
+     * @return 创建结果
+     */
+    public ResultData<Void> deleteProjectRelease(String projectIdOrPath, String tagName) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            ReleasesApi api = gitLabApi.getReleasesApi();
+            api.deleteRelease(projectIdOrPath, tagName);
+            return ResultData.success();
+        } catch (Exception e) {
+            LOG.error("创建tag异常", e);
+            return ResultData.fail("创建tag异常" + e.getMessage());
+        }
+    }
+
+    /**
      * 获取gitlab可用用户
      *
      * @return 返回gitlab可用用户

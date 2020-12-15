@@ -6,6 +6,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
@@ -52,60 +53,6 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
     protected BaseEntityDao<ReleaseVersion> getDao() {
         return dao;
     }
-
-    /**
-     * 发布版本
-     * Jenkins构建成功,调用gitlab创建版本
-     *
-     * @param releaseRecord 构建记录
-     */
-    @Transactional
-    public ResultData<Void> releaseVersion(ReleaseRecord releaseRecord) {
-        if (Objects.isNull(releaseRecord)) {
-            return ResultData.fail("发布记录不能为空.");
-        }
-        if (BuildStatus.SUCCESS == releaseRecord.getBuildStatus()) {
-            String gitId = releaseRecord.getGitId();
-            String tag = releaseRecord.getTagName() + "-Release";
-            String refTag = releaseRecord.getTagName();
-            String versionName = releaseRecord.getName();
-            if (StringUtils.isBlank(versionName)) {
-                versionName = tag;
-            }
-            String remark = releaseRecord.getRemark();
-            if (StringUtils.isBlank(remark)) {
-                remark = versionName;
-            }
-//            LogUtil.bizLog("创建gitlab版本, gitId:{}, versionName:{}, tag:{}, refTag:{}, remark:{}, ", gitId, versionName, tag, refTag, remark);
-            ResultData<Release> resultData = gitlabService.createProjectRelease(gitId, versionName, tag, refTag, remark);
-            if (resultData.successful()) {
-                Release gitlabRelease = resultData.getData();
-                ReleaseVersion version = new ReleaseVersion();
-                version.setAppId(releaseRecord.getAppId());
-                version.setAppName(releaseRecord.getAppName());
-                version.setGitId(releaseRecord.getGitId());
-                version.setModuleName(releaseRecord.getModuleName());
-                version.setName(versionName);
-                version.setCommitId(gitlabRelease.getCommit().getId());
-                // 约定镜像命名规范
-                version.setImageName(releaseRecord.getModuleName() + ":" + tag);
-                version.setVersion(tag);
-                version.setRemark(remark);
-                version.setCreateTime(LocalDateTime.now());
-                this.save(version);
-                LogUtil.bizLog(releaseRecord.getJobName() + "发版成功[" + releaseRecord.getTagName() + "].");
-
-                moduleService.updateVersion(releaseRecord.getModuleCode(), releaseRecord.getTagName());
-
-                return ResultData.success();
-            } else {
-                return ResultData.fail(releaseRecord.getJobName() + "发版失败: " + resultData.getMessage());
-            }
-        } else {
-            return ResultData.fail(releaseRecord.getJobName() + "发版失败,当前构建状态:" + releaseRecord.getBuildStatus().name());
-        }
-    }
-
 
     /**
      * 分页查询应用模块申请单
@@ -297,6 +244,15 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + version.getModuleCode() + "]不存在");
         }
+        ResultData<Release> resultData = gitlabService.createProjectRelease(version.getGitId(), version.getName(), version.getVersion(), version.getRefTag(), version.getRemark());
+        if (resultData.failed()) {
+            return ResultData.fail(module.getCode() + "-版本[" + version.getVersion() + "]发布失败: " + resultData.getMessage());
+        }
+        Release gitlabRelease = resultData.getData();
+        version.setCommitId(gitlabRelease.getCommit().getId());
+        // 约定镜像命名规范
+        version.setImageName(version.getModuleCode() + ":" + version.getVersion());
+
         // 申请通过,修改为可用
         version.setFrozen(Boolean.FALSE);
         this.save(version);
@@ -327,17 +283,58 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
 
         // 发起Jenkins构建ø
         SessionUser user = ContextUtil.getSessionUser();
-        ResultData<ReleaseRecord> resultData = recordService.build(record.getId(), user.getAccount());
-        if (resultData.failed()) {
+        ResultData<ReleaseRecord> buildResult = recordService.build(record.getId(), user.getAccount());
+        if (buildResult.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
         // 保存构建号及状态
-        ReleaseRecord releaseRecord = resultData.getData();
+        ReleaseRecord releaseRecord = buildResult.getData();
         OperateResultWithData<ReleaseRecord> result = recordService.save(releaseRecord);
         if (result.successful()) {
             return ResultData.success();
         } else {
             return ResultData.fail(result.getMessage());
+        }
+    }
+
+    public ReleaseVersion getByVersion(String appId, String moduleCode, String version) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(ReleaseVersion.FIELD_APP_ID, appId));
+        search.addFilter(new SearchFilter(ReleaseVersion.FIELD_MODULE_CODE, moduleCode));
+        search.addFilter(new SearchFilter(ReleaseVersion.FIELD_VERSION, version));
+        return dao.findFirstByFilters(search);
+    }
+
+
+    /**
+     * 发布版本
+     * Jenkins构建成功,调用gitlab创建版本
+     *
+     * @param record 构建记录
+     */
+    @Transactional
+    public ResultData<Void> releaseVersion(ReleaseRecord record) {
+        if (Objects.isNull(record)) {
+            return ResultData.fail("发布记录不能为空.");
+        }
+        if (BuildStatus.SUCCESS == record.getBuildStatus()) {
+            ReleaseVersion version = this.getByVersion(record.getAppId(), record.getModuleCode(), record.getTagName());
+            if (Objects.isNull(version)) {
+                return ResultData.fail(record.getModuleCode() + "版本[" + record.getTagName() + "]不存在.");
+            }
+
+            // 构建成功,更新版本状态为可用
+            version.setAvailable(Boolean.TRUE);
+            this.save(version);
+            LogUtil.bizLog(record.getJobName() + "发版成功[" + record.getTagName() + "].");
+
+            moduleService.updateVersion(record.getModuleCode(), record.getTagName());
+
+            return ResultData.success();
+        } else {
+            gitlabService.deleteProjectRelease(record.getGitId(), record.getTagName());
+
+            return ResultData.fail(record.getJobName() + "发版失败,当前构建状态:" + record.getBuildStatus().name());
         }
     }
 }

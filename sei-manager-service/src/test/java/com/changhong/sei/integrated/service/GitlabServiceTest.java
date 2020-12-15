@@ -96,7 +96,7 @@ public class GitlabServiceTest extends BaseUnitTest {
 
     @Test
     public void deleteGroup() {
-        ResultData<Void> resultData = service.deleteGroup("388");
+        ResultData<Void> resultData = service.deleteGroup("389");
         System.out.println(resultData);
     }
 }

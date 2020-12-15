@@ -78,6 +78,11 @@ public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "是否冻结")
     private Boolean frozen;
     /**
+     * 是否是可用的
+     */
+    @ApiModelProperty(value = "是否是可用的")
+    private Boolean available;
+    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
@@ -183,6 +188,14 @@ public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
 
     public void setFrozen(Boolean frozen) {
         this.frozen = frozen;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
     }
 
     public String getRemark() {
