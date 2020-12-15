@@ -336,12 +336,11 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         ReleaseRecordDetailDto detailDto = modelMapper.map(releaseRecord, ReleaseRecordDetailDto.class);
         if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
             ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
-            if (resultData.successful()) {
-                DeployConfig config = resultData.getData();
-                templateId = config.getId();
-            } else {
+            if (resultData.failed()) {
                 return ResultData.fail(resultData.getMessage());
             }
+            DeployConfig config = resultData.getData();
+            templateId = config.getId();
         } else {
             // 检查
             ResultData<DeployTemplate> resultData = templateService.getPublishTemplate(releaseRecord.getType());
@@ -351,7 +350,6 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             // @see templateService#syncJenkinsJob
             DeployTemplate deployTemplate = resultData.getData();
             templateId = deployTemplate.getId();
-
         }
         ResultData<List<DeployTemplateStageResponse>> result = deployTemplateStageService.getStageByTemplateId(templateId);
         detailDto.setStages(result.getData());
@@ -365,7 +363,6 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 detailDto.setBuildLog(detail.getBuildLog());
             }
         }
-
         return ResultData.success(detailDto);
     }
 
@@ -421,7 +418,19 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 // 异步上传
                 CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, account, needRelease));
             } else {
+                int buildNumber = 0;
+                releaseRecord.setBuildNumber(buildNumber);
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
+
+                ReleaseBuildDetail detail = new ReleaseBuildDetail();
+                detail.setRecordId(recordId);
+                detail.setJobName(jobName);
+                detail.setBuildNumber(buildNumber);
+                detail.setBuildAccount(account);
+                detail.setBuildLog(buildResult.getMessage());
+                detail.setStartTime(System.currentTimeMillis());
+                detail.setBuildStatus(BuildStatus.FAILURE);
+                buildDetailDao.save(detail);
             }
             // 构建时间
             releaseRecord.setBuildTime(LocalDateTime.now());

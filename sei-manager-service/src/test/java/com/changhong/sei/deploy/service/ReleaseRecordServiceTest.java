@@ -19,7 +19,7 @@ public class ReleaseRecordServiceTest extends BaseUnitTest {
 
     @Test
     public void build() {
-        service.build("C670D133-3609-11EB-8A8C-0242C0A84603", "admin");
+        service.build("3B7EDA7A-3DEB-11EB-9C08-0242C0A84603", "admin");
 
         try {
             Thread.sleep(10000000);
@@ -30,7 +30,7 @@ public class ReleaseRecordServiceTest extends BaseUnitTest {
 
     @Test
     public void getBuildDetail() {
-        String id = "E01AC2FF-3902-11EB-AC0B-0242C0A84603";
+        String id = "6551B7B2-3DAE-11EB-9087-3E9632B06CB1";
         ResultData<ReleaseRecordDetailDto> resultData = service.getBuildDetail(id);
         System.out.println(resultData);
     }
