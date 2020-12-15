@@ -72,8 +72,13 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 描述说明(部署要求,脚本内容等)
      */
-    @ApiModelProperty(value = "描述说明(部署要求,脚本内容等)")
+    @ApiModelProperty(value = "描述说明(部署要求等)")
     private String remark;
+    /**
+     * 脚本内容
+     */
+    @ApiModelProperty(value = "脚本内容")
+    private String script;
     /**
      * 期望完成时间
      */
@@ -184,6 +189,14 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
     }
 
     public LocalDateTime getExpCompleteTime() {

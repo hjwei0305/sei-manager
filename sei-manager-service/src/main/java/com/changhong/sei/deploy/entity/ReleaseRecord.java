@@ -77,10 +77,15 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "name")
     private String name;
     /**
-     * 描述说明(部署要求,脚本内容等)
+     * 描述说明(部署要求等)
      */
     @Column(name = "remark")
     private String remark;
+    /**
+     * 脚本内容
+     */
+    @Column(name = "script_")
+    private String script;
 
     /**
      * 是否冻结
@@ -200,6 +205,14 @@ public class ReleaseRecord extends BaseEntity implements IFrozen, Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
     }
 
     @Override
