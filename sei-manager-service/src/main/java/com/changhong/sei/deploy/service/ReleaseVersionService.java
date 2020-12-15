@@ -105,7 +105,6 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 dto.setRefTag(releaseVersion.getRefTag());
                 dto.setName(releaseVersion.getName());
                 dto.setVersion(releaseVersion.getVersion());
-                dto.setRemark(releaseVersion.getRemark());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
@@ -188,7 +187,6 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 dto.setRefTag(releaseVersion.getRefTag());
                 dto.setName(releaseVersion.getName());
                 dto.setVersion(releaseVersion.getVersion());
-                dto.setRemark(releaseVersion.getRemark());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
