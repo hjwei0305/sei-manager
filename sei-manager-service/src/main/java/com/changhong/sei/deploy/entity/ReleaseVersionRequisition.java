@@ -3,6 +3,7 @@ package com.changhong.sei.deploy.entity;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.BuildStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -88,6 +89,12 @@ public class ReleaseVersionRequisition extends BaseEntity implements Serializabl
      */
     @Column(name = "name")
     private String name;
+
+    /**
+     * 构建状态
+     */
+    @Column(name = "build_status")
+    private BuildStatus buildStatus;
     /**
      * 描述说明
      */
@@ -196,6 +203,14 @@ public class ReleaseVersionRequisition extends BaseEntity implements Serializabl
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(BuildStatus buildStatus) {
+        this.buildStatus = buildStatus;
     }
 
     public String getRemark() {

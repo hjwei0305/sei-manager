@@ -55,6 +55,11 @@ public class ReleaseVersionRequisitionDto extends RequisitionDto implements Seri
     @ApiModelProperty(value = "版本主题")
     private String name;
     /**
+     * 构建状态
+     */
+    @ApiModelProperty(value = "构建状态")
+    private BuildStatus buildStatus;
+    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
@@ -130,5 +135,13 @@ public class ReleaseVersionRequisitionDto extends RequisitionDto implements Seri
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(BuildStatus buildStatus) {
+        this.buildStatus = buildStatus;
     }
 }

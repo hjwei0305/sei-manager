@@ -3,6 +3,7 @@ package com.changhong.sei.deploy.entity;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.BuildStatus;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -97,6 +98,11 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
      */
     @Column(name = "name")
     private String name;
+    /**
+     * 构建状态
+     */
+    @Column(name = "build_status")
+    private BuildStatus buildStatus;
     /**
      * 期望完成时间
      */
@@ -213,6 +219,14 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(BuildStatus buildStatus) {
+        this.buildStatus = buildStatus;
     }
 
     public LocalDateTime getExpCompleteTime() {
