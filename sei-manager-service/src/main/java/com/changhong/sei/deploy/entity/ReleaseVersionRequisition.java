@@ -95,11 +95,7 @@ public class ReleaseVersionRequisition extends BaseEntity implements Serializabl
      */
     @Column(name = "build_status")
     private String buildStatus;
-    /**
-     * 描述说明
-     */
-    @Column(name = "remark")
-    private String remark;
+
 
     public String getRelationId() {
         return relationId;
@@ -211,13 +207,5 @@ public class ReleaseVersionRequisition extends BaseEntity implements Serializabl
 
     public void setBuildStatus(String buildStatus) {
         this.buildStatus = buildStatus;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
     }
 }
