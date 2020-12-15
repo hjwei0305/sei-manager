@@ -340,7 +340,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 return ResultData.fail(resultData.getMessage());
             }
             DeployConfig config = resultData.getData();
-            templateId = config.getId();
+            templateId = config.getTempId();
         } else {
             // 检查
             ResultData<DeployTemplate> resultData = templateService.getPublishTemplate(releaseRecord.getType());
