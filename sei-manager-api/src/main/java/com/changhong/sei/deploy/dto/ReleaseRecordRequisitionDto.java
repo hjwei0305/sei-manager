@@ -62,7 +62,7 @@ public class ReleaseRecordRequisitionDto extends RequisitionDto implements Seria
     @ApiModelProperty(value = "发布名称")
     private String name;
     @ApiModelProperty(value = "构建状态")
-    private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
+    private String buildStatus = BuildStatus.NOT_BUILT.name();
     /**
      * 描述说明(部署要求,脚本内容等)
      */
@@ -147,11 +147,11 @@ public class ReleaseRecordRequisitionDto extends RequisitionDto implements Seria
         this.name = name;
     }
 
-    public BuildStatus getBuildStatus() {
+    public String getBuildStatus() {
         return buildStatus;
     }
 
-    public void setBuildStatus(BuildStatus buildStatus) {
+    public void setBuildStatus(String buildStatus) {
         this.buildStatus = buildStatus;
     }
 

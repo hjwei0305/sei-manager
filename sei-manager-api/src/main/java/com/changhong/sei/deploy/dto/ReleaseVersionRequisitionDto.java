@@ -58,7 +58,7 @@ public class ReleaseVersionRequisitionDto extends RequisitionDto implements Seri
      * 构建状态
      */
     @ApiModelProperty(value = "构建状态")
-    private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
+    private String buildStatus = BuildStatus.NOT_BUILT.name();
     /**
      * 描述说明
      */
@@ -137,11 +137,11 @@ public class ReleaseVersionRequisitionDto extends RequisitionDto implements Seri
         this.remark = remark;
     }
 
-    public BuildStatus getBuildStatus() {
+    public String getBuildStatus() {
         return buildStatus;
     }
 
-    public void setBuildStatus(BuildStatus buildStatus) {
+    public void setBuildStatus(String buildStatus) {
         this.buildStatus = buildStatus;
     }
 }
