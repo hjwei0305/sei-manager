@@ -62,7 +62,7 @@ public class ReleaseRecordRequisitionDto extends RequisitionDto implements Seria
     @ApiModelProperty(value = "发布名称")
     private String name;
     @ApiModelProperty(value = "构建状态")
-    private BuildStatus buildStatus;
+    private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
     /**
      * 描述说明(部署要求,脚本内容等)
      */

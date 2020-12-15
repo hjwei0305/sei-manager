@@ -58,7 +58,7 @@ public class ReleaseVersionRequisitionDto extends RequisitionDto implements Seri
      * 构建状态
      */
     @ApiModelProperty(value = "构建状态")
-    private BuildStatus buildStatus;
+    private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
     /**
      * 描述说明
      */
