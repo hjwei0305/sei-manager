@@ -1,6 +1,10 @@
 package com.changhong.sei.deploy.websocket;
 
+import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.deploy.dto.TemplateType;
+import com.changhong.sei.deploy.entity.DeployTemplate;
 import com.changhong.sei.deploy.entity.ReleaseRecord;
+import com.changhong.sei.deploy.service.DeployTemplateService;
 import com.changhong.sei.deploy.service.ReleaseRecordService;
 import com.changhong.sei.deploy.websocket.config.MyEndpointConfigure;
 import com.changhong.sei.integrated.service.JenkinsService;
@@ -9,6 +13,7 @@ import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.ConsoleLog;
 import com.offbytwo.jenkins.model.JobWithDetails;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +43,8 @@ public class WebsocketServer {
     @Autowired
     private ReleaseRecordService releaseRecordService;
     @Autowired
+    private DeployTemplateService templateService;
+    @Autowired
     private JenkinsService jenkinsService;
 
     /**
@@ -57,7 +64,21 @@ public class WebsocketServer {
             return;
         }
 
-        String jobName = releaseRecord.getJobName();
+        String jobName;
+        if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
+            jobName = releaseRecord.getJobName();
+        } else {
+            // 检查
+            ResultData<DeployTemplate> resultData = templateService.getPublishTemplate(releaseRecord.getType());
+            if (resultData.failed()) {
+                LOG.error("发布记录id[{}]对应的JobName不存在, Type[{}]", id, releaseRecord.getType());
+                send(session, "发布记录id[" + id + "]对应的JobName不存在, Type[" + releaseRecord.getType() + "].");
+                return;
+            }
+            // @see templateService#syncJenkinsJob
+            DeployTemplate deployTemplate = resultData.getData();
+            jobName = deployTemplate.getName();
+        }
         int buildNumber = releaseRecord.getBuildNumber();
         try (JenkinsServer jenkinsServer = jenkinsService.getJenkinsServer()) {
             JobWithDetails details = jenkinsServer.getJob(jobName);
