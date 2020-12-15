@@ -94,7 +94,7 @@ public class ReleaseVersionRequisition extends BaseEntity implements Serializabl
      * 构建状态
      */
     @Column(name = "build_status")
-    private BuildStatus buildStatus;
+    private String buildStatus;
     /**
      * 描述说明
      */
@@ -205,11 +205,11 @@ public class ReleaseVersionRequisition extends BaseEntity implements Serializabl
         this.name = name;
     }
 
-    public BuildStatus getBuildStatus() {
+    public String getBuildStatus() {
         return buildStatus;
     }
 
-    public void setBuildStatus(BuildStatus buildStatus) {
+    public void setBuildStatus(String buildStatus) {
         this.buildStatus = buildStatus;
     }
 

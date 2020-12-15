@@ -102,7 +102,7 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
      * 构建状态
      */
     @Column(name = "build_status")
-    private BuildStatus buildStatus;
+    private String buildStatus;
     /**
      * 期望完成时间
      */
@@ -221,11 +221,11 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
         this.name = name;
     }
 
-    public BuildStatus getBuildStatus() {
+    public String getBuildStatus() {
         return buildStatus;
     }
 
-    public void setBuildStatus(BuildStatus buildStatus) {
+    public void setBuildStatus(String buildStatus) {
         this.buildStatus = buildStatus;
     }
 
