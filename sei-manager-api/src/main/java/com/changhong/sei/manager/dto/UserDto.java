@@ -83,6 +83,14 @@ public class UserDto extends BaseEntityDto implements Serializable {
         this.email = email;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     public Boolean getStatus() {
         return status;
     }
