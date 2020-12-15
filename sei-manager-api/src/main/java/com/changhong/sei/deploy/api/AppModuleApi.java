@@ -100,11 +100,11 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
     /**
      * 按用户账号清单移除应用模块用户
      *
-     * @param gitId    git项目id
-     * @param accounts 用户账号清单
+     * @param gitId      git项目id
+     * @param gitUserIds git用户id
      * @return 操作结果
      */
     @DeleteMapping(path = "removeModuleUser/{gitId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "按用户账号清单移除应用模块用户", notes = "按用户账号清单移除应用模块用户")
-    ResultData<Void> removeModuleUser(@PathVariable("gitId") String gitId, @RequestBody Set<String> accounts);
+    ResultData<Void> removeModuleUser(@PathVariable("gitId") String gitId, @RequestBody Set<Integer> gitUserIds);
 }

@@ -55,4 +55,28 @@ public class ModuleUser implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ModuleUser user = (ModuleUser) o;
+
+        if (gitProjectId != null ? !gitProjectId.equals(user.gitProjectId) : user.gitProjectId != null) {
+            return false;
+        }
+        return gitUserId != null ? gitUserId.equals(user.gitUserId) : user.gitUserId == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = gitProjectId != null ? gitProjectId.hashCode() : 0;
+        result = 31 * result + (gitUserId != null ? gitUserId.hashCode() : 0);
+        return result;
+    }
 }

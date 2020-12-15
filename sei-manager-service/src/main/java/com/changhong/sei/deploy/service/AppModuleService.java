@@ -371,11 +371,11 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     /**
      * 按用户账号清单移除应用模块用户
      *
-     * @param gitId    git项目id
-     * @param accounts 用户账号清单
+     * @param gitId      git项目id
+     * @param gitUserIds git用户id
      * @return 操作结果
      */
-    public ResultData<Void> removeModuleUser(String gitId, Set<String> accounts) {
-        return gitlabService.removeProjectUser(gitId, accounts.toArray(new String[0]));
+    public ResultData<Void> removeModuleUser(String gitId, Set<Integer> gitUserIds) {
+        return gitlabService.removeProjectUser(gitId, gitUserIds.toArray(new Integer[0]));
     }
 }

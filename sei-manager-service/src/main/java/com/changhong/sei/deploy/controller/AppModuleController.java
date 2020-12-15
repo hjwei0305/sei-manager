@@ -187,12 +187,12 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     /**
      * 按用户账号清单移除应用模块用户
      *
-     * @param gitId    git项目id
-     * @param accounts 用户账号清单
+     * @param gitId      git项目id
+     * @param gitUserIds git用户id
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> removeModuleUser(String gitId, Set<String> accounts)  {
-        return service.removeModuleUser(gitId, accounts);
+    public ResultData<Void> removeModuleUser(String gitId, Set<Integer> gitUserIds) {
+        return service.removeModuleUser(gitId, gitUserIds);
     }
 }

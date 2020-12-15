@@ -209,22 +209,14 @@ public class GitlabService {
      * 移除项目用户
      *
      * @param projectIdOrPath git项目id
-     * @param account         用户id
+     * @param gitUserIds      用户id
      * @return 操作结果
      */
-    public ResultData<Void> removeProjectUser(String projectIdOrPath, String... accounts) {
+    public ResultData<Void> removeProjectUser(String projectIdOrPath, Integer... gitUserIds) {
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
-            UserApi userApi = gitLabApi.getUserApi();
-            Optional<User> optionalUser;
-            for (String account : accounts) {
-                optionalUser = userApi.getOptionalUser(account);
-                if (optionalUser.isPresent()) {
-                    int userId = optionalUser.get().getId();
-                    ProjectApi api = gitLabApi.getProjectApi();
-                    api.removeMember(projectIdOrPath, userId);
-                } else {
-                    return ResultData.fail("用户[" + account + "]不在gitlab中");
-                }
+            for (Integer gitUserId : gitUserIds) {
+                ProjectApi api = gitLabApi.getProjectApi();
+                api.removeMember(projectIdOrPath, gitUserId);
             }
             return ResultData.success();
         } catch (Exception e) {

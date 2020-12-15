@@ -332,25 +332,38 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             return ResultData.fail("发布记录不存在");
         }
 
+        String templateId;
         ReleaseRecordDetailDto detailDto = modelMapper.map(releaseRecord, ReleaseRecordDetailDto.class);
-
-        ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
-        if (resultData.successful()) {
-            DeployConfig config = resultData.getData();
-            ResultData<List<DeployTemplateStageResponse>> result = deployTemplateStageService.getStageByTemplateId(config.getTempId());
-            detailDto.setStages(result.getData());
-
-            if (BuildStatus.BUILDING != releaseRecord.getBuildStatus()) {
-                Search search = Search.createSearch();
-                search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_RECORD_ID, id));
-                search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_BUILD_NUMBER, releaseRecord.getBuildNumber()));
-                ReleaseBuildDetail detail = buildDetailDao.findFirstByFilters(search);
-                if (Objects.nonNull(detail)) {
-                    detailDto.setBuildLog(detail.getBuildLog());
-                }
+        if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
+            ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
+            if (resultData.successful()) {
+                DeployConfig config = resultData.getData();
+                templateId = config.getId();
+            } else {
+                return ResultData.fail(resultData.getMessage());
             }
         } else {
-            return ResultData.fail(resultData.getMessage());
+            // 检查
+            ResultData<DeployTemplate> resultData = templateService.getPublishTemplate(releaseRecord.getType());
+            if (resultData.failed()) {
+                return ResultData.fail(resultData.getMessage());
+            }
+            // @see templateService#syncJenkinsJob
+            DeployTemplate deployTemplate = resultData.getData();
+            templateId = deployTemplate.getId();
+
+        }
+        ResultData<List<DeployTemplateStageResponse>> result = deployTemplateStageService.getStageByTemplateId(templateId);
+        detailDto.setStages(result.getData());
+
+        if (BuildStatus.BUILDING != releaseRecord.getBuildStatus()) {
+            Search search = Search.createSearch();
+            search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_RECORD_ID, id));
+            search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_BUILD_NUMBER, releaseRecord.getBuildNumber()));
+            ReleaseBuildDetail detail = buildDetailDao.findFirstByFilters(search);
+            if (Objects.nonNull(detail)) {
+                detailDto.setBuildLog(detail.getBuildLog());
+            }
         }
 
         return ResultData.success(detailDto);
