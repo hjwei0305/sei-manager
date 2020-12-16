@@ -1,16 +1,16 @@
 package com.changhong.sei.deploy.dao;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
-import com.changhong.sei.deploy.entity.FlowTypeNodeRecord;
+import com.changhong.sei.deploy.entity.FlowInstanceTask;
 import org.springframework.stereotype.Repository;
 
 /**
- * 流程类型节点记录(FlowTypeNodeRecord)数据库访问类
+ * 流程实例任务节点(FlowInstanceTask)数据库访问类
  *
  * @author sei
  * @since 2020-11-26 14:45:21
  */
 @Repository
-public interface FlowTypeNodeRecordDao extends BaseEntityDao<FlowTypeNodeRecord> {
+public interface FlowInstanceTaskDao extends BaseEntityDao<FlowInstanceTask> {
 
 }

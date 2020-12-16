@@ -12,7 +12,10 @@ import com.changhong.sei.deploy.entity.FlowType;
 import com.changhong.sei.deploy.entity.FlowTypeNode;
 import com.changhong.sei.deploy.entity.FlowTypeNodeRecord;
 import com.changhong.sei.deploy.entity.FlowTypeVersion;
-import com.changhong.sei.deploy.service.FlowDefinitionService;
+import com.changhong.sei.deploy.service.FlowTypeNodeRecordService;
+import com.changhong.sei.deploy.service.FlowTypeNodeService;
+import com.changhong.sei.deploy.service.FlowTypeService;
+import com.changhong.sei.deploy.service.FlowTypeVersionService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -35,11 +38,14 @@ import java.util.Set;
 @Api(value = "FlowDefinitionApi", tags = "流程定义服务")
 @RequestMapping(path = "flow/definition", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class FlowDefinitionController implements FlowDefinitionApi {
-    /**
-     * 流程定义服务对象
-     */
     @Autowired
-    private FlowDefinitionService service;
+    private FlowTypeService typeService;
+    @Autowired
+    private FlowTypeVersionService typeVersionService;
+    @Autowired
+    private FlowTypeNodeService nodeService;
+    @Autowired
+    private FlowTypeNodeRecordService nodeRecordService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -51,7 +57,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
      */
     @Override
     public ResultData<FlowTypeDto> saveType(FlowTypeDto dto) {
-        ResultData<FlowType> resultData = service.saveType(modelMapper.map(dto, FlowType.class));
+        ResultData<FlowType> resultData = typeService.saveType(modelMapper.map(dto, FlowType.class));
         if (resultData.getSuccess()) {
             return ResultData.success(modelMapper.map(resultData.getData(), FlowTypeDto.class));
         } else {
@@ -67,7 +73,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
      */
     @Override
     public ResultData<PageResult<FlowTypeDto>> findTypeByPage(Search search) {
-        PageResult<FlowType> pageResult = service.findTypeByPage(search);
+        PageResult<FlowType> pageResult = typeService.findTypeByPage(search);
         List<FlowTypeDto> typeDtoList = new ArrayList<>();
         List<FlowType> types = pageResult.getRows();
         if (CollectionUtils.isNotEmpty(types)) {
@@ -88,7 +94,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
      */
     @Override
     public ResultData<FlowTypeNodeDto> saveTypeNode(FlowTypeNodeDto dto) {
-        ResultData<FlowTypeNode> resultData = service.saveTypeNode(modelMapper.map(dto, FlowTypeNode.class));
+        ResultData<FlowTypeNode> resultData = nodeService.saveTypeNode(modelMapper.map(dto, FlowTypeNode.class));
         if (resultData.getSuccess()) {
             return ResultData.success(modelMapper.map(resultData.getData(), FlowTypeNodeDto.class));
         } else {
@@ -107,7 +113,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
         if (CollectionUtils.isEmpty(ids)) {
             return ResultData.fail("无删除的参数");
         }
-        service.deleteTypeNode(ids);
+        nodeService.deleteTypeNode(ids);
         return ResultData.success();
     }
 
@@ -120,7 +126,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     @Override
     public ResultData<List<FlowTypeNodeDto>> getTypeNodeByTypeId(String typeId) {
         List<FlowTypeNodeDto> nodeDtoList = new ArrayList<>();
-        List<FlowTypeNode> nodeList = service.getTypeNodeByTypeId(typeId);
+        List<FlowTypeNode> nodeList = nodeService.getTypeNodeByTypeId(typeId);
         if (CollectionUtils.isNotEmpty(nodeList)) {
             for (FlowTypeNode node : nodeList) {
                 nodeDtoList.add(modelMapper.map(node, FlowTypeNodeDto.class));
@@ -138,7 +144,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     @Override
     public ResultData<List<FlowTypeVersionDto>> getTypeVersionByTypeId(String typeId) {
         List<FlowTypeVersionDto> nodeDtoList = new ArrayList<>();
-        List<FlowTypeVersion> list = service.getTypeVersionByTypeId(typeId);
+        List<FlowTypeVersion> list = typeVersionService.getTypeVersionByTypeId(typeId);
         if (CollectionUtils.isNotEmpty(list)) {
             for (FlowTypeVersion node : list) {
                 nodeDtoList.add(modelMapper.map(node, FlowTypeVersionDto.class));
@@ -157,7 +163,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     @Override
     public ResultData<List<FlowTypeNodeRecordDto>> getTypeNodeRecord(String typeId, Integer version) {
         List<FlowTypeNodeRecordDto> nodeDtoList = new ArrayList<>();
-        List<FlowTypeNodeRecord> list = service.getTypeNodeRecord(typeId, version);
+        List<FlowTypeNodeRecord> list = nodeRecordService.getTypeNodeRecord(typeId, version);
         if (CollectionUtils.isNotEmpty(list)) {
             for (FlowTypeNodeRecord node : list) {
                 nodeDtoList.add(modelMapper.map(node, FlowTypeNodeRecordDto.class));
@@ -174,6 +180,6 @@ public class FlowDefinitionController implements FlowDefinitionApi {
      */
     @Override
     public ResultData<Void> publish(String typeId) {
-        return service.publish(typeId);
+        return typeService.publish(typeId);
     }
 }

@@ -8,6 +8,7 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.FlowTypeNodeRecordDao;
 import com.changhong.sei.deploy.entity.FlowType;
 import com.changhong.sei.deploy.entity.FlowTypeNodeRecord;
+import com.changhong.sei.deploy.entity.FlowTypeVersion;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,20 @@ public class FlowTypeNodeRecordService extends BaseEntityService<FlowTypeNodeRec
     }
 
     /**
+     * 通过流程类型获取节点清单
+     *
+     * @param typeId  流程类型id
+     * @param version 流程类型版本
+     * @return 返回结果
+     */
+    public List<FlowTypeNodeRecord> getTypeNodeRecord(String typeId, Integer version) {
+        Search search = new Search();
+        search.addFilter(new SearchFilter(FlowTypeVersion.FIELD_TYPE_ID, typeId));
+        search.addFilter(new SearchFilter(FlowTypeVersion.FIELD_VERSION, version));
+        return dao.findByFilters(search);
+    }
+
+    /**
      * 根据流程类型id,获取流程类型
      *
      * @param typeId 流程类型id
@@ -43,29 +58,6 @@ public class FlowTypeNodeRecordService extends BaseEntityService<FlowTypeNodeRec
      */
     public FlowType getFlowType(String typeId) {
         return typeService.findOne(typeId);
-    }
-
-    /**
-     * 根据流程类型id,获取当前最新实例的版本
-     *
-     * @param flowTypeId 流程类型id
-     * @return 最新实例的版本
-     */
-    public Integer getLatestVersion(String flowTypeId) {
-        return dao.findLatestVersion(flowTypeId);
-    }
-
-    /**
-     * 根据流程类型id,获取当前最新实例的版本
-     *
-     * @param typeId 流程类型id
-     * @return 最新实例的版本
-     */
-    public List<FlowTypeNodeRecord> getFlowTypeNodeRecord(String typeId, Integer version) {
-        Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(FlowTypeNodeRecord.FIELD_TYPE_ID, typeId));
-        search.addFilter(new SearchFilter(FlowTypeNodeRecord.FIELD_VERSION, version));
-        return dao.findByFilters(search);
     }
 
     /**
