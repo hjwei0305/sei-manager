@@ -7,6 +7,7 @@ import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.FlowToDoTaskDto;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
 import com.changhong.sei.deploy.dto.TaskSubmitRequest;
+import com.changhong.sei.deploy.service.FlowToDoTaskService;
 import com.changhong.sei.deploy.service.RequisitionOrderService;
 import com.changhong.sei.util.EnumUtils;
 import io.swagger.annotations.Api;
@@ -34,6 +35,8 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Autowired
     private RequisitionOrderService service;
+    @Autowired
+    private FlowToDoTaskService flowToDoTaskService;
 
     /**
      * 获取待办任务数
@@ -42,7 +45,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<Map<ApplyType, Integer>> getTodoTaskNum() {
-        return service.getTodoTaskNum(ContextUtil.getUserAccount());
+        return flowToDoTaskService.getTodoTaskNum(ContextUtil.getUserAccount());
     }
 
     /**
@@ -52,7 +55,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
      */
     @Override
     public ResultData<List<FlowToDoTaskDto>> getTodoTasks() {
-        return service.getTodoTasks(ContextUtil.getUserAccount(), null);
+        return flowToDoTaskService.getTodoTasks(ContextUtil.getUserAccount(), null);
     }
 
     /**
@@ -65,7 +68,7 @@ public class RequisitionOrderController implements RequisitionOrderApi {
     @Override
     public ResultData<List<FlowToDoTaskDto>> getTodoTasksByType(String type) {
         ApplyType applyType = EnumUtils.getEnum(ApplyType.class, type);
-        return service.getTodoTasks(ContextUtil.getUserAccount(), applyType);
+        return flowToDoTaskService.getTodoTasks(ContextUtil.getUserAccount(), applyType);
     }
 
     /**

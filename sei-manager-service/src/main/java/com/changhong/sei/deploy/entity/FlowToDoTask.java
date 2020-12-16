@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class FlowToDoTask extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -4502581813571547474L;
     public static final String FIELD_EXECUTE_ACCOUNT = "executeAccount";
+    public static final String FIELD_PENDING = "pending";
     public static final String FIELD_APPLY_TYPE = "applyType";
 
     /**

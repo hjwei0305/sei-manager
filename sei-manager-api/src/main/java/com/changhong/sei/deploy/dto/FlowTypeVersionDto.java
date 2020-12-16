@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -29,7 +30,8 @@ public class FlowTypeVersionDto implements Serializable {
     /**
      * 发布时间
      */
-    @ApiModelProperty(value = "发布时间")
+    @ApiModelProperty(value = "发布时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedTime;
     /**
      * 发布人账号
