@@ -23,7 +23,6 @@ import com.changhong.sei.integrated.vo.ProjectVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.ProjectUser;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -55,8 +54,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     private ApplicationService applicationService;
     @Autowired
     private GitlabService gitlabService;
-    @Autowired
-    private ModelMapper modelMapper;
 
     /**
      * 开发运维平台的服务端地址(若有代理,配置代理后的地址)
@@ -105,12 +102,11 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     /**
      * 创建应用模块申请单
      *
-     * @param dto 模块
+     * @param module 模块
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<AppModuleRequisitionDto> createRequisition(AppModuleRequisitionDto dto) {
-        AppModule module = modelMapper.map(dto, AppModule.class);
+    public ResultData<AppModuleRequisitionDto> createRequisition(AppModule module) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         module.setFrozen(Boolean.TRUE);
         // 保存应用模块
@@ -124,9 +120,10 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             // 申请摘要
             requisitionOrder.setSummary(module.getName().concat("[").concat(module.getCode()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder, dto.getTaskNodes());
+            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
+                AppModuleRequisitionDto dto = new AppModuleRequisitionDto();
                 dto.setId(requisition.getId());
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
@@ -134,6 +131,12 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 dto.setApplyType(requisition.getApplicationType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
                 dto.setRelationId(module.getId());
+                dto.setAppId(module.getAppId());
+                dto.setCode(module.getCode());
+                dto.setName(module.getName());
+                dto.setNameSpace(module.getNameSpace());
+                dto.setVersion(module.getVersion());
+                dto.setRemark(module.getRemark());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
@@ -152,7 +155,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<AppModuleRequisitionDto> modifyRequisition(AppModuleRequisitionDto appModule) {
+    public ResultData<AppModuleRequisitionDto> modifyRequisition(AppModule appModule) {
         AppModule module = this.findOne(appModule.getId());
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块不存在!");
@@ -191,17 +194,24 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             // 申请摘要
             requisitionOrder.setSummary(module.getName().concat("[").concat(module.getCode()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder, appModule.getTaskNodes());
+            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                appModule.setId(requisition.getId());
-                appModule.setApplicantAccount(requisition.getApplicantAccount());
-                appModule.setApplicantUserName(requisition.getApplicantUserName());
-                appModule.setApplicationTime(requisition.getApplicationTime());
-                appModule.setApplyType(requisition.getApplicationType());
-                appModule.setApprovalStatus(requisition.getApprovalStatus());
-                appModule.setRelationId(module.getId());
-                return ResultData.success(appModule);
+                AppModuleRequisitionDto dto = new AppModuleRequisitionDto();
+                dto.setId(requisition.getId());
+                dto.setApplicantAccount(requisition.getApplicantAccount());
+                dto.setApplicantUserName(requisition.getApplicantUserName());
+                dto.setApplicationTime(requisition.getApplicationTime());
+                dto.setApplyType(requisition.getApplicationType());
+                dto.setApprovalStatus(requisition.getApprovalStatus());
+                dto.setRelationId(module.getId());
+                dto.setAppId(module.getAppId());
+                dto.setCode(module.getCode());
+                dto.setName(module.getName());
+                dto.setNameSpace(module.getNameSpace());
+                dto.setVersion(module.getVersion());
+                dto.setRemark(module.getRemark());
+                return ResultData.success(dto);
             } else {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

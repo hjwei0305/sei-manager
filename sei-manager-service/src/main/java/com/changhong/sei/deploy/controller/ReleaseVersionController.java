@@ -79,8 +79,8 @@ public class ReleaseVersionController extends BaseEntityController<ReleaseVersio
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseVersionRequisitionDto> createRequisition(@Valid ReleaseVersionRequisitionDto dto) {
-        return service.createRequisition(dto);
+    public ResultData<ReleaseVersionRequisitionDto> createRequisition(@Valid ReleaseVersionDto dto) {
+        return service.createRequisition(convertToEntity(dto));
     }
 
     /**
@@ -90,8 +90,8 @@ public class ReleaseVersionController extends BaseEntityController<ReleaseVersio
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@Valid ReleaseVersionRequisitionDto dto) {
-        return service.modifyRequisition(dto);
+    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@Valid ReleaseVersionDto dto) {
+        return service.modifyRequisition(convertToEntity(dto));
     }
 
     /**

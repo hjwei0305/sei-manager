@@ -55,7 +55,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      */
     @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "创建应用模块申请单", notes = "创建应用模块申请单")
-    ResultData<AppModuleRequisitionDto> createRequisition(@RequestBody @Valid AppModuleRequisitionDto dto);
+    ResultData<AppModuleRequisitionDto> createRequisition(@RequestBody @Valid AppModuleDto dto);
 
     /**
      * 修改编辑应用模块申请单
@@ -65,7 +65,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      */
     @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "修改编辑应用模块申请单", notes = "修改编辑应用模块申请单")
-    ResultData<AppModuleRequisitionDto> modifyRequisition(@RequestBody @Valid AppModuleRequisitionDto dto);
+    ResultData<AppModuleRequisitionDto> modifyRequisition(@RequestBody @Valid AppModuleDto dto);
 
     /**
      * 删除应用模块申请单

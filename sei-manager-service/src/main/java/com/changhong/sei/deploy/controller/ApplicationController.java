@@ -78,8 +78,8 @@ public class ApplicationController extends BaseEntityController<Application, App
      * @return 操作结果
      */
     @Override
-    public ResultData<ApplicationRequisitionDto> createRequisition(ApplicationRequisitionDto dto) {
-        return service.createRequisition(dto);
+    public ResultData<ApplicationRequisitionDto> createRequisition(ApplicationDto dto) {
+        return service.createRequisition(convertToEntity(dto));
     }
 
     /**
@@ -89,8 +89,8 @@ public class ApplicationController extends BaseEntityController<Application, App
      * @return 操作结果
      */
     @Override
-    public ResultData<ApplicationRequisitionDto> modifyRequisition(ApplicationRequisitionDto dto) {
-        return service.modifyRequisition(dto);
+    public ResultData<ApplicationRequisitionDto> modifyRequisition(ApplicationDto dto) {
+        return service.modifyRequisition(convertToEntity(dto));
     }
 
     /**

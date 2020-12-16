@@ -53,13 +53,6 @@ public class RequisitionDto extends BaseEntityDto {
 //    @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "审核状态")
     private ApprovalStatus approvalStatus = ApprovalStatus.INITIAL;
-    /**
-     * 流程实例id
-     */
-    @ApiModelProperty(value = "流程类型id")
-    private String flowTypeId;
-    @ApiModelProperty(notes = "流程任务节点")
-    private List<FlowTypeNodeRecordDto> taskNodes;
 
     public String getRelationId() {
         return relationId;
@@ -107,21 +100,5 @@ public class RequisitionDto extends BaseEntityDto {
 
     public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
-    }
-
-    public String getFlowTypeId() {
-        return flowTypeId;
-    }
-
-    public void setFlowTypeId(String flowTypeId) {
-        this.flowTypeId = flowTypeId;
-    }
-
-    public List<FlowTypeNodeRecordDto> getTaskNodes() {
-        return taskNodes;
-    }
-
-    public void setTaskNodes(List<FlowTypeNodeRecordDto> taskNodes) {
-        this.taskNodes = taskNodes;
     }
 }

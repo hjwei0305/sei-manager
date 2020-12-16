@@ -137,8 +137,8 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      * @return 操作结果
      */
     @Override
-    public ResultData<AppModuleRequisitionDto> createRequisition(AppModuleRequisitionDto dto) {
-        return service.createRequisition(dto);
+    public ResultData<AppModuleRequisitionDto> createRequisition(AppModuleDto dto) {
+        return service.createRequisition(convertToEntity(dto));
     }
 
     /**
@@ -148,8 +148,8 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      * @return 操作结果
      */
     @Override
-    public ResultData<AppModuleRequisitionDto> modifyRequisition(AppModuleRequisitionDto dto) {
-        return service.modifyRequisition(dto);
+    public ResultData<AppModuleRequisitionDto> modifyRequisition(AppModuleDto dto) {
+        return service.modifyRequisition(convertToEntity(dto));
     }
 
     /**

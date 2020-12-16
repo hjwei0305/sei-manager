@@ -47,6 +47,16 @@ public class FlowTypeService extends BaseEntityService<FlowType> {
     }
 
     /**
+     * 根据流程类型id,获取流程类型
+     *
+     * @param typeId 流程类型id
+     * @return 流程类型
+     */
+    public FlowType getFlowType(String typeId) {
+        return dao.findOne(typeId);
+    }
+
+    /**
      * 保存流程类型
      *
      * @param flowType type

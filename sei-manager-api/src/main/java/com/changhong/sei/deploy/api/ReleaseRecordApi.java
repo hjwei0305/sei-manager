@@ -44,7 +44,7 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
      */
     @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "创建发布申请单", notes = "创建发布申请单")
-    ResultData<ReleaseRecordRequisitionDto> createRequisition(@RequestBody @Valid ReleaseRecordRequisitionDto dto);
+    ResultData<ReleaseRecordRequisitionDto> createRequisition(@RequestBody @Valid ReleaseRecordDto dto);
 
     /**
      * 修改编辑发布申请单
@@ -54,7 +54,7 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
      */
     @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "修改编辑发布申请单", notes = "修改编辑发布申请单")
-    ResultData<ReleaseRecordRequisitionDto> modifyRequisition(@RequestBody @Valid ReleaseRecordRequisitionDto dto);
+    ResultData<ReleaseRecordRequisitionDto> modifyRequisition(@RequestBody @Valid ReleaseRecordDto dto);
 
     /**
      * 删除发布申请单

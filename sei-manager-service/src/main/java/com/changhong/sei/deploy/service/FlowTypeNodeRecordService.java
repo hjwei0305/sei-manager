@@ -51,16 +51,6 @@ public class FlowTypeNodeRecordService extends BaseEntityService<FlowTypeNodeRec
     }
 
     /**
-     * 根据流程类型id,获取流程类型
-     *
-     * @param typeId 流程类型id
-     * @return 流程类型
-     */
-    public FlowType getFlowType(String typeId) {
-        return typeService.findOne(typeId);
-    }
-
-    /**
      * 获取下一个任务节点并检查是否是最后一个
      *
      * @param flowTypeId 类型id

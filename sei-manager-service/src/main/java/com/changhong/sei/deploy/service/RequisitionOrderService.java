@@ -35,7 +35,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     @Autowired
     private RequisitionOrderDao dao;
     @Autowired
-    private FlowInstanceService flowTaskInstanceService;
+    private FlowRuntimeService flowRuntimeService;
 
     @Autowired
     private ApplicationService applicationService;
@@ -45,6 +45,8 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     private ReleaseRecordService releaseRecordService;
     @Autowired
     private ReleaseVersionService versionService;
+    @Autowired
+    private FlowInstanceTaskService flowInstanceTaskService;
 
     @Override
     protected BaseEntityDao<RequisitionOrder> getDao() {
@@ -68,7 +70,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<RequisitionOrder> createRequisition(RequisitionOrder requisitionRecord, List<FlowTypeNodeRecordDto> nodeRecordDtos) {
+    public ResultData<RequisitionOrder> createRequisition(RequisitionOrder requisitionRecord) {
         // 审核状态:初始
         requisitionRecord.setApprovalStatus(ApprovalStatus.INITIAL);
         SessionUser sessionUser = ContextUtil.getSessionUser();
@@ -92,7 +94,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<RequisitionOrder> modifyRequisition(RequisitionOrder requisitionRecord, List<FlowTypeNodeRecordDto> nodeRecordDtos) {
+    public ResultData<RequisitionOrder> modifyRequisition(RequisitionOrder requisitionRecord) {
         OperateResultWithData<RequisitionOrder> result = this.save(requisitionRecord);
         if (result.successful()) {
             return ResultData.success(result.getData());
@@ -115,7 +117,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                 OperateResult result = this.delete(requisition.getId());
                 if (result.successful()) {
                     // 删除待办任务
-                    flowTaskInstanceService.deleteTaskByOrderId(requisition.getId());
+                    flowRuntimeService.deleteTaskByOrderId(requisition.getId());
 
                     return ResultData.success();
                 } else {
@@ -142,7 +144,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
             return ResultData.fail("申请单不存在!");
         }
 
-        ResultData<RequisitionOrder> result = flowTaskInstanceService.submit(submitRequest.getFlowTypeId(), requisition);
+        ResultData<RequisitionOrder> result = flowRuntimeService.submit(submitRequest.getFlowTypeId(), requisition);
         if (result.successful()) {
             OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
             if (resultWithData.successful()) {
@@ -171,7 +173,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
             return ResultData.fail("申请单不存在!");
         }
 
-        ResultData<RequisitionOrder> result = flowTaskInstanceService.handleTask(requisition, handleRequest.getOperationType(), handleRequest.getTaskId(), handleRequest.getMessage());
+        ResultData<RequisitionOrder> result = flowRuntimeService.handleTask(requisition, handleRequest.getOperationType(), handleRequest.getTaskId(), handleRequest.getMessage());
         if (result.successful()) {
             RequisitionOrder order = result.getData();
             OperateResultWithData<RequisitionOrder> resultWithData = this.save(order);

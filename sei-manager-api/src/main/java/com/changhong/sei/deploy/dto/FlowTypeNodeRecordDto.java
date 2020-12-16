@@ -18,6 +18,8 @@ public class FlowTypeNodeRecordDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "流程类型id")
     private String typeId;
+    @ApiModelProperty(value = "流程类型")
+    private String typeName;
     /**
      * 版本号
      */
@@ -49,13 +51,20 @@ public class FlowTypeNodeRecordDto extends BaseEntityDto {
     @ApiModelProperty(value = "描述说明")
     private String remark;
 
-
     public String getTypeId() {
         return typeId;
     }
 
     public void setTypeId(String typeId) {
         this.typeId = typeId;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public Object getVersion() {

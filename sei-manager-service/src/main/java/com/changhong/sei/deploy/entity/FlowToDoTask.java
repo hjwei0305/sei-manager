@@ -21,6 +21,7 @@ public class FlowToDoTask extends BaseEntity implements Serializable {
     public static final String FIELD_EXECUTE_ACCOUNT = "executeAccount";
     public static final String FIELD_PENDING = "pending";
     public static final String FIELD_APPLY_TYPE = "applyType";
+    public static final String FIELD_ORDER_ID = "orderId";
 
     /**
      * 流程类型id

@@ -13,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,5 +80,28 @@ public class FlowToDoTaskService extends BaseEntityService<FlowToDoTask> {
             dtoList = new ArrayList<>();
         }
         return ResultData.success(dtoList);
+    }
+
+    /**
+     * 按申请单id删除任务
+     *
+     * @param orderId 申请单id
+     * @return 删除记录数
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteByOrderId(String orderId) {
+        return dao.deleteByOrderId(orderId);
+    }
+
+    /**
+     * 按申请单id更新待办状态
+     *
+     * @param pending 待办
+     * @param orderId 申请单id
+     * @return 删除记录数
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int updateStatus(Boolean pending, String orderId) {
+        return dao.updateStatus(pending, orderId);
     }
 }

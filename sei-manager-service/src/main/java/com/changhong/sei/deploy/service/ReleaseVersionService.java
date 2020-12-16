@@ -17,7 +17,6 @@ import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.GitlabService;
 import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.Release;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,8 +48,6 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
 
     @Autowired
     private GitlabService gitlabService;
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Override
     protected BaseEntityDao<ReleaseVersion> getDao() {
@@ -70,12 +67,11 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
     /**
      * 创建应用模块申请单
      *
-     * @param dto 模块
+     * @param releaseVersion 模块
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseVersionRequisitionDto> createRequisition(ReleaseVersionRequisitionDto dto) {
-        ReleaseVersion releaseVersion = modelMapper.map(dto, ReleaseVersion.class);
+    public ResultData<ReleaseVersionRequisitionDto> createRequisition(ReleaseVersion releaseVersion) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         releaseVersion.setFrozen(Boolean.TRUE);
         // 保存应用模块
@@ -89,17 +85,26 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             // 申请摘要
             requisitionOrder.setSummary(releaseVersion.getName().concat("[").concat(releaseVersion.getVersion()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder, dto.getTaskNodes());
+            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
+                ReleaseVersionRequisitionDto dto = new ReleaseVersionRequisitionDto();
                 dto.setId(requisition.getId());
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
                 dto.setApplyType(requisition.getApplicationType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
-                dto.setRelationId(releaseVersion.getId());
 
+                dto.setRelationId(releaseVersion.getId());
+                dto.setAppId(releaseVersion.getAppId());
+                dto.setAppName(releaseVersion.getAppName());
+                dto.setGitId(releaseVersion.getGitId());
+                dto.setModuleCode(releaseVersion.getModuleCode());
+                dto.setModuleName(releaseVersion.getModuleName());
+                dto.setRefTag(releaseVersion.getRefTag());
+                dto.setName(releaseVersion.getName());
+                dto.setVersion(releaseVersion.getVersion());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
@@ -118,7 +123,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(ReleaseVersionRequisitionDto releaseVersion) {
+    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(ReleaseVersion releaseVersion) {
         ReleaseVersion version = this.findOne(releaseVersion.getId());
         if (Objects.isNull(version)) {
             return ResultData.fail("应用模块不存在!");
@@ -162,7 +167,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             // 申请摘要
             requisitionOrder.setSummary(version.getName().concat("[").concat(version.getVersion()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder, releaseVersion.getTaskNodes());
+            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
                 ReleaseVersionRequisitionDto dto = new ReleaseVersionRequisitionDto();
@@ -172,8 +177,16 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 dto.setApplicationTime(requisition.getApplicationTime());
                 dto.setApplyType(requisition.getApplicationType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
-                dto.setRelationId(version.getId());
 
+                dto.setRelationId(releaseVersion.getId());
+                dto.setAppId(releaseVersion.getAppId());
+                dto.setAppName(releaseVersion.getAppName());
+                dto.setGitId(releaseVersion.getGitId());
+                dto.setModuleCode(releaseVersion.getModuleCode());
+                dto.setModuleName(releaseVersion.getModuleName());
+                dto.setRefTag(releaseVersion.getRefTag());
+                dto.setName(releaseVersion.getName());
+                dto.setVersion(releaseVersion.getVersion());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
