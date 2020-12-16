@@ -7,9 +7,12 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.FlowInstanceDao;
 import com.changhong.sei.deploy.entity.FlowInstance;
+import com.changhong.sei.deploy.entity.FlowInstanceTask;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +27,8 @@ import java.util.Objects;
 public class FlowInstanceService extends BaseEntityService<FlowInstance> {
     @Autowired
     private FlowInstanceDao dao;
+    @Autowired
+    private FlowInstanceTaskService instanceTaskService;
 
     @Override
     protected BaseEntityDao<FlowInstance> getDao() {
@@ -86,5 +91,48 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> {
      */
     public List<FlowInstance> getTypeVersionByTypeCode(String typeCode) {
         return dao.findListByProperty(FlowInstance.FIELD_CODE, typeCode);
+    }
+
+    /**
+     * 通过流程类型,版本,关联值获取流程实例任务节点
+     *
+     * @param typeCode 流程类型code
+     * @return 返回结果
+     */
+    public ResultData<List<FlowInstanceTask>> getFlowInstanceTask(String typeCode, Integer version, String relation) {
+        ResultData<FlowInstance> resultData = getFlowInstance(typeCode, version, relation);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        FlowInstance instance = resultData.getData();
+        List<FlowInstanceTask> taskList = instanceTaskService.getTypeNodeRecord(instance.getId());
+        if (CollectionUtils.isNotEmpty(taskList)) {
+            return ResultData.success(taskList);
+        } else {
+            return ResultData.fail("未配置流程类型[" + typeCode + "].");
+        }
+    }
+
+    /**
+     * 保存更新流程实例任务节点
+     *
+     * @param taskList 流程实例任务节点
+     * @return 返回结果
+     */
+    public ResultData<Void> saveFlowInstanceTask(List<FlowInstanceTask> taskList) {
+
+        return ResultData.success();
+    }
+
+    /**
+     * 发布流程类型
+     *
+     * @param instanceId 流程类型id
+     * @return 发布结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> publish(String instanceId) {
+
+        return ResultData.success();
     }
 }

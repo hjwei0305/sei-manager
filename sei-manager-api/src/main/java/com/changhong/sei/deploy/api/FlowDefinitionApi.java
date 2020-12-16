@@ -8,6 +8,7 @@ import com.changhong.sei.deploy.dto.FlowInstanceTaskDto;
 import com.changhong.sei.deploy.dto.FlowTypeDto;
 import com.changhong.sei.deploy.dto.FlowTypeNodeDto;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -104,4 +105,36 @@ public interface FlowDefinitionApi {
     @PostMapping(path = "publish")
     @ApiOperation(value = "发布流程类型", notes = "发布流程类型")
     ResultData<Void> publish(@RequestParam("typeId") String typeId);
+
+    /**
+     * 通过流程类型,版本,关联值获取流程实例任务节点
+     *
+     * @param typeCode 流程类型code
+     * @return 返回结果
+     */
+    @GetMapping(path = "getFlowInstanceTask")
+    @ApiOperation(value = "通过流程类型,版本,关联值获取流程实例任务节点", notes = "通过流程类型,版本,关联值获取流程实例任务节点")
+    ResultData<List<FlowInstanceTaskDto>> getFlowInstanceTask(@RequestParam("typeCode") String typeCode,
+                                                              @RequestParam("version") Integer version,
+                                                              @RequestParam("relation") String relation);
+
+    /**
+     * 保存更新流程实例任务节点
+     *
+     * @param taskList 流程实例任务节点
+     * @return 返回结果
+     */
+    @PostMapping(path = "saveFlowInstanceTask", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "保存更新流程实例任务节点", notes = "保存更新流程实例任务节点")
+    ResultData<Void> saveFlowInstanceTask(@RequestBody List<FlowInstanceTaskDto> taskList);
+
+    /**
+     * 发布流程实例任务
+     *
+     * @param instanceId 流程类型id
+     * @return 发布结果
+     */
+    @PostMapping(path = "publishFlowInstance")
+    @ApiOperation(value = "发布流程实例任务", notes = "发布流程实例任务")
+    ResultData<Void> publishFlowInstance(@RequestParam("instanceId") String instanceId);
 }

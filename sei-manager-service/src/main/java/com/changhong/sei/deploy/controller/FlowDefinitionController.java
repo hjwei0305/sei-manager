@@ -4,15 +4,18 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.api.FlowDefinitionApi;
+import com.changhong.sei.deploy.dto.FlowInstanceDto;
+import com.changhong.sei.deploy.dto.FlowInstanceTaskDto;
 import com.changhong.sei.deploy.dto.FlowTypeDto;
 import com.changhong.sei.deploy.dto.FlowTypeNodeDto;
-import com.changhong.sei.deploy.dto.FlowInstanceTaskDto;
-import com.changhong.sei.deploy.dto.FlowInstanceDto;
 import com.changhong.sei.deploy.entity.FlowInstance;
 import com.changhong.sei.deploy.entity.FlowInstanceTask;
 import com.changhong.sei.deploy.entity.FlowType;
 import com.changhong.sei.deploy.entity.FlowTypeNode;
-import com.changhong.sei.deploy.service.*;
+import com.changhong.sei.deploy.service.FlowInstanceService;
+import com.changhong.sei.deploy.service.FlowInstanceTaskService;
+import com.changhong.sei.deploy.service.FlowTypeNodeService;
+import com.changhong.sei.deploy.service.FlowTypeService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -177,5 +180,51 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     @Override
     public ResultData<Void> publish(String typeId) {
         return typeService.publish(typeId);
+    }
+
+    /**
+     * 通过流程类型,版本,关联值获取流程实例任务节点
+     *
+     * @param typeCode 流程类型code
+     * @param version
+     * @param relation
+     * @return 返回结果
+     */
+    @Override
+    public ResultData<List<FlowInstanceTaskDto>> getFlowInstanceTask(String typeCode, Integer version, String relation) {
+        ResultData<List<FlowInstanceTask>> resultData = instanceService.getFlowInstanceTask(typeCode, version, relation);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        List<FlowInstanceTaskDto> dtoList = new ArrayList<>();
+        List<FlowInstanceTask> taskList = resultData.getData();
+        if (CollectionUtils.isNotEmpty(taskList)) {
+            for (FlowInstanceTask task : taskList) {
+                dtoList.add(modelMapper.map(task, FlowInstanceTaskDto.class));
+            }
+        }
+        return ResultData.success(dtoList);
+    }
+
+    /**
+     * 保存更新流程实例任务节点
+     *
+     * @param taskList 流程实例任务节点
+     * @return 返回结果
+     */
+    @Override
+    public ResultData<Void> saveFlowInstanceTask(List<FlowInstanceTaskDto> taskList) {
+        return instanceService.saveFlowInstanceTask(null);
+    }
+
+    /**
+     * 发布流程实例任务
+     *
+     * @param instanceId 流程类型id
+     * @return 发布结果
+     */
+    @Override
+    public ResultData<Void> publishFlowInstance(String instanceId) {
+        return instanceService.publish(instanceId);
     }
 }
