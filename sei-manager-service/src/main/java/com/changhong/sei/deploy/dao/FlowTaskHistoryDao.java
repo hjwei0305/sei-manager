@@ -2,7 +2,6 @@ package com.changhong.sei.deploy.dao;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.deploy.entity.FlowTaskHistory;
-import com.changhong.sei.deploy.entity.FlowTaskInstance;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 

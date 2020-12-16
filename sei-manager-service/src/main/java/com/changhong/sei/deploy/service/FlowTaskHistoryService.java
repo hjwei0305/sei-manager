@@ -7,7 +7,6 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.FlowTaskHistoryDao;
 import com.changhong.sei.deploy.dto.OperationType;
 import com.changhong.sei.deploy.entity.FlowTaskHistory;
-import com.changhong.sei.deploy.entity.FlowTaskInstance;
 import com.changhong.sei.deploy.entity.FlowToDoTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

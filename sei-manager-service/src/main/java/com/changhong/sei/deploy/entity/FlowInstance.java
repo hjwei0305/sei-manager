@@ -10,16 +10,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 实现功能：流程任务实例
+ * 实现功能：流程实例
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-26 19:04
  */
 @Entity
-@Table(name = "flow_task_instance")
+@Table(name = "flow_instance")
 @DynamicInsert
 @DynamicUpdate
-public class FlowTaskInstance extends BaseEntity implements Serializable {
+public class FlowInstance extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 8488019354515570494L;
 
     public static final String FIELD_ORDER_ID = "orderId";

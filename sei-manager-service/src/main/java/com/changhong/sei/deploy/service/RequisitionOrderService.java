@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
 /**
  * 申请记录(RequisitionRecord)业务逻辑实现类
  *
@@ -34,7 +33,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     @Autowired
     private RequisitionOrderDao dao;
     @Autowired
-    private FlowTaskInstanceService flowTaskInstanceService;
+    private FlowInstanceService flowTaskInstanceService;
 
     @Autowired
     private ApplicationService applicationService;

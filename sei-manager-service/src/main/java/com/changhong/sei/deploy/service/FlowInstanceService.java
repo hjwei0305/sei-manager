@@ -8,7 +8,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.deploy.dao.FlowTaskInstanceDao;
+import com.changhong.sei.deploy.dao.FlowInstanceDao;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.dto.OperationType;
 import com.changhong.sei.deploy.entity.*;
@@ -30,9 +30,9 @@ import java.util.Objects;
  * @since 2020-11-23 08:33:54
  */
 @Service("flowTaskInstanceService")
-public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance> {
+public class FlowInstanceService extends BaseEntityService<FlowInstance> {
     @Autowired
-    private FlowTaskInstanceDao dao;
+    private FlowInstanceDao dao;
     @Autowired
     private FlowToDoTaskService flowToDoTaskService;
     @Autowired
@@ -47,7 +47,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     private String managerName;
 
     @Override
-    protected BaseEntityDao<FlowTaskInstance> getDao() {
+    protected BaseEntityDao<FlowInstance> getDao() {
         return dao;
     }
 
@@ -90,7 +90,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         }
 
         // 生成流程实例
-        FlowTaskInstance taskInstance = new FlowTaskInstance();
+        FlowInstance taskInstance = new FlowInstance();
         // 流程类型
         taskInstance.setFlowTypeId(flowTypeId);
         taskInstance.setFlowTypeName(nextTaskNode.getTypeName());
@@ -338,7 +338,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             return ResultData.fail(recordResult.getMessage());
         } else {
             // 更新所有任务为已处理
-            List<FlowToDoTask> tasks = flowToDoTaskService.findListByProperty(FlowTaskInstance.FIELD_ORDER_ID, requisition.getId());
+            List<FlowToDoTask> tasks = flowToDoTaskService.findListByProperty(FlowInstance.FIELD_ORDER_ID, requisition.getId());
             for (FlowToDoTask toDoTask : tasks) {
                 toDoTask.setPending(Boolean.FALSE);
             }
