@@ -26,10 +26,9 @@ public class FlowTypeNodeDto extends BaseEntityDto {
     /**
      * 节点序号
      */
-    @Min(0)
-    @Max(9999)
+    @NotBlank
     @ApiModelProperty(value = "节点序号(0-9999)", required = true)
-    private Integer code = 0;
+    private String code;
     /**
      * 节点名称
      */
@@ -63,11 +62,11 @@ public class FlowTypeNodeDto extends BaseEntityDto {
         this.typeId = typeId;
     }
 
-    public Integer getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(Integer code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

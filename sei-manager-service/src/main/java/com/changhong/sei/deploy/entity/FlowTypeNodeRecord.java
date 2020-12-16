@@ -42,6 +42,7 @@ public class FlowTypeNodeRecord extends BaseEntity implements IRank, Serializabl
     private String code;
     /**
      * 排序
+     * 只读.引用code数据,不做更新和写入操作
      */
     @Column(name = "code", insertable = false, updatable = false)
     private Integer rank;

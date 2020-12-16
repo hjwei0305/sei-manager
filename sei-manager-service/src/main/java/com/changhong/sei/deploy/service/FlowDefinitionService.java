@@ -9,11 +9,15 @@ import com.changhong.sei.deploy.entity.FlowType;
 import com.changhong.sei.deploy.entity.FlowTypeNode;
 import com.changhong.sei.deploy.entity.FlowTypeNodeRecord;
 import com.changhong.sei.deploy.entity.FlowTypeVersion;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -127,6 +131,56 @@ public class FlowDefinitionService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> publish(String typeId) {
-        return null;
+        FlowType type = typeService.findOne(typeId);
+        if (Objects.isNull(type)) {
+            return ResultData.fail("流程类型[" + typeId + "]不存在");
+        }
+        List<FlowTypeNode> nodeList = this.getTypeNodeByTypeId(typeId);
+        if (CollectionUtils.isEmpty(nodeList)) {
+            return ResultData.fail(type.getName() + "-未配置任务节点.");
+        }
+
+        // 增加版本号
+        int version = type.getVersion() + 1;
+
+        // 写入流程类型节点记录
+        FlowTypeNodeRecord record;
+        List<FlowTypeNodeRecord> nodeRecords = new ArrayList<>(nodeList.size());
+        for (FlowTypeNode node : nodeList) {
+            record = new FlowTypeNodeRecord();
+            record.setTypeId(typeId);
+            record.setVersion(version);
+            record.setCode(node.getCode());
+            record.setName(node.getName());
+            record.setHandleAccount(node.getHandleAccount());
+            record.setHandleUserName(node.getHandleUserName());
+            record.setRemark(node.getRemark());
+            nodeRecords.add(record);
+        }
+        nodeRecordService.save(nodeRecords);
+
+        // 写入流程类型版本记录
+        FlowTypeVersion typeVersion = new FlowTypeVersion();
+        typeVersion.setTypeId(typeId);
+        typeVersion.setVersion(version);
+        typeVersion.setName(type.getName());
+        typeVersion.setRemark(type.getRemark());
+        OperateResultWithData<FlowTypeVersion> result = typeVersionService.save(typeVersion);
+        if (result.successful()) {
+            // 更新版本号
+            type.setVersion(version);
+            OperateResultWithData<FlowType> result1 = typeService.save(type);
+            if (result1.notSuccessful()) {
+                // 事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultData.fail(result1.getMessage());
+            }
+        } else {
+            // 事务回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultData.fail(result.getMessage());
+        }
+
+        return ResultData.success();
     }
 }
