@@ -43,10 +43,10 @@ public class FlowTaskHistory extends BaseEntity implements Serializable {
     @Column(name = "application_type")
     private ApplyType applicationType;
     /**
-     * 流程实例id
+     * 流程类型代码
      */
-    @Column(name = "flow_instance_id")
-    private String flowInstanceId;
+    @Column(name = "flow_type_code")
+    private String flowTypeCode;
     /**
      * 流程类型名称
      */
@@ -111,7 +111,7 @@ public class FlowTaskHistory extends BaseEntity implements Serializable {
         this.orderId = task.getOrderId();
         this.relationId = task.getRelationId();
         this.applicationType = task.getApplyType();
-        this.flowInstanceId = task.getFlowTypeCode();
+        this.flowTypeCode = task.getFlowTypeCode();
         this.flowTypeName = task.getFlowTypeName();
         this.taskNo = task.getTaskNo();
         this.taskName = task.getTaskName();
@@ -152,12 +152,12 @@ public class FlowTaskHistory extends BaseEntity implements Serializable {
         this.flowTypeName = flowTypeName;
     }
 
-    public String getFlowInstanceId() {
-        return flowInstanceId;
+    public String getFlowTypeCode() {
+        return flowTypeCode;
     }
 
-    public void setFlowInstanceId(String flowInstanceId) {
-        this.flowInstanceId = flowInstanceId;
+    public void setFlowTypeCode(String flowInstanceId) {
+        this.flowTypeCode = flowInstanceId;
     }
 
     public Integer getTaskNo() {
