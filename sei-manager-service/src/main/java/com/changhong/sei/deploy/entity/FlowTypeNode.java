@@ -1,44 +1,50 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.dto.IRank;
+import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.core.entity.RelationEntity;
+import com.changhong.sei.core.entity.ICodeUnique;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * 实现功能：流程定义
+ * 实现功能：流程类型节点
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-28 23:04
  */
 @Entity
-@Table(name = "flow_definition")
+@Table(name = "flow_de_type_node")
 @DynamicInsert
 @DynamicUpdate
-public class FlowDefinition extends BaseEntity implements IRank, RelationEntity<FlowType, FlowTask>, Serializable {
+public class FlowTypeNode extends BaseAuditableEntity implements ICodeUnique, IRank, Serializable {
     private static final long serialVersionUID = 369771080770875655L;
-
+    public static final String FIELD_TYPE_ID = "typeId";
     /**
      * 流程类型
      */
-    @ManyToOne
-    @JoinColumn(name = "type_id", nullable = false)
-    private FlowType parent;
+    @Column(name = "type_id", nullable = false)
+    private String typeId;
     /**
-     * 流程任务
+     * 代码
      */
-    @ManyToOne
-    @JoinColumn(name = "task_id", nullable = false)
-    private FlowTask child;
+    @Column(name = "code")
+    private String code;
     /**
      * 排序
      */
-    @Column(name = "rank")
-    private Integer rank = 0;
+    @Column(name = "code", insertable = false, updatable = false)
+    private Integer rank;
+    /**
+     * 名称
+     */
+    @Column(name = "name")
+    private String name;
     /**
      * 处理人账号
      */
@@ -50,30 +56,35 @@ public class FlowDefinition extends BaseEntity implements IRank, RelationEntity<
     @Column(name = "handle_user_name")
     private String handleUserName;
     /**
-     * 版本乐观锁
+     * 描述说明
      */
-    @Version
-    @Column(name = "version_")
-    private Long version = 0L;
+    @Column(name = "remark")
+    private String remark;
 
-    @Override
-    public FlowType getParent() {
-        return parent;
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
     }
 
     @Override
-    public void setParent(FlowType parent) {
-        this.parent = parent;
+    public String getCode() {
+        return code;
     }
 
     @Override
-    public FlowTask getChild() {
-        return child;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    @Override
-    public void setChild(FlowTask child) {
-        this.child = child;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -101,11 +112,11 @@ public class FlowDefinition extends BaseEntity implements IRank, RelationEntity<
         this.handleUserName = handleUserName;
     }
 
-    public Long getVersion() {
-        return version;
+    public String getRemark() {
+        return remark;
     }
 
-    public void setVersion(Long version) {
-        this.version = version;
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

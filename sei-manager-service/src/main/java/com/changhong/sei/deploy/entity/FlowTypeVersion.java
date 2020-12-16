@@ -1,9 +1,6 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
-import com.changhong.sei.core.entity.IFrozen;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,38 +8,45 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * 实现功能：流程类型
+ * 实现功能：流程类型版本记录
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-28 23:04
  */
 @Entity
-@Table(name = "flow_de_type")
-@DynamicInsert
-@DynamicUpdate
-public class FlowType extends BaseAuditableEntity implements IFrozen, Serializable {
+@Table(name = "flow_de_type_version")
+public class FlowTypeVersion extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = -64497955636689211L;
-
+    public static final String FIELD_TYPE_ID = "typeId";
+    public static final String FIELD_VERSION = "version";
     /**
-     * 模块名称
+     * 流程类型
+     */
+    @Column(name = "type_id", nullable = false)
+    private String typeId;
+    /**
+     * 流程类型版本
+     */
+    @Column(name = "version_")
+    private Integer version = 0;
+    /**
+     * 流程类型名称
      */
     @Column(name = "name")
     private String name;
     /**
      * 描述说明
      */
-    @Column(name = "version_")
-    private Integer version = 0;
-    /**
-     * 描述说明
-     */
     @Column(name = "remark")
     private String remark;
-    /**
-     * 冻结
-     */
-    @Column(name = "frozen")
-    private Boolean frozen = Boolean.FALSE;
+
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
+    }
 
     public String getName() {
         return name;
@@ -68,13 +72,4 @@ public class FlowType extends BaseAuditableEntity implements IFrozen, Serializab
         this.remark = remark;
     }
 
-    @Override
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    @Override
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
-    }
 }
