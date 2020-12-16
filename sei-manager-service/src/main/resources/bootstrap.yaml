@@ -9,3 +9,6 @@ spring:
     #启用平台注册发现
     discovery:
       enabled: false
+
+  jpa:
+    open-in-view: true

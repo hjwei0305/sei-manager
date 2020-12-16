@@ -71,9 +71,9 @@ public interface FlowDefinitionApi {
      * @param typeId 流程类型id
      * @return 返回结果
      */
-    @GetMapping(path = "getTypeNode/{typeId}")
+    @GetMapping(path = "getTypeNode")
     @ApiOperation(value = "通过流程类型获取节点清单", notes = "通过流程类型获取节点清单")
-    ResultData<List<FlowTypeNodeDto>> getTypeNodeByTypeId(@PathVariable("typeId") String typeId);
+    ResultData<List<FlowTypeNodeDto>> getTypeNodeByTypeId(@RequestParam("typeId") String typeId);
 
     /**
      * 通过流程类型获取版本清单
@@ -81,9 +81,9 @@ public interface FlowDefinitionApi {
      * @param typeId 流程类型id
      * @return 返回结果
      */
-    @GetMapping(path = "getTypeVersion/{typeId}")
+    @GetMapping(path = "getTypeVersion")
     @ApiOperation(value = "通过流程类型获取版本清单", notes = "通过流程类型获取版本清单")
-    ResultData<List<FlowTypeVersionDto>> getTypeVersionByTypeId(@PathVariable("typeId") String typeId);
+    ResultData<List<FlowTypeVersionDto>> getTypeVersionByTypeId(@RequestParam("typeId") String typeId);
 
     /**
      * 通过流程类型获取节点清单
@@ -92,10 +92,10 @@ public interface FlowDefinitionApi {
      * @param version 流程类型版本
      * @return 返回结果
      */
-    @GetMapping(path = "getTypeNode/{typeId}/{version}")
+    @GetMapping(path = "getTypeNodeRecord")
     @ApiOperation(value = "通过流程类型和版本获取节点清单", notes = "通过流程类型和版本获取节点清单")
-    ResultData<List<FlowTypeNodeRecordDto>> getTypeNodeRecord(@PathVariable("typeId") String typeId,
-                                                              @PathVariable("version") Integer version);
+    ResultData<List<FlowTypeNodeRecordDto>> getTypeNodeRecord(@RequestParam("typeId") String typeId,
+                                                              @RequestParam("version") Integer version);
 
     /**
      * 发布流程类型
@@ -103,7 +103,7 @@ public interface FlowDefinitionApi {
      * @param typeId 流程类型id
      * @return 发布结果
      */
-    @PostMapping(path = "publish/{typeId}")
+    @PostMapping(path = "publish")
     @ApiOperation(value = "发布流程类型", notes = "发布流程类型")
-    ResultData<Void> publish(@PathVariable("typeId") String typeId);
+    ResultData<Void> publish(@RequestParam("typeId") String typeId);
 }
