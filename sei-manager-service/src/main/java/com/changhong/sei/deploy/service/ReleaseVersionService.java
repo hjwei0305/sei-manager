@@ -79,7 +79,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用版本申请
-            requisitionOrder.setApplicationType(ApplyType.PUBLISH);
+            requisitionOrder.setApplyType(ApplyType.PUBLISH);
             // 应用版本id
             requisitionOrder.setRelationId(releaseVersion.getId());
             // 申请摘要
@@ -93,7 +93,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
+                dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
 
                 dto.setRelationId(releaseVersion.getId());
@@ -161,7 +161,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             }
 
             // 申请类型:应用模块申请
-            requisitionOrder.setApplicationType(ApplyType.PUBLISH);
+            requisitionOrder.setApplyType(ApplyType.PUBLISH);
             // 应用模块id
             requisitionOrder.setRelationId(version.getId());
             // 申请摘要
@@ -175,7 +175,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
+                dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
 
                 dto.setRelationId(releaseVersion.getId());

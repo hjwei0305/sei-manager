@@ -41,7 +41,7 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "application_type")
-    private ApplyType applicationType;
+    private ApplyType applyType;
     /**
      * 申请人账号
      */
@@ -65,10 +65,10 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
     private ApprovalStatus approvalStatus = ApprovalStatus.INITIAL;
 
     /**
-     * 流程类型id
+     * 流程实例id
      */
-    @Column(name = "flow_type_id")
-    private String flowTypeId;
+    @Column(name = "flow_instance_id")
+    private String flowInstanceId;
     /**
      * 流程类型名称
      */
@@ -118,12 +118,12 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
         this.applicantUserName = applicantUserName;
     }
 
-    public ApplyType getApplicationType() {
-        return applicationType;
+    public ApplyType getApplyType() {
+        return applyType;
     }
 
-    public void setApplicationType(ApplyType applicationType) {
-        this.applicationType = applicationType;
+    public void setApplyType(ApplyType applicationType) {
+        this.applyType = applicationType;
     }
 
     public LocalDateTime getApplicationTime() {
@@ -142,12 +142,12 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
         this.approvalStatus = approvalStatus;
     }
 
-    public String getFlowTypeId() {
-        return flowTypeId;
+    public String getFlowInstanceId() {
+        return flowInstanceId;
     }
 
-    public void setFlowTypeId(String flowTypeId) {
-        this.flowTypeId = flowTypeId;
+    public void setFlowInstanceId(String flowInstanceId) {
+        this.flowInstanceId = flowInstanceId;
     }
 
     public Integer getFlowVersion() {

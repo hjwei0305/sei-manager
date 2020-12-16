@@ -22,25 +22,13 @@ import java.io.Serializable;
 @DynamicUpdate
 public class FlowInstanceTask extends BaseEntity implements IRank, Serializable {
     private static final long serialVersionUID = 369771080770875655L;
-    public static final String FIELD_TYPE_ID = "typeId";
-    public static final String FIELD_VERSION = "version";
-    public static final String FIELD_OWNER = "owner";
+    public static final String FIELD_INSTANCE_ID = "instanceId";
 
     /**
-     * 流程类型
+     * 流程实例ID
      */
-    @Column(name = "type_id", nullable = false)
-    private String typeId;
-    /**
-     * 流程类型
-     */
-    @Column(name = "type_name")
-    private String typeName;
-    /**
-     * 流程类型版本
-     */
-    @Column(name = "version_")
-    private Integer version = 0;
+    @Column(name = "instance_id", nullable = false)
+    private String instanceId;
     /**
      * 代码
      */
@@ -67,34 +55,13 @@ public class FlowInstanceTask extends BaseEntity implements IRank, Serializable 
      */
     @Column(name = "handle_user_name")
     private String handleUserName;
-    /**
-     * 所有者
-     */
-    @Column(name = "owner")
-    private String owner;
 
-    public String getTypeId() {
-        return typeId;
+    public String getInstanceId() {
+        return instanceId;
     }
 
-    public void setTypeId(String typeId) {
-        this.typeId = typeId;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 
     public String getCode() {
@@ -136,13 +103,5 @@ public class FlowInstanceTask extends BaseEntity implements IRank, Serializable 
 
     public void setHandleUserName(String handleUserName) {
         this.handleUserName = handleUserName;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 }

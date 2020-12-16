@@ -10,7 +10,6 @@ import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
-import com.changhong.sei.deploy.dto.FlowTypeNodeRecordDto;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
 import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
@@ -21,7 +20,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -45,8 +43,6 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     private ReleaseRecordService releaseRecordService;
     @Autowired
     private ReleaseVersionService versionService;
-    @Autowired
-    private FlowInstanceTaskService flowInstanceTaskService;
 
     @Override
     protected BaseEntityDao<RequisitionOrder> getDao() {
@@ -144,7 +140,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
             return ResultData.fail("申请单不存在!");
         }
 
-        ResultData<RequisitionOrder> result = flowRuntimeService.submit(submitRequest.getFlowTypeId(), requisition);
+        ResultData<RequisitionOrder> result = flowRuntimeService.submit(requisition);
         if (result.successful()) {
             OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
             if (resultWithData.successful()) {
@@ -182,7 +178,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
                 // 如果审核通过,更新关联单据状态
                 if (ApprovalStatus.PASSED == order.getApprovalStatus()) {
                     String relationId = order.getRelationId();
-                    switch (order.getApplicationType()) {
+                    switch (order.getApplyType()) {
                         case APPLICATION:
                             // 应用申请
                             resultData = applicationService.updateFrozen(relationId);

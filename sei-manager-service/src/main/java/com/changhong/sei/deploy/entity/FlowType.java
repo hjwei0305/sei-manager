@@ -1,6 +1,7 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
+import com.changhong.sei.core.entity.ICodeUnique;
 import com.changhong.sei.core.entity.IFrozen;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,9 +22,14 @@ import java.time.LocalDateTime;
 @Table(name = "flow_de_type")
 @DynamicInsert
 @DynamicUpdate
-public class FlowType extends BaseAuditableEntity implements IFrozen, Serializable {
+public class FlowType extends BaseAuditableEntity implements IFrozen, ICodeUnique, Serializable {
     private static final long serialVersionUID = -64497955636689211L;
 
+    /**
+     * 代码
+     */
+    @Column(name = "code")
+    private String code;
     /**
      * 模块名称
      */
@@ -54,6 +60,16 @@ public class FlowType extends BaseAuditableEntity implements IFrozen, Serializab
      */
     @Column(name = "frozen")
     private Boolean frozen = Boolean.FALSE;
+
+    @Override
+    public String getCode() {
+        return code;
+    }
+
+    @Override
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getName() {
         return name;

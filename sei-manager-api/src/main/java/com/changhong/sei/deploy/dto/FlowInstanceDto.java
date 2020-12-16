@@ -1,72 +1,61 @@
-package com.changhong.sei.deploy.entity;
+package com.changhong.sei.deploy.dto;
 
-import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.deploy.dto.ApplyType;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 实现功能：流程实例
+ * 流程类型实例(FlowInstance)DTO类
  *
- * @author 马超(Vision.Mac)
- * @version 1.0.00  2020-11-26 19:04
+ * @author sei
+ * @since 2020-12-16 10:53:49
  */
-@Entity
-@Table(name = "flow_instance")
-@DynamicInsert
-@DynamicUpdate
-public class FlowInstance extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 8488019354515570494L;
-
-    public static final String FIELD_CODE = "code";
-    public static final String FIELD_VERSION = "version";
-    public static final String FIELD_RELATION = "relation";
-    // relation字段的默认值
-    public static final String RELATION_EMPTY = "-";
-
+@ApiModel(description = "流程类型实例DTO")
+public class FlowInstanceDto implements Serializable {
+    private static final long serialVersionUID = -13224391892073412L;
     /**
      * 流程类型代码
      */
-    @Column(name = "code")
+    @ApiModelProperty(value = "流程类型代码")
     private String code;
     /**
      * 流程类型名称
      */
-    @Column(name = "name")
+    @ApiModelProperty(value = "流程类型名称")
     private String name;
     /**
-     * 流程类型版本
+     * 版本号
      */
-    @Column(name = "version_")
-    private Integer version = 0;
+    @ApiModelProperty(value = "版本号")
+    private Integer version;
     /**
      * 关联值
      */
-    @Column(name = "relation")
-    private String relation = RELATION_EMPTY;
+    @ApiModelProperty(value = "关联值")
+    private String relation;
     /**
      * 描述说明
      */
-    @Column(name = "remark")
+    @ApiModelProperty(value = "描述说明")
     private String remark;
     /**
      * 是否发布
      */
-    @Column(name = "is_published")
-    private Boolean published = Boolean.FALSE;
+    @ApiModelProperty(value = "是否发布")
+    private Boolean published;
     /**
      * 发布时间
      */
-    @Column(name = "published_time")
+    @ApiModelProperty(value = "发布时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedTime;
     /**
      * 发布人账号
      */
-    @Column(name = "published_account")
+    @ApiModelProperty(value = "发布人账号")
     private String publishedAccount;
 
     public String getCode() {

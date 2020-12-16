@@ -1,21 +1,19 @@
 package com.changhong.sei.deploy.service;
 
-import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.dao.FlowInstanceTaskDao;
-import com.changhong.sei.deploy.dto.FlowTypeNodeRecordDto;
 import com.changhong.sei.deploy.entity.FlowInstanceTask;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 流程实例任务节点(FlowInstanceTask)业务逻辑实现类
@@ -33,52 +31,39 @@ public class FlowInstanceTaskService extends BaseEntityService<FlowInstanceTask>
         return dao;
     }
 
-    public List<FlowInstanceTask> getFlowInstanceTask(String typeId, Integer version, String account) {
-        Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(FlowInstanceTask.FIELD_TYPE_ID, typeId));
-        search.addFilter(new SearchFilter(FlowInstanceTask.FIELD_VERSION, version));
-        search.addFilter(new SearchFilter(FlowInstanceTask.FIELD_OWNER, account));
-        return dao.findByFilters(search);
+    /**
+     * 通过流程类型获取节点清单
+     *
+     * @param instanceId 流程实例id
+     * @return 返回结果
+     */
+    public List<FlowInstanceTask> getTypeNodeRecord(String instanceId) {
+        return this.findListByProperty(FlowInstanceTask.FIELD_INSTANCE_ID, instanceId);
     }
 
     /**
-     * 更新任务节点
+     * 获取下一个任务节点并检查是否是最后一个
      *
-     * @param nodeRecordDtos 任务节点清单
-     * @return 返回结果
+     * @param instanceId 流程实例id
+     * @param taskNo     任务号
+     * @return 下个任务节点
      */
-    @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> putFlowInstanceTask(String typeId, Integer version, List<FlowTypeNodeRecordDto> nodeRecordDtos) {
-        if (CollectionUtils.isEmpty(nodeRecordDtos)) {
-            return ResultData.fail("任务节点不能为空.");
+    public ResultData<FlowInstanceTask> getNextTaskAndCheckLast(String instanceId, int taskNo) {
+        FlowInstanceTask result = null;
+        List<FlowInstanceTask> nodeRecords = this.findListByProperty(FlowInstanceTask.FIELD_INSTANCE_ID, instanceId);
+        if (CollectionUtils.isNotEmpty(nodeRecords)) {
+            // 顺序排序,以便下一步取出最近一个
+            List<FlowInstanceTask> tasks = nodeRecords.stream().sorted(Comparator.comparing(FlowInstanceTask::getRank)).collect(Collectors.toList());
+            for (FlowInstanceTask task : tasks) {
+                if (taskNo < task.getRank()) {
+                    result = task;
+                    break;
+                }
+            }
+            // 如果通过类型及版本找到有对应的任务,但通过任务号未匹配上,则认为当前任务是最后一个任务,流程应结束
+            return ResultData.success(result);
+        } else {
+            return ResultData.fail("没有找到对应的流程任务节点.");
         }
-        String account = ContextUtil.getUserAccount();
-        Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(FlowInstanceTask.FIELD_TYPE_ID, typeId));
-        search.addFilter(new SearchFilter(FlowInstanceTask.FIELD_VERSION, version));
-        search.addFilter(new SearchFilter(FlowInstanceTask.FIELD_OWNER, account));
-        List<FlowInstanceTask> taskList = getFlowInstanceTask(typeId, version, account);
-        if (CollectionUtils.isNotEmpty(taskList)) {
-            // 如果存在则删除
-            dao.deleteInBatch(taskList);
-        }
-
-        taskList = new ArrayList<>();
-        FlowInstanceTask task;
-        for (FlowTypeNodeRecordDto record : nodeRecordDtos) {
-            task = new FlowInstanceTask();
-            task.setTypeId(typeId);
-            task.setTypeName(record.getTypeName());
-            task.setVersion(version);
-            task.setCode(String.valueOf(record.getCode()));
-            task.setName(record.getName());
-            task.setHandleAccount(record.getHandleAccount());
-            task.setHandleUserName(record.getHandleUserName());
-            task.setOwner(account);
-            taskList.add(task);
-        }
-        this.save(taskList);
-
-        return ResultData.success();
     }
 }

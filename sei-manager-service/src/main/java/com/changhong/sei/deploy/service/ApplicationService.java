@@ -91,7 +91,7 @@ public class ApplicationService extends BaseEntityService<Application> {
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用申请
-            requisitionOrder.setApplicationType(ApplyType.APPLICATION);
+            requisitionOrder.setApplyType(ApplyType.APPLICATION);
             // 应用id
             requisitionOrder.setRelationId(application.getId());
             // 申请摘要
@@ -107,7 +107,7 @@ public class ApplicationService extends BaseEntityService<Application> {
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
+                dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
                 dto.setRelationId(application.getId());
                 dto.setCode(application.getCode());
@@ -168,7 +168,7 @@ public class ApplicationService extends BaseEntityService<Application> {
             }
 
             // 申请类型:应用申请
-            requisitionOrder.setApplicationType(ApplyType.APPLICATION);
+            requisitionOrder.setApplyType(ApplyType.APPLICATION);
             // 应用id
             requisitionOrder.setRelationId(entity.getId());
             // 申请摘要
@@ -184,7 +184,7 @@ public class ApplicationService extends BaseEntityService<Application> {
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
+                dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
                 dto.setRelationId(application.getId());
                 dto.setCode(application.getCode());

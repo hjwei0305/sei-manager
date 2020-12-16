@@ -3,10 +3,10 @@ package com.changhong.sei.deploy.api;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.deploy.dto.FlowInstanceDto;
+import com.changhong.sei.deploy.dto.FlowInstanceTaskDto;
 import com.changhong.sei.deploy.dto.FlowTypeDto;
 import com.changhong.sei.deploy.dto.FlowTypeNodeDto;
-import com.changhong.sei.deploy.dto.FlowTypeNodeRecordDto;
-import com.changhong.sei.deploy.dto.FlowTypeVersionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -78,24 +78,22 @@ public interface FlowDefinitionApi {
     /**
      * 通过流程类型获取版本清单
      *
-     * @param typeId 流程类型id
+     * @param typeCode 流程类型代码
      * @return 返回结果
      */
     @GetMapping(path = "getTypeVersion")
     @ApiOperation(value = "通过流程类型获取版本清单", notes = "通过流程类型获取版本清单")
-    ResultData<List<FlowTypeVersionDto>> getTypeVersionByTypeId(@RequestParam("typeId") String typeId);
+    ResultData<List<FlowInstanceDto>> getTypeVersionByTypeCode(@RequestParam("typeCode") String typeCode);
 
     /**
      * 通过流程类型获取节点清单
      *
-     * @param typeId  流程类型id
-     * @param version 流程类型版本
+     * @param instanceId 流程实例id
      * @return 返回结果
      */
-    @GetMapping(path = "getTypeNodeRecord")
+    @GetMapping(path = "getTaskByInstanceId")
     @ApiOperation(value = "通过流程类型和版本获取节点清单", notes = "通过流程类型和版本获取节点清单")
-    ResultData<List<FlowTypeNodeRecordDto>> getTypeNodeRecord(@RequestParam("typeId") String typeId,
-                                                              @RequestParam("version") Integer version);
+    ResultData<List<FlowInstanceTaskDto>> getTaskByInstanceId(@RequestParam("instanceId") String instanceId);
 
     /**
      * 发布流程类型

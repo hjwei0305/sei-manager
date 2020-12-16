@@ -6,16 +6,13 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.api.FlowDefinitionApi;
 import com.changhong.sei.deploy.dto.FlowTypeDto;
 import com.changhong.sei.deploy.dto.FlowTypeNodeDto;
-import com.changhong.sei.deploy.dto.FlowTypeNodeRecordDto;
-import com.changhong.sei.deploy.dto.FlowTypeVersionDto;
+import com.changhong.sei.deploy.dto.FlowInstanceTaskDto;
+import com.changhong.sei.deploy.dto.FlowInstanceDto;
+import com.changhong.sei.deploy.entity.FlowInstance;
+import com.changhong.sei.deploy.entity.FlowInstanceTask;
 import com.changhong.sei.deploy.entity.FlowType;
 import com.changhong.sei.deploy.entity.FlowTypeNode;
-import com.changhong.sei.deploy.entity.FlowTypeNodeRecord;
-import com.changhong.sei.deploy.entity.FlowTypeVersion;
-import com.changhong.sei.deploy.service.FlowTypeNodeRecordService;
-import com.changhong.sei.deploy.service.FlowTypeNodeService;
-import com.changhong.sei.deploy.service.FlowTypeService;
-import com.changhong.sei.deploy.service.FlowTypeVersionService;
+import com.changhong.sei.deploy.service.*;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -41,11 +38,11 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     @Autowired
     private FlowTypeService typeService;
     @Autowired
-    private FlowTypeVersionService typeVersionService;
+    private FlowInstanceService instanceService;
     @Autowired
     private FlowTypeNodeService nodeService;
     @Autowired
-    private FlowTypeNodeRecordService nodeRecordService;
+    private FlowInstanceTaskService instanceTaskService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -138,16 +135,16 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     /**
      * 通过流程类型获取版本清单
      *
-     * @param typeId 流程类型id
+     * @param typeCode 流程类型代码
      * @return 返回结果
      */
     @Override
-    public ResultData<List<FlowTypeVersionDto>> getTypeVersionByTypeId(String typeId) {
-        List<FlowTypeVersionDto> nodeDtoList = new ArrayList<>();
-        List<FlowTypeVersion> list = typeVersionService.getTypeVersionByTypeId(typeId);
+    public ResultData<List<FlowInstanceDto>> getTypeVersionByTypeCode(String typeCode) {
+        List<FlowInstanceDto> nodeDtoList = new ArrayList<>();
+        List<FlowInstance> list = instanceService.getTypeVersionByTypeCode(typeCode);
         if (CollectionUtils.isNotEmpty(list)) {
-            for (FlowTypeVersion node : list) {
-                nodeDtoList.add(modelMapper.map(node, FlowTypeVersionDto.class));
+            for (FlowInstance node : list) {
+                nodeDtoList.add(modelMapper.map(node, FlowInstanceDto.class));
             }
         }
         return ResultData.success(nodeDtoList);
@@ -156,17 +153,16 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     /**
      * 通过流程类型获取节点清单
      *
-     * @param typeId  流程类型id
-     * @param version 流程类型版本
+     * @param instanceId 流程实例id
      * @return 返回结果
      */
     @Override
-    public ResultData<List<FlowTypeNodeRecordDto>> getTypeNodeRecord(String typeId, Integer version) {
-        List<FlowTypeNodeRecordDto> nodeDtoList = new ArrayList<>();
-        List<FlowTypeNodeRecord> list = nodeRecordService.getTypeNodeRecord(typeId, version);
+    public ResultData<List<FlowInstanceTaskDto>> getTaskByInstanceId(String instanceId) {
+        List<FlowInstanceTaskDto> nodeDtoList = new ArrayList<>();
+        List<FlowInstanceTask> list = instanceTaskService.getTypeNodeRecord(instanceId);
         if (CollectionUtils.isNotEmpty(list)) {
-            for (FlowTypeNodeRecord node : list) {
-                nodeDtoList.add(modelMapper.map(node, FlowTypeNodeRecordDto.class));
+            for (FlowInstanceTask node : list) {
+                nodeDtoList.add(modelMapper.map(node, FlowInstanceTaskDto.class));
             }
         }
         return ResultData.success(nodeDtoList);

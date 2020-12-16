@@ -8,10 +8,10 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.FlowTypeDao;
+import com.changhong.sei.deploy.entity.FlowInstance;
+import com.changhong.sei.deploy.entity.FlowInstanceTask;
 import com.changhong.sei.deploy.entity.FlowType;
 import com.changhong.sei.deploy.entity.FlowTypeNode;
-import com.changhong.sei.deploy.entity.FlowTypeNodeRecord;
-import com.changhong.sei.deploy.entity.FlowTypeVersion;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,11 +35,11 @@ public class FlowTypeService extends BaseEntityService<FlowType> {
     private FlowTypeDao dao;
 
     @Autowired
-    private FlowTypeVersionService typeVersionService;
-    @Autowired
     private FlowTypeNodeService nodeService;
     @Autowired
-    private FlowTypeNodeRecordService nodeRecordService;
+    private FlowInstanceService instanceService;
+    @Autowired
+    private FlowInstanceTaskService instanceTaskService;
 
     @Override
     protected BaseEntityDao<FlowType> getDao() {
@@ -49,11 +49,11 @@ public class FlowTypeService extends BaseEntityService<FlowType> {
     /**
      * 根据流程类型id,获取流程类型
      *
-     * @param typeId 流程类型id
+     * @param typeCode 流程类型代码
      * @return 流程类型
      */
-    public FlowType getFlowType(String typeId) {
-        return dao.findOne(typeId);
+    public FlowType getFlowType(String typeCode) {
+        return dao.findByProperty(FlowType.CODE_FIELD, typeCode);
     }
 
     /**
@@ -103,37 +103,37 @@ public class FlowTypeService extends BaseEntityService<FlowType> {
         // 增加版本号
         int version = type.getVersion() + 1;
 
-        // 写入流程类型节点记录
-        FlowTypeNodeRecord record;
-        List<FlowTypeNodeRecord> nodeRecords = new ArrayList<>(nodeList.size());
-        for (FlowTypeNode node : nodeList) {
-            record = new FlowTypeNodeRecord();
-            record.setTypeId(typeId);
-            record.setTypeName(type.getName());
-            record.setVersion(version);
-            record.setCode(node.getCode());
-            record.setName(node.getName());
-            record.setHandleAccount(node.getHandleAccount());
-            record.setHandleUserName(node.getHandleUserName());
-            record.setRemark(node.getRemark());
-            nodeRecords.add(record);
-        }
-        nodeRecordService.save(nodeRecords);
-
         // 发布时间
         LocalDateTime publishedTime = LocalDateTime.now();
         // 发布人账号
         String publishedAccount = ContextUtil.getUserAccount();
         // 写入流程类型版本记录
-        FlowTypeVersion typeVersion = new FlowTypeVersion();
-        typeVersion.setTypeId(typeId);
-        typeVersion.setVersion(version);
-        typeVersion.setName(type.getName());
-        typeVersion.setRemark(type.getRemark());
-        typeVersion.setPublishedTime(publishedTime);
-        typeVersion.setPublishedAccount(publishedAccount);
-        OperateResultWithData<FlowTypeVersion> result = typeVersionService.save(typeVersion);
+        FlowInstance instance = new FlowInstance();
+        instance.setCode(type.getCode());
+        instance.setName(type.getName());
+        instance.setVersion(version);
+        instance.setRemark(type.getRemark());
+        // 更新发布状态
+        instance.setPublished(Boolean.TRUE);
+        instance.setPublishedTime(publishedTime);
+        instance.setPublishedAccount(publishedAccount);
+        OperateResultWithData<FlowInstance> result = instanceService.save(instance);
         if (result.successful()) {
+            String instanceId = instance.getId();
+            // 写入流程类型节点记录
+            FlowInstanceTask task;
+            List<FlowInstanceTask> nodeRecords = new ArrayList<>(nodeList.size());
+            for (FlowTypeNode node : nodeList) {
+                task = new FlowInstanceTask();
+                task.setInstanceId(instanceId);
+                task.setCode(node.getCode());
+                task.setName(node.getName());
+                task.setHandleAccount(node.getHandleAccount());
+                task.setHandleUserName(node.getHandleUserName());
+                nodeRecords.add(task);
+            }
+            instanceTaskService.save(nodeRecords);
+
             // 更新版本号
             type.setVersion(version);
             type.setPublishedTime(publishedTime);

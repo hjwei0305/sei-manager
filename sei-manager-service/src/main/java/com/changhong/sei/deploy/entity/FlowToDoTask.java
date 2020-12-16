@@ -2,7 +2,6 @@ package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.deploy.dto.ApplyType;
-import com.changhong.sei.deploy.dto.ApprovalStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,10 +23,10 @@ public class FlowToDoTask extends BaseEntity implements Serializable {
     public static final String FIELD_ORDER_ID = "orderId";
 
     /**
-     * 流程类型id
+     * 流程类型代码
      */
-    @Column(name = "flow_type_id")
-    private String flowTypeId;
+    @Column(name = "flow_type_code")
+    private String flowTypeCode;
     /**
      * 流程类型名称
      */
@@ -99,12 +98,12 @@ public class FlowToDoTask extends BaseEntity implements Serializable {
     @Column(name = "is_pending")
     private Boolean pending = Boolean.TRUE;
 
-    public String getFlowTypeId() {
-        return flowTypeId;
+    public String getFlowTypeCode() {
+        return flowTypeCode;
     }
 
-    public void setFlowTypeId(String flowTypeId) {
-        this.flowTypeId = flowTypeId;
+    public void setFlowTypeCode(String flowTypeId) {
+        this.flowTypeCode = flowTypeId;
     }
 
     public String getFlowTypeName() {

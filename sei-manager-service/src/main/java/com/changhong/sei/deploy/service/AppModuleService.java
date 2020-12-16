@@ -114,7 +114,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用模块申请
-            requisitionOrder.setApplicationType(ApplyType.MODULE);
+            requisitionOrder.setApplyType(ApplyType.MODULE);
             // 应用模块id
             requisitionOrder.setRelationId(module.getId());
             // 申请摘要
@@ -128,7 +128,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
+                dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
                 dto.setRelationId(module.getId());
                 dto.setAppId(module.getAppId());
@@ -188,7 +188,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             }
 
             // 申请类型:应用模块申请
-            requisitionOrder.setApplicationType(ApplyType.MODULE);
+            requisitionOrder.setApplyType(ApplyType.MODULE);
             // 应用模块id
             requisitionOrder.setRelationId(module.getId());
             // 申请摘要
@@ -202,7 +202,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
+                dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
                 dto.setRelationId(module.getId());
                 dto.setAppId(module.getAppId());

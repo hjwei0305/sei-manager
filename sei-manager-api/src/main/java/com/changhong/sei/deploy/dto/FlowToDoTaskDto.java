@@ -21,10 +21,10 @@ public class FlowToDoTaskDto extends BaseEntityDto implements Serializable {
     private static final long serialVersionUID = 7058966901999937565L;
 
     /**
-     * 流程类型id
+     * 流程类型代码
      */
-    @ApiModelProperty(notes = "流程类型id")
-    private String flowTypeId;
+    @ApiModelProperty(notes = "流程类型代码")
+    private String flowTypeCode;
     /**
      * 流程类型名称
      */
@@ -96,12 +96,12 @@ public class FlowToDoTaskDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(notes = "待处理")
     private Boolean pending = Boolean.TRUE;
 
-    public String getFlowTypeId() {
-        return flowTypeId;
+    public String getFlowTypeCode() {
+        return flowTypeCode;
     }
 
-    public void setFlowTypeId(String flowTypeId) {
-        this.flowTypeId = flowTypeId;
+    public void setFlowTypeCode(String flowTypeCode) {
+        this.flowTypeCode = flowTypeCode;
     }
 
     public String getFlowTypeName() {
