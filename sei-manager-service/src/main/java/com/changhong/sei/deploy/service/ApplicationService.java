@@ -16,6 +16,7 @@ import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.entity.ApplicationRequisition;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,8 @@ public class ApplicationService extends BaseEntityService<Application> {
     private AppModuleService appModuleService;
     @Autowired
     private RequisitionOrderService requisitionOrderService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     protected BaseEntityDao<Application> getDao() {
@@ -79,11 +82,12 @@ public class ApplicationService extends BaseEntityService<Application> {
     /**
      * 创建应用申请单
      *
-     * @param application 应用
+     * @param appDto 应用
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ApplicationRequisitionDto> createRequisition(Application application) {
+    public ResultData<ApplicationRequisitionDto> createRequisition(ApplicationRequisitionDto appDto) {
+        Application application = modelMapper.map(appDto, Application.class);
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         application.setFrozen(Boolean.TRUE);
         // 保存应用
@@ -99,24 +103,17 @@ public class ApplicationService extends BaseEntityService<Application> {
                     .concat(application.getName())
                     .concat("[").concat(application.getCode()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder, appDto.getTaskNodes());
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                ApplicationRequisitionDto dto = new ApplicationRequisitionDto();
-                dto.setId(requisition.getId());
-                dto.setApplicantAccount(requisition.getApplicantAccount());
-                dto.setApplicantUserName(requisition.getApplicantUserName());
-                dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
-                dto.setApprovalStatus(requisition.getApprovalStatus());
-                dto.setRelationId(application.getId());
-                dto.setCode(application.getCode());
-                dto.setName(application.getName());
-                dto.setGroupCode(application.getGroupCode());
-                dto.setGroupName(application.getGroupName());
-                dto.setVersion(application.getVersion());
-                dto.setRemark(application.getRemark());
-                return ResultData.success(dto);
+                appDto.setId(requisition.getId());
+                appDto.setApplicantAccount(requisition.getApplicantAccount());
+                appDto.setApplicantUserName(requisition.getApplicantUserName());
+                appDto.setApplicationTime(requisition.getApplicationTime());
+                appDto.setApplyType(requisition.getApplicationType());
+                appDto.setApprovalStatus(requisition.getApprovalStatus());
+                appDto.setRelationId(application.getId());
+                return ResultData.success(appDto);
             } else {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -134,7 +131,7 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ApplicationRequisitionDto> modifyRequisition(Application application) {
+    public ResultData<ApplicationRequisitionDto> modifyRequisition(ApplicationRequisitionDto application) {
         Application entity = this.findOne(application.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
@@ -176,24 +173,17 @@ public class ApplicationService extends BaseEntityService<Application> {
                     .concat(entity.getName())
                     .concat("[").concat(entity.getCode()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder, application.getTaskNodes());
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                ApplicationRequisitionDto dto = new ApplicationRequisitionDto();
-                dto.setId(requisition.getId());
-                dto.setApplicantAccount(requisition.getApplicantAccount());
-                dto.setApplicantUserName(requisition.getApplicantUserName());
-                dto.setApplicationTime(requisition.getApplicationTime());
-                dto.setApplyType(requisition.getApplicationType());
-                dto.setApprovalStatus(requisition.getApprovalStatus());
-                dto.setRelationId(application.getId());
-                dto.setCode(application.getCode());
-                dto.setName(application.getName());
-                dto.setGroupCode(application.getGroupCode());
-                dto.setGroupName(application.getGroupName());
-                dto.setVersion(application.getVersion());
-                dto.setRemark(application.getRemark());
-                return ResultData.success(dto);
+                application.setId(requisition.getId());
+                application.setApplicantAccount(requisition.getApplicantAccount());
+                application.setApplicantUserName(requisition.getApplicantUserName());
+                application.setApplicationTime(requisition.getApplicationTime());
+                application.setApplyType(requisition.getApplicationType());
+                application.setApprovalStatus(requisition.getApprovalStatus());
+                application.setRelationId(entity.getId());
+                return ResultData.success(application);
             } else {
                 // 事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

@@ -109,11 +109,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     /**
      * 创建应用申请单
      *
-     * @param releaseRecord 应用
+     * @param dto 应用
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseRecordRequisitionDto> createRequisition(ReleaseRecord releaseRecord) {
+    public ResultData<ReleaseRecordRequisitionDto> createRequisition(ReleaseRecordRequisitionDto dto) {
+        ReleaseRecord releaseRecord = modelMapper.map(dto, ReleaseRecord.class);
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         releaseRecord.setFrozen(Boolean.TRUE);
         // 保存应用
@@ -128,28 +129,17 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             requisitionOrder.setSummary(releaseRecord.getAppName().concat("-").concat(releaseRecord.getAppName())
                     .concat("[").concat(releaseRecord.getName()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder, dto.getTaskNodes());
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                ReleaseRecordRequisitionDto dto = new ReleaseRecordRequisitionDto();
                 dto.setId(requisition.getId());
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
                 dto.setApplicationTime(requisition.getApplicationTime());
                 dto.setApplyType(requisition.getApplicationType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
-
                 dto.setRelationId(releaseRecord.getId());
-                dto.setEnvCode(releaseRecord.getEnvCode());
-                dto.setEnvName(releaseRecord.getEnvName());
-                dto.setAppId(releaseRecord.getAppId());
-                dto.setAppName(releaseRecord.getAppName());
-                dto.setGitId(releaseRecord.getGitId());
-                dto.setModuleName(releaseRecord.getModuleName());
-                dto.setTagName(releaseRecord.getTagName());
-                dto.setName(releaseRecord.getName());
-                dto.setRemark(releaseRecord.getRemark());
-                dto.setExpCompleteTime(releaseRecord.getExpCompleteTime());
+
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
@@ -168,7 +158,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseRecordRequisitionDto> modifyRequisition(ReleaseRecord releaseRecord) {
+    public ResultData<ReleaseRecordRequisitionDto> modifyRequisition(ReleaseRecordRequisitionDto releaseRecord) {
         ReleaseRecord entity = this.findOne(releaseRecord.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
@@ -214,7 +204,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             requisitionOrder.setSummary(releaseRecord.getAppName().concat("-").concat(releaseRecord.getAppName())
                     .concat("[").concat(releaseRecord.getName()).concat("]"));
 
-            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
+            ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder, releaseRecord.getTaskNodes());
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
                 ReleaseRecordRequisitionDto dto = new ReleaseRecordRequisitionDto();
@@ -224,18 +214,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 dto.setApplicationTime(requisition.getApplicationTime());
                 dto.setApplyType(requisition.getApplicationType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
-                dto.setRelationId(releaseRecord.getId());
-
-                dto.setEnvCode(releaseRecord.getEnvCode());
-                dto.setEnvName(releaseRecord.getEnvName());
-                dto.setAppId(releaseRecord.getAppId());
-                dto.setAppName(releaseRecord.getAppName());
-                dto.setGitId(releaseRecord.getGitId());
-                dto.setModuleName(releaseRecord.getModuleName());
-                dto.setTagName(releaseRecord.getTagName());
-                dto.setName(releaseRecord.getName());
-                dto.setRemark(releaseRecord.getRemark());
-                dto.setExpCompleteTime(releaseRecord.getExpCompleteTime());
+                dto.setRelationId(entity.getId());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚

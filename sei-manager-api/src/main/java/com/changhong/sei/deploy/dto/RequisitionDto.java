@@ -1,13 +1,12 @@
 package com.changhong.sei.deploy.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
-import com.changhong.sei.core.dto.serializer.EnumJsonSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 申请记录(Requisition)DTO类
@@ -26,27 +25,6 @@ public class RequisitionDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "关联id")
     private String relationId;
-    /**
-     * 流程实例id
-     */
-    @ApiModelProperty(value = "流程实例id")
-    private String flowInstanceId;
-    /**
-     * 流程类型名称
-     */
-    @ApiModelProperty(value = "流程类型名称")
-    private String flowTypeName;
-    /**
-     * 任务号
-     * 用于需多人处理的事项
-     */
-    @ApiModelProperty(value = "任务号")
-    private String taskNo;
-    /**
-     * 任务名称
-     */
-    @ApiModelProperty(value = "任务名称")
-    private String taskName;
     /**
      * 申请人账号
      */
@@ -75,27 +53,13 @@ public class RequisitionDto extends BaseEntityDto {
 //    @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "审核状态")
     private ApprovalStatus approvalStatus = ApprovalStatus.INITIAL;
-//    /**
-//     * 处理人账号
-//     */
-//    @ApiModelProperty(value = "处理人账号")
-//    private String handleAccount;
-//    /**
-//     * 处理人
-//     */
-//    @ApiModelProperty(value = "处理人")
-//    private String handleUserName;
-//    /**
-//     * 处理日志
-//     */
-//    @ApiModelProperty(value = "处理日志")
-//    private String handleLog;
-//    /**
-//     * 处理时间
-//     */
-//    @ApiModelProperty(value = "处理时间", example = "2020-01-14 22:18:48")
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-//    private LocalDateTime handleTime;
+    /**
+     * 流程实例id
+     */
+    @ApiModelProperty(value = "流程类型id")
+    private String flowTypeId;
+    @ApiModelProperty(notes = "流程任务节点")
+    private List<FlowTypeNodeRecordDto> taskNodes;
 
     public String getRelationId() {
         return relationId;
@@ -103,38 +67,6 @@ public class RequisitionDto extends BaseEntityDto {
 
     public void setRelationId(String relationId) {
         this.relationId = relationId;
-    }
-
-    public String getFlowInstanceId() {
-        return flowInstanceId;
-    }
-
-    public void setFlowInstanceId(String flowInstanceId) {
-        this.flowInstanceId = flowInstanceId;
-    }
-
-    public String getFlowTypeName() {
-        return flowTypeName;
-    }
-
-    public void setFlowTypeName(String flowTypeName) {
-        this.flowTypeName = flowTypeName;
-    }
-
-    public String getTaskNo() {
-        return taskNo;
-    }
-
-    public void setTaskNo(String taskNo) {
-        this.taskNo = taskNo;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
     }
 
     public String getApplicantAccount() {
@@ -177,4 +109,19 @@ public class RequisitionDto extends BaseEntityDto {
         this.approvalStatus = approvalStatus;
     }
 
+    public String getFlowTypeId() {
+        return flowTypeId;
+    }
+
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
+    }
+
+    public List<FlowTypeNodeRecordDto> getTaskNodes() {
+        return taskNodes;
+    }
+
+    public void setTaskNodes(List<FlowTypeNodeRecordDto> taskNodes) {
+        this.taskNodes = taskNodes;
+    }
 }

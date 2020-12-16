@@ -42,7 +42,7 @@ public interface ApplicationApi extends BaseEntityApi<ApplicationDto>, FindByPag
      */
     @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "创建应用申请单", notes = "创建应用申请单")
-    ResultData<ApplicationRequisitionDto> createRequisition(@RequestBody @Valid ApplicationDto dto);
+    ResultData<ApplicationRequisitionDto> createRequisition(@RequestBody @Valid ApplicationRequisitionDto dto);
 
     /**
      * 修改编辑应用申请单
@@ -52,7 +52,7 @@ public interface ApplicationApi extends BaseEntityApi<ApplicationDto>, FindByPag
      */
     @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "修改编辑应用申请单", notes = "修改编辑应用申请单")
-    ResultData<ApplicationRequisitionDto> modifyRequisition(@RequestBody @Valid ApplicationDto dto);
+    ResultData<ApplicationRequisitionDto> modifyRequisition(@RequestBody @Valid ApplicationRequisitionDto dto);
 
     /**
      * 删除应用申请单

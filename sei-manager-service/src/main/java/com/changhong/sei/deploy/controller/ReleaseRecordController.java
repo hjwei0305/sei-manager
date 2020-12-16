@@ -80,8 +80,8 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseRecordRequisitionDto> createRequisition(ReleaseRecordDto dto) {
-        return service.createRequisition(convertToEntity(dto));
+    public ResultData<ReleaseRecordRequisitionDto> createRequisition(ReleaseRecordRequisitionDto dto) {
+        return service.createRequisition(dto);
     }
 
     /**
@@ -91,8 +91,8 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseRecordRequisitionDto> modifyRequisition(ReleaseRecordDto dto) {
-        return service.modifyRequisition(convertToEntity(dto));
+    public ResultData<ReleaseRecordRequisitionDto> modifyRequisition(ReleaseRecordRequisitionDto dto) {
+        return service.modifyRequisition(dto);
     }
 
     /**

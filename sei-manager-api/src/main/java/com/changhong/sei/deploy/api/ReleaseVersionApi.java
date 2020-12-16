@@ -45,7 +45,7 @@ public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, Fin
      */
     @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "创建应用版本申请单", notes = "创建应用版本申请单")
-    ResultData<ReleaseVersionRequisitionDto> createRequisition(@RequestBody @Valid ReleaseVersionDto dto);
+    ResultData<ReleaseVersionRequisitionDto> createRequisition(@RequestBody @Valid ReleaseVersionRequisitionDto dto);
 
     /**
      * 修改编辑应用版本申请单
@@ -55,7 +55,7 @@ public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, Fin
      */
     @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "修改编辑应用版本申请单", notes = "修改编辑应用版本申请单")
-    ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@RequestBody @Valid ReleaseVersionDto dto);
+    ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@RequestBody @Valid ReleaseVersionRequisitionDto dto);
 
     /**
      * 删除应用版本申请单

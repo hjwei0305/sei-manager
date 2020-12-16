@@ -10,6 +10,7 @@ import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.RequisitionOrderDao;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.deploy.dto.FlowTypeNodeRecordDto;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
 import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import com.changhong.sei.deploy.entity.RequisitionOrder;
@@ -20,6 +21,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -66,7 +68,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<RequisitionOrder> createRequisition(RequisitionOrder requisitionRecord) {
+    public ResultData<RequisitionOrder> createRequisition(RequisitionOrder requisitionRecord, List<FlowTypeNodeRecordDto> nodeRecordDtos) {
         // 审核状态:初始
         requisitionRecord.setApprovalStatus(ApprovalStatus.INITIAL);
         SessionUser sessionUser = ContextUtil.getSessionUser();
@@ -90,7 +92,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<RequisitionOrder> modifyRequisition(RequisitionOrder requisitionRecord) {
+    public ResultData<RequisitionOrder> modifyRequisition(RequisitionOrder requisitionRecord, List<FlowTypeNodeRecordDto> nodeRecordDtos) {
         OperateResultWithData<RequisitionOrder> result = this.save(requisitionRecord);
         if (result.successful()) {
             return ResultData.success(result.getData());
