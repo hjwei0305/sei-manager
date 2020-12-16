@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 /**
  * 流程类型(FlowDeType)DTO类
@@ -31,6 +32,16 @@ public class FlowTypeDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "描述说明")
     private String remark;
+    /**
+     * 发布时间
+     */
+    @ApiModelProperty(value = "发布时间")
+    private LocalDateTime publishedTime;
+    /**
+     * 发布人账号
+     */
+    @ApiModelProperty(value = "发布人账号")
+    private String publishedAccount;
     /**
      * 冻结
      */
@@ -60,6 +71,22 @@ public class FlowTypeDto extends BaseEntityDto {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public LocalDateTime getPublishedTime() {
+        return publishedTime;
+    }
+
+    public void setPublishedTime(LocalDateTime publishedTime) {
+        this.publishedTime = publishedTime;
+    }
+
+    public String getPublishedAccount() {
+        return publishedAccount;
+    }
+
+    public void setPublishedAccount(String publishedAccount) {
+        this.publishedAccount = publishedAccount;
     }
 
     public Boolean getFrozen() {

@@ -152,7 +152,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
             return ResultData.fail("申请单不存在!");
         }
 
-        ResultData<RequisitionOrder> result = flowTaskInstanceService.submit(submitRequest.getFlowTypeId(), submitRequest.getFlowTypeName(), requisition);
+        ResultData<RequisitionOrder> result = flowTaskInstanceService.submit(submitRequest.getFlowTypeId(), requisition);
         if (result.successful()) {
             OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
             if (resultWithData.successful()) {

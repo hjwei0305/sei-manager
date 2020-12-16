@@ -4,6 +4,9 @@ import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
  * 流程类型版本(FlowDeTypeVersion)DTO类
  *
@@ -11,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @since 2020-12-16 10:53:49
  */
 @ApiModel(description = "流程类型版本DTO")
-public class FlowTypeVersionDto {
+public class FlowTypeVersionDto implements Serializable {
     private static final long serialVersionUID = -13224391892073412L;
     /**
      * 流程类型id
@@ -22,7 +25,17 @@ public class FlowTypeVersionDto {
      * 版本号
      */
     @ApiModelProperty(value = "版本号")
-    private Object version;
+    private Integer version;
+    /**
+     * 发布时间
+     */
+    @ApiModelProperty(value = "发布时间")
+    private LocalDateTime publishedTime;
+    /**
+     * 发布人账号
+     */
+    @ApiModelProperty(value = "发布人账号")
+    private String publishedAccount;
 //    /**
 //     * 名称
 //     */
@@ -42,13 +55,30 @@ public class FlowTypeVersionDto {
         this.typeId = typeId;
     }
 
-    public Object getVersion() {
+    public Integer getVersion() {
         return version;
     }
 
-    public void setVersion(Object version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
+
+    public LocalDateTime getPublishedTime() {
+        return publishedTime;
+    }
+
+    public void setPublishedTime(LocalDateTime publishedTime) {
+        this.publishedTime = publishedTime;
+    }
+
+    public String getPublishedAccount() {
+        return publishedAccount;
+    }
+
+    public void setPublishedAccount(String publishedAccount) {
+        this.publishedAccount = publishedAccount;
+    }
+
 //
 //    public String getName() {
 //        return name;

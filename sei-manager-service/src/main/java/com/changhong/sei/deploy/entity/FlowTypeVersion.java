@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 实现功能：流程类型版本记录
@@ -39,6 +40,16 @@ public class FlowTypeVersion extends BaseAuditableEntity implements Serializable
      */
     @Column(name = "remark")
     private String remark;
+    /**
+     * 发布时间
+     */
+    @Column(name = "published_time")
+    private LocalDateTime publishedTime;
+    /**
+     * 发布人账号
+     */
+    @Column(name = "published_account")
+    private String publishedAccount;
 
     public String getTypeId() {
         return typeId;
@@ -72,4 +83,19 @@ public class FlowTypeVersion extends BaseAuditableEntity implements Serializable
         this.remark = remark;
     }
 
+    public LocalDateTime getPublishedTime() {
+        return publishedTime;
+    }
+
+    public void setPublishedTime(LocalDateTime publishedTime) {
+        this.publishedTime = publishedTime;
+    }
+
+    public String getPublishedAccount() {
+        return publishedAccount;
+    }
+
+    public void setPublishedAccount(String publishedAccount) {
+        this.publishedAccount = publishedAccount;
+    }
 }

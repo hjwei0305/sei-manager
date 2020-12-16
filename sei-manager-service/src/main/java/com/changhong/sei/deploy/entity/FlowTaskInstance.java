@@ -25,6 +25,22 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
     public static final String FIELD_ORDER_ID = "orderId";
 
     /**
+     * 流程类型id
+     */
+    @Column(name = "flow_type_id")
+    private String flowTypeId;
+    /**
+     * 流程类型名称
+     */
+    @Column(name = "flow_type_name")
+    private String flowTypeName;
+    /**
+     * 流程类型版本
+     */
+    @Column(name = "version_")
+    private Integer version;
+
+    /**
      * 申请单id
      */
     @Column(name = "order_id")
@@ -41,58 +57,68 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
      * 申请类型
      */
     @Enumerated(EnumType.STRING)
-    @Column(name = "application_type")
-    private ApplyType applicationType;
+    @Column(name = "apply_type")
+    private ApplyType applyType;
     /**
-     * 流程类型id
+     * 摘要
      */
-    @Column(name = "flow_type_id")
-    private String flowTypeId;
+    @Column(name = "summary")
+    private String summary;
     /**
-     * 流程类型名称
+     * 申请人账号
      */
-    @Column(name = "flow_type_name")
-    private String flowTypeName;
+    @Column(name = "applicant_account")
+    private String applicantAccount;
     /**
-     * 任务号(序号)
+     * 申请人名称
      */
-    @Column(name = "task_no")
-    private Integer taskNo;
+    @Column(name = "applicant_user_name")
+    private String applicantUserName;
     /**
-     * 任务名称
+     * 申请时间
      */
-    @Column(name = "task_name")
-    private String taskName;
-    /**
-     * 发起人账号
-     */
-    @Column(name = "initiator_account")
-    private String initiatorAccount;
-    /**
-     * 发起人
-     */
-    @Column(name = "initiator_user_name")
-    private String initiatorUserName;
-    /**
-     * 发起时间
-     */
-    @Column(name = "init_time")
-    private LocalDateTime initTime;
-    /**
-     * 待处理人账号
-     */
-    @Column(name = "execute_account")
-    private String executeAccount;
-    /**
-     * 待处理人
-     */
-    @Column(name = "execute_user_name")
-    private String executeUserName;
-    /**
-     * 待处理
-     */
-    @Column(name = "is_pending")
-    private Boolean pending = Boolean.TRUE;
+    @Column(name = "application_time")
+    private LocalDateTime applicationTime;
+
+    public String getFlowTypeId() {
+        return flowTypeId;
+    }
+
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
+    }
+
+    public String getFlowTypeName() {
+        return flowTypeName;
+    }
+
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+//    public Integer getTaskNo() {
+//        return taskNo;
+//    }
+//
+//    public void setTaskNo(Integer taskNo) {
+//        this.taskNo = taskNo;
+//    }
+//
+//    public String getTaskName() {
+//        return taskName;
+//    }
+//
+//    public void setTaskName(String taskName) {
+//        this.taskName = taskName;
+//    }
 
     public String getOrderId() {
         return orderId;
@@ -110,91 +136,43 @@ public class FlowTaskInstance extends BaseEntity implements Serializable {
         this.relationId = relationId;
     }
 
-    public ApplyType getApplicationType() {
-        return applicationType;
+    public ApplyType getApplyType() {
+        return applyType;
     }
 
-    public void setApplicationType(ApplyType applicationType) {
-        this.applicationType = applicationType;
+    public void setApplyType(ApplyType applyType) {
+        this.applyType = applyType;
     }
 
-    public String getFlowTypeName() {
-        return flowTypeName;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setFlowTypeName(String flowTypeName) {
-        this.flowTypeName = flowTypeName;
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
-    public String getFlowTypeId() {
-        return flowTypeId;
+    public String getApplicantAccount() {
+        return applicantAccount;
     }
 
-    public void setFlowTypeId(String flowInstanceId) {
-        this.flowTypeId = flowInstanceId;
+    public void setApplicantAccount(String applicantAccount) {
+        this.applicantAccount = applicantAccount;
     }
 
-    public Integer getTaskNo() {
-        return taskNo;
+    public String getApplicantUserName() {
+        return applicantUserName;
     }
 
-    public void setTaskNo(Integer taskNo) {
-        this.taskNo = taskNo;
+    public void setApplicantUserName(String applicantUserName) {
+        this.applicantUserName = applicantUserName;
     }
 
-    public String getTaskName() {
-        return taskName;
+    public LocalDateTime getApplicationTime() {
+        return applicationTime;
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public String getInitiatorAccount() {
-        return initiatorAccount;
-    }
-
-    public void setInitiatorAccount(String initiatorAccount) {
-        this.initiatorAccount = initiatorAccount;
-    }
-
-    public String getInitiatorUserName() {
-        return initiatorUserName;
-    }
-
-    public void setInitiatorUserName(String initiatorUserName) {
-        this.initiatorUserName = initiatorUserName;
-    }
-
-    public LocalDateTime getInitTime() {
-        return initTime;
-    }
-
-    public void setInitTime(LocalDateTime initTime) {
-        this.initTime = initTime;
-    }
-
-    public String getExecuteAccount() {
-        return executeAccount;
-    }
-
-    public void setExecuteAccount(String executeAccount) {
-        this.executeAccount = executeAccount;
-    }
-
-    public String getExecuteUserName() {
-        return executeUserName;
-    }
-
-    public void setExecuteUserName(String executeUserName) {
-        this.executeUserName = executeUserName;
-    }
-
-    public Boolean getPending() {
-        return pending;
-    }
-
-    public void setPending(Boolean pending) {
-        this.pending = pending;
+    public void setApplicationTime(LocalDateTime applicationTime) {
+        this.applicationTime = applicationTime;
     }
 }

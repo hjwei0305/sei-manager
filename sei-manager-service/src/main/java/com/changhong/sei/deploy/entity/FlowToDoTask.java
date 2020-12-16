@@ -9,36 +9,18 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 实现功能： 待办任务(视图)
+ * 实现功能： 待办任务
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-11-30 16:06
  */
 @Entity
-@Table(name = "v_flow_todo_task")
+@Table(name = "flow_todo_task")
 public class FlowToDoTask extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -4502581813571547474L;
     public static final String FIELD_EXECUTE_ACCOUNT = "executeAccount";
     public static final String FIELD_APPLY_TYPE = "applyType";
-    /**
-     * 申请单id
-     */
-    @Column(name = "order_id")
-    private String orderId;
 
-    /**
-     * 关联id
-     *
-     * @see ApplyType
-     */
-    @Column(name = "relation_id")
-    private String relationId;
-    /**
-     * 申请类型
-     */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "application_type")
-    private ApplyType applyType;
     /**
      * 流程类型id
      */
@@ -84,56 +66,36 @@ public class FlowToDoTask extends BaseEntity implements Serializable {
      */
     @Column(name = "execute_user_name")
     private String executeUserName;
+
+    /**
+     * 申请单id
+     */
+    @Column(name = "order_id")
+    private String orderId;
+
+    /**
+     * 关联id
+     *
+     * @see ApplyType
+     */
+    @Column(name = "relation_id")
+    private String relationId;
+    /**
+     * 申请类型
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "apply_type")
+    private ApplyType applyType;
     /**
      * 摘要
      */
     @Column(name = "summary")
     private String summary;
     /**
-     * 申请人账号
+     * 待处理
      */
-    @Column(name = "applicant_account")
-    private String applicantAccount;
-    /**
-     * 申请人名称
-     */
-    @Column(name = "applicant_user_name")
-    private String applicantUserName;
-    /**
-     * 申请时间
-     */
-    @Column(name = "application_time")
-    private LocalDateTime applicationTime;
-    /**
-     * 审核状态
-     */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "approval_status")
-    private ApprovalStatus approvalStatus;
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getRelationId() {
-        return relationId;
-    }
-
-    public void setRelationId(String relationId) {
-        this.relationId = relationId;
-    }
-
-    public ApplyType getApplyType() {
-        return applyType;
-    }
-
-    public void setApplyType(ApplyType applicationType) {
-        this.applyType = applicationType;
-    }
+    @Column(name = "is_pending")
+    private Boolean pending = Boolean.TRUE;
 
     public String getFlowTypeId() {
         return flowTypeId;
@@ -207,6 +169,30 @@ public class FlowToDoTask extends BaseEntity implements Serializable {
         this.executeUserName = executeUserName;
     }
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getRelationId() {
+        return relationId;
+    }
+
+    public void setRelationId(String relationId) {
+        this.relationId = relationId;
+    }
+
+    public ApplyType getApplyType() {
+        return applyType;
+    }
+
+    public void setApplyType(ApplyType applyType) {
+        this.applyType = applyType;
+    }
+
     public String getSummary() {
         return summary;
     }
@@ -215,35 +201,11 @@ public class FlowToDoTask extends BaseEntity implements Serializable {
         this.summary = summary;
     }
 
-    public String getApplicantAccount() {
-        return applicantAccount;
+    public Boolean getPending() {
+        return pending;
     }
 
-    public void setApplicantAccount(String applicantAccount) {
-        this.applicantAccount = applicantAccount;
-    }
-
-    public String getApplicantUserName() {
-        return applicantUserName;
-    }
-
-    public void setApplicantUserName(String applicantUserName) {
-        this.applicantUserName = applicantUserName;
-    }
-
-    public LocalDateTime getApplicationTime() {
-        return applicationTime;
-    }
-
-    public void setApplicationTime(LocalDateTime applicationTime) {
-        this.applicationTime = applicationTime;
-    }
-
-    public ApprovalStatus getApprovalStatus() {
-        return approvalStatus;
-    }
-
-    public void setApprovalStatus(ApprovalStatus approvalStatus) {
-        this.approvalStatus = approvalStatus;
+    public void setPending(Boolean pending) {
+        this.pending = pending;
     }
 }

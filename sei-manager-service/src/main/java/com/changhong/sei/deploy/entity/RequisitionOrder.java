@@ -24,7 +24,6 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
     private static final long serialVersionUID = 8488019354515570494L;
 
     public static final String FIELD_RELATION_ID = "relationId";
-    public static final String FIELD_FLOW_INSTANCE_ID = "flowInstanceId";
     /**
      * 关联id
      *
@@ -79,7 +78,7 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
      * 流程版本
      */
     @Column(name = "flow_version")
-    private Long flowVersion;
+    private Integer flowVersion;
     /**
      * 版本乐观锁
      */
@@ -151,11 +150,11 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
         this.flowTypeId = flowTypeId;
     }
 
-    public Long getFlowVersion() {
+    public Integer getFlowVersion() {
         return flowVersion;
     }
 
-    public void setFlowVersion(Long flowVersion) {
+    public void setFlowVersion(Integer flowVersion) {
         this.flowVersion = flowVersion;
     }
 

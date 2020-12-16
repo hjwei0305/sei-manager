@@ -11,9 +11,7 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.dao.FlowTaskInstanceDao;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.dto.OperationType;
-import com.changhong.sei.deploy.entity.FlowPublished;
-import com.changhong.sei.deploy.entity.FlowTaskInstance;
-import com.changhong.sei.deploy.entity.RequisitionOrder;
+import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.manager.commom.EmailManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +34,9 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
     @Autowired
     private FlowTaskInstanceDao dao;
     @Autowired
-    private FlowPublishedService publishedService;
+    private FlowToDoTaskService flowToDoTaskService;
+    @Autowired
+    private FlowTypeNodeRecordService flowNodeService;
     @Autowired
     private FlowTaskHistoryService historyService;
     @Autowired
@@ -58,7 +58,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<RequisitionOrder> submit(String flowTypeId, String flowTypeName, RequisitionOrder requisition) {
+    public ResultData<RequisitionOrder> submit(String flowTypeId, RequisitionOrder requisition) {
         // 获取申请单
         if (Objects.isNull(requisition)) {
             return ResultData.fail("申请单不存在!");
@@ -67,25 +67,52 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         if (ApprovalStatus.INITIAL != requisition.getApprovalStatus()) {
             return ResultData.fail("申请单当前状态[" + requisition.getApprovalStatus() + "], 不是初始状态");
         }
-
-        // 通过流程类型获取最新的流程实例版本
-        Long version = publishedService.getLatestVersion(flowTypeId);
+        FlowType flowType = flowNodeService.getFlowType(flowTypeId);
+        if (Objects.isNull(flowType)) {
+            return ResultData.fail("未找到流程类型[" + flowTypeId + "].");
+        }
+        // 当前流程版本
+        int version = flowType.getVersion();
+//        List<FlowTypeNodeRecord> nodeRecords = flowNodeService.getFlowTypeNodeRecord(flowTypeId, flowType.getVersion());
+//        if (CollectionUtils.isEmpty(nodeRecords)) {
+//            return ResultData.fail("未找到流程类型[" + flowType.getName() + "]版本[" + flowType.getVersion() + "]的任务节点.");
+//        }
 
         // 通过流程类型,实例版本及任务号,获取下一个任务
-        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(flowTypeId, version, Integer.MIN_VALUE);
+        ResultData<FlowTypeNodeRecord> resultData = flowNodeService.getNextTaskAndCheckLast(flowTypeId, version, Integer.MIN_VALUE);
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
-
-        FlowPublished nextTask = resultData.getData();
-        if (Objects.isNull(nextTask)) {
+        FlowTypeNodeRecord nextTaskNode = resultData.getData();
+        if (Objects.isNull(nextTaskNode)) {
             // 提交流程,不应该存在没有下个任务的情况
             return ResultData.fail("流程任务配置错误.");
         }
 
+        // 生成流程实例
+        FlowTaskInstance taskInstance = new FlowTaskInstance();
+        // 流程类型
+        taskInstance.setFlowTypeId(flowTypeId);
+        taskInstance.setFlowTypeName(nextTaskNode.getTypeName());
+        // 流程版本
+        taskInstance.setVersion(version);
+
+        // 申请单id
+        taskInstance.setOrderId(requisition.getId());
+        // 业务关联id
+        taskInstance.setRelationId(requisition.getRelationId());
+        // 申请类型
+        taskInstance.setApplyType(requisition.getApplicationType());
+        taskInstance.setSummary(requisition.getSummary());
+        taskInstance.setApplicantAccount(requisition.getApplicantAccount());
+        taskInstance.setApplicantUserName(requisition.getApplicantUserName());
+        taskInstance.setApplicationTime(requisition.getApplicationTime());
+
+        this.save(taskInstance);
+
         SessionUser sessionUser = ContextUtil.getSessionUser();
         // 存在下个任务,则创建下个任务的待办任务
-        ResultData<FlowTaskInstance> result = this.createToDoTask(requisition, sessionUser, nextTask);
+        ResultData<FlowToDoTask> result = this.createToDoTask(requisition, sessionUser, nextTaskNode);
         if (result.successful()) {
             String msg = "提交任务";
             // 记录任务执行历史
@@ -93,7 +120,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             if (recordResult.successful()) {
                 // 指定流程类型
                 requisition.setFlowTypeId(flowTypeId);
-                requisition.setFlowTypeName(flowTypeName);
+                requisition.setFlowTypeName(nextTaskNode.getTypeName());
                 // 记录流程版本
                 requisition.setFlowVersion(version);
                 // 更新申请单状态为审核中
@@ -177,7 +204,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      */
     private ResultData<RequisitionOrder> passed(RequisitionOrder requisition, String taskId, String message) {
         // 获取当前任务
-        FlowTaskInstance currentTask = this.findOne(taskId);
+        FlowToDoTask currentTask = flowToDoTaskService.findOne(taskId);
         if (Objects.isNull(currentTask)) {
             return ResultData.fail("任务不存在!");
         }
@@ -187,14 +214,14 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         }
         // 当前任务待办状态更新为已处理
         currentTask.setPending(Boolean.FALSE);
-        OperateResultWithData<FlowTaskInstance> updateResult = this.save(currentTask);
+        OperateResultWithData<FlowToDoTask> updateResult = flowToDoTaskService.save(currentTask);
         if (updateResult.notSuccessful()) {
             LogUtil.error("任务待办状态更新失败: " + updateResult.getMessage());
             return ResultData.fail("任务待办状态更新失败!");
         }
 
         // 通过流程类型,实例版本及任务号,获取下一个任务
-        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getFlowVersion(), currentTask.getTaskNo());
+        ResultData<FlowTypeNodeRecord> resultData = flowNodeService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getFlowVersion(), currentTask.getTaskNo());
         if (resultData.failed()) {
             LogUtil.error(resultData.getMessage());
             return ResultData.fail("不存在下个任务!");
@@ -202,7 +229,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
 
         SessionUser sessionUser = ContextUtil.getSessionUser();
         // 如果通过类型及版本找到有对应的任务,但通过任务号没有匹配上,则认为当前任务是最后一个任务,流程应结束
-        FlowPublished nextTask = resultData.getData();
+        FlowTypeNodeRecord nextTask = resultData.getData();
         if (Objects.isNull(nextTask)) {
             // 记录任务执行历史
             ResultData<Void> recordResult = historyService.record(currentTask, OperationType.PASSED, sessionUser.getAccount(), sessionUser.getUserName(), message);
@@ -215,7 +242,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             }
         } else {
             // 存在下个任务,则创建下个任务的待办任务
-            ResultData<FlowTaskInstance> result = this.createToDoTask(requisition, sessionUser, nextTask);
+            ResultData<FlowToDoTask> result = this.createToDoTask(requisition, sessionUser, nextTask);
             if (result.successful()) {
                 // 记录任务执行历史
                 ResultData<Void> recordResult = historyService.record(currentTask, OperationType.PASSED, sessionUser.getAccount(), sessionUser.getUserName(), message);
@@ -242,7 +269,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      */
     private ResultData<RequisitionOrder> reject(RequisitionOrder requisition, String taskId, String message) {
         // 获取当前任务
-        FlowTaskInstance currentTask = this.findOne(taskId);
+        FlowToDoTask currentTask = flowToDoTaskService.findOne(taskId);
         if (Objects.isNull(currentTask)) {
             return ResultData.fail("任务不存在!");
         }
@@ -252,7 +279,7 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         }
         // 当前任务待办状态更新为已处理
         currentTask.setPending(Boolean.FALSE);
-        OperateResultWithData<FlowTaskInstance> updateResult = this.save(currentTask);
+        OperateResultWithData<FlowToDoTask> updateResult = flowToDoTaskService.save(currentTask);
         if (updateResult.notSuccessful()) {
             LogUtil.error("任务待办状态更新失败: " + updateResult.getMessage());
             return ResultData.fail("任务待办状态更新失败!");
@@ -279,13 +306,13 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      */
     private ResultData<RequisitionOrder> cancel(RequisitionOrder requisition, String message) {
         SessionUser sessionUser = ContextUtil.getSessionUser();
-        FlowTaskInstance task = new FlowTaskInstance();
+        FlowToDoTask task = new FlowToDoTask();
         // 申请单id
         task.setOrderId(requisition.getId());
         // 业务关联id
         task.setRelationId(requisition.getRelationId());
         // 申请类型
-        task.setApplicationType(requisition.getApplicationType());
+        task.setApplyType(requisition.getApplicationType());
         // 发起人
         task.setInitiatorAccount(sessionUser.getAccount());
         task.setInitiatorUserName(sessionUser.getUserName());
@@ -293,16 +320,16 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
         task.setInitTime(LocalDateTime.now());
 
         // 通过流程类型,实例版本及任务号,获取下一个任务
-        ResultData<FlowPublished> resultData = publishedService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getFlowVersion(), Integer.MIN_VALUE);
+        ResultData<FlowTypeNodeRecord> resultData = flowNodeService.getNextTaskAndCheckLast(requisition.getFlowTypeId(), requisition.getFlowVersion(), Integer.MIN_VALUE);
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
 
         // 任务
-        FlowPublished preTask = resultData.getData();
+        FlowTypeNodeRecord preTask = resultData.getData();
         if (Objects.nonNull(preTask)) {
             task.setTaskNo(preTask.getRank());
-            task.setTaskName(preTask.getTaskName());
+            task.setTaskName(preTask.getName());
         }
 
         // 记录任务执行历史
@@ -311,11 +338,11 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
             return ResultData.fail(recordResult.getMessage());
         } else {
             // 更新所有任务为已处理
-            List<FlowTaskInstance> tasks = this.findListByProperty(FlowTaskInstance.FIELD_ORDER_ID, requisition.getId());
-            for (FlowTaskInstance taskInstance : tasks) {
-                taskInstance.setPending(Boolean.FALSE);
+            List<FlowToDoTask> tasks = flowToDoTaskService.findListByProperty(FlowTaskInstance.FIELD_ORDER_ID, requisition.getId());
+            for (FlowToDoTask toDoTask : tasks) {
+                toDoTask.setPending(Boolean.FALSE);
             }
-            this.save(tasks);
+            flowToDoTaskService.save(tasks);
             // 取消申请单状态: 初始
             requisition.setApprovalStatus(ApprovalStatus.INITIAL);
             return ResultData.success(requisition);
@@ -330,45 +357,47 @@ public class FlowTaskInstanceService extends BaseEntityService<FlowTaskInstance>
      * @param task        任务
      * @return 创建结果
      */
-    private ResultData<FlowTaskInstance> createToDoTask(RequisitionOrder requisition, SessionUser sessionUser, FlowPublished task) {
+    private ResultData<FlowToDoTask> createToDoTask(RequisitionOrder requisition, SessionUser sessionUser, FlowTypeNodeRecord task) {
         // 存在下个任务,则创建下个任务的待办任务
-        FlowTaskInstance taskInstance = new FlowTaskInstance();
-        // 申请单id
-        taskInstance.setOrderId(requisition.getId());
-        // 业务关联id
-        taskInstance.setRelationId(requisition.getRelationId());
-        // 申请类型
-        taskInstance.setApplicationType(requisition.getApplicationType());
+        FlowToDoTask toDoTask = new FlowToDoTask();
+        // 任务
+        toDoTask.setFlowTypeId(task.getTypeId());
+        toDoTask.setFlowTypeName(task.getTypeName());
+        // 任务
+        toDoTask.setTaskNo(task.getRank());
+        toDoTask.setTaskName(task.getName());
         // 发起人
-        taskInstance.setInitiatorAccount(sessionUser.getAccount());
-        taskInstance.setInitiatorUserName(sessionUser.getUserName());
+        toDoTask.setInitiatorAccount(sessionUser.getAccount());
+        toDoTask.setInitiatorUserName(sessionUser.getUserName());
         // 发起时间
-        taskInstance.setInitTime(LocalDateTime.now());
-        // 任务
-        taskInstance.setFlowTypeId(task.getTypeId());
-        taskInstance.setFlowTypeName(task.getTypeName());
-        // 任务
-        taskInstance.setTaskNo(task.getRank());
-        taskInstance.setTaskName(task.getTaskName());
+        toDoTask.setInitTime(LocalDateTime.now());
         // 处理人
-        taskInstance.setExecuteAccount(task.getHandleAccount());
-        taskInstance.setExecuteUserName(task.getHandleUserName());
+        toDoTask.setExecuteAccount(task.getHandleAccount());
+        toDoTask.setExecuteUserName(task.getHandleUserName());
+
+        // 申请单id
+        toDoTask.setOrderId(requisition.getId());
+        // 业务关联id
+        toDoTask.setRelationId(requisition.getRelationId());
+        // 申请类型
+        toDoTask.setApplyType(requisition.getApplicationType());
+        toDoTask.setSummary(requisition.getSummary());
 
         // 保存
-        OperateResultWithData<FlowTaskInstance> result = this.save(taskInstance);
-        if (result.successful()) {
+        flowToDoTaskService.save(toDoTask);
+        try {
             Context context = new Context();
             context.setVariable("userName", task.getHandleUserName());
             context.setVariable("flowType", task.getTypeName());
-            context.setVariable("taskName", task.getTaskName());
+            context.setVariable("taskName", task.getName());
             context.setVariable("summary", requisition.getSummary());
             context.setVariable("url", serverWeb);
             context.setVariable("sysName", managerName);
             String content = ThymeLeafHelper.getTemplateEngine().process("notify/FlowTask.html", context);
             emailManager.sendMail(managerName + "-待办事项", content, sessionUser.getAccount());
-            return ResultData.success(result.getData());
-        } else {
-            return ResultData.fail(result.getMessage());
+        } catch (Exception e) {
+            LogUtil.error("流程待办任务通知异常", e);
         }
+        return ResultData.success(toDoTask);
     }
 }

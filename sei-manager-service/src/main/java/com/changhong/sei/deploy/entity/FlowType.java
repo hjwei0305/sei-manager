@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 实现功能：流程类型
@@ -39,6 +40,16 @@ public class FlowType extends BaseAuditableEntity implements IFrozen, Serializab
     @Column(name = "remark")
     private String remark;
     /**
+     * 发布时间
+     */
+    @Column(name = "published_time")
+    private LocalDateTime publishedTime;
+    /**
+     * 发布人账号
+     */
+    @Column(name = "published_account")
+    private String publishedAccount;
+    /**
      * 冻结
      */
     @Column(name = "frozen")
@@ -66,6 +77,22 @@ public class FlowType extends BaseAuditableEntity implements IFrozen, Serializab
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public LocalDateTime getPublishedTime() {
+        return publishedTime;
+    }
+
+    public void setPublishedTime(LocalDateTime publishedTime) {
+        this.publishedTime = publishedTime;
+    }
+
+    public String getPublishedAccount() {
+        return publishedAccount;
+    }
+
+    public void setPublishedAccount(String publishedAccount) {
+        this.publishedAccount = publishedAccount;
     }
 
     @Override

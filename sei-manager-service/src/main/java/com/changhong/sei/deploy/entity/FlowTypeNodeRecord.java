@@ -31,6 +31,11 @@ public class FlowTypeNodeRecord extends BaseEntity implements IRank, Serializabl
     @Column(name = "type_id", nullable = false)
     private String typeId;
     /**
+     * 流程类型
+     */
+    @Column(name = "type_name")
+    private String typeName;
+    /**
      * 流程类型版本
      */
     @Column(name = "version_")
@@ -73,6 +78,14 @@ public class FlowTypeNodeRecord extends BaseEntity implements IRank, Serializabl
 
     public void setTypeId(String typeId) {
         this.typeId = typeId;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public Integer getVersion() {

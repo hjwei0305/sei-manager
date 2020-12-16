@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.service;
 
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -149,6 +151,7 @@ public class FlowDefinitionService {
         for (FlowTypeNode node : nodeList) {
             record = new FlowTypeNodeRecord();
             record.setTypeId(typeId);
+            record.setTypeName(type.getName());
             record.setVersion(version);
             record.setCode(node.getCode());
             record.setName(node.getName());
@@ -159,16 +162,24 @@ public class FlowDefinitionService {
         }
         nodeRecordService.save(nodeRecords);
 
+        // 发布时间
+        LocalDateTime publishedTime = LocalDateTime.now();
+        // 发布人账号
+        String publishedAccount = ContextUtil.getUserAccount();
         // 写入流程类型版本记录
         FlowTypeVersion typeVersion = new FlowTypeVersion();
         typeVersion.setTypeId(typeId);
         typeVersion.setVersion(version);
         typeVersion.setName(type.getName());
         typeVersion.setRemark(type.getRemark());
+        typeVersion.setPublishedTime(publishedTime);
+        typeVersion.setPublishedAccount(publishedAccount);
         OperateResultWithData<FlowTypeVersion> result = typeVersionService.save(typeVersion);
         if (result.successful()) {
             // 更新版本号
             type.setVersion(version);
+            type.setPublishedTime(publishedTime);
+            type.setPublishedAccount(publishedAccount);
             OperateResultWithData<FlowType> result1 = typeService.save(type);
             if (result1.notSuccessful()) {
                 // 事务回滚
