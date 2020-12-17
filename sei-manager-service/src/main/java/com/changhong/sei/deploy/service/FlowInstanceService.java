@@ -123,16 +123,4 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> {
 
         return ResultData.success();
     }
-
-    /**
-     * 发布流程类型
-     *
-     * @param instanceId 流程类型id
-     * @return 发布结果
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> publish(String instanceId) {
-
-        return ResultData.success();
-    }
 }

@@ -35,6 +35,11 @@ public class FlowTypeDto extends BaseEntityDto {
     @ApiModelProperty(value = "版本号")
     private Integer version;
     /**
+     * 是否能再定义
+     */
+    @ApiModelProperty(value = "是否能再定义")
+    private Boolean redefined = Boolean.FALSE;
+    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
@@ -78,6 +83,14 @@ public class FlowTypeDto extends BaseEntityDto {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Boolean getRedefined() {
+        return redefined;
+    }
+
+    public void setRedefined(Boolean redefined) {
+        this.redefined = redefined;
     }
 
     public String getRemark() {

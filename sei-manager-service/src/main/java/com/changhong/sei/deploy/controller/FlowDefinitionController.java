@@ -87,6 +87,23 @@ public class FlowDefinitionController implements FlowDefinitionApi {
     }
 
     /**
+     * 获取能再定义的流程类型
+     *
+     * @return 分页数据结果
+     */
+    @Override
+    public ResultData<List<FlowTypeDto>> findRedefinedTypes() {
+        List<FlowTypeDto> nodeDtoList = new ArrayList<>();
+        List<FlowType> redefinedTypes = typeService.findRedefinedTypes();
+        if (CollectionUtils.isNotEmpty(redefinedTypes)) {
+            for (FlowType type : redefinedTypes) {
+                nodeDtoList.add(modelMapper.map(type, FlowTypeDto.class));
+            }
+        }
+        return ResultData.success(nodeDtoList);
+    }
+
+    /**
      * 保存流程类型节点
      *
      * @param dto dto
@@ -217,14 +234,4 @@ public class FlowDefinitionController implements FlowDefinitionApi {
         return instanceService.saveFlowInstanceTask(null);
     }
 
-    /**
-     * 发布流程实例任务
-     *
-     * @param instanceId 流程类型id
-     * @return 发布结果
-     */
-    @Override
-    public ResultData<Void> publishFlowInstance(String instanceId) {
-        return instanceService.publish(instanceId);
-    }
 }

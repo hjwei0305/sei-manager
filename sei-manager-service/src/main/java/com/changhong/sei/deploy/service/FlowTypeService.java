@@ -82,6 +82,15 @@ public class FlowTypeService extends BaseEntityService<FlowType> {
         return dao.findByPage(search);
     }
 
+    /**
+     * 获取能再定义的流程类型
+     *
+     * @return 分页数据结果
+     */
+    public List<FlowType> findRedefinedTypes() {
+        return dao.findListByProperty(FlowType.FIELD_REDEFINED, Boolean.TRUE);
+    }
+
 
     /**
      * 发布流程类型

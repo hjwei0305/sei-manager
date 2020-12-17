@@ -47,6 +47,15 @@ public interface FlowDefinitionApi {
     ResultData<PageResult<FlowTypeDto>> findTypeByPage(@RequestBody Search search);
 
     /**
+     * 获取能再定义的流程类型
+     *
+     * @return 分页数据结果
+     */
+    @GetMapping(path = "findRedefinedTypes")
+    @ApiOperation(value = "获取能再定义的流程类型", notes = "获取能再定义的流程类型")
+    ResultData<List<FlowTypeDto>> findRedefinedTypes();
+
+    /**
      * 保存流程类型节点
      *
      * @param dto dto
@@ -128,13 +137,4 @@ public interface FlowDefinitionApi {
     @ApiOperation(value = "保存更新流程实例任务节点", notes = "保存更新流程实例任务节点")
     ResultData<Void> saveFlowInstanceTask(@RequestBody List<FlowInstanceTaskDto> taskList);
 
-    /**
-     * 发布流程实例任务
-     *
-     * @param instanceId 流程类型id
-     * @return 发布结果
-     */
-    @PostMapping(path = "publishFlowInstance")
-    @ApiOperation(value = "发布流程实例任务", notes = "发布流程实例任务")
-    ResultData<Void> publishFlowInstance(@RequestParam("instanceId") String instanceId);
 }

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 public class FlowType extends BaseAuditableEntity implements IFrozen, ICodeUnique, Serializable {
     private static final long serialVersionUID = -64497955636689211L;
+    public static final String FIELD_REDEFINED = "redefined";
 
     /**
      * 代码
@@ -40,6 +41,11 @@ public class FlowType extends BaseAuditableEntity implements IFrozen, ICodeUniqu
      */
     @Column(name = "version_")
     private Integer version = 0;
+    /**
+     * 是否能再定义
+     */
+    @Column(name = "redefined")
+    private Boolean redefined = Boolean.FALSE;
     /**
      * 描述说明
      */
@@ -85,6 +91,14 @@ public class FlowType extends BaseAuditableEntity implements IFrozen, ICodeUniqu
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Boolean getRedefined() {
+        return redefined;
+    }
+
+    public void setRedefined(Boolean redefined) {
+        this.redefined = redefined;
     }
 
     public String getRemark() {
