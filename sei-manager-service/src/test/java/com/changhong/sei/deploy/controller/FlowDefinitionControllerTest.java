@@ -67,7 +67,7 @@ public class FlowDefinitionControllerTest extends BaseUnitTest {
         String instanceId = "3";
         String json = "[{\"id\":\"AAF4703C-4066-11EB-8FC5-0242C0A84603\",\"instanceId\":\"AAF4703B-4066-11EB-8FC5-0242C0A84603\",\"code\":\"1\",\"name\":\"技术经理审核\",\"handleAccount\":\"chao2.ma\",\"handleUserName\":\"马超\"},{\"id\":\"AAF4974D-4066-11EB-8FC5-0242C0A84603\",\"instanceId\":\"AAF4703B-4066-11EB-8FC5-0242C0A84603\",\"code\":\"2\",\"name\":\"产品经理审核\",\"handleAccount\":\"pan1.zhang\",\"handleUserName\":\"张盼\"},{\"id\":\"AAF4974E-4066-11EB-8FC5-0242C0A84603\",\"instanceId\":\"AAF4703B-4066-11EB-8FC5-0242C0A84603\",\"code\":\"3\",\"name\":\"管理员审核\",\"handleAccount\":\"admin\",\"handleUserName\":\"管理员\"}]";
         List<FlowInstanceTaskDto> taskList = JsonUtils.fromJson2List(json, FlowInstanceTaskDto.class);
-        ResultData<Void> resultData = controller.saveFlowInstanceTask(relation, instanceId, taskList);
+        ResultData<Void> resultData = controller.saveFlowInstanceTask(relation, taskList);
         System.out.println(resultData);
     }
 }

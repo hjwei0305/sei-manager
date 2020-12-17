@@ -134,10 +134,9 @@ public interface FlowDefinitionApi {
      * @param taskList 流程实例任务节点
      * @return 返回结果
      */
-    @PostMapping(path = "saveInstanceTask/{relation}/{instanceId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "saveInstanceTask/{relation}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "保存更新流程实例任务节点", notes = "保存更新流程实例任务节点")
     ResultData<Void> saveFlowInstanceTask(@PathVariable("relation") String relation,
-                                          @PathVariable("instanceId") String instanceId,
                                           @RequestBody @Validated @NotEmpty List<FlowInstanceTaskDto> taskList);
 
 }

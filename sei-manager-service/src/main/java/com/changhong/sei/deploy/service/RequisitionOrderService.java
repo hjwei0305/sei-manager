@@ -133,14 +133,14 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> submit(@Valid TaskSubmitRequest submitRequest) {
+    public ResultData<Void> submit(TaskSubmitRequest submitRequest) {
         // 获取申请单
         RequisitionOrder requisition = this.findOne(submitRequest.getRequisitionId());
         if (Objects.isNull(requisition)) {
             return ResultData.fail("申请单不存在!");
         }
 
-        ResultData<RequisitionOrder> result = flowRuntimeService.submit(requisition);
+        ResultData<RequisitionOrder> result = flowRuntimeService.submit(submitRequest.getBizKey(), requisition);
         if (result.successful()) {
             OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
             if (resultWithData.successful()) {
@@ -162,7 +162,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> handleTask(@Valid TaskHandleRequest handleRequest) {
+    public ResultData<Void> handleTask(TaskHandleRequest handleRequest) {
         // 获取申请单
         RequisitionOrder requisition = this.findOne(handleRequest.getRequisitionId());
         if (Objects.isNull(requisition)) {

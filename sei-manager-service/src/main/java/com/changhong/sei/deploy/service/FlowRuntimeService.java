@@ -58,7 +58,7 @@ public class FlowRuntimeService {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<RequisitionOrder> submit(RequisitionOrder requisition) {
+    public ResultData<RequisitionOrder> submit(String bizKey, RequisitionOrder requisition) {
         // 获取申请单
         if (Objects.isNull(requisition)) {
             return ResultData.fail("申请单不存在!");
@@ -80,7 +80,7 @@ public class FlowRuntimeService {
         int version = flowType.getVersion();
 
         // 查找流程实例
-        ResultData<FlowInstance> resultData = instanceService.getFlowInstance(flowTypeCode, version, requisition.getRelationId());
+        ResultData<FlowInstance> resultData = instanceService.getFlowInstance(flowTypeCode, version, bizKey);
         if (resultData.failed()) {
             return ResultData.fail("未找到流程类型[" + flowTypeCode + "]版本[" + version + "]的流程实例.");
         }

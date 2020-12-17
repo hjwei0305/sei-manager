@@ -22,6 +22,9 @@ public class TaskSubmitRequest implements Serializable {
     @NotBlank
     @ApiModelProperty(notes = "申请单id")
     private String requisitionId;
+    @NotBlank
+    @ApiModelProperty(notes = "业务id")
+    private String bizKey;
 
     public String getRequisitionId() {
         return requisitionId;
@@ -31,4 +34,11 @@ public class TaskSubmitRequest implements Serializable {
         this.requisitionId = requisitionId;
     }
 
+    public String getBizKey() {
+        return bizKey;
+    }
+
+    public void setBizKey(String bizKey) {
+        this.bizKey = bizKey;
+    }
 }

@@ -4,6 +4,7 @@ import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.deploy.dto.TaskHandleRequest;
+import com.changhong.sei.deploy.dto.TaskSubmitRequest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,6 +39,10 @@ public class RequisitionOrderServiceTest extends BaseUnitTest {
 
     @Test
     public void submit() {
+        TaskSubmitRequest submitRequest = new TaskSubmitRequest();
+        submitRequest.setRequisitionId("97668A83-406B-11EB-B9A4-0242C0A84603");
+        ResultData<Void> resultData = service.submit(submitRequest);
+        System.out.println(resultData);
     }
 
     @Test

@@ -123,7 +123,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> {
     public ResultData<Void> saveFlowInstanceTask(String relation, String instanceId, List<FlowInstanceTask> taskList) {
         FlowInstance instance = dao.findOne(instanceId);
         if (Objects.isNull(instance)) {
-            return ResultData.fail("流程类型实例[" + instanceId + "]不存在ø.");
+            return ResultData.fail("流程类型实例[" + instanceId + "]不存在.");
         }
         FlowInstance flowInstance = new FlowInstance();
         flowInstance.setCode(instance.getCode());

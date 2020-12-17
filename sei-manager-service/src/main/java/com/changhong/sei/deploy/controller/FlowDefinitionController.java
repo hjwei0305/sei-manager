@@ -230,8 +230,9 @@ public class FlowDefinitionController implements FlowDefinitionApi {
      * @return 返回结果
      */
     @Override
-    public ResultData<Void> saveFlowInstanceTask(String relation, String instanceId, List<FlowInstanceTaskDto> taskList) {
+    public ResultData<Void> saveFlowInstanceTask(String relation, List<FlowInstanceTaskDto> taskList) {
         List<FlowInstanceTask> tasks = new ArrayList<>(taskList.size());
+        String instanceId = null;
         for (FlowInstanceTaskDto taskDto : taskList) {
             tasks.add(modelMapper.map(taskDto, FlowInstanceTask.class));
             instanceId = taskDto.getInstanceId();
