@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.dto;
 
+import com.changhong.sei.core.dto.BaseEntityDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
  * @since 2020-12-16 10:53:49
  */
 @ApiModel(description = "流程类型实例DTO")
-public class FlowInstanceDto implements Serializable {
+public class FlowInstanceDto extends BaseEntityDto implements Serializable {
     private static final long serialVersionUID = -13224391892073412L;
     /**
      * 流程类型代码
