@@ -22,7 +22,7 @@ import java.io.Serializable;
 @Table(name = "flow_de_type_node")
 @DynamicInsert
 @DynamicUpdate
-public class FlowTypeNode extends BaseAuditableEntity implements ICodeUnique, IRank, Serializable {
+public class FlowTypeNode extends BaseAuditableEntity implements IRank, Serializable {
     private static final long serialVersionUID = 369771080770875655L;
     public static final String FIELD_TYPE_ID = "typeId";
     /**
@@ -69,12 +69,10 @@ public class FlowTypeNode extends BaseAuditableEntity implements ICodeUnique, IR
         this.typeId = typeId;
     }
 
-    @Override
     public String getCode() {
         return code;
     }
 
-    @Override
     public void setCode(String code) {
         this.code = code;
     }
