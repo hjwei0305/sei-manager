@@ -4,6 +4,8 @@ import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 流程实例任务节点(FlowInstanceTask)DTO类
  *
@@ -17,26 +19,31 @@ public class FlowInstanceTaskDto extends BaseEntityDto {
     /**
      * 流程实例ID
      */
+    @NotBlank
     @ApiModelProperty(value = "流程类型id")
     private String instanceId;
     /**
      * 代码
      */
+    @NotBlank
     @ApiModelProperty(value = "任务节点号")
     private String code;
     /**
      * 名称
      */
+    @NotBlank
     @ApiModelProperty(value = "任务节点名称")
     private String name;
     /**
      * 处理人账号
      */
+    @NotBlank
     @ApiModelProperty(value = "处理人账号")
     private String handleAccount;
     /**
      * 处理人
      */
+    @NotBlank
     @ApiModelProperty(value = "处理人")
     private String handleUserName;
 

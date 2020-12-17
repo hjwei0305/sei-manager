@@ -119,7 +119,26 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> {
      * @param taskList 流程实例任务节点
      * @return 返回结果
      */
-    public ResultData<Void> saveFlowInstanceTask(List<FlowInstanceTask> taskList) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> saveFlowInstanceTask(String relation, String instanceId, List<FlowInstanceTask> taskList) {
+        FlowInstance instance = dao.findOne(instanceId);
+        if (Objects.isNull(instance)) {
+            return ResultData.fail("流程类型实例[" + instanceId + "]不存在ø.");
+        }
+        FlowInstance flowInstance = new FlowInstance();
+        flowInstance.setCode(instance.getCode());
+        flowInstance.setName(instance.getName());
+        flowInstance.setVersion(instance.getVersion());
+        flowInstance.setRelation(relation);
+        flowInstance.setRemark(instance.getRemark());
+        this.save(flowInstance);
+
+        String newInstanceId = flowInstance.getId();
+        for (FlowInstanceTask task : taskList) {
+            task.setId(null);
+            task.setInstanceId(newInstanceId);
+        }
+        instanceTaskService.save(taskList);
 
         return ResultData.success();
     }

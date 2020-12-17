@@ -53,21 +53,6 @@ public class FlowInstance extends BaseEntity implements Serializable {
      */
     @Column(name = "remark")
     private String remark;
-    /**
-     * 是否发布
-     */
-    @Column(name = "is_published")
-    private Boolean published = Boolean.FALSE;
-    /**
-     * 发布时间
-     */
-    @Column(name = "published_time")
-    private LocalDateTime publishedTime;
-    /**
-     * 发布人账号
-     */
-    @Column(name = "published_account")
-    private String publishedAccount;
 
     public String getCode() {
         return code;
@@ -109,27 +94,4 @@ public class FlowInstance extends BaseEntity implements Serializable {
         this.remark = remark;
     }
 
-    public Boolean getPublished() {
-        return published;
-    }
-
-    public void setPublished(Boolean published) {
-        this.published = published;
-    }
-
-    public LocalDateTime getPublishedTime() {
-        return publishedTime;
-    }
-
-    public void setPublishedTime(LocalDateTime publishedTime) {
-        this.publishedTime = publishedTime;
-    }
-
-    public String getPublishedAccount() {
-        return publishedAccount;
-    }
-
-    public void setPublishedAccount(String publishedAccount) {
-        this.publishedAccount = publishedAccount;
-    }
 }

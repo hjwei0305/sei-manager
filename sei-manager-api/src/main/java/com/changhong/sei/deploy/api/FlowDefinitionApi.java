@@ -8,12 +8,13 @@ import com.changhong.sei.deploy.dto.FlowInstanceTaskDto;
 import com.changhong.sei.deploy.dto.FlowTypeDto;
 import com.changhong.sei.deploy.dto.FlowTypeNodeDto;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Set;
 
@@ -133,8 +134,10 @@ public interface FlowDefinitionApi {
      * @param taskList 流程实例任务节点
      * @return 返回结果
      */
-    @PostMapping(path = "saveFlowInstanceTask", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "saveInstanceTask/{relation}/{instanceId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "保存更新流程实例任务节点", notes = "保存更新流程实例任务节点")
-    ResultData<Void> saveFlowInstanceTask(@RequestBody List<FlowInstanceTaskDto> taskList);
+    ResultData<Void> saveFlowInstanceTask(@PathVariable("relation") String relation,
+                                          @PathVariable("instanceId") String instanceId,
+                                          @RequestBody @Validated @NotEmpty List<FlowInstanceTaskDto> taskList);
 
 }
