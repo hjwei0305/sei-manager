@@ -20,6 +20,11 @@ import java.time.LocalDateTime;
 public class ReleaseVersionRequisition extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     /**
+     * 业务key
+     */
+    @Column(name = "biz_key")
+    private String bizKey;
+    /**
      * 关联id
      *
      * @see ApplyType
@@ -96,6 +101,13 @@ public class ReleaseVersionRequisition extends BaseEntity implements Serializabl
     @Column(name = "build_status")
     private String buildStatus;
 
+    public String getBizKey() {
+        return bizKey;
+    }
+
+    public void setBizKey(String bizKey) {
+        this.bizKey = bizKey;
+    }
 
     public String getRelationId() {
         return relationId;

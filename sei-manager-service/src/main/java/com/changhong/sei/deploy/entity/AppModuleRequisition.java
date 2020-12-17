@@ -19,6 +19,11 @@ import java.time.LocalDateTime;
 public class AppModuleRequisition extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -64497955636689211L;
     /**
+     * 业务key
+     */
+    @Column(name = "biz_key")
+    private String bizKey;
+    /**
      * 关联id
      *
      * @see ApplyType
@@ -92,6 +97,14 @@ public class AppModuleRequisition extends BaseEntity implements Serializable {
     private String gitWebUrl;
     @Column(name = "git_create_time")
     private LocalDateTime gitCreateTime;
+
+    public String getBizKey() {
+        return bizKey;
+    }
+
+    public void setBizKey(String bizKey) {
+        this.bizKey = bizKey;
+    }
 
     public String getRelationId() {
         return relationId;

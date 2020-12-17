@@ -23,7 +23,11 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 public class ReleaseRecordRequisition extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -78400014111481829L;
-    public static final String FIELD_APP_ID = "appId";
+    /**
+     * 业务key
+     */
+    @Column(name = "biz_key")
+    private String bizKey;
     /**
      * 关联id
      *
@@ -108,6 +112,14 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
      */
     @Column(name = "exp_complete_time")
     private LocalDateTime expCompleteTime;
+
+    public String getBizKey() {
+        return bizKey;
+    }
+
+    public void setBizKey(String bizKey) {
+        this.bizKey = bizKey;
+    }
 
     public String getRelationId() {
         return relationId;
