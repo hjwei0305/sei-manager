@@ -56,6 +56,13 @@ public class FlowTypeDto extends BaseEntityDto {
     @ApiModelProperty(value = "冻结")
     private Boolean frozen = Boolean.FALSE;
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getName() {
         return name;
