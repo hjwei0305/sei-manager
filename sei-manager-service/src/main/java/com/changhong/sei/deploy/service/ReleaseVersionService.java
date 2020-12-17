@@ -257,6 +257,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
 
         // 申请通过,修改为可用
         version.setFrozen(Boolean.FALSE);
+        version.setBuildStatus(BuildStatus.BUILDING);
         this.save(version);
 
         ReleaseRecord record = recordService.getByGitIdAndTag(version.getGitId(), version.getVersion());
@@ -319,14 +320,16 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         if (Objects.isNull(record)) {
             return ResultData.fail("发布记录不能为空.");
         }
-        if (BuildStatus.SUCCESS == record.getBuildStatus()) {
-            ReleaseVersion version = this.getByVersion(record.getAppId(), record.getModuleCode(), record.getTagName());
-            if (Objects.isNull(version)) {
-                return ResultData.fail(record.getModuleCode() + "版本[" + record.getTagName() + "]不存在.");
-            }
 
+        ReleaseVersion version = this.getByVersion(record.getAppId(), record.getModuleCode(), record.getTagName());
+        if (Objects.isNull(version)) {
+            return ResultData.fail(record.getModuleCode() + "版本[" + record.getTagName() + "]不存在.");
+        }
+
+        if (BuildStatus.SUCCESS == record.getBuildStatus()) {
             // 构建成功,更新版本状态为可用
             version.setAvailable(Boolean.TRUE);
+            version.setBuildStatus(record.getBuildStatus());
             this.save(version);
             LogUtil.bizLog(record.getJobName() + "发版成功[" + record.getTagName() + "].");
 
@@ -334,6 +337,9 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
 
             return ResultData.success();
         } else {
+            version.setBuildStatus(record.getBuildStatus());
+            this.save(version);
+
             gitlabService.deleteProjectRelease(record.getGitId(), record.getTagName());
 
             return ResultData.fail(record.getJobName() + "发版失败,当前构建状态:" + record.getBuildStatus().name());

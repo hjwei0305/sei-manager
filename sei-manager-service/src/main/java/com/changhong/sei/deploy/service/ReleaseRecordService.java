@@ -533,7 +533,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             // 更新发布记录状态
             record.setBuildStatus(status);
             dao.save(record);
-            if (BuildStatus.SUCCESS == status && needRelease) {
+            if (needRelease) {
                 releaseVersionService.releaseVersion(record);
             }
         }

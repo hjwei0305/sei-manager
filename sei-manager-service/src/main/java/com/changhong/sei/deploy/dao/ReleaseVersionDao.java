@@ -1,7 +1,6 @@
 package com.changhong.sei.deploy.dao;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
-import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.entity.ReleaseVersion;
 import org.springframework.stereotype.Repository;
 

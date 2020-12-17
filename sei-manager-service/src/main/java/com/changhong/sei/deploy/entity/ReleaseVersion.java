@@ -2,12 +2,11 @@ package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.IFrozen;
+import com.changhong.sei.deploy.dto.BuildStatus;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -102,6 +101,12 @@ public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable 
      */
     @Column(name = "available")
     private Boolean available = Boolean.FALSE;
+    /**
+     * Jenkins构建状态
+     */
+    @Column(name = "build_status")
+    @Enumerated(EnumType.STRING)
+    private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
 
     public String getAppId() {
         return appId;
@@ -223,5 +228,13 @@ public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable 
 
     public void setAvailable(Boolean available) {
         this.available = available;
+    }
+
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(BuildStatus buildStatus) {
+        this.buildStatus = buildStatus;
     }
 }
