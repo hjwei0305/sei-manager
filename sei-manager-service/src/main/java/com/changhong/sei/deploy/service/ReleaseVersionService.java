@@ -72,6 +72,12 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseVersionRequisitionDto> createRequisition(ReleaseVersion releaseVersion) {
+        // 通过模块和版本检查是否重复申请
+        ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
+        if (Objects.nonNull(existed)) {
+            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]已申请过,请不要重复申请.");
+        }
+
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         releaseVersion.setFrozen(Boolean.TRUE);
         // 保存应用模块
@@ -124,6 +130,11 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(ReleaseVersion releaseVersion) {
+        // 通过模块和版本检查是否重复申请
+        ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
+        if (Objects.nonNull(existed)) {
+            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]已申请过,请不要重复申请.");
+        }
         ReleaseVersion version = this.findOne(releaseVersion.getId());
         if (Objects.isNull(version)) {
             return ResultData.fail("应用模块不存在!");

@@ -61,7 +61,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> {
             if (Objects.nonNull(instance)) {
                 return ResultData.success(instance);
             } else {
-                return ResultData.fail("未找到流程类型代码[" + typeCode + "],版本[" + version + "],关联值[" + relation + "]的流程实例.");
+                return ResultData.fail("未找到流程类型代码[" + typeCode + "],版本[" + version + "],关联值[" + relation + "]的流程实例,可能未发布流程.");
             }
         } else {
             search.addFilter(new SearchFilter(FlowInstance.FIELD_RELATION, relation));

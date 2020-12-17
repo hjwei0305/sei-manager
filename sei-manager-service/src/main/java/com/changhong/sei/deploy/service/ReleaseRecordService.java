@@ -114,6 +114,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseRecordRequisitionDto> createRequisition(ReleaseRecord releaseRecord) {
+        // 通过模块和tag检查是否重复申请
+        ReleaseRecord existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
+        if (Objects.nonNull(existed)) {
+            return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getTagName() + "]已申请过,请不要重复申请.");
+        }
+
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         releaseRecord.setFrozen(Boolean.TRUE);
         // 保存应用
@@ -169,6 +175,12 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseRecordRequisitionDto> modifyRequisition(ReleaseRecord releaseRecord) {
+        // 通过模块和tag检查是否重复申请
+        ReleaseRecord existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
+        if (Objects.nonNull(existed)) {
+            return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getTagName() + "]已申请过,请不要重复申请.");
+        }
+
         ReleaseRecord entity = this.findOne(releaseRecord.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
@@ -539,6 +551,13 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         }
     }
 
+    /**
+     * 通过git和tag获取构建记录
+     *
+     * @param gitId gitId
+     * @param tag   tag
+     * @return 构建记录
+     */
     public ReleaseRecord getByGitIdAndTag(String gitId, String tag) {
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(ReleaseRecord.FIELD_GIT_ID, gitId));
