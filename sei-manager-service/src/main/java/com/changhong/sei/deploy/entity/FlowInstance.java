@@ -1,12 +1,12 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
-import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.deploy.dto.ApplyType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -54,6 +54,16 @@ public class FlowInstance extends BaseAuditableEntity implements Serializable {
      */
     @Column(name = "remark")
     private String remark;
+    /**
+     * 发布时间
+     */
+    @Column(name = "published_time")
+    private LocalDateTime publishedTime;
+    /**
+     * 发布人账号
+     */
+    @Column(name = "published_account")
+    private String publishedAccount;
 
     public String getCode() {
         return code;
@@ -95,4 +105,19 @@ public class FlowInstance extends BaseAuditableEntity implements Serializable {
         this.remark = remark;
     }
 
+    public LocalDateTime getPublishedTime() {
+        return publishedTime;
+    }
+
+    public void setPublishedTime(LocalDateTime publishedTime) {
+        this.publishedTime = publishedTime;
+    }
+
+    public String getPublishedAccount() {
+        return publishedAccount;
+    }
+
+    public void setPublishedAccount(String publishedAccount) {
+        this.publishedAccount = publishedAccount;
+    }
 }

@@ -43,11 +43,6 @@ public class FlowInstanceDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "描述说明")
     private String remark;
     /**
-     * 是否发布
-     */
-    @ApiModelProperty(value = "是否发布")
-    private Boolean published;
-    /**
      * 发布时间
      */
     @ApiModelProperty(value = "发布时间", example = "2020-01-14 22:18:48")
@@ -97,14 +92,6 @@ public class FlowInstanceDto extends BaseEntityDto implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    public Boolean getPublished() {
-        return published;
-    }
-
-    public void setPublished(Boolean published) {
-        this.published = published;
     }
 
     public LocalDateTime getPublishedTime() {
