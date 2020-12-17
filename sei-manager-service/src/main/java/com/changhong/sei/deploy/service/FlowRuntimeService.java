@@ -308,6 +308,10 @@ public class FlowRuntimeService {
         // 发起时间
         task.setInitTime(LocalDateTime.now());
 
+        // 流程类型
+        task.setFlowTypeCode(requisition.getApplyType().name());
+        task.setFlowTypeName(requisition.getFlowTypeName());
+
         // 通过流程类型,实例版本及任务号,获取下一个任务
         ResultData<FlowInstanceTask> resultData = instanceTaskService.getNextTaskAndCheckLast(requisition.getFlowInstanceId(), Integer.MIN_VALUE);
         if (resultData.failed()) {
