@@ -22,12 +22,6 @@ public class TaskSubmitRequest implements Serializable {
     @NotBlank
     @ApiModelProperty(notes = "申请单id")
     private String requisitionId;
-    /**
-     * 流程类型id
-     */
-    @NotBlank
-    @ApiModelProperty(notes = "流程类型id")
-    private String flowTypeId;
 
     public String getRequisitionId() {
         return requisitionId;
@@ -35,14 +29,6 @@ public class TaskSubmitRequest implements Serializable {
 
     public void setRequisitionId(String requisitionId) {
         this.requisitionId = requisitionId;
-    }
-
-    public String getFlowTypeId() {
-        return flowTypeId;
-    }
-
-    public void setFlowTypeId(String flowTypeId) {
-        this.flowTypeId = flowTypeId;
     }
 
 }
