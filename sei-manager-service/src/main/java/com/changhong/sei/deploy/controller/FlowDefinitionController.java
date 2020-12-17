@@ -234,6 +234,7 @@ public class FlowDefinitionController implements FlowDefinitionApi {
         List<FlowInstanceTask> tasks = new ArrayList<>(taskList.size());
         for (FlowInstanceTaskDto taskDto : taskList) {
             tasks.add(modelMapper.map(taskDto, FlowInstanceTask.class));
+            instanceId = taskDto.getInstanceId();
         }
         return instanceService.saveFlowInstanceTask(relation, instanceId, tasks);
     }

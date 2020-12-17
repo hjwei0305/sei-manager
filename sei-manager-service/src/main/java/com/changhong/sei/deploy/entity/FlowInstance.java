@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.entity;
 
+import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.deploy.dto.ApplyType;
 import org.hibernate.annotations.DynamicInsert;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @Table(name = "flow_instance")
 @DynamicInsert
 @DynamicUpdate
-public class FlowInstance extends BaseEntity implements Serializable {
+public class FlowInstance extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 8488019354515570494L;
 
     public static final String FIELD_CODE = "code";
