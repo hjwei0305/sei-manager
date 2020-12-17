@@ -122,10 +122,6 @@ public class FlowTypeService extends BaseEntityService<FlowType> {
         instance.setName(type.getName());
         instance.setVersion(version);
         instance.setRemark(type.getRemark());
-        // 更新发布状态
-        instance.setPublished(Boolean.TRUE);
-        instance.setPublishedTime(publishedTime);
-        instance.setPublishedAccount(publishedAccount);
         OperateResultWithData<FlowInstance> result = instanceService.save(instance);
         if (result.successful()) {
             String instanceId = instance.getId();
