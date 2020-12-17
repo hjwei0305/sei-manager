@@ -17,7 +17,11 @@ import java.util.List;
 @ApiModel(description = "申请记录DTO")
 public class RequisitionDto extends BaseEntityDto {
     private static final long serialVersionUID = -38024625578859016L;
-
+    /**
+     * 业务key
+     */
+    @ApiModelProperty(value = "业务key")
+    private String bizKey;
     /**
      * 关联id
      *
@@ -53,6 +57,14 @@ public class RequisitionDto extends BaseEntityDto {
 //    @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "审核状态")
     private ApprovalStatus approvalStatus = ApprovalStatus.INITIAL;
+
+    public String getBizKey() {
+        return bizKey;
+    }
+
+    public void setBizKey(String bizKey) {
+        this.bizKey = bizKey;
+    }
 
     public String getRelationId() {
         return relationId;

@@ -140,7 +140,9 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
             return ResultData.fail("申请单不存在!");
         }
 
-        ResultData<RequisitionOrder> result = flowRuntimeService.submit(submitRequest.getBizKey(), requisition);
+        // 设置业务key
+        requisition.setBizKey(submitRequest.getBizKey());
+        ResultData<RequisitionOrder> result = flowRuntimeService.submit(requisition);
         if (result.successful()) {
             OperateResultWithData<RequisitionOrder> resultWithData = this.save(requisition);
             if (resultWithData.successful()) {

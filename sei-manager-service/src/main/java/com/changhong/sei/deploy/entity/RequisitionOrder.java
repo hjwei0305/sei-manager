@@ -25,6 +25,11 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
 
     public static final String FIELD_RELATION_ID = "relationId";
     /**
+     * 业务key
+     */
+    @Column(name = "biz_key")
+    private String bizKey;
+    /**
      * 关联id
      *
      * @see ApplyType
@@ -85,6 +90,14 @@ public class RequisitionOrder extends BaseAuditableEntity implements Serializabl
     @Version
     @Column(name = "version_")
     private Long version = 0L;
+
+    public String getBizKey() {
+        return bizKey;
+    }
+
+    public void setBizKey(String bizKey) {
+        this.bizKey = bizKey;
+    }
 
     public String getRelationId() {
         return relationId;
