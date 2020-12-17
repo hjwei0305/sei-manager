@@ -18,6 +18,12 @@ import java.time.LocalDateTime;
 public class FlowTypeDto extends BaseEntityDto {
     private static final long serialVersionUID = 887727657051875692L;
     /**
+     * 代码
+     */
+    @NotBlank
+    @ApiModelProperty(value = "代码", required = true)
+    private String code;
+    /**
      * 名称
      */
     @NotBlank
