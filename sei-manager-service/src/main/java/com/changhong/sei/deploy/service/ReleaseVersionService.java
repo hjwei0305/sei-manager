@@ -75,7 +75,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         // 通过模块和版本检查是否重复申请
         ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
         if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]已申请过,请不要重复申请.");
+            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
         }
 
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
@@ -133,7 +133,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         // 通过模块和版本检查是否重复申请
         ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
         if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]已申请过,请不要重复申请.");
+            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
         }
         ReleaseVersion version = this.findOne(releaseVersion.getId());
         if (Objects.isNull(version)) {
