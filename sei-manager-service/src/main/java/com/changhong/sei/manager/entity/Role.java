@@ -22,6 +22,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class Role extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -60933176202135691L;
+    public static final String FIELD_IS_PUBLIC = "isPublic";
     /**
      * 角色名
      */
@@ -32,6 +33,11 @@ public class Role extends BaseEntity implements Serializable {
      */
     @Column(name = "description")
     private String description;
+    /**
+     * 是否是公共角色
+     */
+    @Column(name = "is_public")
+    private Boolean isPublic = Boolean.FALSE;
     /**
      * 创建时间
      */
@@ -63,6 +69,14 @@ public class Role extends BaseEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
     public Long getCreateTime() {

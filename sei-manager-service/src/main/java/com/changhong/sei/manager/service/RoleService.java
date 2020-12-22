@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -55,6 +56,13 @@ public class RoleService extends BaseEntityService<Role> {
      */
     @Override
     protected OperateResult preDelete(String s) {
+        Role role = dao.findOne(s);
+        if (Objects.isNull(role)) {
+            return OperateResult.operationFailure("功能角色[" + s + "]不存在，删除失败！");
+        }
+        if (role.getIsPublic()) {
+            return OperateResult.operationFailure("功能角色[" + role.getName() + "]为系统公共角色，不允许删除！");
+        }
         if (roleFeatureService.isExistByParent(s)) {
             //功能角色存在已经分配的功能项，禁止删除！
             return OperateResult.operationFailure("功能角色存在已经分配的功能项，禁止删除！");
@@ -87,4 +95,12 @@ public class RoleService extends BaseEntityService<Role> {
         return userRoleService.getChildrenFromParentId(userId);
     }
 
+    /**
+     * 获取系统公共角色
+     *
+     * @return 公共角色清单
+     */
+    public List<Role> getPublicRoles() {
+        return dao.findListByProperty(Role.FIELD_IS_PUBLIC, Boolean.TRUE);
+    }
 }

@@ -547,10 +547,18 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
             return result;
         }
 
-        //一般用户的功能角色
+        Set<Role> userRoles = new HashSet<>();
+        //公共角色
+        List<Role> publicRoles = roleService.getPublicRoles();
+        if (CollectionUtils.isNotEmpty(publicRoles)) {
+            userRoles.addAll(publicRoles);
+        }
+
         //获取用户授权的角色
         List<Role> authRoles = userRoleService.getChildrenFromParentId(user.getId());
-        Set<Role> userRoles = new HashSet<>(authRoles);
+        if (CollectionUtils.isNotEmpty(authRoles)) {
+            userRoles.addAll(authRoles);
+        }
         //获取角色分配的功能项清单
         if (userRoles.isEmpty()) {
             return result;

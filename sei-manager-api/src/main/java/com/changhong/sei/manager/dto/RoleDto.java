@@ -27,6 +27,11 @@ public class RoleDto extends BaseEntityDto {
     @Size(max = 100)
     @ApiModelProperty(value = "描述(max = 100)")
     private String description;
+    /**
+     * 是否是公共角色
+     */
+    @ApiModelProperty(value = "是否是公共角色")
+    private Boolean isPublic;
 
     /**
      * 授权分配关系Id
@@ -48,6 +53,14 @@ public class RoleDto extends BaseEntityDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(Boolean isPublic) {
+        isPublic = isPublic;
     }
 
     public String getRelationId() {
