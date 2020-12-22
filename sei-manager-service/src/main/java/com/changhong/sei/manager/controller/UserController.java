@@ -107,28 +107,19 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回注册结果
      */
     @Override
-    public ResultData<Void> registered(RegisteredUserRequest request) {
-        return service.registered(request);
+    public ResultData<String> registVerify(RegisteredUserRequest request) {
+        return service.registVerify(request);
     }
 
     /**
      * 账号注册申请激活
      *
-     * @param sign 签名值
+     * @param request 激活请求
      * @return 返回结果
      */
     @Override
-    public void activate(String sign, HttpServletResponse response) throws IOException {
-        ResultData<String> resultData = service.activate(sign);
-        if (resultData.successful()) {
-            response.setContentType("text/html;charset=utf-8");
-            response.sendRedirect(resultData.getData());
-        } else {
-            response.setCharacterEncoding("utf-8");
-            response.setContentType("application/json; charset=utf-8");
-            PrintWriter writer = response.getWriter();
-            writer.write(resultData.getMessage());
-        }
+    public ResultData<Void> activate(RegisteredUserRequest request, HttpServletResponse response) throws IOException {
+        return service.activate(request);
     }
 
     /**

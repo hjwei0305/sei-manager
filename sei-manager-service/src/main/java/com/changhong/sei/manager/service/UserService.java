@@ -13,6 +13,7 @@ import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.manager.commom.Constants;
 import com.changhong.sei.manager.commom.EmailManager;
+import com.changhong.sei.manager.commom.RandomUtils;
 import com.changhong.sei.manager.commom.validatecode.IVerifyCodeGen;
 import com.changhong.sei.manager.commom.validatecode.VerifyCode;
 import com.changhong.sei.manager.dao.UserDao;
@@ -144,15 +145,15 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
     }
 
     /**
-     * 注册用户
+     * 注册验证
      *
      * @param request 注册请求
-     * @return 返回注册结果
+     * @return 返回注册验证结果
      */
-    public ResultData<Void> registered(RegisteredUserRequest request) {
+    public ResultData<String> registVerify(RegisteredUserRequest request) {
         ResultData<Void> resultData = check(request.getReqId(), request.getVerifyCode());
         if (resultData.failed()) {
-            return resultData;
+            return ResultData.fail(resultData.getMessage());
         }
 
         String email = request.getEmail();
@@ -167,31 +168,41 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 //        if (StringUtils.isNotBlank(cacheValue)) {
 //            return ResultData.fail("[" + email + "]已申请过,请勿重复申请");
 //        }
+        // 验证码
+        String verifyCode = RandomUtils.randomNumberString(6);
+        request.setVerifyCode(verifyCode);
         // 三天有效期
-        cacheBuilder.set(cacheKey, email, 3600000 * 24 * 3);
+        cacheBuilder.set(cacheKey, request, 3600000 * 24 * 3);
 
         Context context = new Context();
-        context.setVariable("url", serverHost.concat("/user/activate/") + sign);
+        context.setVariable("verifyCode", verifyCode);
         String content = ThymeLeafHelper.getTemplateEngine().process("notify/ActivateUser.html", context);
 
         ResultData<Void> result = emailManager.sendMail(managerName + "-账号注册申请", content, email);
         if (result.successful()) {
-            return ResultData.success("账号激活链接已发送到指定邮箱,请尽快完成激活.", null);
+            return ResultData.success("账号注册验证码已发送到指定邮箱,请前往查收.", null);
         } else {
-            return result;
+            return ResultData.fail(result.getMessage());
         }
     }
 
     /**
      * 账号注册申请激活
      *
-     * @param sign 签名值
+     * @param request 激活请求
      * @return 返回结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<String> activate(String sign) {
-        String cacheKey = Constants.REDIS_REGISTERED_KEY + sign;
-        String email = cacheBuilder.get(cacheKey);
+    public ResultData<Void> activate(RegisteredUserRequest request) {
+        String cacheKey = Constants.REDIS_REGISTERED_KEY + request.getReqId();
+        RegisteredUserRequest userRequest = cacheBuilder.get(cacheKey);
+        if (Objects.isNull(userRequest)) {
+            return ResultData.fail("错误注册激活数据!");
+        }
+        if (!StringUtils.equalsIgnoreCase(request.getVerifyCode(), userRequest.getVerifyCode())) {
+            return ResultData.fail("验证码错误!");
+        }
+        String email = userRequest.getEmail();
         if (StringUtils.isNotBlank(email)) {
             User user = this.getByEmail(email);
             if (Objects.nonNull(user)) {
@@ -215,12 +226,12 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
             }
             ResultData<User> result = this.createUser(user);
             if (result.successful()) {
-                return ResultData.success(serverWeb);
+                return ResultData.success("账号密码已发送至申请邮箱,请尽快查收!", null);
             } else {
                 return ResultData.fail(result.getMessage());
             }
         }
-        return ResultData.fail("激活失败,激活链接已失效.");
+        return ResultData.fail("激活失败,激活数据异常.");
     }
 
     @Override

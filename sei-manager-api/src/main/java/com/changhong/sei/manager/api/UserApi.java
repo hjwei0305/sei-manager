@@ -62,14 +62,14 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     ResultData<Void> check(@RequestParam("reqId") @NotBlank String reqId, @RequestParam("code") @NotBlank String code);
 
     /**
-     * 注册用户
+     * 注册验证
      *
      * @param request 注册请求
-     * @return 返回注册结果
+     * @return 返回注册验证结果
      */
-    @PostMapping(path = "registered", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "注册用户", notes = "注册用户")
-    ResultData<Void> registered(@Valid @RequestBody RegisteredUserRequest request);
+    @PostMapping(path = "registVerify", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "注册验证", notes = "注册验证")
+    ResultData<String> registVerify(@Valid @RequestBody RegisteredUserRequest request);
 
     /**
      * 账号注册申请激活
@@ -79,7 +79,7 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
      */
     @GetMapping(path = "activate/{sign}")
     @ApiOperation(value = "账号注册申请激活", notes = "账号注册申请激活")
-    void activate(@PathVariable("sign") String sign, HttpServletResponse response) throws IOException;
+    ResultData<Void> activate(@Valid @RequestBody RegisteredUserRequest request, HttpServletResponse response) throws IOException;
 
     /**
      * 创建用户

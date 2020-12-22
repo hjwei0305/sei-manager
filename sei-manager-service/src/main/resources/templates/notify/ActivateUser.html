@@ -1,12 +1,12 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>账号激活</title>
+    <title>账号注册</title>
 </head>
 <body>
 <p>您好:</p>
 <p style="margin: 0 10px; line-height:40px; text-indent:2em;">
-    您申请了SEI开发运维平台账号，请您在<span style="font-weight: bolder;">三天内</span>通过该链接[<a th:text="${url}" th:href="${url}"></a>]完成账号激活!
+    您申请了SEI开发运维平台账号，请尽快通过该验证码[<span style="font-weight: bolder;" th:text="${verifyCode}"></span>]完成注册激活!
 </p>
 <p style="margin-left: 400px; line-height:40px; text-indent:2em;">
     祝您工作愉快！
