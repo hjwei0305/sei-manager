@@ -31,9 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -118,7 +116,7 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
      * @return 返回结果
      */
     @Override
-    public ResultData<Void> activate(RegisteredUserRequest request, HttpServletResponse response) throws IOException {
+    public ResultData<Void> activate(RegisteredUserRequest request) throws IOException {
         return service.activate(request);
     }
 

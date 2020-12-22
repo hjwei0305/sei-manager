@@ -12,7 +12,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
@@ -74,12 +73,11 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     /**
      * 账号注册申请激活
      *
-     * @param sign 签名值
      * @return 返回结果
      */
-    @GetMapping(path = "activate/{sign}")
+    @PostMapping(path = "activate")
     @ApiOperation(value = "账号注册申请激活", notes = "账号注册申请激活")
-    ResultData<Void> activate(@Valid @RequestBody RegisteredUserRequest request, HttpServletResponse response) throws IOException;
+    ResultData<Void> activate(@Valid @RequestBody RegisteredUserRequest request) throws IOException;
 
     /**
      * 创建用户
