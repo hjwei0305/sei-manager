@@ -5,6 +5,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.dto.utils.DesensitizationUtils;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
@@ -180,7 +181,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
         ResultData<Void> result = emailManager.sendMail(managerName + "-账号注册申请", content, email);
         if (result.successful()) {
-            return ResultData.success("账号注册验证码已发送到指定邮箱,请前往查收.", sign);
+            return ResultData.success("账号注册验证码已发送到指定邮箱[" + DesensitizationUtils.email(email) + "],请前往查收.", sign);
         } else {
             return ResultData.fail(result.getMessage());
         }
