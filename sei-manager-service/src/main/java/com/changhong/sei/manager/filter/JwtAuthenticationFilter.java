@@ -147,7 +147,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         switch (httpMethod) {
             case GET:
                 ignores.add("/**/user/generate/**");
-                ignores.add("/**/user/activate/**");
                 ignores.add("/**/user/getMailServer/**");
                 ignores.addAll(customConfig.getIgnores().getGet());
                 break;
@@ -160,7 +159,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
             case POST:
                 ignores.add("/**/webhook/**");
                 ignores.add("/**/user/check/**");
-                ignores.add("/**/user/registered/**");
+                ignores.add("/**/user/registVerify/**");
+                ignores.add("/**/user/activate/**");
                 ignores.add("/**/user/forgetPassword/**");
                 ignores.addAll(customConfig.getIgnores().getPost());
                 break;
