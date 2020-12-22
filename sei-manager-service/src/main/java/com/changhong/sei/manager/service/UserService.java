@@ -180,7 +180,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
 
         ResultData<Void> result = emailManager.sendMail(managerName + "-账号注册申请", content, email);
         if (result.successful()) {
-            return ResultData.success("账号注册验证码已发送到指定邮箱,请前往查收.", null);
+            return ResultData.success("账号注册验证码已发送到指定邮箱,请前往查收.", verifyCode);
         } else {
             return ResultData.fail(result.getMessage());
         }
