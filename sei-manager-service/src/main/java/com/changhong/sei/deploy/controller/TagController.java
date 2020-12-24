@@ -51,12 +51,12 @@ public class TagController implements TagApi {
     /**
      * 获取项目标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 创建结果
      */
     @Override
-    public ResultData<List<TagDto>> getTags(String moduleCode) {
-        return service.getTags(moduleCode);
+    public ResultData<List<TagDto>> getTags(String moduleId) {
+        return service.getTags(moduleId);
     }
 
     /**
@@ -84,11 +84,11 @@ public class TagController implements TagApi {
     /**
      * 同步gitlab项目标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 同步结果
      */
     @Override
-    public ResultData<Void> syncTag(String moduleCode) {
-        return service.syncTag(moduleCode);
+    public ResultData<Void> syncTag(String moduleId) {
+        return service.syncTag(moduleId);
     }
 }

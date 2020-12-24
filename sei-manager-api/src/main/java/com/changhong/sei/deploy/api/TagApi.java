@@ -22,12 +22,12 @@ public interface TagApi {
     /**
      * 获取最新的标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 创建结果
      */
     @GetMapping(path = "getLastTag")
     @ApiOperation(value = "获取最新的标签", notes = "获取最新的标签")
-    ResultData<TagDto> getLastTag(@RequestParam("moduleCode") String moduleCode);
+    ResultData<TagDto> getLastTag(@RequestParam("moduleId") String moduleId);
 
     /**
      * 通过Id获取一个Tag
@@ -42,12 +42,12 @@ public interface TagApi {
     /**
      * 获取项目标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 创建结果
      */
     @GetMapping(path = "getTags")
     @ApiOperation(value = "获取项目标签", notes = "获取项目标签")
-    ResultData<List<TagDto>> getTags(@RequestParam("moduleCode") String moduleCode);
+    ResultData<List<TagDto>> getTags(@RequestParam("moduleId") String moduleId);
 
     /**
      * 创建标签
@@ -72,10 +72,10 @@ public interface TagApi {
     /**
      * 同步gitlab项目标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 同步结果
      */
     @PostMapping(path = "syncTag")
     @ApiOperation(value = "同步gitlab项目标签", notes = "同步gitlab项目标签")
-    ResultData<Void> syncTag(@RequestParam("moduleCode") String moduleCode);
+    ResultData<Void> syncTag(@RequestParam("moduleId") String moduleId);
 }

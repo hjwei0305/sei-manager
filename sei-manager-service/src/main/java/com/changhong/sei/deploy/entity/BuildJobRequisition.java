@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "v_release_record_requisition")
+@Table(name = "v_build_job_requisition")
 @DynamicInsert
 @DynamicUpdate
 public class BuildJobRequisition extends BaseEntity implements Serializable {

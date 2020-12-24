@@ -298,10 +298,12 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             return ResultData.fail(resultData.getMessage());
         }
 
-        BuildJob releaseRecord = resultData.getData();
-        releaseRecord.setFrozen(Boolean.FALSE);
-        OperateResultWithData<BuildJob> result = this.save(releaseRecord);
+        BuildJob buildJob = resultData.getData();
+        buildJob.setFrozen(Boolean.FALSE);
+        OperateResultWithData<BuildJob> result = this.save(buildJob);
         if (result.successful()) {
+            // 禁用当前应用模块其他构建任务的构建
+
             return ResultData.success();
         } else {
             return ResultData.fail(result.getMessage());
@@ -413,7 +415,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             // 参数:项目名称(模块代码)
             params.put(Constants.DEPLOY_PARAM_PROJECT_NAME, releaseRecord.getModuleCode());
             // 参数:应用git仓库地址
-            AppModule module = moduleService.getAppModule(releaseRecord.getModuleCode());
+            AppModule module = moduleService.getAppModuleByGitId(releaseRecord.getGitId());
             params.put(Constants.DEPLOY_PARAM_GIT_PATH, Objects.isNull(module) ? "null" : module.getGitHttpUrl());
             // 参数:代码分支或者TAG
             params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());

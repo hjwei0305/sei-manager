@@ -301,23 +301,23 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     }
 
     /**
-     * 根据代码获取应用模块
+     * 根据gitId获取应用模块
      *
-     * @param code 应用模块代码
+     * @param gitId 应用模块gitId
      * @return 返回应用模块
      */
-    public AppModule getAppModule(String code) {
-        return dao.findByProperty(AppModule.CODE_FIELD, code);
+    public AppModule getAppModuleByGitId(String gitId) {
+        return dao.findByProperty(AppModule.FIELD_GIT_ID, gitId);
     }
 
     /**
      * 更新应用模块版本号
      *
-     * @param code    模块代码
+     * @param gitId   gitId
      * @param version 版本号
      */
-    public void updateVersion(String code, String version) {
-        dao.updateVersion(code, version);
+    public int updateVersion(String gitId, String version) {
+        return dao.updateVersion(gitId, version);
     }
 
     /**

@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.StringJoiner;
 
@@ -23,10 +22,12 @@ public class TagDto extends BaseEntityDto implements Serializable {
     private static final long serialVersionUID = -4455924348686616256L;
 
     /**
-     * 应用模块代码
+     * 应用模块
      */
     @NotBlank
-    @ApiModelProperty(notes = "应用模块代码", required = true)
+    @ApiModelProperty(notes = "应用模块id", required = true)
+    private String moduleId;
+    @ApiModelProperty(notes = "应用模块代码")
     private String moduleCode;
     @ApiModelProperty(notes = "tag名")
     private String tagName;
@@ -67,6 +68,14 @@ public class TagDto extends BaseEntityDto implements Serializable {
     private String commitId;
     @ApiModelProperty(notes = "是否发布版本")
     private Boolean release = Boolean.FALSE;
+
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
 
     public String getModuleCode() {
         return moduleCode;

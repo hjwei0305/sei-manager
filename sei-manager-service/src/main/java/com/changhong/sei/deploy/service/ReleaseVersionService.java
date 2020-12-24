@@ -249,7 +249,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             return ResultData.fail("版本申请单[" + id + "]不存在");
         }
 
-        AppModule module = moduleService.getAppModule(version.getModuleCode());
+        AppModule module = moduleService.getAppModuleByGitId(version.getGitId());
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + version.getModuleCode() + "]不存在");
         }
@@ -344,7 +344,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             this.save(version);
             LogUtil.bizLog(record.getJobName() + "发版成功[" + record.getTagName() + "].");
 
-            moduleService.updateVersion(record.getModuleCode(), record.getTagName());
+            moduleService.updateVersion(record.getGitId(), record.getTagName());
 
             return ResultData.success();
         } else {

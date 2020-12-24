@@ -54,17 +54,17 @@ public class TagService extends BaseEntityService<Tag> {
     /**
      * 获取最新的标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 创建结果
      */
-    public ResultData<TagDto> getLastTag(String moduleCode) {
-        AppModule module = moduleService.findByProperty(AppModule.CODE_FIELD, moduleCode);
+    public ResultData<TagDto> getLastTag(String moduleId) {
+        AppModule module = moduleService.findOne(moduleId);
         if (Objects.isNull(module)) {
-            return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
+            return ResultData.fail("应用模块Id[" + moduleId + "]不存在.");
         }
         TagDto dto;
         Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_CODE, moduleCode));
+        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, moduleId));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MAJOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));
@@ -105,12 +105,12 @@ public class TagService extends BaseEntityService<Tag> {
     /**
      * 获取项目标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 创建结果
      */
-    public ResultData<List<TagDto>> getTags(String moduleCode) {
+    public ResultData<List<TagDto>> getTags(String moduleId) {
         Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_CODE, moduleCode));
+        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, moduleId));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MAJOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));
@@ -130,24 +130,23 @@ public class TagService extends BaseEntityService<Tag> {
      */
     public ResultData<Void> createTag(TagDto request) {
         String branch = "master";
-        String moduleCode = request.getModuleCode();
-        AppModule module = moduleService.findByProperty(AppModule.CODE_FIELD, moduleCode);
+        AppModule module = moduleService.findByProperty(AppModule.ID, request.getModuleId());
         if (Objects.isNull(module)) {
-            return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
+            return ResultData.fail("应用模块id[" + request.getModuleId() + "]不存在.");
         }
-
         // 检查tag是否存在(模块代码+tag唯一)
         String tagName = request.getTagName();
         Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_CODE, moduleCode));
+        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, module.getId()));
         search.addFilter(new SearchFilter(Tag.FIELD_CODE, tagName));
         Tag existTag = dao.findFirstByFilters(search);
         if (Objects.nonNull(existTag)) {
-            return ResultData.fail("模块[" + moduleCode + "]已存在Tag[" + tagName + "].");
+            return ResultData.fail("模块[" + module.getCode() + "]已存在Tag[" + tagName + "].");
         }
 
         Tag tag = new Tag();
-        tag.setModuleCode(moduleCode);
+        tag.setModuleId(module.getId());
+        tag.setModuleCode(module.getCode());
         tag.setMajor(request.getMajor());
         tag.setMinor(request.getMinor());
         tag.setRevised(request.getRevised());
@@ -194,7 +193,7 @@ public class TagService extends BaseEntityService<Tag> {
         if (Objects.isNull(tag)) {
             return ResultData.fail("标签[" + id + "]不存在");
         }
-        AppModule module = moduleService.findByProperty(AppModule.CODE_FIELD, tag.getModuleCode());
+        AppModule module = moduleService.findOne(tag.getModuleId());
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + tag.getModuleCode() + "]不存在.");
         }
@@ -212,20 +211,20 @@ public class TagService extends BaseEntityService<Tag> {
     /**
      * 同步gitlab项目标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 同步结果
      */
     @SeiLock(key = "'syncTag' + #moduleCode", fallback = "syncTagFallback")
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> syncTag(String moduleCode) {
-        AppModule module = moduleService.findByProperty(AppModule.CODE_FIELD, moduleCode);
+    public ResultData<Void> syncTag(String moduleId) {
+        AppModule module = moduleService.findOne(moduleId);
         if (Objects.isNull(module)) {
-            return ResultData.fail("应用模块[" + moduleCode + "]不存在.");
+            return ResultData.fail("应用模块id[" + moduleId + "]不存在.");
         }
 
         Set<String> tagNameSet;
         // 获取所有tag
-        List<Tag> allTags = dao.findListByProperty(Tag.FIELD_MODULE_CODE, moduleCode);
+        List<Tag> allTags = dao.findListByProperty(Tag.FIELD_MODULE_ID, moduleId);
         if (CollectionUtils.isNotEmpty(allTags)) {
             tagNameSet = allTags.stream().map(Tag::getCode).collect(Collectors.toSet());
             allTags.clear();
@@ -251,7 +250,8 @@ public class TagService extends BaseEntityService<Tag> {
                 Matcher m = FIND_PATTERN.matcher(version);
                 if (m.find()) {
                     tag = new Tag();
-                    tag.setModuleCode(moduleCode);
+                    tag.setModuleId(moduleId);
+                    tag.setModuleCode(module.getCode());
                     tag.setMajor(Integer.valueOf(m.group(1)));
                     tag.setMinor(Integer.valueOf(m.group(2)));
                     tag.setRevised(Integer.valueOf(m.group(3)));
@@ -286,6 +286,7 @@ public class TagService extends BaseEntityService<Tag> {
     private TagDto convert(Tag tag) {
         TagDto dto = new TagDto();
         if (Objects.nonNull(tag)) {
+            dto.setModuleId(tag.getModuleId());
             dto.setModuleCode(tag.getModuleCode());
             dto.setTagName(tag.getTagName());
             dto.setMajor(tag.getMajor());
