@@ -4,6 +4,7 @@ import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.IFrozen;
 import com.changhong.sei.deploy.dto.BuildStatus;
 import com.changhong.sei.deploy.dto.TemplateType;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -30,6 +31,11 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
      */
     @Column(name = "type")
     private String type = TemplateType.DEPLOY.name();
+    /**
+     * 任务名称
+     */
+    @Column(name = "job_name")
+    private String jobName;
     /**
      * 环境
      */
@@ -118,6 +124,11 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
      */
     @Column(name = "build_account")
     private String buildAccount;
+    /**
+     * 是否允许构建
+     */
+    @Column(name = "allow_build")
+    private Boolean allowBuild = Boolean.TRUE;
 
     public String getType() {
         return type;
@@ -125,6 +136,22 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    /**
+     * 环境代码+模块代码
+     *
+     * @return Jenkins任务名
+     */
+    public String getJobName() {
+        if (StringUtils.isBlank(jobName)) {
+            jobName = getEnvCode() + "_" + getModuleCode();
+        }
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
     }
 
     public String getEnvCode() {
@@ -265,13 +292,11 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
         this.buildAccount = buildAccount;
     }
 
-    /**
-     * 环境代码+模块代码
-     *
-     * @return Jenkins任务名
-     */
-    @Transient
-    public String getJobName() {
-        return envCode + "_" + moduleCode;
+    public Boolean getAllowBuild() {
+        return allowBuild;
+    }
+
+    public void setAllowBuild(Boolean allowBuild) {
+        this.allowBuild = allowBuild;
     }
 }
