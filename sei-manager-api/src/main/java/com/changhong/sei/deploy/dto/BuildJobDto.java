@@ -102,6 +102,11 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
      */
     @ApiModelProperty(value = "构建人账号")
     private String buildAccount;
+    /**
+     * 是否允许构建
+     */
+    @ApiModelProperty(value = "是否允许构建")
+    private Boolean allowBuild;
 
     public String getEnvCode() {
         return envCode;
@@ -229,5 +234,13 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
 
     public void setBuildAccount(String buildAccount) {
         this.buildAccount = buildAccount;
+    }
+
+    public Boolean getAllowBuild() {
+        return allowBuild;
+    }
+
+    public void setAllowBuild(Boolean allowBuild) {
+        this.allowBuild = allowBuild;
     }
 }
