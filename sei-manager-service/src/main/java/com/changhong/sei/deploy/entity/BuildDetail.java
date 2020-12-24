@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * 实现功能：
+ * 实现功能：构建明细(BuildDetail)实体类
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-12-04 16:37
@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Table(name = "release_build_detail")
 @DynamicInsert
 @DynamicUpdate
-public class ReleaseBuildDetail extends BaseEntity implements Serializable {
+public class BuildDetail extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2444540079790981818L;
     public static final String FIELD_RECORD_ID = "recordId";

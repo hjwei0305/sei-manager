@@ -1,29 +1,25 @@
 package com.changhong.sei.deploy.dto;
 
-import com.changhong.sei.core.dto.BaseEntityDto;
-import com.changhong.sei.core.dto.serializer.EnumJsonSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
- * 发布记录(ReleaseRecord)DTO类
+ * 构建任务申请单(BuildJobRequisition)DTO类
  *
  * @author sei
  * @since 2020-11-23 08:34:10
  */
-@ApiModel(description = "发布记录DTO")
-public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializable {
+@ApiModel(description = "构建任务申请单DTO")
+public class BuildJobRequisitionDto extends RequisitionDto implements Serializable {
     private static final long serialVersionUID = 630890453379821715L;
     /**
      * 环境
      */
-    @ApiModelProperty(value = "环境代码", required = true)
+    @ApiModelProperty(value = "环境代码")
     private String envCode;
     /**
      * 环境
@@ -33,7 +29,7 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
     /**
      * 所属应用id
      */
-    @ApiModelProperty(value = "应用id", required = true)
+    @ApiModelProperty(value = "应用id")
     private String appId;
     /**
      * 所属应用id
@@ -43,12 +39,12 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
     /**
      * 模块git id
      */
-    @ApiModelProperty(value = "模块git id", required = true)
+    @ApiModelProperty(value = "模块git id")
     private String gitId;
     /**
-     * 模块名称
+     * 模块代码
      */
-    @ApiModelProperty(value = "模块代码", required = true)
+    @ApiModelProperty(value = "模块代码")
     private String moduleCode;
     /**
      * 模块名称
@@ -58,18 +54,15 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
     /**
      * 标签名称
      */
-    @ApiModelProperty(value = "标签名称", required = true)
+    @ApiModelProperty(value = "标签名称")
     private String tagName;
-    /**
-     * 是否冻结
-     */
-    @ApiModelProperty(value = "是否可用")
-    private Boolean frozen;
     /**
      * 发布名称
      */
-    @ApiModelProperty(value = "发布名称", required = true)
+    @ApiModelProperty(value = "发布名称")
     private String name;
+    @ApiModelProperty(value = "构建状态")
+    private String buildStatus = BuildStatus.NOT_BUILT.name();
     /**
      * 描述说明(部署要求,脚本内容等)
      */
@@ -81,23 +74,6 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
     @ApiModelProperty(value = "期望完成时间", example = "2020-01-14 22:18:48")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expCompleteTime;
-    /**
-     * Jenkins构建状态
-     */
-    @JsonSerialize(using = EnumJsonSerializer.class)
-    @ApiModelProperty(value = "Jenkins构建状态")
-    private BuildStatus buildStatus;
-
-    @ApiModelProperty(value = "构建阶段清单")
-    private List<DeployTemplateStageResponse> stages;
-
-    @ApiModelProperty(value = "构建日志")
-    private String buildLog;
-    /**
-     * Jenkins构建人账号
-     */
-    @ApiModelProperty(value = "构建人账号")
-    private String buildAccount;
 
     public String getEnvCode() {
         return envCode;
@@ -163,20 +139,20 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
         this.tagName = tagName;
     }
 
-    public Boolean getFrozen() {
-        return frozen;
-    }
-
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(String buildStatus) {
+        this.buildStatus = buildStatus;
     }
 
     public String getRemark() {
@@ -193,37 +169,5 @@ public class ReleaseRecordDetailDto extends BaseEntityDto implements Serializabl
 
     public void setExpCompleteTime(LocalDateTime expCompleteTime) {
         this.expCompleteTime = expCompleteTime;
-    }
-
-    public BuildStatus getBuildStatus() {
-        return buildStatus;
-    }
-
-    public void setBuildStatus(BuildStatus buildStatus) {
-        this.buildStatus = buildStatus;
-    }
-
-    public List<DeployTemplateStageResponse> getStages() {
-        return stages;
-    }
-
-    public void setStages(List<DeployTemplateStageResponse> stages) {
-        this.stages = stages;
-    }
-
-    public String getBuildLog() {
-        return buildLog;
-    }
-
-    public void setBuildLog(String buildLog) {
-        this.buildLog = buildLog;
-    }
-
-    public String getBuildAccount() {
-        return buildAccount;
-    }
-
-    public void setBuildAccount(String buildAccount) {
-        this.buildAccount = buildAccount;
     }
 }

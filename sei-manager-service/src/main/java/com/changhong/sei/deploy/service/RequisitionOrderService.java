@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -40,7 +39,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     @Autowired
     private AppModuleService appModuleService;
     @Autowired
-    private ReleaseRecordService releaseRecordService;
+    private BuildJobService releaseRecordService;
     @Autowired
     private ReleaseVersionService versionService;
 

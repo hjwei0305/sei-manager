@@ -6,9 +6,9 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.dto.GitlabPushHookRequest;
-import com.changhong.sei.deploy.dto.ReleaseRecordDetailDto;
-import com.changhong.sei.deploy.dto.ReleaseRecordDto;
-import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
+import com.changhong.sei.deploy.dto.BuildDetailDto;
+import com.changhong.sei.deploy.dto.BuildJobDto;
+import com.changhong.sei.deploy.dto.BuildJobRequisitionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 /**
- * 发布记录(ReleaseRecord)API
+ * 构建任务(BuildJob)API
  *
  * @author sei
  * @since 2020-11-23 08:34:10
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "releaseRecord")
-public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindByPageApi<ReleaseRecordDto> {
+public interface BuildJobApi extends BaseEntityApi<BuildJobDto>, FindByPageApi<BuildJobDto> {
 
     /**
      * 分页查询发布申请单
@@ -34,7 +34,7 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
      */
     @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "分页查询发布申请单", notes = "分页查询发布申请单")
-    ResultData<PageResult<ReleaseRecordRequisitionDto>> findRequisitionByPage(@RequestBody Search search);
+    ResultData<PageResult<BuildJobRequisitionDto>> findRequisitionByPage(@RequestBody Search search);
 
     /**
      * 创建发布申请单
@@ -44,7 +44,7 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
      */
     @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "创建发布申请单", notes = "创建发布申请单")
-    ResultData<ReleaseRecordRequisitionDto> createRequisition(@RequestBody @Valid ReleaseRecordDto dto);
+    ResultData<BuildJobRequisitionDto> createRequisition(@RequestBody @Valid BuildJobDto dto);
 
     /**
      * 修改编辑发布申请单
@@ -54,7 +54,7 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
      */
     @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "修改编辑发布申请单", notes = "修改编辑发布申请单")
-    ResultData<ReleaseRecordRequisitionDto> modifyRequisition(@RequestBody @Valid ReleaseRecordDto dto);
+    ResultData<BuildJobRequisitionDto> modifyRequisition(@RequestBody @Valid BuildJobDto dto);
 
     /**
      * 删除发布申请单
@@ -84,7 +84,7 @@ public interface ReleaseRecordApi extends BaseEntityApi<ReleaseRecordDto>, FindB
      */
     @GetMapping(path = "getBuildDetail")
     @ApiOperation(value = "获取构建明细", notes = "获取构建明细")
-    ResultData<ReleaseRecordDetailDto> getBuildDetail(@RequestParam("id") String id);
+    ResultData<BuildDetailDto> getBuildDetail(@RequestParam("id") String id);
 
     /**
      * Gitlab Push Hook

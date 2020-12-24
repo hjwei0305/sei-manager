@@ -44,7 +44,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
     @Autowired
     private RequisitionOrderService requisitionOrderService;
     @Autowired
-    private ReleaseRecordService recordService;
+    private BuildJobService recordService;
 
     @Autowired
     private GitlabService gitlabService;
@@ -271,10 +271,10 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         version.setBuildStatus(BuildStatus.BUILDING);
         this.save(version);
 
-        ReleaseRecord record = recordService.getByGitIdAndTag(version.getGitId(), version.getVersion());
+        BuildJob record = recordService.getByGitIdAndTag(version.getGitId(), version.getVersion());
         if (Objects.isNull(record)) {
             // 生成一条构建记录
-            record = new ReleaseRecord();
+            record = new BuildJob();
             if (StringUtils.isBlank(module.getNameSpace())) {
                 // 前端应用
                 record.setType(TemplateType.PUBLISH_WEB.name());
@@ -297,13 +297,13 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
 
         // 发起Jenkins构建ø
         SessionUser user = ContextUtil.getSessionUser();
-        ResultData<ReleaseRecord> buildResult = recordService.build(record.getId(), user.getAccount());
+        ResultData<BuildJob> buildResult = recordService.build(record.getId(), user.getAccount());
         if (buildResult.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
         // 保存构建号及状态
-        ReleaseRecord releaseRecord = buildResult.getData();
-        OperateResultWithData<ReleaseRecord> result = recordService.save(releaseRecord);
+        BuildJob releaseRecord = buildResult.getData();
+        OperateResultWithData<BuildJob> result = recordService.save(releaseRecord);
         if (result.successful()) {
             return ResultData.success();
         } else {
@@ -327,7 +327,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      * @param record 构建记录
      */
     @Transactional
-    public ResultData<Void> releaseVersion(ReleaseRecord record) {
+    public ResultData<Void> releaseVersion(BuildJob record) {
         if (Objects.isNull(record)) {
             return ResultData.fail("发布记录不能为空.");
         }

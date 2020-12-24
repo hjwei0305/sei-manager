@@ -3,9 +3,9 @@ package com.changhong.sei.deploy.websocket;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.deploy.dto.TemplateType;
 import com.changhong.sei.deploy.entity.DeployTemplate;
-import com.changhong.sei.deploy.entity.ReleaseRecord;
+import com.changhong.sei.deploy.entity.BuildJob;
 import com.changhong.sei.deploy.service.DeployTemplateService;
-import com.changhong.sei.deploy.service.ReleaseRecordService;
+import com.changhong.sei.deploy.service.BuildJobService;
 import com.changhong.sei.deploy.websocket.config.MyEndpointConfigure;
 import com.changhong.sei.integrated.service.JenkinsService;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -41,7 +41,7 @@ public class WebsocketServer {
      */
     private static final Map<String, Session> SESSION_MAP = new ConcurrentHashMap<>();
     @Autowired
-    private ReleaseRecordService releaseRecordService;
+    private BuildJobService releaseRecordService;
     @Autowired
     private DeployTemplateService templateService;
     @Autowired
@@ -57,7 +57,7 @@ public class WebsocketServer {
         //添加到集合中
         SESSION_MAP.put(session.getId(), session);
 
-        ReleaseRecord releaseRecord = releaseRecordService.findOne(id);
+        BuildJob releaseRecord = releaseRecordService.findOne(id);
         if (Objects.isNull(releaseRecord)) {
             LOG.error("发布记录id[{}]不存在", id);
             send(session, "发布记录id[" + id + "]不存在.");

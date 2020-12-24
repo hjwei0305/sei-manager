@@ -9,15 +9,16 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * 发布记录(ReleaseRecord)DTO类
+ * 构建明细(BuildDetail)DTO类
  *
  * @author sei
  * @since 2020-11-23 08:34:10
  */
-@ApiModel(description = "发布记录DTO")
-public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
+@ApiModel(description = "构建明细DTO")
+public class BuildDetailDto extends BaseEntityDto implements Serializable {
     private static final long serialVersionUID = 630890453379821715L;
     /**
      * 环境
@@ -72,13 +73,8 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 描述说明(部署要求,脚本内容等)
      */
-    @ApiModelProperty(value = "描述说明(部署要求等)")
+    @ApiModelProperty(value = "描述说明(部署要求,脚本内容等)")
     private String remark;
-    /**
-     * 脚本内容
-     */
-    @ApiModelProperty(value = "脚本内容")
-    private String script;
     /**
      * 期望完成时间
      */
@@ -91,12 +87,12 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
     @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(value = "Jenkins构建状态")
     private BuildStatus buildStatus;
-    /**
-     * Jenkins构建时间
-     */
-    @ApiModelProperty(value = "构建时间", example = "2020-01-14 22:18:48")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime buildTime;
+
+    @ApiModelProperty(value = "构建阶段清单")
+    private List<DeployTemplateStageResponse> stages;
+
+    @ApiModelProperty(value = "构建日志")
+    private String buildLog;
     /**
      * Jenkins构建人账号
      */
@@ -191,14 +187,6 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
         this.remark = remark;
     }
 
-    public String getScript() {
-        return script;
-    }
-
-    public void setScript(String script) {
-        this.script = script;
-    }
-
     public LocalDateTime getExpCompleteTime() {
         return expCompleteTime;
     }
@@ -215,12 +203,20 @@ public class ReleaseRecordDto extends BaseEntityDto implements Serializable {
         this.buildStatus = buildStatus;
     }
 
-    public LocalDateTime getBuildTime() {
-        return buildTime;
+    public List<DeployTemplateStageResponse> getStages() {
+        return stages;
     }
 
-    public void setBuildTime(LocalDateTime buildTime) {
-        this.buildTime = buildTime;
+    public void setStages(List<DeployTemplateStageResponse> stages) {
+        this.stages = stages;
+    }
+
+    public String getBuildLog() {
+        return buildLog;
+    }
+
+    public void setBuildLog(String buildLog) {
+        this.buildLog = buildLog;
     }
 
     public String getBuildAccount() {

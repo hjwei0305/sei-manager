@@ -11,9 +11,9 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.common.Constants;
-import com.changhong.sei.deploy.dao.ReleaseBuildDetailDao;
-import com.changhong.sei.deploy.dao.ReleaseRecordDao;
-import com.changhong.sei.deploy.dao.ReleaseRecordRequisitionDao;
+import com.changhong.sei.deploy.dao.BuildDetailDao;
+import com.changhong.sei.deploy.dao.BuildJobDao;
+import com.changhong.sei.deploy.dao.BuildJobRequisitionDao;
 import com.changhong.sei.deploy.dto.*;
 import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.JenkinsService;
@@ -40,22 +40,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-
 /**
- * 发布记录(ReleaseRecord)业务逻辑实现类
+ * 发布记录(BuildJob)业务逻辑实现类
  *
  * @author sei
  * @since 2020-11-23 08:34:09
  */
-@Service("releaseRecordService")
-public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
-    private static final Logger LOG = LoggerFactory.getLogger(ReleaseRecordService.class);
+@Service("buildJobService")
+public class BuildJobService extends BaseEntityService<BuildJob> {
+    private static final Logger LOG = LoggerFactory.getLogger(BuildJobService.class);
     @Autowired
-    private ReleaseRecordDao dao;
+    private BuildJobDao dao;
     @Autowired
-    private ReleaseRecordRequisitionDao requisitionDao;
+    private BuildJobRequisitionDao requisitionDao;
     @Autowired
-    private ReleaseBuildDetailDao buildDetailDao;
+    private BuildDetailDao buildDetailDao;
     @Autowired
     private AppModuleService moduleService;
     @Autowired
@@ -74,7 +73,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     private ModelMapper modelMapper;
 
     @Override
-    protected BaseEntityDao<ReleaseRecord> getDao() {
+    protected BaseEntityDao<BuildJob> getDao() {
         return dao;
     }
 
@@ -86,7 +85,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Override
     protected OperateResult preDelete(String id) {
         // 检查状态控制删除
-        ReleaseRecord app = this.findOne(id);
+        BuildJob app = this.findOne(id);
         if (Objects.isNull(app)) {
             return OperateResult.operationFailure("[" + id + "]发布记录不存在,删除失败!");
         }
@@ -102,7 +101,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @param search 查询参数
      * @return 分页查询结果
      */
-    public PageResult<ReleaseRecordRequisition> findRequisitionByPage(Search search) {
+    public PageResult<BuildJobRequisition> findRequisitionByPage(Search search) {
         return requisitionDao.findByPage(search);
     }
 
@@ -113,9 +112,9 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseRecordRequisitionDto> createRequisition(ReleaseRecord releaseRecord) {
+    public ResultData<BuildJobRequisitionDto> createRequisition(BuildJob releaseRecord) {
         // 通过模块和tag检查是否重复申请
-        ReleaseRecord existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
+        BuildJob existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
         if (Objects.nonNull(existed)) {
             return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getTagName() + "]存在申请记录,请不要重复申请.");
         }
@@ -123,7 +122,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         releaseRecord.setFrozen(Boolean.TRUE);
         // 保存应用
-        OperateResultWithData<ReleaseRecord> resultWithData = this.save(releaseRecord);
+        OperateResultWithData<BuildJob> resultWithData = this.save(releaseRecord);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:发布申请
@@ -137,7 +136,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                ReleaseRecordRequisitionDto dto = new ReleaseRecordRequisitionDto();
+                BuildJobRequisitionDto dto = new BuildJobRequisitionDto();
                 dto.setId(requisition.getId());
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
@@ -174,14 +173,14 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseRecordRequisitionDto> modifyRequisition(ReleaseRecord releaseRecord) {
+    public ResultData<BuildJobRequisitionDto> modifyRequisition(BuildJob releaseRecord) {
         // 通过模块和tag检查是否重复申请
-        ReleaseRecord existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
+        BuildJob existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
         if (Objects.nonNull(existed)) {
             return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getTagName() + "]存在申请记录,请不要重复申请.");
         }
 
-        ReleaseRecord entity = this.findOne(releaseRecord.getId());
+        BuildJob entity = this.findOne(releaseRecord.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
         }
@@ -203,7 +202,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         entity.setExpCompleteTime(releaseRecord.getExpCompleteTime());
 
         // 保存应用
-        OperateResultWithData<ReleaseRecord> resultWithData = this.save(entity);
+        OperateResultWithData<BuildJob> resultWithData = this.save(entity);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = requisitionOrderService.getByRelationId(entity.getId());
             if (Objects.isNull(requisitionOrder)) {
@@ -229,7 +228,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                ReleaseRecordRequisitionDto dto = new ReleaseRecordRequisitionDto();
+                BuildJobRequisitionDto dto = new BuildJobRequisitionDto();
                 dto.setId(requisition.getId());
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
@@ -266,7 +265,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> deleteRequisition(String id) {
-        ReleaseRecord releaseRecord = this.findOne(id);
+        BuildJob releaseRecord = this.findOne(id);
         if (Objects.nonNull(releaseRecord)) {
             if (releaseRecord.getFrozen()) {
                 // 删除应用
@@ -294,14 +293,14 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updateFrozen(String id) {
         SessionUser user = ContextUtil.getSessionUser();
-        ResultData<ReleaseRecord> resultData = build(id, user.getAccount());
+        ResultData<BuildJob> resultData = build(id, user.getAccount());
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
 
-        ReleaseRecord releaseRecord = resultData.getData();
+        BuildJob releaseRecord = resultData.getData();
         releaseRecord.setFrozen(Boolean.FALSE);
-        OperateResultWithData<ReleaseRecord> result = this.save(releaseRecord);
+        OperateResultWithData<BuildJob> result = this.save(releaseRecord);
         if (result.successful()) {
             return ResultData.success();
         } else {
@@ -318,13 +317,13 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> buildJob(String id) {
         SessionUser user = ContextUtil.getSessionUser();
-        ResultData<ReleaseRecord> resultData = build(id, user.getAccount());
+        ResultData<BuildJob> resultData = build(id, user.getAccount());
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
 
-        ReleaseRecord releaseRecord = resultData.getData();
-        OperateResultWithData<ReleaseRecord> result = this.save(releaseRecord);
+        BuildJob releaseRecord = resultData.getData();
+        OperateResultWithData<BuildJob> result = this.save(releaseRecord);
         if (result.successful()) {
             return ResultData.success();
         } else {
@@ -338,14 +337,14 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @param id 发布记录id
      * @return 返回构建阶段
      */
-    public ResultData<ReleaseRecordDetailDto> getBuildDetail(String id) {
-        ReleaseRecord releaseRecord = this.findOne(id);
+    public ResultData<BuildDetailDto> getBuildDetail(String id) {
+        BuildJob releaseRecord = this.findOne(id);
         if (Objects.isNull(releaseRecord)) {
             return ResultData.fail("发布记录不存在");
         }
 
         String templateId;
-        ReleaseRecordDetailDto detailDto = modelMapper.map(releaseRecord, ReleaseRecordDetailDto.class);
+        BuildDetailDto detailDto = modelMapper.map(releaseRecord, BuildDetailDto.class);
         if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
             ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
             if (resultData.failed()) {
@@ -368,9 +367,9 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
 
         if (BuildStatus.BUILDING != releaseRecord.getBuildStatus()) {
             Search search = Search.createSearch();
-            search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_RECORD_ID, id));
-            search.addFilter(new SearchFilter(ReleaseBuildDetail.FIELD_BUILD_NUMBER, releaseRecord.getBuildNumber()));
-            ReleaseBuildDetail detail = buildDetailDao.findFirstByFilters(search);
+            search.addFilter(new SearchFilter(BuildDetail.FIELD_RECORD_ID, id));
+            search.addFilter(new SearchFilter(BuildDetail.FIELD_BUILD_NUMBER, releaseRecord.getBuildNumber()));
+            BuildDetail detail = buildDetailDao.findFirstByFilters(search);
             if (Objects.nonNull(detail)) {
                 detailDto.setBuildLog(detail.getBuildLog());
             }
@@ -385,8 +384,8 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @return 返回发布记录
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseRecord> build(String recordId, String account) {
-        ReleaseRecord releaseRecord = this.findOne(recordId);
+    public ResultData<BuildJob> build(String recordId, String account) {
+        BuildJob releaseRecord = this.findOne(recordId);
         if (Objects.nonNull(releaseRecord)) {
             final String jobName;
             final boolean needRelease;
@@ -428,13 +427,13 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
                 releaseRecord.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
-                CompletableFuture.runAsync(() -> ContextUtil.getBean(ReleaseRecordService.class).runBuild(recordId, jobName, buildNumber, account, needRelease));
+                CompletableFuture.runAsync(() -> ContextUtil.getBean(BuildJobService.class).runBuild(recordId, jobName, buildNumber, account, needRelease));
             } else {
                 int buildNumber = 0;
                 releaseRecord.setBuildNumber(buildNumber);
                 releaseRecord.setBuildStatus(BuildStatus.FAILURE);
 
-                ReleaseBuildDetail detail = new ReleaseBuildDetail();
+                BuildDetail detail = new BuildDetail();
                 detail.setRecordId(recordId);
                 detail.setJobName(jobName);
                 detail.setBuildNumber(buildNumber);
@@ -463,7 +462,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {
         }
-        ReleaseBuildDetail detail = new ReleaseBuildDetail();
+        BuildDetail detail = new BuildDetail();
         detail.setRecordId(id);
         detail.setJobName(jobName);
         detail.setBuildNumber(buildNumber);
@@ -539,7 +538,7 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
 
         buildDetailDao.save(detail);
 
-        ReleaseRecord record = dao.findOne(id);
+        BuildJob record = dao.findOne(id);
         if (Objects.nonNull(record)) {
             BuildStatus status = detail.getBuildStatus();
             // 更新发布记录状态
@@ -558,10 +557,10 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
      * @param tag   tag
      * @return 构建记录
      */
-    public ReleaseRecord getByGitIdAndTag(String gitId, String tag) {
+    public BuildJob getByGitIdAndTag(String gitId, String tag) {
         Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(ReleaseRecord.FIELD_GIT_ID, gitId));
-        search.addFilter(new SearchFilter(ReleaseRecord.FIELD_TAG_NAME, tag));
+        search.addFilter(new SearchFilter(BuildJob.FIELD_GIT_ID, gitId));
+        search.addFilter(new SearchFilter(BuildJob.FIELD_TAG_NAME, tag));
         return dao.findFirstByFilters(search);
     }
 
@@ -584,9 +583,9 @@ public class ReleaseRecordService extends BaseEntityService<ReleaseRecord> {
         }
         String tag = "dev";
         try {
-            ReleaseRecord record = getByGitIdAndTag(gitId, tag);
+            BuildJob record = getByGitIdAndTag(gitId, tag);
             if (Objects.isNull(record)) {
-                record = new ReleaseRecord();
+                record = new BuildJob();
                 record.setEnvCode("dev");
                 record.setEnvName("开发环境");
                 record.setAppId(module.getAppId());

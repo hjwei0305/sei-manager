@@ -1,9 +1,9 @@
 package com.changhong.sei.deploy.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
-import com.changhong.sei.deploy.dto.ApplyType;
-import com.changhong.sei.deploy.dto.ApprovalStatus;
+import com.changhong.sei.core.entity.IFrozen;
 import com.changhong.sei.deploy.dto.BuildStatus;
+import com.changhong.sei.deploy.dto.TemplateType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -12,50 +12,24 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 发布记录(ReleaseRecord)实体类
+ * 构建任务(BuildJob)实体类
  *
  * @author sei
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "v_release_record_requisition")
+@Table(name = "release_record")
 @DynamicInsert
 @DynamicUpdate
-public class ReleaseRecordRequisition extends BaseEntity implements Serializable {
+public class BuildJob extends BaseEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
+    public static final String FIELD_GIT_ID = "gitId";
+    public static final String FIELD_TAG_NAME = "tagName";
     /**
-     * 业务key
+     * 类型
      */
-    @Column(name = "biz_key")
-    private String bizKey;
-    /**
-     * 关联id
-     *
-     * @see ApplyType
-     */
-    @Column(name = "relation_id")
-    private String relationId;
-    /**
-     * 申请人账号
-     */
-    @Column(name = "applicant_account")
-    private String applicantAccount;
-    /**
-     * 申请人名称
-     */
-    @Column(name = "applicant_user_name")
-    private String applicantUserName;
-    /**
-     * 申请时间
-     */
-    @Column(name = "application_time")
-    private LocalDateTime applicationTime;
-    /**
-     * 审核状态
-     */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "approval_status")
-    private ApprovalStatus approvalStatus;
+    @Column(name = "type")
+    private String type = TemplateType.DEPLOY.name();
     /**
      * 环境
      */
@@ -82,7 +56,7 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
     @Column(name = "git_id")
     private String gitId;
     /**
-     * 模块名称
+     * 模块代码
      */
     @Column(name = "module_code")
     private String moduleCode;
@@ -103,62 +77,54 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
     @Column(name = "name")
     private String name;
     /**
-     * 构建状态
+     * 描述说明(部署要求等)
      */
-    @Column(name = "build_status")
-    private String buildStatus;
+    @Column(name = "remark")
+    private String remark;
+    /**
+     * 脚本内容
+     */
+    @Column(name = "script_")
+    private String script;
+
+    /**
+     * 是否冻结
+     */
+    @Column(name = "frozen")
+    private Boolean frozen = Boolean.TRUE;
     /**
      * 期望完成时间
      */
     @Column(name = "exp_complete_time")
     private LocalDateTime expCompleteTime;
+    /**
+     * Jenkins构建号
+     */
+    @Column(name = "build_number")
+    private Integer buildNumber;
+    /**
+     * Jenkins构建状态
+     */
+    @Column(name = "build_status")
+    @Enumerated(EnumType.STRING)
+    private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
+    /**
+     * Jenkins构建时间
+     */
+    @Column(name = "build_time")
+    private LocalDateTime buildTime;
+    /**
+     * Jenkins构建人账号
+     */
+    @Column(name = "build_account")
+    private String buildAccount;
 
-    public String getBizKey() {
-        return bizKey;
+    public String getType() {
+        return type;
     }
 
-    public void setBizKey(String bizKey) {
-        this.bizKey = bizKey;
-    }
-
-    public String getRelationId() {
-        return relationId;
-    }
-
-    public void setRelationId(String relationId) {
-        this.relationId = relationId;
-    }
-
-    public String getApplicantAccount() {
-        return applicantAccount;
-    }
-
-    public void setApplicantAccount(String applicantAccount) {
-        this.applicantAccount = applicantAccount;
-    }
-
-    public String getApplicantUserName() {
-        return applicantUserName;
-    }
-
-    public void setApplicantUserName(String applicantUserName) {
-        this.applicantUserName = applicantUserName;
-    }
-
-    public LocalDateTime getApplicationTime() {
-        return applicationTime;
-    }
-
-    public void setApplicationTime(LocalDateTime applicationTime) {
-        this.applicationTime = applicationTime;
-    }
-
-    public ApprovalStatus getApprovalStatus() {
-        return approvalStatus;
-    }
-
-    public void setApprovalStatus(ApprovalStatus approvalStatus) {
-        this.approvalStatus = approvalStatus;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getEnvCode() {
@@ -233,12 +199,30 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
         this.name = name;
     }
 
-    public String getBuildStatus() {
-        return buildStatus;
+    public String getRemark() {
+        return remark;
     }
 
-    public void setBuildStatus(String buildStatus) {
-        this.buildStatus = buildStatus;
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
+
+    @Override
+    public Boolean getFrozen() {
+        return frozen;
+    }
+
+    @Override
+    public void setFrozen(Boolean frozen) {
+        this.frozen = frozen;
     }
 
     public LocalDateTime getExpCompleteTime() {
@@ -247,5 +231,47 @@ public class ReleaseRecordRequisition extends BaseEntity implements Serializable
 
     public void setExpCompleteTime(LocalDateTime expCompleteTime) {
         this.expCompleteTime = expCompleteTime;
+    }
+
+    public Integer getBuildNumber() {
+        return buildNumber;
+    }
+
+    public void setBuildNumber(Integer buildNumber) {
+        this.buildNumber = buildNumber;
+    }
+
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public void setBuildStatus(BuildStatus buildStatus) {
+        this.buildStatus = buildStatus;
+    }
+
+    public LocalDateTime getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(LocalDateTime buildTime) {
+        this.buildTime = buildTime;
+    }
+
+    public String getBuildAccount() {
+        return buildAccount;
+    }
+
+    public void setBuildAccount(String buildAccount) {
+        this.buildAccount = buildAccount;
+    }
+
+    /**
+     * 环境代码+模块代码
+     *
+     * @return Jenkins任务名
+     */
+    @Transient
+    public String getJobName() {
+        return envCode + "_" + moduleCode;
     }
 }

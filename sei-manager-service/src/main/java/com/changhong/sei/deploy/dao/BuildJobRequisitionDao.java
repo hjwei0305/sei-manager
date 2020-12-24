@@ -1,7 +1,7 @@
 package com.changhong.sei.deploy.dao;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
-import com.changhong.sei.deploy.entity.ReleaseRecordRequisition;
+import com.changhong.sei.deploy.entity.BuildJobRequisition;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * @since 2020-10-30 15:20:23
  */
 @Repository
-public interface ReleaseRecordRequisitionDao extends BaseEntityDao<ReleaseRecordRequisition> {
+public interface BuildJobRequisitionDao extends BaseEntityDao<BuildJobRequisition> {
 
 }

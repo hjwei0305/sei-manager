@@ -5,14 +5,14 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
-import com.changhong.sei.deploy.api.ReleaseRecordApi;
+import com.changhong.sei.deploy.api.BuildJobApi;
 import com.changhong.sei.deploy.dto.GitlabPushHookRequest;
-import com.changhong.sei.deploy.dto.ReleaseRecordDetailDto;
-import com.changhong.sei.deploy.dto.ReleaseRecordDto;
-import com.changhong.sei.deploy.dto.ReleaseRecordRequisitionDto;
-import com.changhong.sei.deploy.entity.ReleaseRecord;
-import com.changhong.sei.deploy.entity.ReleaseRecordRequisition;
-import com.changhong.sei.deploy.service.ReleaseRecordService;
+import com.changhong.sei.deploy.dto.BuildDetailDto;
+import com.changhong.sei.deploy.dto.BuildJobDto;
+import com.changhong.sei.deploy.dto.BuildJobRequisitionDto;
+import com.changhong.sei.deploy.entity.BuildJob;
+import com.changhong.sei.deploy.entity.BuildJobRequisition;
+import com.changhong.sei.deploy.service.BuildJobService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,23 +24,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 发布记录(ReleaseRecord)控制类
+ * 构建任务(BuildJob)控制类
  *
  * @author sei
  * @since 2020-11-23 08:34:09
  */
 @RestController
-@Api(value = "ReleaseRecordApi", tags = "发布记录服务")
+@Api(value = "BuildJobApi", tags = "构建任务服务")
 @RequestMapping(path = "releaseRecord", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class ReleaseRecordController extends BaseEntityController<ReleaseRecord, ReleaseRecordDto> implements ReleaseRecordApi {
+public class BuildJobController extends BaseEntityController<BuildJob, BuildJobDto> implements BuildJobApi {
     /**
      * 发布记录服务对象
      */
     @Autowired
-    private ReleaseRecordService service;
+    private BuildJobService service;
 
     @Override
-    public BaseEntityService<ReleaseRecord> getService() {
+    public BaseEntityService<BuildJob> getService() {
         return service;
     }
 
@@ -51,7 +51,7 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      * @return 分页查询结果
      */
     @Override
-    public ResultData<PageResult<ReleaseRecordDto>> findByPage(Search search) {
+    public ResultData<PageResult<BuildJobDto>> findByPage(Search search) {
         return convertToDtoPageResult(service.findByPage(search));
     }
 
@@ -62,12 +62,12 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      * @return 分页查询结果
      */
     @Override
-    public ResultData<PageResult<ReleaseRecordRequisitionDto>> findRequisitionByPage(Search search) {
-        PageResult<ReleaseRecordRequisition> pageResult = service.findRequisitionByPage(search);
-        PageResult<ReleaseRecordRequisitionDto> result = new PageResult<>(pageResult);
-        List<ReleaseRecordRequisition> requisitions = pageResult.getRows();
+    public ResultData<PageResult<BuildJobRequisitionDto>> findRequisitionByPage(Search search) {
+        PageResult<BuildJobRequisition> pageResult = service.findRequisitionByPage(search);
+        PageResult<BuildJobRequisitionDto> result = new PageResult<>(pageResult);
+        List<BuildJobRequisition> requisitions = pageResult.getRows();
         if (CollectionUtils.isNotEmpty(requisitions)) {
-            List<ReleaseRecordRequisitionDto> dtos = requisitions.stream().map(e -> dtoModelMapper.map(e, ReleaseRecordRequisitionDto.class)).collect(Collectors.toList());
+            List<BuildJobRequisitionDto> dtos = requisitions.stream().map(e -> dtoModelMapper.map(e, BuildJobRequisitionDto.class)).collect(Collectors.toList());
             result.setRows(dtos);
         }
         return ResultData.success(result);
@@ -80,7 +80,7 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseRecordRequisitionDto> createRequisition(ReleaseRecordDto dto) {
+    public ResultData<BuildJobRequisitionDto> createRequisition(BuildJobDto dto) {
         return service.createRequisition(convertToEntity(dto));
     }
 
@@ -91,7 +91,7 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseRecordRequisitionDto> modifyRequisition(ReleaseRecordDto dto) {
+    public ResultData<BuildJobRequisitionDto> modifyRequisition(BuildJobDto dto) {
         return service.modifyRequisition(convertToEntity(dto));
     }
 
@@ -123,7 +123,7 @@ public class ReleaseRecordController extends BaseEntityController<ReleaseRecord,
      * @return 返回构建明细
      */
     @Override
-    public ResultData<ReleaseRecordDetailDto> getBuildDetail(String id) {
+    public ResultData<BuildDetailDto> getBuildDetail(String id) {
         return service.getBuildDetail(id);
     }
 
