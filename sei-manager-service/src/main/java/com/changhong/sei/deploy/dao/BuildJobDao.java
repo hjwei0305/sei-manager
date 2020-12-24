@@ -22,6 +22,6 @@ public interface BuildJobDao extends BaseEntityDao<BuildJob> {
      * @return 返回更新的记录数
      */
     @Modifying
-    @Query("update BuildJob t set t.allowBuild = :allowBuild where t.jobName = :jobName ")
-    int updateAllowBuildStatus(@Param("jobName") String jobName, @Param("allowBuild") Boolean allowBuild);
+    @Query("update BuildJob t set t.allowBuild = :allowBuild where t.jobName = :jobName and t.type = :type ")
+    int updateAllowBuildStatus(@Param("jobName") String jobName, @Param("type") String type, @Param("allowBuild") Boolean allowBuild);
 }

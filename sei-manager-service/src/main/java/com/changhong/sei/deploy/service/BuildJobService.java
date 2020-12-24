@@ -302,9 +302,10 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         buildJob.setFrozen(Boolean.FALSE);
         OperateResultWithData<BuildJob> result = this.save(buildJob);
         if (result.successful()) {
-            // 禁用当前应用模块其他tag构建任务的构建
-            dao.updateAllowBuildStatus(buildJob.getJobName(), Boolean.FALSE);
-
+            if (StringUtils.equals(TemplateType.DEPLOY.name(), buildJob.getType())) {
+                // 禁用当前应用模块其他tag构建任务的构建
+                dao.updateAllowBuildStatus(buildJob.getJobName(), TemplateType.DEPLOY.name(), Boolean.FALSE);
+            }
             return ResultData.success();
         } else {
             return ResultData.fail(result.getMessage());
