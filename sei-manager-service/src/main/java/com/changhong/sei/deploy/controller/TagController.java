@@ -51,12 +51,12 @@ public class TagController implements TagApi {
     /**
      * 获取项目标签
      *
-     * @param moduleId 模块id
+     * @param gitId gitId
      * @return 创建结果
      */
     @Override
-    public ResultData<List<TagDto>> getTags(String moduleId) {
-        return service.getTags(moduleId);
+    public ResultData<List<TagDto>> getTags(String gitId) {
+        return service.getTags(gitId);
     }
 
     /**

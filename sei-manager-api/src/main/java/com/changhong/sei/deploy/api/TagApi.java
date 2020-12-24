@@ -42,12 +42,12 @@ public interface TagApi {
     /**
      * 获取项目标签
      *
-     * @param moduleId 模块id
+     * @param gitId gitId
      * @return 创建结果
      */
     @GetMapping(path = "getTags")
     @ApiOperation(value = "获取项目标签", notes = "获取项目标签")
-    ResultData<List<TagDto>> getTags(@RequestParam("moduleId") String moduleId);
+    ResultData<List<TagDto>> getTags(@RequestParam("gitId") String gitId);
 
     /**
      * 创建标签

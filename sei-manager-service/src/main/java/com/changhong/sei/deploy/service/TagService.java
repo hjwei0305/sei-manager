@@ -105,12 +105,16 @@ public class TagService extends BaseEntityService<Tag> {
     /**
      * 获取项目标签
      *
-     * @param moduleId 模块id
+     * @param gitId gitId
      * @return 创建结果
      */
-    public ResultData<List<TagDto>> getTags(String moduleId) {
+    public ResultData<List<TagDto>> getTags(String gitId) {
+        AppModule appModule = moduleService.getAppModuleByGitId(gitId);
+        if (Objects.isNull(appModule)) {
+            return ResultData.fail("未找到git[" + gitId + "]对应的应用模块.");
+        }
         Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, moduleId));
+        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, appModule.getId()));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MAJOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));

@@ -302,7 +302,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         buildJob.setFrozen(Boolean.FALSE);
         OperateResultWithData<BuildJob> result = this.save(buildJob);
         if (result.successful()) {
-            // 禁用当前应用模块其他构建任务的构建
+            // 禁用当前应用模块其他tag构建任务的构建
+            dao.updateAllowBuildStatus(buildJob.getJobName(), Boolean.FALSE);
 
             return ResultData.success();
         } else {
@@ -387,21 +388,26 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<BuildJob> build(String recordId, String account) {
-        BuildJob releaseRecord = this.findOne(recordId);
-        if (Objects.nonNull(releaseRecord)) {
+        BuildJob buildJob = this.findOne(recordId);
+        if (Objects.nonNull(buildJob)) {
+            // 检查是否允许构建
+            if (!buildJob.getAllowBuild()) {
+                return ResultData.fail("模块[" + buildJob.getModuleCode() + "]已有新的构建任务,请使用新任务构建.");
+            }
+
             final String jobName;
             final boolean needRelease;
-            if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
+            if (StringUtils.equals(TemplateType.DEPLOY.name(), buildJob.getType())) {
                 // 检查部署配置是否存在
-                ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
+                ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(buildJob.getEnvCode(), buildJob.getModuleCode());
                 if (resultData.failed()) {
                     return ResultData.fail(resultData.getMessage());
                 }
-                jobName = releaseRecord.getJobName();
+                jobName = buildJob.getJobName();
                 needRelease = false;
             } else {
                 // 检查
-                ResultData<DeployTemplate> resultData = templateService.getPublishTemplate(releaseRecord.getType());
+                ResultData<DeployTemplate> resultData = templateService.getPublishTemplate(buildJob.getType());
                 if (resultData.failed()) {
                     return ResultData.fail(resultData.getMessage());
                 }
@@ -413,27 +419,27 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
 
             Map<String, String> params = new HashMap<>();
             // 参数:项目名称(模块代码)
-            params.put(Constants.DEPLOY_PARAM_PROJECT_NAME, releaseRecord.getModuleCode());
+            params.put(Constants.DEPLOY_PARAM_PROJECT_NAME, buildJob.getModuleCode());
             // 参数:应用git仓库地址
-            AppModule module = moduleService.getAppModuleByGitId(releaseRecord.getGitId());
+            AppModule module = moduleService.getAppModuleByGitId(buildJob.getGitId());
             params.put(Constants.DEPLOY_PARAM_GIT_PATH, Objects.isNull(module) ? "null" : module.getGitHttpUrl());
             // 参数:代码分支或者TAG
-            params.put(Constants.DEPLOY_PARAM_BRANCH, releaseRecord.getTagName());
+            params.put(Constants.DEPLOY_PARAM_BRANCH, buildJob.getTagName());
 
             // 调用Jenkins构建
             ResultData<Integer> buildResult = jenkinsService.buildJob(jobName, params);
             if (buildResult.successful()) {
                 final int buildNumber = buildResult.getData();
-                releaseRecord.setBuildNumber(buildNumber);
+                buildJob.setBuildNumber(buildNumber);
                 // 更新构建状态为构建中
-                releaseRecord.setBuildStatus(BuildStatus.BUILDING);
+                buildJob.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
                 CompletableFuture.runAsync(() -> ContextUtil.getBean(BuildJobService.class).runBuild(recordId, jobName, buildNumber, account, needRelease));
             } else {
                 int buildNumber = 0;
-                releaseRecord.setBuildNumber(buildNumber);
-                releaseRecord.setBuildStatus(BuildStatus.FAILURE);
+                buildJob.setBuildNumber(buildNumber);
+                buildJob.setBuildStatus(BuildStatus.FAILURE);
 
                 BuildDetail detail = new BuildDetail();
                 detail.setRecordId(recordId);
@@ -446,12 +452,12 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 buildDetailDao.save(detail);
             }
             // 构建时间
-            releaseRecord.setBuildTime(LocalDateTime.now());
+            buildJob.setBuildTime(LocalDateTime.now());
             // 构建人账号
-            releaseRecord.setBuildAccount(account);
-            return ResultData.success(releaseRecord);
+            buildJob.setBuildAccount(account);
+            return ResultData.success(buildJob);
         } else {
-            return ResultData.fail("发布记录不存在");
+            return ResultData.fail("构建任务不存在");
         }
     }
 
