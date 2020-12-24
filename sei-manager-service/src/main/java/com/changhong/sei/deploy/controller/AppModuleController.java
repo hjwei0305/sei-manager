@@ -14,6 +14,7 @@ import com.changhong.sei.deploy.entity.AppModuleRequisition;
 import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
 import com.changhong.sei.deploy.service.ApplicationService;
+import com.changhong.sei.manager.dto.UserDto;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,26 +175,37 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     }
 
     /**
+     * 获取应用模块未分配的用户
+     *
+     * @param id 应用模块id
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<List<ModuleUser>> getUnassignedUsers(String id) {
+        return service.getUnassignedUsers(id);
+    }
+
+    /**
      * 添加应用模块用户
      *
-     * @param gitId    git项目id
+     * @param id       应用模块id
      * @param accounts 用户account
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> addModuleUser(String gitId, Set<String> accounts) {
-        return service.addModuleUser(gitId, accounts);
+    public ResultData<Void> addModuleUser(String id, Set<String> accounts) {
+        return service.addModuleUser(id, accounts);
     }
 
     /**
      * 按用户账号清单移除应用模块用户
      *
-     * @param gitId      git项目id
+     * @param id         应用模块id
      * @param gitUserIds git用户id
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> removeModuleUser(String gitId, Set<Integer> gitUserIds) {
-        return service.removeModuleUser(gitId, gitUserIds);
+    public ResultData<Void> removeModuleUser(String id, Set<Integer> gitUserIds) {
+        return service.removeModuleUser(id, gitUserIds);
     }
 }

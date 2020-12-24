@@ -88,24 +88,34 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
     ResultData<List<ModuleUser>> getModuleUsers(@RequestParam("id") String id);
 
     /**
+     * 获取应用模块未分配的用户
+     *
+     * @param id 应用模块id
+     * @return 操作结果
+     */
+    @GetMapping(path = "getUnassignedUsers/{id}")
+    @ApiOperation(value = "获取应用模块未分配的用户", notes = "获取应用模块未分配的用户")
+    ResultData<List<ModuleUser>> getUnassignedUsers(@PathVariable("id") String id);
+
+    /**
      * 添加应用模块用户
      *
-     * @param gitId    git项目id
+     * @param id       应用模块id
      * @param accounts 用户account
      * @return 操作结果
      */
-    @PostMapping(path = "addModuleUser/{gitId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "addModuleUser/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "添加应用模块用户", notes = "添加应用模块用户")
-    ResultData<Void> addModuleUser(@PathVariable("gitId") String gitId, @RequestBody Set<String> accounts);
+    ResultData<Void> addModuleUser(@PathVariable("id") String id, @RequestBody Set<String> accounts);
 
     /**
      * 按用户账号清单移除应用模块用户
      *
-     * @param gitId      git项目id
+     * @param id         应用模块id
      * @param gitUserIds git用户id
      * @return 操作结果
      */
-    @DeleteMapping(path = "removeModuleUser/{gitId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @DeleteMapping(path = "removeModuleUser/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "按用户账号清单移除应用模块用户", notes = "按用户账号清单移除应用模块用户")
-    ResultData<Void> removeModuleUser(@PathVariable("gitId") String gitId, @RequestBody Set<Integer> gitUserIds);
+    ResultData<Void> removeModuleUser(@PathVariable("id") String id, @RequestBody Set<Integer> gitUserIds);
 }

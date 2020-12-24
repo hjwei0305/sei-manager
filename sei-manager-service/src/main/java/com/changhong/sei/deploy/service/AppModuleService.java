@@ -4,6 +4,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
@@ -20,6 +21,9 @@ import com.changhong.sei.deploy.entity.RequisitionOrder;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
+import com.changhong.sei.manager.dto.UserDto;
+import com.changhong.sei.manager.entity.User;
+import com.changhong.sei.manager.service.UserService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.ProjectUser;
@@ -29,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -51,6 +56,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     private RequisitionOrderService requisitionOrderService;
     @Autowired
     private ApplicationService applicationService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private GitlabService gitlabService;
 
@@ -349,21 +356,58 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     }
 
     /**
+     * 获取应用模块未分配的用户
+     *
+     * @param id 应用模块id
+     * @return 操作结果
+     */
+    public ResultData<List<ModuleUser>> getUnassignedUsers(String id) {
+        AppModule module = this.findOne(id);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + id + "]不存在.");
+        }
+        final String gitId = module.getGitId();
+        ResultData<List<ProjectUser>> resultData = gitlabService.getProjectUser(gitId);
+        if (resultData.successful()) {
+            List<ModuleUser> moduleUsers;
+            Set<String> accountSet = resultData.getData().stream().map(ProjectUser::getUsername).collect(Collectors.toSet());
+            Search search = Search.createSearch();
+            search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accountSet, SearchFilter.Operator.NOTIN));
+            List<User> users = userService.findByFilters(search);
+            if (CollectionUtils.isNotEmpty(users)) {
+                moduleUsers = users.stream().map(user -> {
+                    ModuleUser moduleUser = new ModuleUser();
+                    moduleUser.setAccount(user.getAccount());
+                    moduleUser.setName(user.getNickname());
+                    return moduleUser;
+                }).collect(Collectors.toList());
+            } else {
+                moduleUsers = new ArrayList<>();
+            }
+            return ResultData.success(moduleUsers);
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
+    }
+
+
+    /**
      * 添加应用模块用户
      *
-     * @param gitId    git项目id
+     * @param id       应用模块id
      * @param accounts 用户account
      * @return 操作结果
      */
-    public ResultData<Void> addModuleUser(String gitId, Set<String> accounts) {
-        if (StringUtils.isBlank(gitId)) {
-            return ResultData.fail("模块gitId不能为空.");
+    public ResultData<Void> addModuleUser(String id, Set<String> accounts) {
+        AppModule module = this.findOne(id);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + id + "]不存在.");
         }
         if (CollectionUtils.isEmpty(accounts)) {
             return ResultData.fail("账号不能为空.");
         }
 
-        ResultData<Integer> resultData = gitlabService.addProjectUser(gitId, accounts.toArray(new String[0]));
+        ResultData<Integer> resultData = gitlabService.addProjectUser(module.getGitId(), accounts.toArray(new String[0]));
         if (resultData.successful()) {
             return ResultData.success();
         } else {
@@ -374,11 +418,15 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     /**
      * 按用户账号清单移除应用模块用户
      *
-     * @param gitId      git项目id
+     * @param id         应用模块id
      * @param gitUserIds git用户id
      * @return 操作结果
      */
-    public ResultData<Void> removeModuleUser(String gitId, Set<Integer> gitUserIds) {
-        return gitlabService.removeProjectUser(gitId, gitUserIds.toArray(new Integer[0]));
+    public ResultData<Void> removeModuleUser(String id, Set<Integer> gitUserIds) {
+        AppModule module = this.findOne(id);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + id + "]不存在.");
+        }
+        return gitlabService.removeProjectUser(module.getGitId(), gitUserIds.toArray(new Integer[0]));
     }
 }

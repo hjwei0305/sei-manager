@@ -245,7 +245,7 @@ public class GitlabService {
                         return ResultData.fail("添加项目用户失败");
                     }
                 } else {
-                    return ResultData.fail("用户[" + accounts + "]不在gitlab中");
+                    return ResultData.fail("用户[" + account + "]不在gitlab中");
                 }
             }
             return ResultData.success();
