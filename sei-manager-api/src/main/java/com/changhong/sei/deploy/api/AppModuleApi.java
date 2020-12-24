@@ -8,6 +8,7 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.dto.AppModuleDto;
 import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
 import com.changhong.sei.deploy.dto.ModuleUser;
+import com.changhong.sei.manager.dto.UserDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -93,9 +94,9 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param id 应用模块id
      * @return 操作结果
      */
-    @GetMapping(path = "getUnassignedUsers")
+    @GetMapping(path = "getUnassignedUsers/{id}")
     @ApiOperation(value = "获取应用模块未分配的用户", notes = "获取应用模块未分配的用户")
-    ResultData<List<ModuleUser>> getUnassignedUsers(@RequestParam("id") String id);
+    ResultData<PageResult<UserDto>> getUnassignedUsers(@PathVariable("id") String id, Search search);
 
     /**
      * 添加应用模块用户

@@ -361,7 +361,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * @param id 应用模块id
      * @return 操作结果
      */
-    public ResultData<List<ModuleUser>> getUnassignedUsers(String id) {
+    public ResultData<PageResult<User>> getUnassignedUsers(String id, Search search) {
         AppModule module = this.findOne(id);
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + id + "]不存在.");
@@ -371,20 +371,9 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         if (resultData.successful()) {
             List<ModuleUser> moduleUsers;
             Set<String> accountSet = resultData.getData().stream().map(ProjectUser::getUsername).collect(Collectors.toSet());
-            Search search = Search.createSearch();
             search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accountSet, SearchFilter.Operator.NOTIN));
-            List<User> users = userService.findByFilters(search);
-            if (CollectionUtils.isNotEmpty(users)) {
-                moduleUsers = users.stream().map(user -> {
-                    ModuleUser moduleUser = new ModuleUser();
-                    moduleUser.setAccount(user.getAccount());
-                    moduleUser.setName(user.getNickname());
-                    return moduleUser;
-                }).collect(Collectors.toList());
-            } else {
-                moduleUsers = new ArrayList<>();
-            }
-            return ResultData.success(moduleUsers);
+            PageResult<User> pageResult = userService.findByPage(search);
+            return ResultData.success(pageResult);
         } else {
             return ResultData.fail(resultData.getMessage());
         }

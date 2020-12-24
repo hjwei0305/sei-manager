@@ -15,6 +15,7 @@ import com.changhong.sei.deploy.entity.Application;
 import com.changhong.sei.deploy.service.AppModuleService;
 import com.changhong.sei.deploy.service.ApplicationService;
 import com.changhong.sei.manager.dto.UserDto;
+import com.changhong.sei.manager.entity.User;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,12 +178,23 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     /**
      * 获取应用模块未分配的用户
      *
-     * @param id 应用模块id
+     * @param id     应用模块id
+     * @param search
      * @return 操作结果
      */
     @Override
-    public ResultData<List<ModuleUser>> getUnassignedUsers(String id) {
-        return service.getUnassignedUsers(id);
+    public ResultData<PageResult<UserDto>> getUnassignedUsers(String id, Search search) {
+        ResultData<PageResult<User>> resultData = service.getUnassignedUsers(id, search);
+        if (resultData.successful()) {
+            List<UserDto> userDtoList;
+            PageResult<User> userPageResult = resultData.getData();
+            PageResult<UserDto> pageResult = new PageResult<>(userPageResult);
+            userDtoList = userPageResult.getRows().stream().map(user -> dtoModelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+            pageResult.setRows(userDtoList);
+            return ResultData.success(pageResult);
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
     }
 
     /**
