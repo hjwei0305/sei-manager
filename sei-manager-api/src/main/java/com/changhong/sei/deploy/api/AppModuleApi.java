@@ -93,9 +93,9 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param id 应用模块id
      * @return 操作结果
      */
-    @GetMapping(path = "getUnassignedUsers/{id}")
+    @GetMapping(path = "getUnassignedUsers")
     @ApiOperation(value = "获取应用模块未分配的用户", notes = "获取应用模块未分配的用户")
-    ResultData<List<ModuleUser>> getUnassignedUsers(@PathVariable("id") String id);
+    ResultData<List<ModuleUser>> getUnassignedUsers(@RequestParam("id") String id);
 
     /**
      * 添加应用模块用户
