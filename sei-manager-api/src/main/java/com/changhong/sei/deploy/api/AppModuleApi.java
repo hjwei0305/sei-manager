@@ -94,7 +94,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param id 应用模块id
      * @return 操作结果
      */
-    @GetMapping(path = "getUnassignedUsers/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "getUnassignedUsers/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "获取应用模块未分配的用户", notes = "获取应用模块未分配的用户")
     ResultData<PageResult<UserDto>> getUnassignedUsers(@PathVariable("id") String id,  @RequestBody Search search);
 
