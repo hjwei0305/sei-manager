@@ -349,7 +349,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         String templateId;
         BuildDetailDto detailDto = modelMapper.map(releaseRecord, BuildDetailDto.class);
         if (StringUtils.equals(TemplateType.DEPLOY.name(), releaseRecord.getType())) {
-            ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getModuleCode());
+            ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(releaseRecord.getEnvCode(), releaseRecord.getAppId(), releaseRecord.getModuleCode());
             if (resultData.failed()) {
                 return ResultData.fail(resultData.getMessage());
             }
@@ -399,7 +399,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             final boolean needRelease;
             if (StringUtils.equals(TemplateType.DEPLOY.name(), buildJob.getType())) {
                 // 检查部署配置是否存在
-                ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(buildJob.getEnvCode(), buildJob.getModuleCode());
+                ResultData<DeployConfig> resultData = deployConfigService.getDeployConfig(buildJob.getEnvCode(), buildJob.getAppId(), buildJob.getModuleCode());
                 if (resultData.failed()) {
                     return ResultData.fail(resultData.getMessage());
                 }

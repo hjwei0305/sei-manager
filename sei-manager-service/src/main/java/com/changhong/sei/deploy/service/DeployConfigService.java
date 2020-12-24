@@ -47,7 +47,7 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
         boolean isNew = isNew(entity);
         if (isNew) {
             // 新增检查配置是否存在
-            ResultData<DeployConfig> resultData = getDeployConfig(entity.getEnvCode(), entity.getModuleCode());
+            ResultData<DeployConfig> resultData = getDeployConfig(entity.getEnvCode(), entity.getAppId(), entity.getModuleCode());
             if (resultData.successful()) {
                 DeployConfig deployConfig = resultData.getData();
                 return OperateResultWithData.operationFailure("已存在ENV[" + deployConfig.getEnvCode() + "]ModuleCode[" + deployConfig.getModuleCode() + "]的部署配置");
@@ -122,9 +122,10 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
      * @param moduleCode 模块代码
      * @return 返回部署配置
      */
-    public ResultData<DeployConfig> getDeployConfig(String envCode, String moduleCode) {
+    public ResultData<DeployConfig> getDeployConfig(String envCode, String appId, String moduleCode) {
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(DeployConfig.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(DeployConfig.FIELD_APP_ID, appId));
         search.addFilter(new SearchFilter(DeployConfig.FIELD_MODULE_CODE, moduleCode));
         DeployConfig config = dao.findFirstByFilters(search);
         if (Objects.isNull(config)) {

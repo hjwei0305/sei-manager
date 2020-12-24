@@ -218,7 +218,7 @@ public class TagService extends BaseEntityService<Tag> {
      * @param moduleId 模块id
      * @return 同步结果
      */
-    @SeiLock(key = "'syncTag' + #moduleCode", fallback = "syncTagFallback")
+    @SeiLock(key = "'manager:syncTag' + #moduleId", fallback = "syncTagFallback")
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> syncTag(String moduleId) {
         AppModule module = moduleService.findOne(moduleId);
@@ -281,10 +281,10 @@ public class TagService extends BaseEntityService<Tag> {
     /**
      * 同步标签分布式锁降级处理方法
      *
-     * @SeiLock(key = "'syncTag' + #moduleCode", fallback = "syncTagFallback")
+     * @SeiLock(key = "'syncTag' + #moduleId", fallback = "syncTagFallback")
      */
-    public ResultData<Void> syncTagFallback(String moduleCode) {
-        return ResultData.fail("正在同步[" + moduleCode + "]的gitlab标签, 请稍后再试...");
+    public ResultData<Void> syncTagFallback(String moduleId) {
+        return ResultData.fail("正在同步[" + moduleId + "]的gitlab标签, 请稍后再试...");
     }
 
     private TagDto convert(Tag tag) {

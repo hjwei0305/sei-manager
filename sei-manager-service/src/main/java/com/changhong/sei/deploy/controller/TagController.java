@@ -29,12 +29,12 @@ public class TagController implements TagApi {
     /**
      * 获取最新的标签
      *
-     * @param moduleCode 模块代码
+     * @param moduleId 模块id
      * @return 创建结果
      */
     @Override
-    public ResultData<TagDto> getLastTag(String moduleCode) {
-        return service.getLastTag(moduleCode);
+    public ResultData<TagDto> getLastTag(String moduleId) {
+        return service.getLastTag(moduleId);
     }
 
     /**
