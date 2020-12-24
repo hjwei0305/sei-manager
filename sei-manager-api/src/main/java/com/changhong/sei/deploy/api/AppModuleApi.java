@@ -90,12 +90,13 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
     /**
      * 添加应用模块用户
      *
-     * @param users 用户
+     * @param gitId    git项目id
+     * @param accounts 用户account
      * @return 操作结果
      */
-    @PostMapping(path = "addModuleUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "addModuleUser/{gitId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "添加应用模块用户", notes = "添加应用模块用户")
-    ResultData<Void> addModuleUser(@RequestBody Set<ModuleUser> users);
+    ResultData<Void> addModuleUser(@PathVariable("gitId") String gitId, @RequestBody Set<String> accounts);
 
     /**
      * 按用户账号清单移除应用模块用户

@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -352,20 +351,24 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     /**
      * 添加应用模块用户
      *
-     * @param users 用户
+     * @param gitId    git项目id
+     * @param accounts 用户account
      * @return 操作结果
      */
-    public ResultData<Void> addModuleUser(Set<ModuleUser> users) {
-        if (CollectionUtils.isNotEmpty(users)) {
-            String gitId = null;
-            Set<String> accounts = new HashSet<>();
-            for (ModuleUser user : users) {
-                gitId = user.getGitProjectId();
-                accounts.add(user.getAccount());
-            }
-            gitlabService.addProjectUser(gitId, accounts.toArray(new String[0]));
+    public ResultData<Void> addModuleUser(String gitId, Set<String> accounts) {
+        if (StringUtils.isBlank(gitId)) {
+            return ResultData.fail("模块gitId不能为空.");
         }
-        return null;
+        if (CollectionUtils.isEmpty(accounts)) {
+            return ResultData.fail("账号不能为空.");
+        }
+
+        ResultData<Integer> resultData = gitlabService.addProjectUser(gitId, accounts.toArray(new String[0]));
+        if (resultData.successful()) {
+            return ResultData.success();
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
     }
 
     /**

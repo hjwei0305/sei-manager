@@ -176,12 +176,13 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     /**
      * 添加应用模块用户
      *
-     * @param users 用户
+     * @param gitId    git项目id
+     * @param accounts 用户account
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> addModuleUser(Set<ModuleUser> users) {
-        return service.addModuleUser(users);
+    public ResultData<Void> addModuleUser(String gitId, Set<String> accounts) {
+        return service.addModuleUser(gitId, accounts);
     }
 
     /**
