@@ -72,6 +72,8 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseVersionRequisitionDto> createRequisition(ReleaseVersion releaseVersion) {
+        // 重置版本
+        releaseVersion.setVersion(releaseVersion.getRefTag() + "-Release");
         // 通过模块和版本检查是否重复申请
         ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
         if (Objects.nonNull(existed)) {
@@ -130,6 +132,8 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(ReleaseVersion releaseVersion) {
+        // 重置版本
+        releaseVersion.setVersion(releaseVersion.getRefTag() + "-Release");
         // 通过模块和版本检查是否重复申请
         ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
         if (Objects.nonNull(existed)) {
