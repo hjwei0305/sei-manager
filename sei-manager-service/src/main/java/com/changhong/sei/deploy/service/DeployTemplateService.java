@@ -155,7 +155,7 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
             if (params != null && params.size() > 0) {
                 script.append("\n\r // 全局参数 start  \n\r");
                 for (Map.Entry<String, Object> entry : params.entrySet()) {
-                    script.append(" def ").append(entry.getKey()).append(" = '").append(entry.getValue()).append("' \n\r");
+                    script.append(" def ").append(entry.getKey()).append(" = \"").append(entry.getValue()).append("\" \n\r");
                 }
                 script.append("\n\r // 全局参数 end  \n\r");
             }
