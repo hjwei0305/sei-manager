@@ -37,6 +37,10 @@ public class RbacAuthorityService {
     }
 
     public boolean hasPermission(HttpServletRequest request, Authentication authentication) {
+        // 所有请求都需要登录访问
+        if (!authentication.isAuthenticated()) {
+            return false;
+        }
         return true;
         //checkRequest(request);
 

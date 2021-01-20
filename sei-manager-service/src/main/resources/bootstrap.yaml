@@ -1,6 +1,9 @@
 sei: # 应用全局配置
   application:
+    env: DEV
+    code: sei-manager
     version: '@project_version@'
+    description: '@project_description@'
 
 spring:
   config:

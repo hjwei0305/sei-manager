@@ -1,13 +1,9 @@
 sei: # 应用全局配置
   application:
-    code: sei-agent
-    name: SEI平台代理
     env: DEV
-    version: 6.0.1
-    swagger:
-      title: "${sei.application.name} API"
-      description: "${sei.application.name} 的API文档，运行环境: ${sei.application.env}"
-      version: ${sei.application.version}
+    code: sei-agent
+    description: SEI平台代理
+    version: '@project_version@'
   mock: # 本地调试的当前用户配置
     user:
       tenant-code: global

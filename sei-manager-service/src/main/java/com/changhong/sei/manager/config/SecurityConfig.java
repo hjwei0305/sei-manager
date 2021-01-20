@@ -58,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().csrf().disable()
                 // 登录行为由自己实现，参考 AuthController#login
                 .formLogin().disable()
+                .logout().disable()
                 .httpBasic().disable()
 
                 // 认证请求
@@ -65,14 +66,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 登录地址
                 .antMatchers(HttpMethod.POST, "/**/login", "/**/logout").permitAll()
                 // 所有请求都需要登录访问
-                .anyRequest()
-                .authenticated()
+//                .anyRequest()
+//                .authenticated()
                 // RBAC 动态 url 认证
                 .anyRequest()
                 .access("@rbacAuthorityService.hasPermission(request, authentication)")
 
                 // 登出行为由自己实现，参考 AuthController#logout
-                .and().logout().disable()
+                .and()
                 // Session 管理
                 .sessionManagement()
                 // 因为使用了JWT，所以这里不管理Session
