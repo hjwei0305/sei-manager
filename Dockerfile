@@ -1,24 +1,22 @@
 # Docker for java  sei-manager
 
 # 基础镜像
-FROM frolvlad/alpine-java:latest
+FROM registry.cn-hangzhou.aliyuncs.com/brianchou/server-jre:8u281-alpine
 
-# 作者
+# 维护者
 LABEL maintainer="hua.feng@changhong.com"
 
 # 环境变量
-## JAVA_OPTS：JAVA启动参数
-## APP_NAME：应用名称（各项目需要修改）
 ENV JAVA_OPTS=""  APP_NAME="sei-manager"
 
-# 设置时区
-RUN rm -rf /etc/localtime && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+# 拷贝包
+ADD --chown=sei $APP_NAME-service/build/libs/$APP_NAME.jar $APP_NAME.jar
 
-# 添加应用
-ADD $APP_NAME-service/build/libs/$APP_NAME.jar $APP_NAME.jar
-
-# 开放8080端口
+# 暴露端口
 EXPOSE 8080
+
+# 切换用户
+USER sei
 
 # 启动应用
 ENTRYPOINT ["sh","-c","java -server -XX:+UseG1GC -XX:InitialRAMPercentage=75.0  -XX:MaxRAMPercentage=75.0 $JAVA_OPTS  -jar $APP_NAME.jar --server.servlet.context-path=/$APP_NAME --server.port=8080"]
