@@ -58,7 +58,6 @@ public class BaseElasticService {
     @Autowired
     private RestHighLevelClient restHighLevelClient;
 
-
     /**
      * 删除index
      */
