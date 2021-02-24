@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 登录行为由自己实现，参考 AuthController#login
                 .formLogin().disable()
                 .logout().disable()
-                .httpBasic().disable()
+                .httpBasic().and()
 
                 // 认证请求
                 .authorizeRequests()
