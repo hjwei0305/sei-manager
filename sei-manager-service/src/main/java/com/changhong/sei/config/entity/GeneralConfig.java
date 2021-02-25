@@ -21,6 +21,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class GeneralConfig extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = -76565844866333714L;
+    public static final String FIELD_ENV_CODE = "envCode";
     /**
      * 环境代码
      */
