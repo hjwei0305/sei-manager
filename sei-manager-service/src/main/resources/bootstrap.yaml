@@ -6,6 +6,10 @@ sei: # 应用全局配置
     description: '@project_description@'
 
 spring:
+  security:
+    user:
+      name: admin
+      password: 123456
   config:
     # 服务器上的配置文件路径
     additional-location: /usr/app/
