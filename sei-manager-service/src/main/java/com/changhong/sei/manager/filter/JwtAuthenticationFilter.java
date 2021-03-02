@@ -146,8 +146,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         Set<String> ignores = Sets.newHashSet();
         switch (httpMethod) {
             case GET:
+                ignores.add("/**/config/**");
                 ignores.add("/**/user/generate/**");
                 ignores.add("/**/user/getMailServer/**");
+
+                // swagger 文档
+                ignores.add("/**/v2/api-docs*/**");
+                ignores.add("/**/swagger-*/**");
+
+                ignores.add("/**/*.html");
+                ignores.add("/**/*.js");
+                ignores.add("/**/*.css");
+                ignores.add("/**/*.ico");
+                ignores.add("/**/*.jpg");
+                ignores.add("/**/*.svg");
+                ignores.add("/**/*.png");
+                ignores.add("/**/*.gif");
                 ignores.addAll(customConfig.getIgnores().getGet());
                 break;
             case PUT:
@@ -181,9 +195,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         }
 
         ignores.addAll(customConfig.getIgnores().getPattern());
-        // swagger 文档
-        ignores.add("/**/v2/api-docs*/**");
-        ignores.add("/**/swagger-*/**");
 
         // spring boot actuator
         ignores.add("/**/actuator/**");
@@ -191,14 +202,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         ignores.add("/**/applications/**");
         ignores.add("/**/websocket/**");
 
-        ignores.add("/**/*.html");
-        ignores.add("/**/*.js");
-        ignores.add("/**/*.css");
-        ignores.add("/**/*.ico");
-        ignores.add("/**/*.jpg");
-        ignores.add("/**/*.svg");
-        ignores.add("/**/*.png");
-        ignores.add("/**/*.gif");
         ignores.add("/**/login");
 
         if (CollectionUtils.isNotEmpty(ignores)) {
