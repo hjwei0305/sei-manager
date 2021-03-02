@@ -1,7 +1,7 @@
 package com.changhong.sei.config.conf;
 
 import com.changhong.sei.config.service.DbEnvironmentRepository;
-//import org.springframework.cloud.config.server.environment.EnvironmentRepository;
+import org.springframework.cloud.config.server.environment.EnvironmentRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EnvironmentRepositoryConfig {
 
-//    @Bean
-//    public EnvironmentRepository environmentRepository() {
-//        return new DbEnvironmentRepository();
-//    }
+    @Bean
+    public EnvironmentRepository environmentRepository() {
+        return new DbEnvironmentRepository();
+    }
 }

@@ -18,7 +18,7 @@ dependencies {
     // 本项目依赖模块
     compile project(':sei-manager-api')
     compile(
-//            "org.springframework.cloud:spring-cloud-config-server",
+            "org.springframework.cloud:spring-cloud-config-server",
             "org.springframework.boot:spring-boot-starter-security",
             "org.springframework.boot:spring-boot-starter-mail",
             "org.springframework.boot:spring-boot-starter-thymeleaf",
