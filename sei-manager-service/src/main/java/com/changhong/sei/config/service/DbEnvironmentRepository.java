@@ -1,7 +1,7 @@
 package com.changhong.sei.config.service;
 
 import org.springframework.cloud.config.environment.Environment;
-import org.springframework.cloud.config.server.environment.EnvironmentRepository;
+//import org.springframework.cloud.config.server.environment.EnvironmentRepository;
 import org.springframework.core.Ordered;
 
 /**
@@ -10,9 +10,9 @@ import org.springframework.core.Ordered;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2021-02-20 15:52
  */
-public class DbEnvironmentRepository implements EnvironmentRepository, Ordered {
+//public class DbEnvironmentRepository implements EnvironmentRepository, Ordered {
+public class DbEnvironmentRepository implements  Ordered {
 
-    @Override
     public Environment findOne(String application, String profile, String label) {
         Environment environment = new Environment(application, profile);
         return environment;
