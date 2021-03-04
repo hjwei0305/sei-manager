@@ -31,6 +31,9 @@ public class TagDto extends BaseEntityDto implements Serializable {
     private String moduleCode;
     @ApiModelProperty(notes = "tag名")
     private String tagName;
+
+    @ApiModelProperty(notes = "分支")
+    private String branch;
     /**
      * 主版本
      */
@@ -97,6 +100,14 @@ public class TagDto extends BaseEntityDto implements Serializable {
 
     public void setTagName(String tagName) {
         this.tagName = tagName;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 
     public Integer getMajor() {

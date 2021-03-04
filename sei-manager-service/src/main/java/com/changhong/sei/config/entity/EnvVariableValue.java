@@ -2,7 +2,6 @@ package com.changhong.sei.config.entity;
 
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.core.entity.BaseAuditableEntity;
-import com.changhong.sei.core.entity.ICodeUnique;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -16,16 +15,32 @@ import java.io.Serializable;
  * @since 2021-03-02 14:26:19
  */
 @Entity
-@Table(name = "conf_env_variable")
+@Table(name = "conf_env_variable_value")
 @DynamicInsert
 @DynamicUpdate
-public class EnvVariable extends BaseAuditableEntity implements ICodeUnique, Serializable {
+public class EnvVariableValue extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 938743634139683037L;
+    public static final String FIELD_KEY = "key";
+    /**
+     * 环境代码
+     */
+    @Column(name = "env_code")
+    private String envCode;
+    /**
+     * 环境名称
+     */
+    @Column(name = "env_name")
+    private String envName;
     /**
      * 配置键
      */
-    @Column(name = "code")
-    private String code;
+    @Column(name = "key")
+    private String key;
+    /**
+     * 配置值
+     */
+    @Column(name = "value")
+    private String value;
     /**
      * 使用状态：NONE、ENABLE、DISABLE
      */
@@ -38,14 +53,36 @@ public class EnvVariable extends BaseAuditableEntity implements ICodeUnique, Ser
     @Column(name = "remark")
     private String remark;
 
-    @Override
-    public String getCode() {
-        return code;
+    public String getEnvCode() {
+        return envCode;
     }
 
-    @Override
-    public void setCode(String code) {
-        this.code = code;
+    public void setEnvCode(String envCode) {
+        this.envCode = envCode;
+    }
+
+    public String getEnvName() {
+        return envName;
+    }
+
+    public void setEnvName(String envName) {
+        this.envName = envName;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public UseStatus getUseStatus() {
@@ -63,4 +100,5 @@ public class EnvVariable extends BaseAuditableEntity implements ICodeUnique, Ser
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
 }

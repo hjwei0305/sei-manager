@@ -14,15 +14,30 @@ import javax.validation.constraints.NotBlank;
  * @since 2021-03-02 14:26:32
  */
 @ApiModel(description = "环境变量DTO")
-public class EnvVariableDto extends BaseEntityDto {
+public class EnvVariableValueDto extends BaseEntityDto {
     private static final long serialVersionUID = 249277880977324386L;
-
+    /**
+     * 环境代码
+     */
+    @NotBlank
+    @ApiModelProperty(value = "环境代码")
+    private String envCode;
+    /**
+     * 环境名称
+     */
+    @ApiModelProperty(value = "环境名称")
+    private String envName;
     /**
      * 配置键
      */
     @NotBlank
     @ApiModelProperty(value = "配置键")
-    private String code;
+    private String key;
+    /**
+     * 配置值
+     */
+    @ApiModelProperty(value = "配置值")
+    private String value;
     /**
      * 使用状态：NONE、ENABLE、DISABLE
      */
@@ -34,12 +49,37 @@ public class EnvVariableDto extends BaseEntityDto {
     @ApiModelProperty(value = "描述说明")
     private String remark;
 
-    public String getCode() {
-        return code;
+
+    public String getEnvCode() {
+        return envCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setEnvCode(String envCode) {
+        this.envCode = envCode;
+    }
+
+    public String getEnvName() {
+        return envName;
+    }
+
+    public void setEnvName(String envName) {
+        this.envName = envName;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public UseStatus getUseStatus() {
@@ -57,4 +97,5 @@ public class EnvVariableDto extends BaseEntityDto {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
 }

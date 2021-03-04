@@ -59,6 +59,11 @@ public class Tag extends BaseEntity implements Serializable {
     @Column(name = "revised")
     private Integer revised = 0;
     /**
+     * 分支
+     */
+    @Column(name = "branch")
+    private String branch;
+    /**
      * 是否发布
      */
     @Column(name = "is_release")
@@ -130,6 +135,14 @@ public class Tag extends BaseEntity implements Serializable {
 
     public void setRevised(Integer revised) {
         this.revised = revised;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 
     public Boolean getRelease() {

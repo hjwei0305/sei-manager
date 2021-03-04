@@ -133,7 +133,6 @@ public class TagService extends BaseEntityService<Tag> {
      * @return 创建结果
      */
     public ResultData<Void> createTag(TagDto request) {
-        String branch = "master";
         AppModule module = moduleService.findByProperty(AppModule.ID, request.getModuleId());
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块id[" + request.getModuleId() + "]不存在.");
@@ -151,6 +150,7 @@ public class TagService extends BaseEntityService<Tag> {
         Tag tag = new Tag();
         tag.setModuleId(module.getId());
         tag.setModuleCode(module.getCode());
+        tag.setBranch(request.getBranch());
         tag.setMajor(request.getMajor());
         tag.setMinor(request.getMinor());
         tag.setRevised(request.getRevised());
@@ -169,7 +169,7 @@ public class TagService extends BaseEntityService<Tag> {
             tag.setCode(tag.getTagName());
             this.save(tag);
         } else {
-            resultData = gitlabService.createProjectTag(module.getGitId(), tag.getTagName(), branch, tag.getMessage());
+            resultData = gitlabService.createProjectTag(module.getGitId(), tag.getTagName(), tag.getBranch(), tag.getMessage());
             if (resultData.successful()) {
                 gitTag = resultData.getData();
                 tag.setRelease(Objects.nonNull(tag.getRelease()));
