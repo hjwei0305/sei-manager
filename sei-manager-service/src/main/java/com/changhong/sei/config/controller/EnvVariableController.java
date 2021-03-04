@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,13 +68,17 @@ public class EnvVariableController extends BaseEntityController<EnvVariable, Env
     @Override
     public ResultData<List<EnvVariableValueDto>> getVariableValues(String code) {
         List<EnvVariableValueDto> valueDtos;
-        List<EnvVariableValue> variableValues = service.findEnvVariableValues(code);
-        if (CollectionUtils.isNotEmpty(variableValues)) {
-            valueDtos = variableValues.stream().map(v -> dtoModelMapper.map(v, EnvVariableValueDto.class)).collect(Collectors.toList());
-        } else {
-            valueDtos = new ArrayList<>();
+        ResultData<List<EnvVariableValue>> resultData = service.findEnvVariableValues(code);
+        if (resultData.successful()) {
+            List<EnvVariableValue> variableValues = resultData.getData();
+            if (CollectionUtils.isNotEmpty(variableValues)) {
+                valueDtos = variableValues.stream().map(v -> dtoModelMapper.map(v, EnvVariableValueDto.class)).collect(Collectors.toList());
+            } else {
+                valueDtos = new ArrayList<>();
+            }
+            return ResultData.success(valueDtos);
         }
-        return ResultData.success(valueDtos);
+        return ResultData.fail(resultData.getMessage());
     }
 
     /**
