@@ -42,7 +42,7 @@ public class EnvVariableValueDto extends BaseEntityDto {
      * 使用状态：NONE、ENABLE、DISABLE
      */
     @ApiModelProperty(value = "使用状态：NONE、ENABLE、DISABLE")
-    private UseStatus useStatus;
+    private UseStatus useStatus = UseStatus.NONE;
     /**
      * 描述说明
      */

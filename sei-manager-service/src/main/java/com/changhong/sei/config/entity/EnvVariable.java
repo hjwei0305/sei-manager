@@ -31,7 +31,7 @@ public class EnvVariable extends BaseAuditableEntity implements ICodeUnique, Ser
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "use_status")
-    private UseStatus useStatus;
+    private UseStatus useStatus = UseStatus.NONE;
     /**
      * 描述说明
      */
