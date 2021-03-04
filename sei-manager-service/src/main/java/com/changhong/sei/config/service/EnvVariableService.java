@@ -3,20 +3,24 @@ package com.changhong.sei.config.service;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.EnvVariableDao;
 import com.changhong.sei.config.dao.EnvVariableValueDao;
-import com.changhong.sei.config.dto.EnvVariableValueDto;
 import com.changhong.sei.config.entity.EnvVariable;
 import com.changhong.sei.config.entity.EnvVariableValue;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.deploy.entity.RuntimeEnv;
+import com.changhong.sei.deploy.service.RuntimeEnvService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 环境变量(ConfEnvVariable)业务逻辑实现类
@@ -30,6 +34,8 @@ public class EnvVariableService extends BaseEntityService<EnvVariable> {
     private EnvVariableDao dao;
     @Autowired
     private EnvVariableValueDao variableValueDao;
+    @Autowired
+    private RuntimeEnvService runtimeEnvService;
 
     @Override
     protected BaseEntityDao<EnvVariable> getDao() {
@@ -74,8 +80,38 @@ public class EnvVariableService extends BaseEntityService<EnvVariable> {
      * @param key 环境变量key
      * @return 环境变量清单
      */
-    public List<EnvVariableValue> findEnvVariableValues(String key) {
-        return variableValueDao.findListByProperty(EnvVariableValue.FIELD_KEY, key);
+    public ResultData<List<EnvVariableValue>> findEnvVariableValues(String key) {
+        EnvVariable variable = findByProperty(EnvVariable.CODE_FIELD, key);
+        if (Objects.isNull(variable)) {
+            return ResultData.fail(key + "-不是一个环境变量.");
+        }
+
+        List<RuntimeEnv> envList = runtimeEnvService.findAllUnfrozen();
+        if (CollectionUtils.isEmpty(envList)) {
+            return ResultData.fail("无可用的运行环境.");
+        }
+        List<EnvVariableValue> values = variableValueDao.findListByProperty(EnvVariableValue.FIELD_KEY, key);
+        if (Objects.isNull(values)) {
+            values = new ArrayList<>();
+        }
+
+        Map<String, EnvVariableValue> data = values.stream().collect(Collectors.toMap(EnvVariableValue::getEnvCode, v -> v));
+
+        List<EnvVariableValue> results = new ArrayList<>();
+        EnvVariableValue variableValue;
+        for (RuntimeEnv env : envList) {
+            variableValue = data.get(env.getCode());
+            if (Objects.isNull(variableValue)) {
+                variableValue = new EnvVariableValue();
+                variableValue.setEnvCode(env.getCode());
+                variableValue.setEnvName(env.getName());
+                variableValue.setKey(key);
+                variableValue.setRemark(variable.getRemark());
+            }
+            results.add(variableValue);
+        }
+
+        return ResultData.success(results);
     }
 
     /**
