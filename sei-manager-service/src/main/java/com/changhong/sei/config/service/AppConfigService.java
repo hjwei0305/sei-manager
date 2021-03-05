@@ -49,7 +49,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             return OperateResult.operationFailure("不存在删除的对象.");
         }
         if (UseStatus.NONE == variable.getUseStatus()) {
-            return super.preDelete(s);
+            return super.delete(s);
         } else if (UseStatus.ENABLE == variable.getUseStatus()) {
             // 更新为禁用
             variable.setUseStatus(UseStatus.DISABLE);
