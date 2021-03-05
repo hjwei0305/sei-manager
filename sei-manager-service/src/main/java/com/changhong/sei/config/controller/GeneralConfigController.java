@@ -95,6 +95,6 @@ public class GeneralConfigController extends BaseEntityController<GeneralConfig,
     @Override
     public ResultData<Void> syncConfigs(Set<GeneralConfigDto> dtoList) {
         List<GeneralConfig> configs = dtoList.stream().map(c -> entityModelMapper.map(c, GeneralConfig.class)).collect(Collectors.toList());
-        return service.addGeneralConfig(configs);
+        return service.syncConfigs(configs);
     }
 }

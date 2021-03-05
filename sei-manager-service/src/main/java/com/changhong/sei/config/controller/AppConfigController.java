@@ -3,9 +3,7 @@ package com.changhong.sei.config.controller;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.api.AppConfigApi;
 import com.changhong.sei.config.dto.AppConfigDto;
-import com.changhong.sei.config.dto.GeneralConfigDto;
 import com.changhong.sei.config.entity.AppConfig;
-import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.config.service.AppConfigService;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
@@ -16,8 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,7 +61,7 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
     @Override
     public ResultData<Void> addConfig(Set<AppConfigDto> dtoList) {
         List<AppConfig> configs = dtoList.stream().map(c -> entityModelMapper.map(c, AppConfig.class)).collect(Collectors.toList());
-        return service.addGeneralConfig(configs);
+        return service.addConfig(configs);
     }
 
     /**
@@ -99,6 +95,6 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
     @Override
     public ResultData<Void> syncConfigs(Set<AppConfigDto> dtoList) {
         List<AppConfig> configs = dtoList.stream().map(c -> entityModelMapper.map(c, AppConfig.class)).collect(Collectors.toList());
-        return service.addGeneralConfig(configs);
+        return service.syncConfigs(configs);
     }
 }
