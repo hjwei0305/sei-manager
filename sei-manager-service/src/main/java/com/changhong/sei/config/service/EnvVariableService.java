@@ -119,8 +119,10 @@ public class EnvVariableService extends BaseEntityService<EnvVariable> {
      */
     @Transactional
     public ResultData<Void> saveVariableValue(List<EnvVariableValue> variableValues) {
-
-
+        if (CollectionUtils.isEmpty(variableValues)) {
+            return ResultData.fail("持久化的环境变量值不存在.");
+        }
+        variableValueDao.save(variableValues);
         return ResultData.success();
     }
 

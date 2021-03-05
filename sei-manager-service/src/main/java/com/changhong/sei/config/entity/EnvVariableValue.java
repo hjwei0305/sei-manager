@@ -34,12 +34,12 @@ public class EnvVariableValue extends BaseAuditableEntity implements Serializabl
     /**
      * 配置键
      */
-    @Column(name = "key")
+    @Column(name = "key_code")
     private String key;
     /**
      * 配置值
      */
-    @Column(name = "value")
+    @Column(name = "key_value")
     private String value;
     /**
      * 使用状态：NONE、ENABLE、DISABLE
