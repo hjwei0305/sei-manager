@@ -33,6 +33,15 @@ public interface EnvVariableApi extends BaseEntityApi<EnvVariableDto> {
     ResultData<List<EnvVariableDto>> getAllKey();
 
     /**
+     * 获取所有启用的环境变量key列表
+     *
+     * @return key列表
+     */
+    @GetMapping(path = "getEnableKey")
+    @ApiOperation(value = "获取所有启用的环境变量key列表", notes = "获取所有启用的环境变量key列表")
+    ResultData<List<EnvVariableDto>> getEnableKey();
+
+    /**
      * 通过key获取各个环境变量清单
      *
      * @return 环境变量清单

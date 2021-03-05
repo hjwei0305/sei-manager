@@ -1,31 +1,26 @@
 package com.changhong.sei.config.dto;
 
-import com.changhong.sei.common.UseStatus;
-import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * 通用参数配置(GeneralConfig)DTO类
+ * 实现功能：
  *
- * @author sei
- * @since 2021-02-22 21:44:07
+ * @author 马超(Vision.Mac)
+ * @version 1.0.00  2021-03-05 15:00
  */
-@ApiModel(description = "通用参数配置DTO")
-public class GeneralConfigDto extends BaseEntityDto {
-    private static final long serialVersionUID = 551282924714662198L;
+@ApiModel(description = "同步配置到其他环境")
+public class EnvConfigDto implements Serializable {
+    private static final long serialVersionUID = 5319130224008373953L;
+
     /**
      * 环境代码
      */
     @ApiModelProperty(value = "环境代码")
     private String envCode;
-    /**
-     * 环境名称
-     */
-    @ApiModelProperty(value = "环境名称")
-    private String envName;
     /**
      * 配置键
      */
@@ -36,16 +31,6 @@ public class GeneralConfigDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "配置值")
     private String value;
-    /**
-     * 描述说明
-     */
-    @ApiModelProperty(value = "描述说明")
-    private String remark;
-    /**
-     * 使用状态：NONE、ENABLE、DISABLE
-     */
-    @ApiModelProperty(value = "使用状态：NONE、ENABLE、DISABLE")
-    private UseStatus useStatus = UseStatus.NONE;
 
     public String getEnvCode() {
         return envCode;
@@ -53,14 +38,6 @@ public class GeneralConfigDto extends BaseEntityDto {
 
     public void setEnvCode(String envCode) {
         this.envCode = envCode;
-    }
-
-    public String getEnvName() {
-        return envName;
-    }
-
-    public void setEnvName(String envName) {
-        this.envName = envName;
     }
 
     public String getKey() {
@@ -79,22 +56,6 @@ public class GeneralConfigDto extends BaseEntityDto {
         this.value = value;
     }
 
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public UseStatus getUseStatus() {
-        return useStatus;
-    }
-
-    public void setUseStatus(UseStatus useStatus) {
-        this.useStatus = useStatus;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -104,7 +65,7 @@ public class GeneralConfigDto extends BaseEntityDto {
             return false;
         }
 
-        GeneralConfigDto that = (GeneralConfigDto) o;
+        EnvConfigDto that = (EnvConfigDto) o;
 
         if (!Objects.equals(envCode, that.envCode)) {
             return false;

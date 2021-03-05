@@ -1,12 +1,11 @@
 package com.changhong.sei.config.entity;
 
+import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.core.entity.BaseAuditableEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -44,13 +43,19 @@ public class AppConfig extends BaseAuditableEntity implements Serializable {
     /**
      * 配置键
      */
-    @Column(name = "key")
+    @Column(name = "key_code")
     private String key;
     /**
      * 配置值
      */
-    @Column(name = "value")
+    @Column(name = "key_value")
     private String value;
+    /**
+     * 使用状态：NONE、ENABLE、DISABLE
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "use_status")
+    private UseStatus useStatus = UseStatus.NONE;
     /**
      * 描述说明
      */
@@ -104,6 +109,14 @@ public class AppConfig extends BaseAuditableEntity implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public UseStatus getUseStatus() {
+        return useStatus;
+    }
+
+    public void setUseStatus(UseStatus useStatus) {
+        this.useStatus = useStatus;
     }
 
     public String getRemark() {

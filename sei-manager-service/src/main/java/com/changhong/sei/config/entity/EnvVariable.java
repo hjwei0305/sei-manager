@@ -21,6 +21,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class EnvVariable extends BaseAuditableEntity implements ICodeUnique, Serializable {
     private static final long serialVersionUID = 938743634139683037L;
+    public static final String FIELD_USE_STATUS = "useStatus";
     /**
      * 配置键
      */

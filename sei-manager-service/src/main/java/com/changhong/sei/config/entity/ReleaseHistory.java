@@ -36,12 +36,12 @@ public class ReleaseHistory extends BaseEntity implements Serializable {
     /**
      * 配置键
      */
-    @Column(name = "key")
+    @Column(name = "key_code")
     private String key;
     /**
      * 配置值
      */
-    @Column(name = "value")
+    @Column(name = "key_value")
     private String value;
     /**
      * 发布人账号

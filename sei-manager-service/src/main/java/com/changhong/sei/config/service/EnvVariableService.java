@@ -9,6 +9,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.deploy.entity.RuntimeEnv;
 import com.changhong.sei.deploy.service.RuntimeEnvService;
 import org.apache.commons.collections.CollectionUtils;
@@ -61,6 +62,8 @@ public class EnvVariableService extends BaseEntityService<EnvVariable> {
             // 更新为禁用
             variable.setUseStatus(UseStatus.DISABLE);
             dao.save(variable);
+        } else {
+            return OperateResult.operationFailure("对象已为禁用状态.");
         }
         return OperateResult.operationSuccess();
     }
@@ -148,6 +151,8 @@ public class EnvVariableService extends BaseEntityService<EnvVariable> {
                 // 更新为禁用
                 variable.setUseStatus(UseStatus.DISABLE);
                 dao.save(variable);
+            } else {
+                return OperateResult.operationFailure("对象已为禁用状态.");
             }
         }
         return OperateResult.operationSuccess();

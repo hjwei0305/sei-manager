@@ -1,6 +1,8 @@
 package com.changhong.sei.config.controller;
 
+import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.api.GeneralConfigApi;
+import com.changhong.sei.config.dto.EnvConfigDto;
 import com.changhong.sei.config.dto.GeneralConfigDto;
 import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.config.service.GeneralConfigService;
@@ -13,7 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -48,5 +52,49 @@ public class GeneralConfigController extends BaseEntityController<GeneralConfig,
         List<GeneralConfig> configList = service.findListByProperty(GeneralConfig.FIELD_ENV_CODE, envCode);
         List<GeneralConfigDto> list = configList.stream().map(c -> dtoModelMapper.map(c, GeneralConfigDto.class)).collect(Collectors.toList());
         return ResultData.success(list);
+    }
+
+    /**
+     * 新增通用配置
+     *
+     * @param dtoList 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> addGeneralConfig(Set<GeneralConfigDto> dtoList) {
+        return null;
+    }
+
+    /**
+     * 启用通用配置
+     *
+     * @param ids 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> enableConfig(Set<String> ids) {
+        return service.updateStatus(ids, UseStatus.ENABLE);
+    }
+
+    /**
+     * 禁用通用配置
+     *
+     * @param ids 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> disableConfig(Set<String> ids) {
+        return service.updateStatus(ids, UseStatus.DISABLE);
+    }
+
+    /**
+     * 同步配置到其他环境
+     *
+     * @param ids 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> syncConfigs(Set<EnvConfigDto> ids) {
+        return null;
     }
 }

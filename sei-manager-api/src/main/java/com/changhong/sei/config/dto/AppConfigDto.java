@@ -1,5 +1,6 @@
 package com.changhong.sei.config.dto;
 
+import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -43,6 +44,11 @@ public class AppConfigDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "配置值")
     private String value;
+    /**
+     * 使用状态：NONE、ENABLE、DISABLE
+     */
+    @ApiModelProperty(value = "使用状态：NONE、ENABLE、DISABLE")
+    private UseStatus useStatus = UseStatus.NONE;
     /**
      * 描述说明
      */
@@ -96,6 +102,14 @@ public class AppConfigDto extends BaseEntityDto {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public UseStatus getUseStatus() {
+        return useStatus;
+    }
+
+    public void setUseStatus(UseStatus useStatus) {
+        this.useStatus = useStatus;
     }
 
     public String getRemark() {

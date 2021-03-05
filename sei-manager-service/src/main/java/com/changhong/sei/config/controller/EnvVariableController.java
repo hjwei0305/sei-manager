@@ -1,5 +1,6 @@
 package com.changhong.sei.config.controller;
 
+import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.api.EnvVariableApi;
 import com.changhong.sei.config.dto.EnvVariableDto;
 import com.changhong.sei.config.dto.EnvVariableValueDto;
@@ -51,6 +52,24 @@ public class EnvVariableController extends BaseEntityController<EnvVariable, Env
     public ResultData<List<EnvVariableDto>> getAllKey() {
         List<EnvVariableDto> dtoList;
         List<EnvVariable> list = service.findAllKey();
+        if (CollectionUtils.isNotEmpty(list)) {
+            dtoList = list.stream().map(v -> dtoModelMapper.map(v, EnvVariableDto.class)).collect(Collectors.toList());
+        } else {
+            dtoList = new ArrayList<>();
+        }
+        return ResultData.success(dtoList);
+    }
+
+    /**
+     * 获取所有启用的环境变量key列表
+     *
+     * @return key列表
+     */
+    @Override
+    public ResultData<List<EnvVariableDto>> getEnableKey() {
+        List<EnvVariableDto> dtoList;
+        // 获取所有启用的环境变量
+        List<EnvVariable> list = service.findListByProperty(EnvVariable.FIELD_USE_STATUS, UseStatus.ENABLE);
         if (CollectionUtils.isNotEmpty(list)) {
             dtoList = list.stream().map(v -> dtoModelMapper.map(v, EnvVariableDto.class)).collect(Collectors.toList());
         } else {

@@ -42,12 +42,6 @@ public class EnvVariableValue extends BaseAuditableEntity implements Serializabl
     @Column(name = "key_value")
     private String value;
     /**
-     * 使用状态：NONE、ENABLE、DISABLE
-     */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "use_status")
-    private UseStatus useStatus = UseStatus.NONE;
-    /**
      * 描述说明
      */
     @Column(name = "remark")
@@ -83,14 +77,6 @@ public class EnvVariableValue extends BaseAuditableEntity implements Serializabl
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public UseStatus getUseStatus() {
-        return useStatus;
-    }
-
-    public void setUseStatus(UseStatus useStatus) {
-        this.useStatus = useStatus;
     }
 
     public String getRemark() {
