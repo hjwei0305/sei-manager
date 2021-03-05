@@ -2,8 +2,6 @@ package com.changhong.sei.config.service;
 
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.GeneralConfigDao;
-import com.changhong.sei.config.dto.EnvConfigDto;
-import com.changhong.sei.config.dto.GeneralConfigDto;
 import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
@@ -14,8 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -42,13 +41,31 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
      * @param configs 业务实体
      * @return 操作结果
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> addGeneralConfig(Set<GeneralConfig> configs) {
         if (CollectionUtils.isEmpty(configs)) {
             return ResultData.fail("配置数据不能为空.");
         }
+        Set<String> keys = configs.stream().map(GeneralConfig::getKey).collect(Collectors.toSet());
+        if (keys.size() != 1) {
+            return ResultData.fail("不能同时配置多个key.");
+        }
+        String key = keys.stream().findAny().get();
+        List<GeneralConfig> configList = dao.findListByProperty(GeneralConfig.FIELD_KEY, key);
+        if (CollectionUtils.isEmpty(configList)) {
+            this.save(configs);
+        } else {
+            // 已存在的环境配置
+            Set<String> envConfig = configList.stream().map(GeneralConfig::getEnvCode).collect(Collectors.toSet());
+            for (GeneralConfig conf : configs) {
+                if (envConfig.contains(conf.getEnvCode())) {
+                    continue;
+                }
+                this.save(conf);
+            }
+        }
 
-
-        return null;
+        return ResultData.success();
     }
 
     /**
@@ -61,15 +78,5 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
     public ResultData<Void> updateStatus(Set<String> ids, UseStatus useStatus) {
         dao.updateStatus(ids, useStatus);
         return ResultData.success();
-    }
-
-    /**
-     * 同步配置到其他环境
-     *
-     * @param ids 业务实体DTO
-     * @return 操作结果
-     */
-    public ResultData<Void> syncConfigs(Set<EnvConfigDto> ids) {
-        return null;
     }
 }

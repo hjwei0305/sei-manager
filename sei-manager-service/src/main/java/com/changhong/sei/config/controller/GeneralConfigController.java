@@ -2,7 +2,6 @@ package com.changhong.sei.config.controller;
 
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.api.GeneralConfigApi;
-import com.changhong.sei.config.dto.EnvConfigDto;
 import com.changhong.sei.config.dto.GeneralConfigDto;
 import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.config.service.GeneralConfigService;
@@ -15,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,7 +60,8 @@ public class GeneralConfigController extends BaseEntityController<GeneralConfig,
      */
     @Override
     public ResultData<Void> addGeneralConfig(Set<GeneralConfigDto> dtoList) {
-        return null;
+        Set<GeneralConfig> configs = dtoList.stream().map(c -> entityModelMapper.map(c, GeneralConfig.class)).collect(Collectors.toSet());
+        return service.addGeneralConfig(configs);
     }
 
     /**
@@ -90,11 +89,12 @@ public class GeneralConfigController extends BaseEntityController<GeneralConfig,
     /**
      * 同步配置到其他环境
      *
-     * @param ids 业务实体DTO
+     * @param dtoList 业务实体DTO
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> syncConfigs(Set<EnvConfigDto> ids) {
-        return null;
+    public ResultData<Void> syncConfigs(Set<GeneralConfigDto> dtoList) {
+        Set<GeneralConfig> configs = dtoList.stream().map(c -> entityModelMapper.map(c, GeneralConfig.class)).collect(Collectors.toSet());
+        return service.addGeneralConfig(configs);
     }
 }
