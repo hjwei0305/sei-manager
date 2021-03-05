@@ -79,9 +79,9 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
             this.save(configs);
         } else {
             // 已存在的环境配置
-            Set<String> envConfig = configList.stream().map(GeneralConfig::getEnvCode).collect(Collectors.toSet());
+            Set<String> envConfig = configList.stream().map(g -> g.getEnvCode() + "-" + g.getKey()).collect(Collectors.toSet());
             for (GeneralConfig conf : configs) {
-                if (envConfig.contains(conf.getEnvCode())) {
+                if (envConfig.contains(conf.getEnvCode() + "-" + conf.getKey())) {
                     continue;
                 }
                 this.save(conf);
@@ -129,6 +129,7 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
                 }
                 configMap.put(id, conf);
             }
+            config.setId(null);
             config.setKey(conf.getKey());
             config.setValue(conf.getValue());
             config.setRemark(conf.getRemark());

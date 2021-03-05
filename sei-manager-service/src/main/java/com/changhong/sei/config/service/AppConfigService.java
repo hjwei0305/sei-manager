@@ -3,6 +3,7 @@ package com.changhong.sei.config.service;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.AppConfigDao;
 import com.changhong.sei.config.entity.AppConfig;
+import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
@@ -79,9 +80,9 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             this.save(configs);
         } else {
             // 已存在的环境配置
-            Set<String> envConfig = configList.stream().map(AppConfig::getEnvCode).collect(Collectors.toSet());
+            Set<String> envConfig = configList.stream().map(g -> g.getEnvCode() + "-" + g.getKey()).collect(Collectors.toSet());
             for (AppConfig conf : configs) {
-                if (envConfig.contains(conf.getEnvCode())) {
+                if (envConfig.contains(conf.getEnvCode() + "-" + conf.getKey())) {
                     continue;
                 }
                 this.save(conf);
@@ -129,6 +130,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
                 }
                 configMap.put(id, conf);
             }
+            config.setId(null);
             config.setKey(conf.getKey());
             config.setValue(conf.getValue());
             config.setRemark(conf.getRemark());
