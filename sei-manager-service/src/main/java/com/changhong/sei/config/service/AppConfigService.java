@@ -3,15 +3,18 @@ package com.changhong.sei.config.service;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.AppConfigDao;
 import com.changhong.sei.config.entity.AppConfig;
+import com.changhong.sei.config.entity.EnvVariable;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,6 +33,31 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
     @Override
     protected BaseEntityDao<AppConfig> getDao() {
         return dao;
+    }
+
+    /**
+     * 主键删除
+     *
+     * @param s 主键
+     * @return 返回操作结果对象
+     */
+    @Override
+    @Transactional
+    public OperateResult delete(String s) {
+        AppConfig variable = dao.findOne(s);
+        if (Objects.isNull(variable)) {
+            return OperateResult.operationFailure("不存在删除的对象.");
+        }
+        if (UseStatus.NONE == variable.getUseStatus()) {
+            return super.preDelete(s);
+        } else if (UseStatus.ENABLE == variable.getUseStatus()) {
+            // 更新为禁用
+            variable.setUseStatus(UseStatus.DISABLE);
+            dao.save(variable);
+        } else {
+            return OperateResult.operationFailure("对象已为禁用状态.");
+        }
+        return OperateResult.operationSuccess();
     }
 
     /**
