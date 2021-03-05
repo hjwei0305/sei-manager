@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
     @Autowired
     private GeneralConfigDao dao;
-    @Autowired
-    private RuntimeEnvService runtimeEnvService;
 
     @Override
     protected BaseEntityDao<GeneralConfig> getDao() {
@@ -42,7 +40,7 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> addGeneralConfig(Set<GeneralConfig> configs) {
+    public ResultData<Void> addGeneralConfig(List<GeneralConfig> configs) {
         if (CollectionUtils.isEmpty(configs)) {
             return ResultData.fail("配置数据不能为空.");
         }

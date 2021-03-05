@@ -43,7 +43,7 @@ public interface GeneralConfigApi extends BaseEntityApi<GeneralConfigDto> {
      * @param dtoList 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "addGeneralConfig", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "addConfig", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "新增通用配置", notes = "新增通用配置")
     ResultData<Void> addGeneralConfig(@RequestBody @NotEmpty Set<GeneralConfigDto> dtoList);
 
@@ -70,10 +70,10 @@ public interface GeneralConfigApi extends BaseEntityApi<GeneralConfigDto> {
     /**
      * 同步配置到其他环境
      *
-     * @param ids 业务实体DTO
+     * @param dtoList 业务实体DTO
      * @return 操作结果
      */
     @PostMapping(path = "syncConfigs", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "同步配置到其他环境", notes = "同步配置到其他环境")
-    ResultData<Void> syncConfigs(@RequestBody @Valid Set<GeneralConfigDto> ids);
+    ResultData<Void> syncConfigs(@RequestBody @Valid Set<GeneralConfigDto> dtoList);
 }

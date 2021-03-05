@@ -7,7 +7,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * 通用参数配置(ConfGlobalConfig)实体类
@@ -104,31 +103,4 @@ public class GeneralConfig extends BaseAuditableEntity implements Serializable {
         this.remark = remark;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        GeneralConfig that = (GeneralConfig) o;
-
-        if (!Objects.equals(envCode, that.envCode)) {
-            return false;
-        }
-        return key != null ? key.equals(that.key) : that.key == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (envCode != null ? envCode.hashCode() : 0);
-        result = 31 * result + (key != null ? key.hashCode() : 0);
-        return result;
-    }
 }

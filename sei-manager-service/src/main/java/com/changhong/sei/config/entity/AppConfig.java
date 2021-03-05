@@ -20,6 +20,8 @@ import java.io.Serializable;
 @DynamicUpdate
 public class AppConfig extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 168255479322893154L;
+    public static final String FIELD_KEY = "key";
+    public static final String FIELD_ENV_CODE = "envCode";
     /**
      * 应用服务代码
      */

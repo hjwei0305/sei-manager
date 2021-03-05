@@ -109,13 +109,17 @@ public class GeneralConfigDto extends BaseEntityDto {
         if (!Objects.equals(envCode, that.envCode)) {
             return false;
         }
-        return Objects.equals(key, that.key);
+        if (!Objects.equals(key, that.key)) {
+            return false;
+        }
+        return useStatus == that.useStatus;
     }
 
     @Override
     public int hashCode() {
         int result = envCode != null ? envCode.hashCode() : 0;
         result = 31 * result + (key != null ? key.hashCode() : 0);
+        result = 31 * result + (useStatus != null ? useStatus.hashCode() : 0);
         return result;
     }
 }

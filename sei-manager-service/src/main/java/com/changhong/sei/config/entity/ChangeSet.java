@@ -41,7 +41,7 @@ public class ChangeSet extends BaseEntity implements Serializable {
     /**
      * 配置键
      */
-    @Column(name = "key")
+    @Column(name = "key_code")
     private String key;
     /**
      * 变更前
@@ -68,7 +68,6 @@ public class ChangeSet extends BaseEntity implements Serializable {
      */
     @Column(name = "change_date")
     private Date changeDate;
-
 
     public String getCategory() {
         return category;

@@ -5,6 +5,8 @@ import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Objects;
+
 /**
  * 应用参数配置(ConfAppConfig)DTO类
  *
@@ -120,4 +122,35 @@ public class AppConfigDto extends BaseEntityDto {
         this.remark = remark;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        AppConfigDto that = (AppConfigDto) o;
+
+        if (!Objects.equals(appCode, that.appCode)) {
+            return false;
+        }
+        if (!Objects.equals(envCode, that.envCode)) {
+            return false;
+        }
+        if (!Objects.equals(key, that.key)) {
+            return false;
+        }
+        return useStatus == that.useStatus;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = appCode != null ? appCode.hashCode() : 0;
+        result = 31 * result + (envCode != null ? envCode.hashCode() : 0);
+        result = 31 * result + (key != null ? key.hashCode() : 0);
+        result = 31 * result + (useStatus != null ? useStatus.hashCode() : 0);
+        return result;
+    }
 }
