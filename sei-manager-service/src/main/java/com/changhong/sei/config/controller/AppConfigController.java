@@ -3,6 +3,7 @@ package com.changhong.sei.config.controller;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.api.AppConfigApi;
 import com.changhong.sei.config.dto.AppConfigDto;
+import com.changhong.sei.config.dto.ConfigCompareResponse;
 import com.changhong.sei.config.entity.AppConfig;
 import com.changhong.sei.config.service.AppConfigService;
 import com.changhong.sei.core.controller.BaseEntityController;
@@ -42,11 +43,12 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
     /**
      * 通过环境代码获取应用配置清单
      *
+     * @param appCode 应用代码
      * @param envCode 环境代码
      * @return 业务实体
      */
     @Override
-    public ResultData<List<AppConfigDto>> findByEnv(String envCode) {
+    public ResultData<List<AppConfigDto>> findByAppEnv(String appCode, String envCode) {
         List<AppConfig> configList = service.findListByProperty(AppConfig.FIELD_ENV_CODE, envCode);
         List<AppConfigDto> list = configList.stream().map(c -> dtoModelMapper.map(c, AppConfigDto.class)).collect(Collectors.toList());
         return ResultData.success(list);
@@ -96,5 +98,27 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
     public ResultData<Void> syncConfigs(Set<AppConfigDto> dtoList) {
         List<AppConfig> configs = dtoList.stream().map(c -> entityModelMapper.map(c, AppConfig.class)).collect(Collectors.toList());
         return service.syncConfigs(configs);
+    }
+
+    /**
+     * 发布前比较配置
+     *
+     * @param appCode 应用代码
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<ConfigCompareResponse> compareBeforeRelease(String appCode) {
+        return null;
+    }
+
+    /**
+     * 发布配置
+     *
+     * @param appCode 应用代码
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> release(String appCode) {
+        return null;
     }
 }

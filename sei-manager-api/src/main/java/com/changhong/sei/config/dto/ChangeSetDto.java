@@ -16,20 +16,20 @@ import java.util.Date;
 public class ChangeSetDto extends BaseEntityDto {
     private static final long serialVersionUID = 555063211162189746L;
     /**
-     * 分类 global全局 app应用
+     * 分类 general通用 app应用
      */
-    @ApiModelProperty(value = "分类global全局app应用")
-    private String category;
+    @ApiModelProperty(value = "分类:general通用 app应用")
+    private ConfigCategory category;
     /**
      * 配置id
      */
     @ApiModelProperty(value = "配置id")
     private String configId;
     /**
-     * 变更类型 ctreate-新增 modify-编辑 delete-删除
+     * 变更类型 create-新增 modify-编辑 delete-删除
      */
-    @ApiModelProperty(value = "变更类型ctreate-新增modify-编辑delete-删除")
-    private String changeType;
+    @ApiModelProperty(value = "变更类型:create-新增 modify-编辑 delete-删除")
+    private ChangeType changeType;
     /**
      * 配置键
      */
@@ -62,11 +62,11 @@ public class ChangeSetDto extends BaseEntityDto {
     private Date changeDate;
 
 
-    public String getCategory() {
+    public ConfigCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(ConfigCategory category) {
         this.category = category;
     }
 
@@ -78,11 +78,11 @@ public class ChangeSetDto extends BaseEntityDto {
         this.configId = configId;
     }
 
-    public String getChangeType() {
+    public ChangeType getChangeType() {
         return changeType;
     }
 
-    public void setChangeType(String changeType) {
+    public void setChangeType(ChangeType changeType) {
         this.changeType = changeType;
     }
 

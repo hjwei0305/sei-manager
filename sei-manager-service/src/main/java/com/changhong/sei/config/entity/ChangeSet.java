@@ -1,6 +1,7 @@
 package com.changhong.sei.config.entity;
 
-import com.changhong.sei.core.entity.BaseAuditableEntity;
+import com.changhong.sei.config.dto.ChangeType;
+import com.changhong.sei.config.dto.ConfigCategory;
 import com.changhong.sei.core.entity.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -24,20 +25,20 @@ import java.util.Date;
 public class ChangeSet extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -27702112857964781L;
     /**
-     * 分类 global全局 app应用
+     * 分类 general通用 app应用
      */
     @Column(name = "category")
-    private String category;
+    private ConfigCategory category;
     /**
      * 配置id
      */
     @Column(name = "config_id")
     private String configId;
     /**
-     * 变更类型 ctreate-新增 modify-编辑 delete-删除
+     * 变更类型 create-新增 modify-编辑 delete-删除
      */
     @Column(name = "change_type")
-    private String changeType;
+    private ChangeType changeType;
     /**
      * 配置键
      */
@@ -69,11 +70,11 @@ public class ChangeSet extends BaseEntity implements Serializable {
     @Column(name = "change_date")
     private Date changeDate;
 
-    public String getCategory() {
+    public ConfigCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(ConfigCategory category) {
         this.category = category;
     }
 
@@ -85,11 +86,11 @@ public class ChangeSet extends BaseEntity implements Serializable {
         this.configId = configId;
     }
 
-    public String getChangeType() {
+    public ChangeType getChangeType() {
         return changeType;
     }
 
-    public void setChangeType(String changeType) {
+    public void setChangeType(ChangeType changeType) {
         this.changeType = changeType;
     }
 

@@ -1,15 +1,13 @@
 package com.changhong.sei.config.api;
 
 import com.changhong.sei.config.dto.AppConfigDto;
+import com.changhong.sei.config.dto.ConfigCompareResponse;
 import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.dto.ResultData;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -28,14 +26,15 @@ public interface AppConfigApi extends BaseEntityApi<AppConfigDto> {
     String PATH = "appConfig";
 
     /**
-     * 通过环境代码获取应用配置清单
+     * 通过应用和环境代码获取应用配置清单
      *
+     * @param appCode 应用代码
      * @param envCode 环境代码
      * @return 业务实体
      */
-    @GetMapping(path = "findByEnv")
-    @ApiOperation(value = "通过环境代码获取指定环境的应用配置清单", notes = "通过环境代码获取指定环境的应用配置清单")
-    ResultData<List<AppConfigDto>> findByEnv(@RequestParam("envCode") String envCode);
+    @GetMapping(path = "findByAppEnv")
+    @ApiOperation(value = "通过应用和环境代码获取指定环境的应用配置清单", notes = "通过应用和环境代码获取指定环境的应用配置清单")
+    ResultData<List<AppConfigDto>> findByAppEnv(@RequestParam("appCode") String appCode, @RequestParam("envCode") String envCode);
 
     /**
      * 新增应用配置
@@ -76,4 +75,24 @@ public interface AppConfigApi extends BaseEntityApi<AppConfigDto> {
     @PostMapping(path = "syncConfigs", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "同步配置到其他环境", notes = "同步配置到其他环境")
     ResultData<Void> syncConfigs(@RequestBody @Valid Set<AppConfigDto> dtoList);
+
+    /**
+     * 发布前比较配置
+     *
+     * @param appCode 应用代码
+     * @return 操作结果
+     */
+    @PostMapping(path = "compareBeforeRelease/{appCode}")
+    @ApiOperation(value = "发布前比较配置", notes = "发布前比较配置")
+    ResultData<ConfigCompareResponse> compareBeforeRelease(@PathVariable("appCode") String appCode);
+
+    /**
+     * 发布配置
+     *
+     * @param appCode 应用代码
+     * @return 操作结果
+     */
+    @PostMapping(path = "release/{appCode}")
+    @ApiOperation(value = "发布配置", notes = "发布配置")
+    ResultData<Void> release(@PathVariable("appCode") String appCode);
 }

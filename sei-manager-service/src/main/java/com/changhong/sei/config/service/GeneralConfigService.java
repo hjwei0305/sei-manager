@@ -5,6 +5,7 @@ import com.changhong.sei.config.dao.GeneralConfigDao;
 import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import org.apache.commons.collections.CollectionUtils;
@@ -16,14 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 /**
  * 通用参数配置(GeneralConfig)业务逻辑实现类
  *
  * @author sei
  * @since 2021-02-22 21:44:04
  */
-@Service("GeneralConfigService")
+@Service
 public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
     @Autowired
     private GeneralConfigDao dao;
@@ -87,7 +87,6 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
                 this.save(conf);
             }
         }
-
         return ResultData.success();
     }
 
@@ -109,13 +108,29 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
      * @param configs 业务实体DTO
      * @return 操作结果
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> syncConfigs(List<GeneralConfig> configs) {
         if (CollectionUtils.isEmpty(configs)) {
             return ResultData.fail("配置数据不能为空.");
         }
+
+        Set<String> ids = configs.stream().map(GeneralConfig::getId).collect(Collectors.toSet());
+        List<GeneralConfig> configList = dao.findByFilter(new SearchFilter(GeneralConfig.ID, ids, SearchFilter.Operator.IN));
+        if (CollectionUtils.isEmpty(configList)) {
+            return ResultData.fail("同步的配置不存在.");
+        }
+        Map<String, GeneralConfig> configMap = configList.stream().collect(Collectors.toMap(GeneralConfig::getId, c -> c));
+        Set<String> keys = configList.stream().map(GeneralConfig::getKey).collect(Collectors.toSet());
+        configList = dao.findByFilter(new SearchFilter(GeneralConfig.FIELD_KEY, keys, SearchFilter.Operator.IN));
+        Set<String> existedKeys;
+        if (CollectionUtils.isEmpty(configList)) {
+            existedKeys = new HashSet<>();
+        } else {
+            existedKeys = configList.stream().map(c -> c.getEnvCode() + "|" + c.getKey()).collect(Collectors.toSet());
+        }
+
         String id;
         GeneralConfig conf;
-        Map<String, GeneralConfig> configMap = new HashMap<>();
         for (GeneralConfig config : configs) {
             id = config.getId();
             if (StringUtils.isBlank(id)) {
@@ -123,17 +138,19 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
             }
             conf = configMap.get(id);
             if (Objects.isNull(conf)) {
-                conf = dao.findOne(id);
-                if (Objects.isNull(conf)) {
-                    continue;
-                }
-                configMap.put(id, conf);
+                continue;
             }
+            // 检查key是否在指定环境中存在,存在则跳过不同步
+            if (StringUtils.isBlank(config.getEnvCode()) || existedKeys.contains(config.getEnvCode() + "|" + conf.getKey())) {
+                continue;
+            }
+
             config.setId(null);
             config.setKey(conf.getKey());
             config.setValue(conf.getValue());
             config.setRemark(conf.getRemark());
+            this.save(config);
         }
-        return addGeneralConfig(configs);
+        return ResultData.success();
     }
 }
