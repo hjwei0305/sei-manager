@@ -24,4 +24,13 @@ public class ReleasedConfigService extends BaseEntityService<ReleasedConfig> {
         return dao;
     }
 
+    /**
+     * 根据环境和应用代码删除配置
+     *
+     * @param envCode 环境代码
+     * @param appCode 应用代码
+     */
+    public void removeByEnvAppCode(String envCode, String appCode) {
+        dao.removeByEnvAppCode(envCode, appCode);
+    }
 }

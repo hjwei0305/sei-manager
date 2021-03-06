@@ -21,6 +21,7 @@ import java.io.Serializable;
 public class EnvVariableValue extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 938743634139683037L;
     public static final String FIELD_KEY = "key";
+    public static final String FIELD_ENV_CODE = "envCode";
     /**
      * 环境代码
      */

@@ -2,19 +2,24 @@ package com.changhong.sei.config.service;
 
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.AppConfigDao;
-import com.changhong.sei.config.entity.AppConfig;
+import com.changhong.sei.config.dto.ConfigCompareResponse;
+import com.changhong.sei.config.entity.*;
+import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +33,14 @@ import java.util.stream.Collectors;
 public class AppConfigService extends BaseEntityService<AppConfig> {
     @Autowired
     private AppConfigDao dao;
+    @Autowired
+    private GeneralConfigService generalConfigService;
+    @Autowired
+    private EnvVariableService envVariableService;
+    @Autowired
+    private ReleasedConfigService releasedConfigService;
+    @Autowired
+    private ReleaseHistoryService releaseHistoryService;
 
     @Override
     protected BaseEntityDao<AppConfig> getDao() {
@@ -169,5 +182,118 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             this.save(config);
         }
         return ResultData.success();
+    }
+
+
+    /**
+     * 发布前比较配置
+     *
+     * @param appCode 应用代码
+     * @return 操作结果
+     */
+    public ResultData<ConfigCompareResponse> compareBeforeRelease(String appCode, String envCode) {
+        return null;
+    }
+
+    /**
+     * 发布配置
+     *
+     * @param appCode 应用代码
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> release(final String appCode, final String envCode) {
+        Set<ReleasedConfig> configSet = new HashSet<>();
+        // 获取所有可用的环境变量
+        List<EnvVariableValue> variableValues = envVariableService.getEnableVariableValues(envCode);
+        // 环境变量key-value映射
+        Map<String, String> variableValueMap = variableValues.stream()
+                .collect(Collectors.toMap(v -> "${".concat(v.getKey()).concat("}"), EnvVariableValue::getValue));
+
+        // 获取可用的通用配置清单
+        List<GeneralConfig> generalConfigs = generalConfigService.getEnableConfigs(envCode);
+        Set<ReleasedConfig> gcSet = generalConfigs.stream().map(gc -> {
+            ReleasedConfig config = new ReleasedConfig();
+            config.setAppCode(appCode);
+            config.setEnvCode(envCode);
+            config.setKey(gc.getKey());
+            // 处理环境变量
+            config.setValue(resolutionVariable(gc.getValue(), variableValueMap));
+            return config;
+        }).collect(Collectors.toSet());
+        if (CollectionUtils.isNotEmpty(gcSet)) {
+            configSet.addAll(gcSet);
+        }
+
+        // 获取可用的应用自定义配置清单
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(AppConfig.FIELD_APP_CODE, appCode));
+        search.addFilter(new SearchFilter(AppConfig.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(AppConfig.FIELD_USE_STATUS, UseStatus.ENABLE));
+        List<AppConfig> appConfigs = dao.findByFilters(search);
+        Set<ReleasedConfig> acSet = appConfigs.stream().map(ac -> {
+            ReleasedConfig config = new ReleasedConfig();
+            config.setAppCode(appCode);
+            config.setEnvCode(envCode);
+            config.setKey(ac.getKey());
+            // 处理环境变量
+            config.setValue(resolutionVariable(ac.getValue(), variableValueMap));
+            return config;
+        }).collect(Collectors.toSet());
+        if (CollectionUtils.isNotEmpty(acSet)) {
+            configSet.addAll(acSet);
+        }
+
+        if (CollectionUtils.isEmpty(configSet)) {
+            return ResultData.fail("不存在可用的配置.");
+        }
+
+        // 清除原有发布配置
+        releasedConfigService.removeByEnvAppCode(envCode, appCode);
+
+        // 写入发布配置
+        releasedConfigService.save(configSet);
+
+        LocalDateTime now = LocalDateTime.now();
+        String version = DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT);
+        ReleaseHistory history;
+        SessionUser user = ContextUtil.getSessionUser();
+        List<ReleaseHistory> histories = new ArrayList<>();
+        // 记录发布历史
+        for (ReleasedConfig config : configSet) {
+            history = new ReleaseHistory();
+            history.setVersion(version);
+            history.setAppCode(config.getAppCode());
+            history.setEnvCode(config.getEnvCode());
+            history.setKey(config.getKey());
+            history.setValue(config.getValue());
+            history.setPublisherAccount(user.getAccount());
+            history.setPublisherName(user.getUserName());
+            history.setPublishDate(now);
+            histories.add(history);
+        }
+        releaseHistoryService.save(histories);
+
+
+        return ResultData.success();
+    }
+
+    /**
+     * 解析环境变量
+     * 将${ABC} 替换为具体的值
+     *
+     * @param value            配置值,如${ABC}替换为123
+     * @param variableValueMap 环境变量映射值
+     * @return 返回具体的值
+     */
+    private String resolutionVariable(String value, Map<String, String> variableValueMap) {
+        if (StringUtils.isNotBlank(value)) {
+            for (Map.Entry<String, String> entry : variableValueMap.entrySet()) {
+                if (value.contains(entry.getKey())) {
+                    return entry.getValue();
+                }
+            }
+        }
+        return value;
     }
 }

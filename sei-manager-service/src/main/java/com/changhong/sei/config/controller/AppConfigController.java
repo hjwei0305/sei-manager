@@ -104,10 +104,11 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      * 发布前比较配置
      *
      * @param appCode 应用代码
+     * @param envCode 环境代码
      * @return 操作结果
      */
     @Override
-    public ResultData<ConfigCompareResponse> compareBeforeRelease(String appCode) {
+    public ResultData<ConfigCompareResponse> compareBeforeRelease(String appCode, String envCode) {
         return null;
     }
 
@@ -115,10 +116,11 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      * 发布配置
      *
      * @param appCode 应用代码
+     * @param envCode 环境代码
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> release(String appCode) {
-        return null;
+    public ResultData<Void> release(String appCode, String envCode) {
+        return service.release(appCode, envCode);
     }
 }

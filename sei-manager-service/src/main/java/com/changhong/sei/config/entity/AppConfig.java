@@ -23,6 +23,7 @@ public class AppConfig extends BaseAuditableEntity implements Serializable {
     public static final String FIELD_KEY = "key";
     public static final String FIELD_APP_CODE = "appCode";
     public static final String FIELD_ENV_CODE = "envCode";
+    public static final String FIELD_USE_STATUS = "useStatus";
     /**
      * 应用服务代码
      */

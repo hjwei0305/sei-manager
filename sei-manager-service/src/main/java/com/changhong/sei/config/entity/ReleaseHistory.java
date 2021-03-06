@@ -1,6 +1,5 @@
 package com.changhong.sei.config.entity;
 
-import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -9,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -23,6 +23,11 @@ import java.util.Date;
 @DynamicUpdate
 public class ReleaseHistory extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 941750274919012375L;
+    /**
+     * 版本
+     */
+    @Column(name = "version_")
+    private String version;
     /**
      * 应用服务代码
      */
@@ -57,8 +62,15 @@ public class ReleaseHistory extends BaseEntity implements Serializable {
      * 发布时间
      */
     @Column(name = "publish_date")
-    private Date publishDate;
+    private LocalDateTime publishDate;
 
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
     public String getAppCode() {
         return appCode;
@@ -108,11 +120,11 @@ public class ReleaseHistory extends BaseEntity implements Serializable {
         this.publisherName = publisherName;
     }
 
-    public Date getPublishDate() {
+    public LocalDateTime getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(Date publishDate) {
+    public void setPublishDate(LocalDateTime publishDate) {
         this.publishDate = publishDate;
     }
 

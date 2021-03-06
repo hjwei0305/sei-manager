@@ -25,7 +25,7 @@ public class EnvVariable extends BaseAuditableEntity implements ICodeUnique, Ser
     /**
      * 配置键
      */
-    @Column(name = "code")
+    @Column(name = "code", unique = true)
     private String code;
     /**
      * 使用状态：NONE、ENABLE、DISABLE

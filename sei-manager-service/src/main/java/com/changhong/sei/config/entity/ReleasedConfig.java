@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 已发布的应用配置(ConfReleasedConfig)实体类
@@ -43,7 +44,6 @@ public class ReleasedConfig extends BaseEntity implements Serializable {
     @Column(name = "key_value")
     private String value;
 
-
     public String getAppCode() {
         return appCode;
     }
@@ -76,4 +76,35 @@ public class ReleasedConfig extends BaseEntity implements Serializable {
         this.value = value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        ReleasedConfig that = (ReleasedConfig) o;
+
+        if (!Objects.equals(appCode, that.appCode)) {
+            return false;
+        }
+        if (!Objects.equals(envCode, that.envCode)) {
+            return false;
+        }
+        return key != null ? key.equals(that.key) : that.key == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (appCode != null ? appCode.hashCode() : 0);
+        result = 31 * result + (envCode != null ? envCode.hashCode() : 0);
+        result = 31 * result + (key != null ? key.hashCode() : 0);
+        return result;
+    }
 }

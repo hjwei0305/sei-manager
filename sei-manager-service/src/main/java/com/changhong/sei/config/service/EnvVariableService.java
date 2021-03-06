@@ -3,10 +3,13 @@ package com.changhong.sei.config.service;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.EnvVariableDao;
 import com.changhong.sei.config.dao.EnvVariableValueDao;
+import com.changhong.sei.config.dto.EnvVariableDto;
 import com.changhong.sei.config.entity.EnvVariable;
 import com.changhong.sei.config.entity.EnvVariableValue;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
@@ -17,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @author sei
  * @since 2021-03-02 14:26:26
  */
-@Service("envVariableService")
+@Service
 public class EnvVariableService extends BaseEntityService<EnvVariable> {
     @Autowired
     private EnvVariableDao dao;
@@ -156,5 +156,23 @@ public class EnvVariableService extends BaseEntityService<EnvVariable> {
             }
         }
         return OperateResult.operationSuccess();
+    }
+
+    /**
+     * 获取所有启用的环境变量列表
+     *
+     * @return 环境变量列表
+     */
+    public List<EnvVariableValue> getEnableVariableValues(String envCode) {
+        List<EnvVariable> variables = dao.findListByProperty(EnvVariable.FIELD_USE_STATUS, UseStatus.ENABLE);
+        if (CollectionUtils.isEmpty(variables)) {
+            return new ArrayList<>();
+        }
+        Set<String> keys = variables.stream().map(EnvVariable::getCode).collect(Collectors.toSet());
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(EnvVariableValue.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(EnvVariableValue.FIELD_KEY, keys, SearchFilter.Operator.IN));
+        // 获取所有启用的环境变量
+        return variableValueDao.findByFilters(search);
     }
 }

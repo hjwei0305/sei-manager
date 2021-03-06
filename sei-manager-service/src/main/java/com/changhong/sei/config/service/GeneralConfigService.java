@@ -2,9 +2,11 @@ package com.changhong.sei.config.service;
 
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.GeneralConfigDao;
+import com.changhong.sei.config.entity.AppConfig;
 import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
@@ -152,5 +154,21 @@ public class GeneralConfigService extends BaseEntityService<GeneralConfig> {
             this.save(config);
         }
         return ResultData.success();
+    }
+
+    /**
+     * 获取指定环境当前可用的通用配置
+     *
+     * @param envCode 环境代码
+     * @return 可用的通用配置清单
+     */
+    public List<GeneralConfig> getEnableConfigs(String envCode) {
+        if (StringUtils.isBlank(envCode)) {
+            return new ArrayList<>();
+        }
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(AppConfig.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(AppConfig.FIELD_USE_STATUS, UseStatus.ENABLE));
+        return dao.findByFilters(search);
     }
 }
