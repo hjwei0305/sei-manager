@@ -85,8 +85,8 @@ public interface AppConfigApi extends BaseEntityApi<AppConfigDto> {
      */
     @PostMapping(path = "compareBeforeRelease/{appCode}/{envCode}")
     @ApiOperation(value = "发布前比较配置", notes = "发布前比较配置")
-    ResultData<ConfigCompareResponse> compareBeforeRelease(@PathVariable("appCode") String appCode,
-                                                           @PathVariable("envCode") String envCode);
+    ResultData<List<ConfigCompareResponse>> compareBeforeRelease(@PathVariable("appCode") String appCode,
+                                                                 @PathVariable("envCode") String envCode);
 
     /**
      * 发布配置

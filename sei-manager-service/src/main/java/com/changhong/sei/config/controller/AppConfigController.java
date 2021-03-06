@@ -108,8 +108,8 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      * @return 操作结果
      */
     @Override
-    public ResultData<ConfigCompareResponse> compareBeforeRelease(String appCode, String envCode) {
-        return null;
+    public ResultData<List<ConfigCompareResponse>> compareBeforeRelease(String appCode, String envCode) {
+        return service.compareBeforeRelease(appCode, envCode);
     }
 
     /**

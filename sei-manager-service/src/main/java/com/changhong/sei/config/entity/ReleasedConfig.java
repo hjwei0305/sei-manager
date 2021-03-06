@@ -43,6 +43,11 @@ public class ReleasedConfig extends BaseEntity implements Serializable {
      */
     @Column(name = "key_value")
     private String value;
+    /**
+     * 版本
+     */
+    @Column(name = "version_")
+    private String version;
 
     public String getAppCode() {
         return appCode;
@@ -74,6 +79,14 @@ public class ReleasedConfig extends BaseEntity implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     @Override

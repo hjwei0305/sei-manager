@@ -5,12 +5,17 @@ import com.changhong.sei.config.dto.ReleaseHistoryDto;
 import com.changhong.sei.config.entity.ReleaseHistory;
 import com.changhong.sei.config.service.ReleaseHistoryService;
 import com.changhong.sei.core.controller.BaseEntityController;
+import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Set;
 
 /**
  * 发布历史(ConfReleaseHistory)控制类
@@ -33,4 +38,26 @@ public class ReleaseHistoryController extends BaseEntityController<ReleaseHistor
         return service;
     }
 
+    /**
+     * 分页查询业务实体
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public ResultData<PageResult<ReleaseHistoryDto>> findByPage(Search search) {
+        return convertToDtoPageResult(service.findByPage(search));
+    }
+
+    /**
+     * 获取指定应用环境的发布版本清单
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @return 发布版本清单
+     */
+    @Override
+    public ResultData<Set<String>> getVersions(String appCode, String envCode) {
+        return ResultData.success(service.getVersions(appCode, envCode));
+    }
 }

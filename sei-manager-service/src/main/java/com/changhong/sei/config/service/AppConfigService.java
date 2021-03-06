@@ -2,6 +2,7 @@ package com.changhong.sei.config.service;
 
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.dao.AppConfigDao;
+import com.changhong.sei.config.dto.ChangeType;
 import com.changhong.sei.config.dto.ConfigCompareResponse;
 import com.changhong.sei.config.entity.*;
 import com.changhong.sei.core.context.ContextUtil;
@@ -12,7 +13,6 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
-import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -184,15 +185,87 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         return ResultData.success();
     }
 
-
     /**
      * 发布前比较配置
      *
      * @param appCode 应用代码
      * @return 操作结果
      */
-    public ResultData<ConfigCompareResponse> compareBeforeRelease(String appCode, String envCode) {
-        return null;
+    public ResultData<List<ConfigCompareResponse>> compareBeforeRelease(final String appCode, final String envCode) {
+        // 获取要发布的配置清单
+        ResultData<Set<ReleasedConfig>> resultData = getReleasedConfigs(appCode, envCode, "");
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        // 本次要发布的配置
+        Set<ReleasedConfig> configSet = resultData.getData();
+        Map<String, ReleasedConfig> releasedConfigMap = configSet.stream().collect(Collectors.toMap(ReleasedConfig::getKey, c -> c));
+
+        // 上次发布的配置
+        List<ReleaseHistory> histories = releaseHistoryService.getLastReleaseHistory(appCode, envCode);
+        Map<String, ReleaseHistory> historyMap = histories.stream().collect(Collectors.toMap(ReleaseHistory::getKey, h -> h));
+
+        ReleasedConfig config;
+        ReleaseHistory history;
+        // 比较结果
+        ConfigCompareResponse compare;
+        List<ConfigCompareResponse> compareList = new ArrayList<>();
+        // 新增部分和修改部分
+        for (Map.Entry<String, ReleasedConfig> entry : releasedConfigMap.entrySet()) {
+            config = entry.getValue();
+            compare = new ConfigCompareResponse();
+            // key
+            compare.setKey(config.getKey());
+            // 发布后值
+            compare.setAfterValue(config.getValue());
+
+            history = historyMap.get(entry.getKey());
+            if (Objects.nonNull(history)) {
+                // 比较值是否一致
+                if (StringUtils.equals(config.getValue(), history.getValue())) {
+                    continue;
+                }
+                // 修改部分
+                compare.setChangeType(ChangeType.MODIFY);
+                // 本次发布前的值
+                compare.setBeforeValue(history.getValue());
+                // 发布人
+                compare.setPublisherAccount(history.getPublisherAccount());
+                compare.setPublisherName(history.getPublisherName());
+                // 发布时间
+                compare.setPublishDate(history.getPublishDate());
+            } else {
+                // 新增部分
+                compare.setChangeType(ChangeType.CREATE);
+            }
+            compareList.add(compare);
+        }
+        // 删除部分
+        for (ReleaseHistory his : histories) {
+            if (!releasedConfigMap.containsKey(his.getKey())) {
+                compare = new ConfigCompareResponse();
+                // 删除部分
+                compare.setChangeType(ChangeType.DELETE);
+                // key
+                compare.setKey(his.getKey());
+                // 本次发布前的值
+                compare.setBeforeValue(his.getValue());
+                // 发布人
+                compare.setPublisherAccount(his.getPublisherAccount());
+                compare.setPublisherName(his.getPublisherName());
+                // 发布时间
+                compare.setPublishDate(his.getPublishDate());
+
+                compareList.add(compare);
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(compareList)) {
+            compareList = compareList.stream().sorted(Comparator.comparing(ConfigCompareResponse::getKey)).collect(Collectors.toList());
+        } else {
+            return ResultData.fail("不存在配置差异,无需发布.");
+        }
+        return ResultData.success(compareList);
     }
 
     /**
@@ -203,6 +276,52 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> release(final String appCode, final String envCode) {
+        // 发布版本(批号)
+        LocalDateTime now = LocalDateTime.now();
+        final String version = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        ResultData<Set<ReleasedConfig>> resultData = getReleasedConfigs(appCode, envCode, version);
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        // 获取要发布的配置清单
+        Set<ReleasedConfig> configSet = resultData.getData();
+
+        // 清除原有发布配置
+        releasedConfigService.removeByEnvAppCode(envCode, appCode);
+
+        // 写入发布配置
+        releasedConfigService.save(configSet);
+
+        ReleaseHistory history;
+        SessionUser user = ContextUtil.getSessionUser();
+        List<ReleaseHistory> histories = new ArrayList<>();
+        // 记录发布历史
+        for (ReleasedConfig config : configSet) {
+            history = new ReleaseHistory();
+            history.setVersion(version);
+            history.setAppCode(config.getAppCode());
+            history.setEnvCode(config.getEnvCode());
+            history.setKey(config.getKey());
+            history.setValue(config.getValue());
+            history.setPublisherAccount(user.getAccount());
+            history.setPublisherName(user.getUserName());
+            history.setPublishDate(now);
+            histories.add(history);
+        }
+        releaseHistoryService.save(histories);
+
+        return ResultData.success();
+    }
+
+    /**
+     * 获取要发布的配置清单
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @param version 版本呢
+     * @return 要发布的配置清单
+     */
+    private ResultData<Set<ReleasedConfig>> getReleasedConfigs(final String appCode, final String envCode, final String version) {
         Set<ReleasedConfig> configSet = new HashSet<>();
         // 获取所有可用的环境变量
         List<EnvVariableValue> variableValues = envVariableService.getEnableVariableValues(envCode);
@@ -214,6 +333,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         List<GeneralConfig> generalConfigs = generalConfigService.getEnableConfigs(envCode);
         Set<ReleasedConfig> gcSet = generalConfigs.stream().map(gc -> {
             ReleasedConfig config = new ReleasedConfig();
+            config.setVersion(version);
             config.setAppCode(appCode);
             config.setEnvCode(envCode);
             config.setKey(gc.getKey());
@@ -233,6 +353,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         List<AppConfig> appConfigs = dao.findByFilters(search);
         Set<ReleasedConfig> acSet = appConfigs.stream().map(ac -> {
             ReleasedConfig config = new ReleasedConfig();
+            config.setVersion(version);
             config.setAppCode(appCode);
             config.setEnvCode(envCode);
             config.setKey(ac.getKey());
@@ -247,35 +368,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         if (CollectionUtils.isEmpty(configSet)) {
             return ResultData.fail("不存在可用的配置.");
         }
-
-        // 清除原有发布配置
-        releasedConfigService.removeByEnvAppCode(envCode, appCode);
-
-        // 写入发布配置
-        releasedConfigService.save(configSet);
-
-        LocalDateTime now = LocalDateTime.now();
-        String version = DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT);
-        ReleaseHistory history;
-        SessionUser user = ContextUtil.getSessionUser();
-        List<ReleaseHistory> histories = new ArrayList<>();
-        // 记录发布历史
-        for (ReleasedConfig config : configSet) {
-            history = new ReleaseHistory();
-            history.setVersion(version);
-            history.setAppCode(config.getAppCode());
-            history.setEnvCode(config.getEnvCode());
-            history.setKey(config.getKey());
-            history.setValue(config.getValue());
-            history.setPublisherAccount(user.getAccount());
-            history.setPublisherName(user.getUserName());
-            history.setPublishDate(now);
-            histories.add(history);
-        }
-        releaseHistoryService.save(histories);
-
-
-        return ResultData.success();
+        return ResultData.success(configSet);
     }
 
     /**
@@ -287,7 +380,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
      * @return 返回具体的值
      */
     private String resolutionVariable(String value, Map<String, String> variableValueMap) {
-        if (StringUtils.isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value) && variableValueMap.size() > 0) {
             for (Map.Entry<String, String> entry : variableValueMap.entrySet()) {
                 if (value.contains(entry.getKey())) {
                     return entry.getValue();

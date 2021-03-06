@@ -1,9 +1,11 @@
 package com.changhong.sei.config.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -40,17 +42,18 @@ public class ConfigCompareResponse implements Serializable {
      * 变更人账号
      */
     @ApiModelProperty(value = "发布账号")
-    private String releaserAccount;
+    private String publisherAccount;
     /**
      * 变更人姓名
      */
     @ApiModelProperty(value = "发布姓名")
-    private String releaserName;
+    private String publisherName;
     /**
      * 变更时间
      */
-    @ApiModelProperty(value = "发布时间")
-    private Date releaseDate;
+    @ApiModelProperty(value = "发布时间", example = "2020-01-14 22:18:48")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishDate;
 
     public ChangeType getChangeType() {
         return changeType;
@@ -84,27 +87,27 @@ public class ConfigCompareResponse implements Serializable {
         this.afterValue = afterValue;
     }
 
-    public String getReleaserAccount() {
-        return releaserAccount;
+    public String getPublisherAccount() {
+        return publisherAccount;
     }
 
-    public void setReleaserAccount(String releaserAccount) {
-        this.releaserAccount = releaserAccount;
+    public void setPublisherAccount(String publisherAccount) {
+        this.publisherAccount = publisherAccount;
     }
 
-    public String getReleaserName() {
-        return releaserName;
+    public String getPublisherName() {
+        return publisherName;
     }
 
-    public void setReleaserName(String releaserName) {
-        this.releaserName = releaserName;
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
     }
 
-    public Date getReleaseDate() {
-        return releaseDate;
+    public LocalDateTime getPublishDate() {
+        return publishDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setPublishDate(LocalDateTime publishDate) {
+        this.publishDate = publishDate;
     }
 }
