@@ -23,6 +23,9 @@ import java.util.Objects;
 @DynamicUpdate
 public class ReleasedConfig extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 398877085315740550L;
+    public static final String FIELD_APP_CODE = "appCode";
+    public static final String FIELD_ENV_CODE = "envCode";
+    public static final String FIELD_VERSION = "version";
     /**
      * 应用服务代码
      */

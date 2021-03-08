@@ -3,9 +3,14 @@ package com.changhong.sei.config.service;
 import com.changhong.sei.config.dao.ReleasedConfigDao;
 import com.changhong.sei.config.entity.ReleasedConfig;
 import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 /**
@@ -22,6 +27,22 @@ public class ReleasedConfigService extends BaseEntityService<ReleasedConfig> {
     @Override
     protected BaseEntityDao<ReleasedConfig> getDao() {
         return dao;
+    }
+
+    /**
+     * 根据环境和应用代码获取配置
+     *
+     * @param appCode 应用代码
+     * @param profile 环境代码
+     */
+    public List<ReleasedConfig> getConfigs(String appCode, String profile, String label) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(ReleasedConfig.FIELD_APP_CODE, appCode));
+        search.addFilter(new SearchFilter(ReleasedConfig.FIELD_ENV_CODE, profile));
+        if (StringUtils.isNotBlank(label)) {
+            search.addFilter(new SearchFilter(ReleasedConfig.FIELD_VERSION, label));
+        }
+        return dao.findByFilters(search);
     }
 
     /**
