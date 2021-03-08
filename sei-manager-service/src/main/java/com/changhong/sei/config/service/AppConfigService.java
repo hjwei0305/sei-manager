@@ -329,22 +329,6 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         Map<String, String> variableValueMap = variableValues.stream()
                 .collect(Collectors.toMap(v -> "${".concat(v.getKey()).concat("}"), EnvVariableValue::getValue));
 
-        // 获取可用的通用配置清单
-        List<GeneralConfig> generalConfigs = generalConfigService.getEnableConfigs(envCode);
-        Set<ReleasedConfig> gcSet = generalConfigs.stream().map(gc -> {
-            ReleasedConfig config = new ReleasedConfig();
-            config.setVersion(version);
-            config.setAppCode(appCode);
-            config.setEnvCode(envCode);
-            config.setKey(gc.getKey());
-            // 处理环境变量
-            config.setValue(resolutionVariable(gc.getValue(), variableValueMap));
-            return config;
-        }).collect(Collectors.toSet());
-        if (CollectionUtils.isNotEmpty(gcSet)) {
-            configSet.addAll(gcSet);
-        }
-
         // 获取可用的应用自定义配置清单
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(AppConfig.FIELD_APP_CODE, appCode));
@@ -363,6 +347,22 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         }).collect(Collectors.toSet());
         if (CollectionUtils.isNotEmpty(acSet)) {
             configSet.addAll(acSet);
+        }
+
+        // 获取可用的通用配置清单
+        List<GeneralConfig> generalConfigs = generalConfigService.getEnableConfigs(envCode);
+        Set<ReleasedConfig> gcSet = generalConfigs.stream().map(gc -> {
+            ReleasedConfig config = new ReleasedConfig();
+            config.setVersion(version);
+            config.setAppCode(appCode);
+            config.setEnvCode(envCode);
+            config.setKey(gc.getKey());
+            // 处理环境变量
+            config.setValue(resolutionVariable(gc.getValue(), variableValueMap));
+            return config;
+        }).collect(Collectors.toSet());
+        if (CollectionUtils.isNotEmpty(gcSet)) {
+            configSet.addAll(gcSet);
         }
 
         if (CollectionUtils.isEmpty(configSet)) {

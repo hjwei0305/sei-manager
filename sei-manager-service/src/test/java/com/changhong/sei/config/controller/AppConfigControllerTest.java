@@ -21,4 +21,9 @@ public class AppConfigControllerTest extends BaseUnitTest {
     public void getAppList() {
         controller.getAppList("");
     }
+
+    @Test
+    public void compareBeforeRelease() {
+        controller.compareBeforeRelease("testModule", "Dev");
+    }
 }

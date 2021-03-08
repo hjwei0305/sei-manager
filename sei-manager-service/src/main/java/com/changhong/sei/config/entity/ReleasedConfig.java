@@ -97,9 +97,6 @@ public class ReleasedConfig extends BaseEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
 
         ReleasedConfig that = (ReleasedConfig) o;
 
@@ -114,7 +111,7 @@ public class ReleasedConfig extends BaseEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result = 17;
         result = 31 * result + (appCode != null ? appCode.hashCode() : 0);
         result = 31 * result + (envCode != null ? envCode.hashCode() : 0);
         result = 31 * result + (key != null ? key.hashCode() : 0);

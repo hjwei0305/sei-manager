@@ -22,7 +22,9 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-security",
             "org.springframework.boot:spring-boot-starter-mail",
             "org.springframework.boot:spring-boot-starter-thymeleaf",
-            "org.springframework.boot:spring-boot-starter-websocket"
+            "org.springframework.boot:spring-boot-starter-websocket",
+
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-properties"
     )
     // SEI平台依赖包
 
