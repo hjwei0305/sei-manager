@@ -34,7 +34,7 @@ public interface AppConfigApi extends BaseEntityApi<AppConfigDto> {
      */
     @GetMapping(path = "getAppList")
     @ApiOperation(value = "获取应用清单", notes = "获取应用清单")
-    ResultData<List<AppDto>> getAppList(@RequestParam("groupCode") String groupCode);
+    ResultData<List<AppDto>> getAppList(@RequestParam(name = "groupCode", required = false) String groupCode);
 
     /**
      * 通过应用和环境代码获取应用配置清单
