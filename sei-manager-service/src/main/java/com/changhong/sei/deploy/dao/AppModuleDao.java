@@ -33,6 +33,6 @@ public interface AppModuleDao extends BaseEntityDao<AppModule> {
      * @param groupCode 分组代码
      * @return 返回应用模块记录
      */
-    @Query("select m from AppModule m where appId in (select a.id from Application a where a.groupCode = :groupCode ) ")
+    @Query("select m from AppModule m where m.frozen = false and m.appId in (select a.id from Application a where a.groupCode = :groupCode ) ")
     List<AppModule> getByGroup(@Param("groupCode") String groupCode);
 }
