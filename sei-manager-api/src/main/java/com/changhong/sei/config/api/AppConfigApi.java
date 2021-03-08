@@ -1,6 +1,7 @@
 package com.changhong.sei.config.api;
 
 import com.changhong.sei.config.dto.AppConfigDto;
+import com.changhong.sei.config.dto.AppDto;
 import com.changhong.sei.config.dto.ConfigCompareResponse;
 import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.dto.ResultData;
@@ -24,6 +25,15 @@ import java.util.Set;
 @FeignClient(name = "sei-manager", path = AppConfigApi.PATH)
 public interface AppConfigApi extends BaseEntityApi<AppConfigDto> {
     String PATH = "appConfig";
+
+    /**
+     * 获取应用清单
+     *
+     * @return 应用清单
+     */
+    @GetMapping(path = "getAppList")
+    @ApiOperation(value = "获取应用清单", notes = "获取应用清单")
+    ResultData<List<AppDto>> getAppList();
 
     /**
      * 通过应用和环境代码获取应用配置清单

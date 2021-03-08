@@ -3,18 +3,23 @@ package com.changhong.sei.config.controller;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.api.AppConfigApi;
 import com.changhong.sei.config.dto.AppConfigDto;
+import com.changhong.sei.config.dto.AppDto;
 import com.changhong.sei.config.dto.ConfigCompareResponse;
 import com.changhong.sei.config.entity.AppConfig;
 import com.changhong.sei.config.service.AppConfigService;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.deploy.entity.AppModule;
+import com.changhong.sei.deploy.service.AppModuleService;
 import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,10 +39,34 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      */
     @Autowired
     private AppConfigService service;
+    @Autowired
+    private AppModuleService appModuleService;
 
     @Override
     public BaseEntityService<AppConfig> getService() {
         return service;
+    }
+
+    /**
+     * 获取应用清单
+     *
+     * @return 应用清单
+     */
+    @Override
+    public ResultData<List<AppDto>> getAppList() {
+        List<AppDto> appDtoList;
+        List<AppModule> appModules = appModuleService.findAllUnfrozen();
+        if (CollectionUtils.isNotEmpty(appModules)) {
+            appDtoList = appModules.stream().map(a -> {
+                AppDto dto = new AppDto();
+                dto.setCode(a.getCode());
+                dto.setName(a.getName());
+                return dto;
+            }).collect(Collectors.toList());
+        } else {
+            appDtoList = new ArrayList<>();
+        }
+        return ResultData.success(appDtoList);
     }
 
     /**
