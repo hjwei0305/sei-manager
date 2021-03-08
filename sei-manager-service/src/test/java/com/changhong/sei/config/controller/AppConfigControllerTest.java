@@ -19,6 +19,6 @@ public class AppConfigControllerTest extends BaseUnitTest {
 
     @Test
     public void getAppList() {
-        controller.getAppList();
+        controller.getAppList("");
     }
 }

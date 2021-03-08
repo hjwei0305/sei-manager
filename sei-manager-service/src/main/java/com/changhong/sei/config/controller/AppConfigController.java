@@ -14,6 +14,7 @@ import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.service.AppModuleService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,9 +54,14 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      * @return 应用清单
      */
     @Override
-    public ResultData<List<AppDto>> getAppList() {
+    public ResultData<List<AppDto>> getAppList(String groupCode) {
         List<AppDto> appDtoList;
-        List<AppModule> appModules = appModuleService.findAllUnfrozen();
+        List<AppModule> appModules;
+        if (StringUtils.isBlank(groupCode)) {
+            appModules = appModuleService.findAllUnfrozen();
+        } else {
+            appModules = appModuleService.getByGroupCode(groupCode);
+        }
         if (CollectionUtils.isNotEmpty(appModules)) {
             appDtoList = appModules.stream().map(a -> {
                 AppDto dto = new AppDto();

@@ -418,4 +418,14 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         }
         return gitlabService.removeProjectUser(module.getGitId(), gitUserIds.toArray(new Integer[0]));
     }
+
+    /**
+     * 通过分组代码查询
+     *
+     * @param groupCode 分组代码
+     * @return 返回应用模块记录
+     */
+    public List<AppModule> getByGroupCode(String groupCode) {
+        return dao.getByGroup(groupCode);
+    }
 }
