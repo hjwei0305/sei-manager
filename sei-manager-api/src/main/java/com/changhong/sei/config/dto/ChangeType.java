@@ -23,5 +23,10 @@ public enum ChangeType {
      * 删除
      */
     @Remark("删除")
-    DELETE
+    DELETE,
+    /**
+     * 一致
+     */
+    @Remark("一致")
+    EQUALS
 }

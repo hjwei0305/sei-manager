@@ -1,7 +1,9 @@
 package com.changhong.sei.config.service;
 
 import com.changhong.sei.common.UseStatus;
+import com.changhong.sei.common.YamlTransferUtils;
 import com.changhong.sei.config.dao.AppConfigDao;
+import com.changhong.sei.config.dto.AppDto;
 import com.changhong.sei.config.dto.ChangeType;
 import com.changhong.sei.config.dto.ConfigCompareResponse;
 import com.changhong.sei.config.entity.*;
@@ -11,8 +13,13 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.deploy.entity.AppModule;
+import com.changhong.sei.deploy.entity.RuntimeEnv;
+import com.changhong.sei.deploy.service.AppModuleService;
+import com.changhong.sei.deploy.service.RuntimeEnvService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +49,40 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
     private ReleasedConfigService releasedConfigService;
     @Autowired
     private ReleaseHistoryService releaseHistoryService;
+    @Autowired
+    private AppModuleService appModuleService;
+    @Autowired
+    private RuntimeEnvService runtimeEnvService;
 
     @Override
     protected BaseEntityDao<AppConfig> getDao() {
         return dao;
+    }
+
+    /**
+     * 获取应用清单
+     *
+     * @return 应用清单
+     */
+    public ResultData<List<AppDto>> getAppList(String groupCode) {
+        List<AppDto> appDtoList;
+        List<AppModule> appModules;
+        if (StringUtils.isBlank(groupCode)) {
+            appModules = appModuleService.findAllUnfrozen();
+        } else {
+            appModules = appModuleService.getByGroupCode(groupCode);
+        }
+        if (CollectionUtils.isNotEmpty(appModules)) {
+            appDtoList = appModules.stream().map(a -> {
+                AppDto dto = new AppDto();
+                dto.setCode(a.getCode());
+                dto.setName(a.getName());
+                return dto;
+            }).collect(Collectors.toList());
+        } else {
+            appDtoList = new ArrayList<>();
+        }
+        return ResultData.success(appDtoList);
     }
 
     /**
@@ -217,7 +254,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             // key
             compare.setKey(config.getKey());
             // 发布后值
-            compare.setAfterValue(config.getValue());
+            compare.setTargetValue(config.getValue());
 
             history = historyMap.get(entry.getKey());
             if (Objects.nonNull(history)) {
@@ -228,7 +265,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
                 // 修改部分
                 compare.setChangeType(ChangeType.MODIFY);
                 // 本次发布前的值
-                compare.setBeforeValue(history.getValue());
+                compare.setCurrentValue(history.getValue());
                 // 发布人
                 compare.setPublisherAccount(history.getPublisherAccount());
                 compare.setPublisherName(history.getPublisherName());
@@ -249,7 +286,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
                 // key
                 compare.setKey(his.getKey());
                 // 本次发布前的值
-                compare.setBeforeValue(his.getValue());
+                compare.setCurrentValue(his.getValue());
                 // 发布人
                 compare.setPublisherAccount(his.getPublisherAccount());
                 compare.setPublisherName(his.getPublisherName());
@@ -314,6 +351,79 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
     }
 
     /**
+     * 获取yaml格式
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @return yaml格式
+     */
+    public String getYamlData(final String appCode, final String envCode) {
+        String result = "";
+        // 获取可用的应用自定义配置清单
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(AppConfig.FIELD_APP_CODE, appCode));
+        search.addFilter(new SearchFilter(AppConfig.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(AppConfig.FIELD_USE_STATUS, UseStatus.ENABLE));
+        List<AppConfig> appConfigs = dao.findByFilters(search);
+        if (CollectionUtils.isNotEmpty(appConfigs)) {
+            // 获取所有可用的环境变量
+            List<EnvVariableValue> variableValues = envVariableService.getEnableVariableValues(envCode);
+            // 环境变量key-value映射
+            final Map<String, String> variableValueMap = variableValues.stream()
+                    .collect(Collectors.toMap(v -> "${".concat(v.getKey()).concat("}"), EnvVariableValue::getValue));
+
+            Map<String, Object> dataMap = appConfigs.stream().collect(Collectors.toMap(AppConfig::getKey, ac -> {
+                // 处理环境变量
+                return resolutionVariable(ac.getValue(), variableValueMap);
+            }));
+            result = YamlTransferUtils.map2Yaml(dataMap);
+        }
+
+        return result;
+    }
+
+    /**
+     * 保存yaml格式配置
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @param yaml    yaml格式配置内容
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> saveYamlData(final String appCode, final String envCode, String yaml) {
+        AppModule module = appModuleService.findByProperty(AppModule.FIELD_CODE, appCode);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块中未找到代码[" + appCode + "].");
+        }
+        RuntimeEnv env = runtimeEnvService.findByProperty(RuntimeEnv.CODE_FIELD, envCode);
+        if (Objects.isNull(env)) {
+            return ResultData.fail("运行环境中未找到代码[" + envCode + "].");
+        }
+
+        Map<String, Object> dataMap = YamlTransferUtils.yaml2Map(yaml);
+        if (dataMap.isEmpty()) {
+            return ResultData.fail("yaml解析未获取到配置数据.");
+        }
+
+        AppConfig config;
+        List<AppConfig> configs = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+            config = new AppConfig();
+            config.setAppCode(appCode);
+            config.setAppName(module.getName());
+            config.setEnvCode(envCode);
+            config.setEnvName(env.getName());
+            config.setKey(entry.getKey());
+            config.setValue((String) entry.getValue());
+            config.setUseStatus(UseStatus.ENABLE);
+            configs.add(config);
+        }
+
+        return syncConfigs(configs);
+    }
+
+    /**
      * 获取要发布的配置清单
      *
      * @param appCode 应用代码
@@ -335,7 +445,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         search.addFilter(new SearchFilter(AppConfig.FIELD_ENV_CODE, envCode));
         search.addFilter(new SearchFilter(AppConfig.FIELD_USE_STATUS, UseStatus.ENABLE));
         List<AppConfig> appConfigs = dao.findByFilters(search);
-        Set<ReleasedConfig> acSet = appConfigs.stream().map(ac -> {
+        for (AppConfig ac : appConfigs) {
             ReleasedConfig config = new ReleasedConfig();
             config.setVersion(version);
             config.setAppCode(appCode);
@@ -343,15 +453,12 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             config.setKey(ac.getKey());
             // 处理环境变量
             config.setValue(resolutionVariable(ac.getValue(), variableValueMap));
-            return config;
-        }).collect(Collectors.toSet());
-        if (CollectionUtils.isNotEmpty(acSet)) {
-            configSet.addAll(acSet);
+            configSet.add(config);
         }
 
         // 获取可用的通用配置清单
         List<GeneralConfig> generalConfigs = generalConfigService.getEnableConfigs(envCode);
-        Set<ReleasedConfig> gcSet = generalConfigs.stream().map(gc -> {
+        for (GeneralConfig gc : generalConfigs) {
             ReleasedConfig config = new ReleasedConfig();
             config.setVersion(version);
             config.setAppCode(appCode);
@@ -359,10 +466,9 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             config.setKey(gc.getKey());
             // 处理环境变量
             config.setValue(resolutionVariable(gc.getValue(), variableValueMap));
-            return config;
-        }).collect(Collectors.toSet());
-        if (CollectionUtils.isNotEmpty(gcSet)) {
-            configSet.addAll(gcSet);
+            if (!configSet.add(config)) {
+                LogUtil.debug(gc.getKey() + " -> 被应用配置覆盖.");
+            }
         }
 
         if (CollectionUtils.isEmpty(configSet)) {

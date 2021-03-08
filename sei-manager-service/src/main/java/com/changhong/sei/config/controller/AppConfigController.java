@@ -40,8 +40,6 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      */
     @Autowired
     private AppConfigService service;
-    @Autowired
-    private AppModuleService appModuleService;
 
     @Override
     public BaseEntityService<AppConfig> getService() {
@@ -55,24 +53,7 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      */
     @Override
     public ResultData<List<AppDto>> getAppList(String groupCode) {
-        List<AppDto> appDtoList;
-        List<AppModule> appModules;
-        if (StringUtils.isBlank(groupCode)) {
-            appModules = appModuleService.findAllUnfrozen();
-        } else {
-            appModules = appModuleService.getByGroupCode(groupCode);
-        }
-        if (CollectionUtils.isNotEmpty(appModules)) {
-            appDtoList = appModules.stream().map(a -> {
-                AppDto dto = new AppDto();
-                dto.setCode(a.getCode());
-                dto.setName(a.getName());
-                return dto;
-            }).collect(Collectors.toList());
-        } else {
-            appDtoList = new ArrayList<>();
-        }
-        return ResultData.success(appDtoList);
+        return service.getAppList(groupCode);
     }
 
     /**
@@ -157,5 +138,30 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
     @Override
     public ResultData<Void> release(String appCode, String envCode) {
         return service.release(appCode, envCode);
+    }
+
+    /**
+     * 获取yaml格式(配置时态)
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @return yaml格式
+     */
+    @Override
+    public String getYamlData(String appCode, String envCode) {
+        return service.getYamlData(appCode, envCode);
+    }
+
+    /**
+     * 保存yaml格式配置
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @param yaml    yaml格式配置内容
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> saveYamlData(String appCode, String envCode, String yaml) {
+        return service.saveYamlData(appCode, envCode, yaml);
     }
 }

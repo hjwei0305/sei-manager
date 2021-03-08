@@ -1,6 +1,7 @@
 package com.changhong.sei.config.controller;
 
 import com.changhong.sei.config.api.ReleaseHistoryApi;
+import com.changhong.sei.config.dto.ConfigCompareResponse;
 import com.changhong.sei.config.dto.ReleaseHistoryDto;
 import com.changhong.sei.config.entity.ReleaseHistory;
 import com.changhong.sei.config.service.ReleaseHistoryService;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -59,5 +61,18 @@ public class ReleaseHistoryController extends BaseEntityController<ReleaseHistor
     @Override
     public ResultData<Set<String>> getVersions(String appCode, String envCode) {
         return ResultData.success(service.getVersions(appCode, envCode));
+    }
+
+    /**
+     * 跨环境比较已发布的配置(当前运行时态的配置)
+     *
+     * @param appCode    应用代码
+     * @param currentEnv 当前环境代码
+     * @param targetEnv  目标环境代码
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<List<ConfigCompareResponse>> crossEnvCompare(String appCode, String currentEnv, String targetEnv) {
+        return service.crossEnvCompare(appCode, currentEnv, targetEnv);
     }
 }

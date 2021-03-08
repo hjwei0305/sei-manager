@@ -25,6 +25,7 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
     public static final String FIELD_GIT_ID = "gitId";
+    public static final String FIELD_CODE = "code";
     /**
      * 所属应用id
      */

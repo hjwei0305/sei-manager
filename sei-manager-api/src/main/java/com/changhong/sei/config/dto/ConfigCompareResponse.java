@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 配置比较DTO类
@@ -31,13 +30,13 @@ public class ConfigCompareResponse implements Serializable {
     /**
      * 变更前
      */
-    @ApiModelProperty(value = "发布前")
-    private String beforeValue;
+    @ApiModelProperty(value = "当前值(发布前)")
+    private String currentValue;
     /**
      * 变更后
      */
-    @ApiModelProperty(value = "发布后")
-    private String afterValue;
+    @ApiModelProperty(value = "目标值(发布后)")
+    private String targetValue;
     /**
      * 变更人账号
      */
@@ -71,20 +70,20 @@ public class ConfigCompareResponse implements Serializable {
         this.key = key;
     }
 
-    public String getBeforeValue() {
-        return beforeValue;
+    public String getCurrentValue() {
+        return currentValue;
     }
 
-    public void setBeforeValue(String beforeValue) {
-        this.beforeValue = beforeValue;
+    public void setCurrentValue(String currentValue) {
+        this.currentValue = currentValue;
     }
 
-    public String getAfterValue() {
-        return afterValue;
+    public String getTargetValue() {
+        return targetValue;
     }
 
-    public void setAfterValue(String afterValue) {
-        this.afterValue = afterValue;
+    public void setTargetValue(String targetValue) {
+        this.targetValue = targetValue;
     }
 
     public String getPublisherAccount() {

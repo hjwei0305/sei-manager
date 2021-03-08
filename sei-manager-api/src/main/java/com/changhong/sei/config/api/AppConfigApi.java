@@ -110,4 +110,30 @@ public interface AppConfigApi extends BaseEntityApi<AppConfigDto> {
     @ApiOperation(value = "发布配置", notes = "发布配置")
     ResultData<Void> release(@PathVariable("appCode") String appCode,
                              @PathVariable("envCode") String envCode);
+
+    /**
+     * 获取yaml格式(配置时态)
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @return yaml格式
+     */
+    @GetMapping(path = "getYamlData/{appCode}/{envCode}")
+    @ApiOperation(value = "获取yaml格式", notes = "获取yaml格式(配置时态)")
+    String getYamlData(@PathVariable("appCode") String appCode,
+                       @PathVariable("envCode") String envCode);
+
+    /**
+     * 保存yaml格式配置
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @param yaml    yaml格式配置内容
+     * @return 操作结果
+     */
+    @PostMapping(path = "saveYamlData/{appCode}/{envCode}")
+    @ApiOperation(value = "保存yaml格式配置", notes = "保存yaml格式配置")
+    ResultData<Void> saveYamlData(@PathVariable("appCode") String appCode,
+                                  @PathVariable("envCode") String envCode,
+                                  @RequestBody String yaml);
 }
