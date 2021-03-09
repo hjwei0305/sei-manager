@@ -69,7 +69,7 @@ public class ReleaseHistoryService extends BaseEntityService<ReleaseHistory> {
         if (CollectionUtils.isNotEmpty(currentConfigs)) {
             currentConfigs.sort(Comparator.comparing(ReleaseHistory::getKey));
             for (ReleaseHistory config : currentConfigs) {
-                currentStr.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
+                currentStr.append(config.getKey()).append(" = ").append(config.getValue()).append("\n");
             }
         }
         result.put("currentConfig", currentStr.toString());
@@ -80,7 +80,7 @@ public class ReleaseHistoryService extends BaseEntityService<ReleaseHistory> {
         if (CollectionUtils.isNotEmpty(targetConfigs)) {
             targetConfigs.sort(Comparator.comparing(ReleaseHistory::getKey));
             for (ReleaseHistory config : targetConfigs) {
-                targetStr.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
+                targetStr.append(config.getKey()).append(" = ").append(config.getValue()).append("\n");
             }
         }
         result.put("targetConfig", targetStr.toString());
