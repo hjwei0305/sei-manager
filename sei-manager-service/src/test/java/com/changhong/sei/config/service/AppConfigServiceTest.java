@@ -116,7 +116,7 @@ class AppConfigServiceTest {
                 "  ReadTimeout: 180000\n" +
                 "logging:\n" +
                 "  level:\n" +
-                "    root: WARN\n" +
+                "    root: DEBUG\n" +
                 "feign:\n" +
                 "  client:\n" +
                 "    config:\n" +

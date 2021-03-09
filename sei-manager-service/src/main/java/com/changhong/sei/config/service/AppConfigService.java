@@ -417,33 +417,38 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         search.addFilter(new SearchFilter(AppConfig.FIELD_ENV_CODE, envCode));
         search.addFilter(new SearchFilter(AppConfig.FIELD_USE_STATUS, UseStatus.ENABLE));
         List<AppConfig> configList = dao.findByFilters(search);
-        Set<String> existedKeys;
+        Map<String, AppConfig> existedKeyMap;
         if (CollectionUtils.isEmpty(configList)) {
-            existedKeys = new HashSet<>();
+            existedKeyMap = new HashMap<>();
         } else {
-            existedKeys = configList.stream().map(c -> c.getEnvCode() + "|" + c.getKey()).collect(Collectors.toSet());
+            existedKeyMap = configList.stream().collect(Collectors.toMap(AppConfig::getKey, a -> a));
         }
 
         AppConfig config;
         List<AppConfig> configs = new ArrayList<>();
         for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+            String value = (String) entry.getValue();
             // 检查key是否在指定环境中存在,存在则跳过不同步
-            if (existedKeys.contains(envCode + "|" + entry.getKey())) {
-                continue;
+            config = existedKeyMap.get(entry.getKey());
+            if (Objects.isNull(config)) {
+                config = new AppConfig();
+                config.setAppCode(appCode);
+                config.setAppName(module.getName());
+                config.setEnvCode(envCode);
+                config.setEnvName(env.getName());
+                config.setKey(entry.getKey());
+                config.setUseStatus(UseStatus.ENABLE);
+            } else {
+                if (StringUtils.equals(config.getValue(), value)) {
+                    continue;
+                }
             }
-
-            config = new AppConfig();
-            config.setAppCode(appCode);
-            config.setAppName(module.getName());
-            config.setEnvCode(envCode);
-            config.setEnvName(env.getName());
-            config.setKey(entry.getKey());
-            config.setValue((String) entry.getValue());
-            config.setUseStatus(UseStatus.ENABLE);
+            config.setValue(value);
             configs.add(config);
-
         }
-        this.save(configs);
+        if (CollectionUtils.isNotEmpty(configs)) {
+            this.save(configs);
+        }
         return ResultData.success();
     }
 
