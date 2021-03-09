@@ -425,6 +425,16 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         }
 
         AppConfig config;
+        // 处理删除
+        for (Map.Entry<String, AppConfig> entry : existedKeyMap.entrySet()) {
+            if (!dataMap.containsKey(entry.getKey())) {
+                config = entry.getValue();
+                config.setUseStatus(UseStatus.DISABLE);
+                this.save(config);
+            }
+        }
+
+        // 处理新增和修改
         List<AppConfig> configs = new ArrayList<>();
         for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
             String value = (String) entry.getValue();

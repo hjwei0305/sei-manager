@@ -63,26 +63,27 @@ public class ReleaseHistoryService extends BaseEntityService<ReleaseHistory> {
      */
     public ResultData<Map<String, String>> crossEnvCompare(final String appCode, final String currentEnv, final String targetEnv) {
         Map<String, String> result = new HashMap<>();
+        StringBuilder currentStr = new StringBuilder();
         // 当前环境发布的配置
         List<ReleaseHistory> currentConfigs = dao.getLastReleaseHistory(appCode, currentEnv);
         if (CollectionUtils.isNotEmpty(currentConfigs)) {
             currentConfigs.sort(Comparator.comparing(ReleaseHistory::getKey));
-            StringBuilder str = new StringBuilder();
             for (ReleaseHistory config : currentConfigs) {
-                str.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
+                currentStr.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
             }
-            result.put("currentConfig", str.toString());
         }
+        result.put("currentConfig", currentStr.toString());
+
+        StringBuilder targetStr = new StringBuilder();
         // 目标环境发布的配置
         List<ReleaseHistory> targetConfigs = dao.getLastReleaseHistory(appCode, targetEnv);
         if (CollectionUtils.isNotEmpty(targetConfigs)) {
             targetConfigs.sort(Comparator.comparing(ReleaseHistory::getKey));
-            StringBuilder str = new StringBuilder();
             for (ReleaseHistory config : targetConfigs) {
-                str.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
+                targetStr.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
             }
-            result.put("targetConfig", str.toString());
         }
+        result.put("targetConfig", targetStr.toString());
         return ResultData.success(result);
     }
 
