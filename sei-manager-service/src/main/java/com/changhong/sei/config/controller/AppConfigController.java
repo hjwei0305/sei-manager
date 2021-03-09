@@ -116,7 +116,7 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> syncConfigs(Set<AppConfigDto> dtoList) {
+    public ResultData<Void> syncConfigs(List<AppConfigDto> dtoList) {
         List<AppConfig> configs = dtoList.stream().map(c -> entityModelMapper.map(c, AppConfig.class)).collect(Collectors.toList());
         return service.syncConfigs(configs);
     }

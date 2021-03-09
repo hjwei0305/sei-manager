@@ -85,7 +85,7 @@ public interface AppConfigApi extends BaseEntityApi<AppConfigDto> {
      */
     @PostMapping(path = "syncConfigs", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "同步配置到其他环境", notes = "同步配置到其他环境")
-    ResultData<Void> syncConfigs(@RequestBody @Valid Set<AppConfigDto> dtoList);
+    ResultData<Void> syncConfigs(@RequestBody @Valid List<AppConfigDto> dtoList);
 
     /**
      * 发布前比较配置
