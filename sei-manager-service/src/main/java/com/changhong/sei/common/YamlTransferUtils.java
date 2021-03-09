@@ -1,5 +1,6 @@
 package com.changhong.sei.common;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsFactory;
@@ -168,6 +169,37 @@ public class YamlTransferUtils {
                 generator.flush();
 
                 return writer.toString();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String json2Yaml(String json) {
+        JsonFactory factory = new JsonFactory();
+        try (JsonParser parser = factory.createParser(json)) {
+            Writer writer = new StringWriter();
+
+            YAMLFactory yamlFactory = new YAMLFactory();
+            try (YAMLGenerator generator = yamlFactory.createGenerator(writer)) {
+                JsonToken token = parser.nextToken();
+                while (token != null) {
+                    if (JsonToken.START_OBJECT.equals(token)) {
+                        generator.writeStartObject();
+                    } else if (JsonToken.FIELD_NAME.equals(token)) {
+                        generator.writeFieldName(parser.getCurrentName());
+                    } else if (JsonToken.VALUE_STRING.equals(token)) {
+                        generator.writeString(parser.getText());
+                    } else if (JsonToken.END_OBJECT.equals(token)) {
+                        generator.writeEndObject();
+                    }
+                    token = parser.nextToken();
+                }
+                generator.flush();
+
+                return properties2Yaml(writer.toString());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

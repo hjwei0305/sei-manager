@@ -16,6 +16,7 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
+import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.RuntimeEnv;
 import com.changhong.sei.deploy.service.AppModuleService;
@@ -371,12 +372,16 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             // 环境变量key-value映射
             final Map<String, String> variableValueMap = variableValues.stream()
                     .collect(Collectors.toMap(v -> "${".concat(v.getKey()).concat("}"), EnvVariableValue::getValue));
-
-            Map<String, Object> dataMap = appConfigs.stream().collect(Collectors.toMap(AppConfig::getKey, ac -> {
+            StringBuilder str = new StringBuilder();
+            for (AppConfig ac : appConfigs) {
                 // 处理环境变量
-                return resolutionVariable(ac.getValue(), variableValueMap);
-            }));
-            result = YamlTransferUtils.map2Yaml(dataMap);
+                str.append(ac.getKey()).append(" = ").append(resolutionVariable(ac.getValue(), variableValueMap)).append("\n\r");
+            }
+//            Map<String, Object> dataMap = appConfigs.stream().collect(Collectors.toMap(AppConfig::getKey, ac -> {
+//                // 处理环境变量
+//                return resolutionVariable(ac.getValue(), variableValueMap);
+//            }));
+            result = YamlTransferUtils.properties2Yaml(str.toString());
         }
 
         return result;
@@ -406,9 +411,27 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             return ResultData.fail("yaml解析未获取到配置数据.");
         }
 
+        // 查询指定应用所有可用的配置
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(AppConfig.FIELD_APP_CODE, appCode));
+        search.addFilter(new SearchFilter(AppConfig.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(AppConfig.FIELD_USE_STATUS, UseStatus.ENABLE));
+        List<AppConfig> configList = dao.findByFilters(search);
+        Set<String> existedKeys;
+        if (CollectionUtils.isEmpty(configList)) {
+            existedKeys = new HashSet<>();
+        } else {
+            existedKeys = configList.stream().map(c -> c.getEnvCode() + "|" + c.getKey()).collect(Collectors.toSet());
+        }
+
         AppConfig config;
         List<AppConfig> configs = new ArrayList<>();
         for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+            // 检查key是否在指定环境中存在,存在则跳过不同步
+            if (existedKeys.contains(envCode + "|" + entry.getKey())) {
+                continue;
+            }
+
             config = new AppConfig();
             config.setAppCode(appCode);
             config.setAppName(module.getName());
@@ -418,9 +441,10 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             config.setValue((String) entry.getValue());
             config.setUseStatus(UseStatus.ENABLE);
             configs.add(config);
-        }
 
-        return syncConfigs(configs);
+        }
+        this.save(configs);
+        return ResultData.success();
     }
 
     /**
