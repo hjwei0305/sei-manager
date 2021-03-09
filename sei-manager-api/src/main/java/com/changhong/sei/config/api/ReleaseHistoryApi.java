@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -49,7 +50,21 @@ public interface ReleaseHistoryApi extends BaseEntityApi<ReleaseHistoryDto>, Fin
      */
     @PostMapping(path = "crossEnvCompare/{appCode}/{currentEnv}/{targetEnv}")
     @ApiOperation(value = "跨环境比较已发布的配置(当前运行时态的配置)", notes = "跨环境比较已发布的配置(当前运行时态的配置)")
-    ResultData<List<ConfigCompareResponse>> crossEnvCompare(@PathVariable("appCode") String appCode,
+    ResultData<Map<String, String>> crossEnvCompare(@PathVariable("appCode") String appCode,
+                                                    @PathVariable("currentEnv") String currentEnv,
+                                                    @PathVariable("targetEnv") String targetEnv);
+
+    /**
+     * 跨环境比较已发布的配置(当前运行时态的配置)
+     *
+     * @param appCode    应用代码
+     * @param currentEnv 当前环境代码
+     * @param targetEnv  目标环境代码
+     * @return 操作结果
+     */
+    @PostMapping(path = "crossEnvCompare/{appCode}/{currentEnv}/{targetEnv}")
+    @ApiOperation(value = "跨环境比较已发布的配置(当前运行时态的配置)", notes = "跨环境比较已发布的配置(当前运行时态的配置)")
+    ResultData<List<ConfigCompareResponse>> crossEnvCompareResult(@PathVariable("appCode") String appCode,
                                                             @PathVariable("currentEnv") String currentEnv,
                                                             @PathVariable("targetEnv") String targetEnv);
 }

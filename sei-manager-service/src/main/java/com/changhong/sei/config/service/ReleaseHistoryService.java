@@ -7,10 +7,9 @@ import com.changhong.sei.config.entity.ReleaseHistory;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -62,7 +61,40 @@ public class ReleaseHistoryService extends BaseEntityService<ReleaseHistory> {
      * @param targetEnv  目标环境代码
      * @return 操作结果
      */
-    public ResultData<List<ConfigCompareResponse>> crossEnvCompare(final String appCode, final String currentEnv, final String targetEnv) {
+    public ResultData<Map<String, String>> crossEnvCompare(final String appCode, final String currentEnv, final String targetEnv) {
+        Map<String, String> result = new HashMap<>();
+        // 当前环境发布的配置
+        List<ReleaseHistory> currentConfigs = dao.getLastReleaseHistory(appCode, currentEnv);
+        if (CollectionUtils.isNotEmpty(currentConfigs)) {
+            currentConfigs.sort(Comparator.comparing(ReleaseHistory::getKey));
+            StringBuilder str = new StringBuilder();
+            for (ReleaseHistory config : currentConfigs) {
+                str.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
+            }
+            result.put("currentConfig", str.toString());
+        }
+        // 目标环境发布的配置
+        List<ReleaseHistory> targetConfigs = dao.getLastReleaseHistory(appCode, targetEnv);
+        if (CollectionUtils.isNotEmpty(targetConfigs)) {
+            targetConfigs.sort(Comparator.comparing(ReleaseHistory::getKey));
+            StringBuilder str = new StringBuilder();
+            for (ReleaseHistory config : targetConfigs) {
+                str.append(config.getKey()).append(" = ").append(config.getValue()).append("\n\r");
+            }
+            result.put("targetConfig", str.toString());
+        }
+        return ResultData.success(result);
+    }
+
+    /**
+     * 跨环境比较已发布的配置(当前运行时态的配置)
+     *
+     * @param appCode    应用代码
+     * @param currentEnv 当前环境代码
+     * @param targetEnv  目标环境代码
+     * @return 操作结果
+     */
+    public ResultData<List<ConfigCompareResponse>> crossEnvCompareResult(final String appCode, final String currentEnv, final String targetEnv) {
         // 当前环境发布的配置
         List<ReleaseHistory> currentConfigs = dao.getLastReleaseHistory(appCode, currentEnv);
         Map<String, ReleaseHistory> currentMap = currentConfigs.stream().collect(Collectors.toMap(ReleaseHistory::getKey, h -> h));

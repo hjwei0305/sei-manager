@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -72,7 +73,20 @@ public class ReleaseHistoryController extends BaseEntityController<ReleaseHistor
      * @return 操作结果
      */
     @Override
-    public ResultData<List<ConfigCompareResponse>> crossEnvCompare(String appCode, String currentEnv, String targetEnv) {
+    public ResultData<Map<String, String>> crossEnvCompare(String appCode, String currentEnv, String targetEnv) {
         return service.crossEnvCompare(appCode, currentEnv, targetEnv);
+    }
+
+    /**
+     * 跨环境比较已发布的配置(当前运行时态的配置)
+     *
+     * @param appCode    应用代码
+     * @param currentEnv 当前环境代码
+     * @param targetEnv  目标环境代码
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<List<ConfigCompareResponse>> crossEnvCompareResult(String appCode, String currentEnv, String targetEnv) {
+        return service.crossEnvCompareResult(appCode, currentEnv, targetEnv);
     }
 }
