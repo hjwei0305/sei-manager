@@ -62,8 +62,8 @@ public interface ReleaseHistoryApi extends BaseEntityApi<ReleaseHistoryDto>, Fin
      * @param targetEnv  目标环境代码
      * @return 操作结果
      */
-    @PostMapping(path = "crossEnvCompare/{appCode}/{currentEnv}/{targetEnv}")
-    @ApiOperation(value = "跨环境比较已发布的配置(当前运行时态的配置)", notes = "跨环境比较已发布的配置(当前运行时态的配置)")
+    @PostMapping(path = "crossEnvCompareResult/{appCode}/{currentEnv}/{targetEnv}")
+    @ApiOperation(value = "跨环境比较已发布的配置差异结果", notes = "跨环境比较已发布的配置差异结果(当前运行时态的配置)")
     ResultData<List<ConfigCompareResponse>> crossEnvCompareResult(@PathVariable("appCode") String appCode,
                                                             @PathVariable("currentEnv") String currentEnv,
                                                             @PathVariable("targetEnv") String targetEnv);
