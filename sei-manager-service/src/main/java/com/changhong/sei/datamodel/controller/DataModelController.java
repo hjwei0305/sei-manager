@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "DataModelApi", tags = "数据模型服务")
-@RequestMapping(path = "dataModel", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "dataModel", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DataModelController extends BaseEntityController<DataModel, DataModelDto> implements DataModelApi {
     /**
      * 数据模型服务对象

@@ -38,7 +38,7 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "DeployTemplateStageApi", tags = "部署模板阶段关系表服务")
-@RequestMapping(path = "deployTemplateStage", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "deployTemplateStage", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DeployTemplateStageController extends BaseRelationController<DeployTemplateStage, DeployTemplate, DeployStage, DeployTemplateStageDto, DeployTemplateDto, DeployStageDto> implements DeployTemplateStageApi {
     /**
      * 部署模板阶段关系表服务对象

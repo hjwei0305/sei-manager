@@ -32,7 +32,7 @@ public interface BuildJobApi extends BaseEntityApi<BuildJobDto>, FindByPageApi<B
      * @param search 查询参数
      * @return 分页查询结果
      */
-    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询发布申请单", notes = "分页查询发布申请单")
     ResultData<PageResult<BuildJobRequisitionDto>> findRequisitionByPage(@RequestBody Search search);
 
@@ -42,7 +42,7 @@ public interface BuildJobApi extends BaseEntityApi<BuildJobDto>, FindByPageApi<B
      * @param dto 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建发布申请单", notes = "创建发布申请单")
     ResultData<BuildJobRequisitionDto> createRequisition(@RequestBody @Valid BuildJobDto dto);
 
@@ -52,7 +52,7 @@ public interface BuildJobApi extends BaseEntityApi<BuildJobDto>, FindByPageApi<B
      * @param dto 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "修改编辑发布申请单", notes = "修改编辑发布申请单")
     ResultData<BuildJobRequisitionDto> modifyRequisition(@RequestBody @Valid BuildJobDto dto);
 

@@ -57,7 +57,7 @@ public interface UserGroupApi extends BaseEntityApi<UserGroupDto> {
      * @param dtoList 用户组DTO
      * @return 操作结果
      */
-    @PostMapping(path = "saveList", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "saveList", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "保存多个用户组", notes = "保存多个用户组")
     ResultData<Void> saveList(@RequestBody @Valid List<UserGroupDto> dtoList);
 }

@@ -64,7 +64,7 @@ public interface RequisitionOrderApi {
      * @param submitRequest 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "submit", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "submit", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "提交申请单", notes = "提交申请单")
     ResultData<Void> submit(@RequestBody @Valid TaskSubmitRequest submitRequest);
 
@@ -74,7 +74,7 @@ public interface RequisitionOrderApi {
      * @param handleRequest 任务处理请求
      * @return 操作结果
      */
-    @PostMapping(path = "handle", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "handle", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "处理申请单待办任务", notes = "处理申请单待办任务")
     ResultData<Void> handle(@RequestBody @Valid TaskHandleRequest handleRequest);
 }

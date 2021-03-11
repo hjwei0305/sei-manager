@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "AppModuleApi", tags = "应用模块服务")
-@RequestMapping(path = "appModule", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "appModule", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AppModuleController extends BaseEntityController<AppModule, AppModuleDto> implements AppModuleApi {
     /**
      * 应用模块服务对象

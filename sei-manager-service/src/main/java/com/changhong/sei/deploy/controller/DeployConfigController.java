@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(value = "DeployConfigApi", tags = "部署配置服务")
-@RequestMapping(path = "deployConfig", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "deployConfig", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DeployConfigController extends BaseEntityController<DeployConfig, DeployConfigDto> implements DeployConfigApi {
     /**
      * 服务器节点服务对象

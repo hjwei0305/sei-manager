@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @RestController
 @Api(value = "FlowRuntimeApi", tags = "流程运行时服务")
-@RequestMapping(path = "flow/runtime", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "flow/runtime", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FlowRuntimeController implements FlowRuntimeApi {
     /**
      * 流程定义服务对象

@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "TagApi", tags = "应用标签服务")
-@RequestMapping(path = "tag", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "tag", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController implements TagApi {
 
     @Autowired

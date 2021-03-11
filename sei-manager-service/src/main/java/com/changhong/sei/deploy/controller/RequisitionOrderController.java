@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RestController
 @Api(value = "RequisitionRecordApi", tags = "申请审核服务")
-@RequestMapping(path = "requisition", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "requisition", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RequisitionOrderController implements RequisitionOrderApi {
     /**
      * 申请记录服务对象

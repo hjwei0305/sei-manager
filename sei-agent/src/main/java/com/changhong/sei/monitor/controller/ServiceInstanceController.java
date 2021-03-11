@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RefreshScope
 @Api(value = "ServiceInstanceApi", tags = "服务实例API服务")
-@RequestMapping(path = "serviceInstance", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "serviceInstance", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ServiceInstanceController implements ServiceInstanceApi {
     /**
      * 应用服务服务对象

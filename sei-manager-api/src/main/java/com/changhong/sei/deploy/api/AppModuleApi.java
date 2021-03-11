@@ -34,7 +34,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param search 查询参数
      * @return 分页查询结果
      */
-    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询应用模块申请单", notes = "分页查询应用模块申请单")
     ResultData<PageResult<AppModuleRequisitionDto>> findRequisitionByPage(@RequestBody Search search);
 
@@ -54,7 +54,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param dto 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建应用模块申请单", notes = "创建应用模块申请单")
     ResultData<AppModuleRequisitionDto> createRequisition(@RequestBody @Valid AppModuleDto dto);
 
@@ -64,7 +64,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param dto 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "修改编辑应用模块申请单", notes = "修改编辑应用模块申请单")
     ResultData<AppModuleRequisitionDto> modifyRequisition(@RequestBody @Valid AppModuleDto dto);
 
@@ -94,7 +94,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param id 应用模块id
      * @return 操作结果
      */
-    @PostMapping(path = "getUnassignedUsers/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "getUnassignedUsers/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "获取应用模块未分配的用户", notes = "获取应用模块未分配的用户")
     ResultData<PageResult<UserDto>> getUnassignedUsers(@PathVariable("id") String id,  @RequestBody Search search);
 
@@ -105,7 +105,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param accounts 用户account
      * @return 操作结果
      */
-    @PostMapping(path = "addModuleUser/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "addModuleUser/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "添加应用模块用户", notes = "添加应用模块用户")
     ResultData<Void> addModuleUser(@PathVariable("id") String id, @RequestBody Set<String> accounts);
 
@@ -116,7 +116,7 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
      * @param gitUserIds git用户id
      * @return 操作结果
      */
-    @DeleteMapping(path = "removeModuleUser/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @DeleteMapping(path = "removeModuleUser/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "按用户账号清单移除应用模块用户", notes = "按用户账号清单移除应用模块用户")
     ResultData<Void> removeModuleUser(@PathVariable("id") String id, @RequestBody Set<Integer> gitUserIds);
 }

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(value = "UserRoleApi", tags = "用户分配的功能角色API服务实现")
-@RequestMapping(path = "userRole", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "userRole", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserRoleController extends BaseRelationController<UserRole, User, Role, UserRoleDto, UserDto, RoleDto>
         implements UserRoleApi {
     @Autowired

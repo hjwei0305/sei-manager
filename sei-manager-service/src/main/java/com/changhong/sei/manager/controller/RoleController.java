@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "FeatureRoleApi", tags = "功能角色API服务实现")
-@RequestMapping(path = "role", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "role", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoleController extends BaseEntityController<Role, RoleDto> implements RoleApi {
     @Autowired
     private RoleService service;

@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "NodeApi", tags = "服务器节点服务")
-@RequestMapping(path = "node", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "node", produces = MediaType.APPLICATION_JSON_VALUE)
 public class NodeController extends BaseEntityController<Node, NodeDto> implements NodeApi {
     /**
      * 服务器节点服务对象

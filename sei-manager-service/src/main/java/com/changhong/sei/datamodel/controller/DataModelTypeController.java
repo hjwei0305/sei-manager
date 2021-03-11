@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "DataModelTypeApi", tags = "数据模型分类服务")
-@RequestMapping(path = "dataModelType", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "dataModelType", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DataModelTypeController extends BaseTreeController<DataModelType, DataModelTypeDto>
         implements DataModelTypeApi {
     /**

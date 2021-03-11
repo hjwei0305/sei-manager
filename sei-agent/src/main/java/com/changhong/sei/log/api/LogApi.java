@@ -27,7 +27,7 @@ public interface LogApi {
     /**
      * 分页查询
      */
-    @PostMapping(value = "findByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "findByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询", notes = "分页查询")
     ResultData<PageResult<LogResponse>> findByPage(@RequestBody @Valid LogSearch search);
 

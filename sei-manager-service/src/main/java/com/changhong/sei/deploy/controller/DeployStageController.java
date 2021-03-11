@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "DeployStageApi", tags = "部署阶段服务")
-@RequestMapping(path = "deployStage", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "deployStage", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DeployStageController extends BaseEntityController<DeployStage, DeployStageDto> implements DeployStageApi {
     /**
      * 部署阶段服务对象

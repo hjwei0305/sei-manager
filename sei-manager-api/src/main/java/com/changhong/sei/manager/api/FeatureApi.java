@@ -30,7 +30,7 @@ public interface FeatureApi extends BaseEntityApi<FeatureDto>, FindByPageApi<Fea
      * @param search 过滤条件
      * @return 功能项列表
      */
-    @PostMapping(path = "findByFilters", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findByFilters", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "根据过滤条件获取功能项", notes = "根据过滤条件获取功能项")
     ResultData<List<FeatureDto>> findByFilters(@RequestBody Search search);
 

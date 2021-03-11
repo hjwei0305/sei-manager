@@ -36,7 +36,7 @@ import java.util.Set;
  */
 @RestController
 @Api(value = "FlowDefinitionApi", tags = "流程定义服务")
-@RequestMapping(path = "flow/definition", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "flow/definition", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FlowDefinitionController implements FlowDefinitionApi {
     @Autowired
     private FlowTypeService typeService;

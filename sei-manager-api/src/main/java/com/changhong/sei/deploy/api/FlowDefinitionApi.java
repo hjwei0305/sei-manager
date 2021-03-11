@@ -33,7 +33,7 @@ public interface FlowDefinitionApi {
      * @param dto dto
      * @return 返回结果
      */
-    @PostMapping(path = "saveType", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "saveType", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "保存流程类型", notes = "保存一个流程类型")
     ResultData<FlowTypeDto> saveType(@RequestBody @Valid FlowTypeDto dto);
 
@@ -43,7 +43,7 @@ public interface FlowDefinitionApi {
      * @param search search
      * @return 分页数据结果
      */
-    @PostMapping(path = "findTypeByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findTypeByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询流程类型", notes = "分页查询流程类型")
     ResultData<PageResult<FlowTypeDto>> findTypeByPage(@RequestBody Search search);
 
@@ -62,7 +62,7 @@ public interface FlowDefinitionApi {
      * @param dto dto
      * @return 返回结果
      */
-    @PostMapping(path = "saveTypeNode", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "saveTypeNode", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "保存流程类型节点", notes = "保存一个流程类型节点")
     ResultData<FlowTypeNodeDto> saveTypeNode(@RequestBody @Valid FlowTypeNodeDto dto);
 
@@ -72,7 +72,7 @@ public interface FlowDefinitionApi {
      * @param ids 流程类型节点Id集合
      * @return 操作结果
      */
-    @DeleteMapping(path = "deleteTypeNode", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @DeleteMapping(path = "deleteTypeNode", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "删除流程类型节点", notes = "删除流程类型节点")
     ResultData<Void> deleteTypeNode(@RequestBody Set<String> ids);
 
@@ -134,7 +134,7 @@ public interface FlowDefinitionApi {
      * @param taskList 流程实例任务节点
      * @return 返回结果
      */
-    @PostMapping(path = "saveInstanceTask/{relation}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "saveInstanceTask/{relation}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "保存更新流程实例任务节点", notes = "保存更新流程实例任务节点")
     ResultData<Void> saveFlowInstanceTask(@PathVariable("relation") String relation,
                                           @RequestBody @Validated @NotEmpty List<FlowInstanceTaskDto> taskList);

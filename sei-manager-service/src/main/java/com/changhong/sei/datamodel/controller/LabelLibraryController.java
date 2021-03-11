@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(value = "LabelLibraryApi", tags = "标签库服务")
-@RequestMapping(path = "labelLibrary", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "labelLibrary", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LabelLibraryController extends BaseEntityController<LabelLibrary, LabelLibraryDto>
         implements LabelLibraryApi {
     /**

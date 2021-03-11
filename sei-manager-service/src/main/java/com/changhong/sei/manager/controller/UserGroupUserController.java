@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(value = "UserGroupUserApi", tags = "用户组分配的用户API服务实现")
-@RequestMapping(path = "userGroupUser", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "userGroupUser", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserGroupUserController extends BaseRelationController<UserGroupUser, UserGroup, User, UserGroupUserDto, UserGroupDto, UserDto>
         implements UserGroupUserApi {
     @Autowired

@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "DeployTemplateApi", tags = "部署模板服务")
-@RequestMapping(path = "deployTemplate", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "deployTemplate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DeployTemplateController extends BaseEntityController<DeployTemplate, DeployTemplateDto> implements DeployTemplateApi {
     /**
      * 部署模板服务对象

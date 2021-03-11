@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "CertificateApi", tags = "部署凭证服务")
-@RequestMapping(path = "certificate", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "certificate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController extends BaseEntityController<Certificate, CertificateDto> implements CertificateApi {
     /**
      * 凭证服务对象

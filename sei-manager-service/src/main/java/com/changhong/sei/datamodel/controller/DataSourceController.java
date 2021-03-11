@@ -37,7 +37,7 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "DataSourceApi", tags = "数据源服务")
-@RequestMapping(path = "dataSource", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "dataSource", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DataSourceController extends BaseEntityController<DataSource, DataSourceDto>
         implements DataSourceApi {
     /**

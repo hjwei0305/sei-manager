@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RefreshScope
 @Api(value = "LogApi", tags = "日志API服务")
-@RequestMapping(path = "log", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "log", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LogController implements LogApi {
     @Autowired
     private LogService service;

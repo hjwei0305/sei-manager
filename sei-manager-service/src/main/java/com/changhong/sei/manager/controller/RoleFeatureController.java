@@ -28,7 +28,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "RoleFeatureApi", tags = "功能角色分配的功能项API服务实现")
-@RequestMapping(path = "roleFeature", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "roleFeature", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoleFeatureController extends BaseRelationController<RoleFeature, Role, Feature, RoleFeatureDto, RoleDto, FeatureDto>
         implements RoleFeatureApi {
     @Autowired

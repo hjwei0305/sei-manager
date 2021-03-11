@@ -27,7 +27,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "RuntimeEnvApi", tags = "运行环境服务")
-@RequestMapping(path = "env", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "env", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RuntimeEnvController extends BaseEntityController<RuntimeEnv, RuntimeEnvDto> implements RuntimeEnvApi {
     /**
      * 服务器节点服务对象

@@ -33,7 +33,7 @@ public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, Fin
      * @param search 查询参数
      * @return 分页查询结果
      */
-    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询应用版本申请单", notes = "分页查询应用版本申请单")
     ResultData<PageResult<ReleaseVersionRequisitionDto>> findRequisitionByPage(Search search);
 
@@ -43,7 +43,7 @@ public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, Fin
      * @param dto 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建应用版本申请单", notes = "创建应用版本申请单")
     ResultData<ReleaseVersionRequisitionDto> createRequisition(@RequestBody @Valid ReleaseVersionDto dto);
 
@@ -53,7 +53,7 @@ public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, Fin
      * @param dto 业务实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "修改编辑应用版本申请单", notes = "修改编辑应用版本申请单")
     ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@RequestBody @Valid ReleaseVersionDto dto);
 

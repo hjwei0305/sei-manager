@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "MenuApi", tags = "系统菜单API服务")
-@RequestMapping(path = "menu", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "menu", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MenuController extends BaseTreeController<Menu, MenuDto>
         implements MenuApi {
     @Autowired

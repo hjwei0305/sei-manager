@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "ReleaseVersionApi", tags = "版本发布记录服务")
-@RequestMapping(path = "releaseVersion", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "releaseVersion", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ReleaseVersionController extends BaseEntityController<ReleaseVersion, ReleaseVersionDto> implements ReleaseVersionApi {
     /**
      * 服务器节点服务对象

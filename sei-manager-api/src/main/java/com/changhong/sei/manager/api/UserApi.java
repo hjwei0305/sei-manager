@@ -66,7 +66,7 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
      * @param request 注册请求
      * @return 返回注册验证结果
      */
-    @PostMapping(path = "registVerify", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "registVerify", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "注册验证", notes = "注册验证")
     ResultData<String> registVerify(@Valid @RequestBody RegisteredUserRequest request);
 
@@ -82,14 +82,14 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     /**
      * 创建用户
      */
-    @PostMapping(value = "createUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "createUser", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建用户", notes = "创建用户")
     ResultData<Void> createUser(@Valid @RequestBody CreateUserRequest user);
 
     /**
      * 忘记密码流程检查用户
      */
-    @PostMapping(value = "forgetPassword/checkUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "forgetPassword/checkUser", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "忘记密码流程检查用户", notes = "忘记密码流程检查用户")
     ResultData<ForgetPasswordResponse> checkUser(@Valid @RequestBody ForgetPasswordRequest user);
 
@@ -103,14 +103,14 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
     /**
      * 修改密码
      */
-    @PostMapping(value = "updatePassword", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "updatePassword", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "修改密码", notes = "修改密码")
     ResultData<Void> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest);
 
     /**
      * 登录
      */
-    @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "登录", notes = "登录")
     ResultData<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest);
 
@@ -144,7 +144,7 @@ public interface UserApi extends BaseEntityApi<UserDto>, FindByPageApi<UserDto> 
      *
      * @param search 分页参数
      */
-    @PostMapping(value = "online", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "online", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "在线用户列表", notes = "在线用户列表")
     ResultData<UserDto> online(@RequestBody Search search);
 

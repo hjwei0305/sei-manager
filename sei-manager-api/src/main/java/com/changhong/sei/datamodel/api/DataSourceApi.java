@@ -29,7 +29,7 @@ public interface DataSourceApi extends FindByPageApi<DataSourceDto> {
      * @param dto 数据源实体DTO
      * @return 操作结果
      */
-    @PostMapping(path = "saveRequest", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "saveRequest", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "保存数据源实体", notes = "保存一个数据源实体")
     ResultData<DataSourceDto> saveRequest(@RequestBody @Valid DataSourceRequest dto);
 

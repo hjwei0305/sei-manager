@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "UserGroupApi", tags = "用户组API服务实现")
-@RequestMapping(path = "userGroup", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "userGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserGroupController extends BaseEntityController<UserGroup, UserGroupDto> implements UserGroupApi {
     @Autowired
     private UserGroupService service;

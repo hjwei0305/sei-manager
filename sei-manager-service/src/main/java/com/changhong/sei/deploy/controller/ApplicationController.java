@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "ApplicationApi", tags = "应用服务")
-@RequestMapping(path = "application", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "application", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ApplicationController extends BaseEntityController<Application, ApplicationDto> implements ApplicationApi {
     /**
      * 应用服务服务对象
