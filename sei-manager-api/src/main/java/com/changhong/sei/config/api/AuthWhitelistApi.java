@@ -28,7 +28,7 @@ public interface AuthWhitelistApi extends BaseEntityApi<AuthWhitelistDto> {
      * @param envCode 环境代码
      * @return 业务实体
      */
-    @GetMapping(path = "getWhitelist")
+    @GetMapping(path = "get")
     @ApiOperation(value = "获取指定环境的白名单", notes = "获取指定环境的白名单")
-    ResultData<List<AuthWhitelistDto>> getWhitelist(@RequestParam("envCode") String envCode);
+    ResultData<List<AuthWhitelistDto>> get(@RequestParam("envCode") String envCode);
 }

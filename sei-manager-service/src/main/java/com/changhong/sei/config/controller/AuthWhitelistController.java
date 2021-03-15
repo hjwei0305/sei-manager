@@ -44,7 +44,7 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
      * @return 业务实体
      */
     @Override
-    public ResultData<List<AuthWhitelistDto>> getWhitelist(String envCode) {
+    public ResultData<List<AuthWhitelistDto>> get(String envCode) {
         List<AuthWhitelist> list = service.findListByProperty(AuthWhitelist.FIELD_ENV_CODE, envCode);
         List<AuthWhitelistDto> dtoList = list.stream().map(a -> dtoModelMapper.map(a, AuthWhitelistDto.class)).collect(Collectors.toList());
         return ResultData.success(dtoList);
