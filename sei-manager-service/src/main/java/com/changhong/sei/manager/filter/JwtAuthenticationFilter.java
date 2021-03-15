@@ -147,6 +147,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         switch (httpMethod) {
             case GET:
                 ignores.add("/**/config/**");
+                ignores.add("/**/authWhitelist/get/**");
                 ignores.add("/**/user/generate/**");
                 ignores.add("/**/user/getMailServer/**");
 
