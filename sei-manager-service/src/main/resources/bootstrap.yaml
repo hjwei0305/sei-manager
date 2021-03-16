@@ -13,9 +13,11 @@ spring:
     config:
       server:
         # 配置中心前缀
-        prefix: config
+        prefix: configserver
       # 配置中心
       enabled: false
+      # 配置中心服务认证token
+      token: 123456
     #启用平台注册发现
     discovery:
       enabled: false

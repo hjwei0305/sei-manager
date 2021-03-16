@@ -15,9 +15,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,6 +32,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
@@ -47,6 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
     private CustomConfig customConfig;
     @Autowired
     private CacheBuilder cacheBuilder;
+
+    @Value("${spring.cloud.config.token}")
+    private String configToken;
 
     @Override
     @SuppressWarnings("NullableProblems")
@@ -116,6 +123,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
                 }
                 return;
             }
+        } else {
+            // 配置中心客户端请求token
+            jwt = request.getHeader("X-Config-Token");
+            if (StringUtils.isNotBlank(jwt)) {
+                if (StringUtils.equals(configToken, jwt)) {
+                    UserDetails userDetails = new UserDetails() {
+                        private static final long serialVersionUID = 6643192420743444923L;
+
+                        @Override
+                        public Collection<? extends GrantedAuthority> getAuthorities() {
+                            return new ArrayList<>();
+                        }
+
+                        @Override
+                        public String getPassword() {
+                            return null;
+                        }
+
+                        @Override
+                        public String getUsername() {
+                            return "ConfigClient";
+                        }
+
+                        @Override
+                        public boolean isAccountNonExpired() {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean isAccountNonLocked() {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean isCredentialsNonExpired() {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean isEnabled() {
+                            return true;
+                        }
+                    };
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    securityContext.setAuthentication(authenticationToken);
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+            }
         }
         try {
             response.setHeader("Access-Control-Allow-Origin", "*");
@@ -146,8 +204,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Con
         Set<String> ignores = Sets.newHashSet();
         switch (httpMethod) {
             case GET:
-                ignores.add("/**/config/**");
+                // 网关配置白名单
                 ignores.add("/**/authWhitelist/get/**");
+                // 验证码
                 ignores.add("/**/user/generate/**");
                 ignores.add("/**/user/getMailServer/**");
 
