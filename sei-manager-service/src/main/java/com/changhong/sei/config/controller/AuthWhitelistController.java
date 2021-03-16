@@ -2,6 +2,7 @@ package com.changhong.sei.config.controller;
 
 import com.changhong.sei.config.api.AuthWhitelistApi;
 import com.changhong.sei.config.dto.AuthWhitelistDto;
+import com.changhong.sei.config.dto.SyncAuthWhitelistDto;
 import com.changhong.sei.config.entity.AuthWhitelist;
 import com.changhong.sei.config.service.AuthWhitelistService;
 import com.changhong.sei.core.controller.BaseEntityController;
@@ -15,8 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,24 +71,13 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
     }
 
     /**
-     * 新增认证白名单
-     *
-     * @param dtoList 业务实体DTO
-     * @return 操作结果
-     */
-    @Override
-    public ResultData<Void> add(@NotEmpty List<AuthWhitelistDto> dtoList) {
-        return null;
-    }
-
-    /**
      * 同步配置到其他环境
      *
-     * @param dtoList 业务实体DTO
+     * @param dto 业务实体DTO
      * @return 操作结果
      */
     @Override
-    public ResultData<Void> syncConfigs(@Valid List<AuthWhitelistDto> dtoList) {
-        return null;
+    public ResultData<Void> syncConfigs(SyncAuthWhitelistDto dto) {
+        return service.syncConfigs(dto);
     }
 }
