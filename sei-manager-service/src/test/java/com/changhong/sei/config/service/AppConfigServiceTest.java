@@ -1,5 +1,6 @@
 package com.changhong.sei.config.service;
 
+import com.changhong.sei.config.entity.EnvVariableValue;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.test.BaseUnit5Test;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,13 +26,30 @@ import static org.junit.jupiter.api.Assertions.*;
 class AppConfigServiceTest {
     @Autowired
     private AppConfigService service;
+    @Autowired
+    private EnvVariableService envVariableService;
 
     @Test
     void getYamlData() {
-        String app = "sei-auth";
+        String app = "ch-ht";
         String env = "Dev";
         String yaml = service.getYamlData(app, env);
         System.out.println(yaml);
+    }
+
+    @Test
+    void compareBeforeRelease() {
+        String app = "sei-notify";
+        String env = "Dev";
+        service.compareBeforeRelease(app, env);
+    }
+
+    @Test
+    void release() {
+        String app = "ch-ht";
+        String env = "Dev";
+        ResultData<Void> resultData = service.release(app, env);
+        System.out.println(resultData);
     }
 
     @Test

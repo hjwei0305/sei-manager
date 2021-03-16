@@ -74,7 +74,10 @@ public class EnvVariableController extends BaseEntityController<EnvVariable, Env
         // 获取所有启用的环境变量
         List<EnvVariable> list = service.findListByProperty(EnvVariable.FIELD_USE_STATUS, UseStatus.ENABLE);
         if (CollectionUtils.isNotEmpty(list)) {
-            dtoList = list.stream().map(v -> dtoModelMapper.map(v, EnvVariableDto.class)).collect(Collectors.toList());
+            dtoList = list.stream()
+                    .map(v -> dtoModelMapper.map(v, EnvVariableDto.class))
+                    .sorted(Comparator.comparing(EnvVariableDto::getCode))
+                    .collect(Collectors.toList());
         } else {
             dtoList = new ArrayList<>();
         }

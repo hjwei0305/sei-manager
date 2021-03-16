@@ -36,6 +36,6 @@ public interface ReleaseHistoryDao extends BaseEntityDao<ReleaseHistory> {
      * @return 返回上一次发布的配置项
      */
     @Query("select h from ReleaseHistory h where h.appCode = :appCode and h.envCode = :envCode and h.version = " +
-            " (select c.version from ReleasedConfig c where c.appCode = :appCode and c.envCode = :envCode group by c.version)")
+            " (select c.version from ReleasedConfig c where c.appCode = :appCode and c.envCode = :envCode group by c.version) order by h.key ")
     List<ReleaseHistory> getLastReleaseHistory(@Param("appCode") String appCode, @Param("envCode") String envCode);
 }

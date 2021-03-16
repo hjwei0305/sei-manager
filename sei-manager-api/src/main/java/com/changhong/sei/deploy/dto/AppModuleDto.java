@@ -37,6 +37,16 @@ public class AppModuleDto extends BaseEntityDto {
     @ApiModelProperty(value = "模块名称")
     private String name;
     /**
+     * 应用分组代码
+     */
+    @ApiModelProperty(value = "应用分组代码")
+    private String groupCode;
+    /**
+     * 应用分组名称
+     */
+    @ApiModelProperty(value = "应用分组名称")
+    private String groupName;
+    /**
      * 模块版本
      */
     @ApiModelProperty(value = "模块版本")
@@ -114,6 +124,22 @@ public class AppModuleDto extends BaseEntityDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public String getVersion() {

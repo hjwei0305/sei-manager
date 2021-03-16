@@ -6,6 +6,7 @@ import com.changhong.sei.config.dao.AppConfigDao;
 import com.changhong.sei.config.dto.AppDto;
 import com.changhong.sei.config.dto.ChangeType;
 import com.changhong.sei.config.dto.ConfigCompareResponse;
+import com.changhong.sei.config.dto.GeneralConfigDto;
 import com.changhong.sei.config.entity.*;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
@@ -13,6 +14,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.dto.serach.SearchOrder;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
@@ -67,18 +69,24 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
     public ResultData<List<AppDto>> getAppList(String groupCode) {
         List<AppDto> appDtoList;
         List<AppModule> appModules;
-        if (StringUtils.isBlank(groupCode)) {
-            appModules = appModuleService.findAllUnfrozen();
-        } else {
-            appModules = appModuleService.getByGroupCode(groupCode);
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(AppModule.FIELD_NAME_SPACE, SearchFilter.NO_NULL_VALUE));
+        search.addFilter(new SearchFilter(AppModule.FROZEN, Boolean.FALSE));
+        if (StringUtils.isNotBlank(groupCode)) {
+            search.addFilter(new SearchFilter(AppModule.FIELD_GROUP_CODE, groupCode));
         }
+        search.addSortOrder(new SearchOrder(AppModule.FIELD_CODE));
+        appModules = appModuleService.findByFilters(search);
         if (CollectionUtils.isNotEmpty(appModules)) {
-            appDtoList = appModules.stream().map(a -> {
+            appDtoList = appModules.stream()
+                    // 命名空间不为空,则是后端应用
+                    .filter(a -> StringUtils.isNotBlank(a.getNameSpace()))
+                    .map(a -> {
                 AppDto dto = new AppDto();
                 dto.setCode(a.getCode());
                 dto.setName(a.getName());
                 return dto;
-            }).collect(Collectors.toList());
+            }).sorted(Comparator.comparing(AppDto::getCode)).collect(Collectors.toList());
         } else {
             appDtoList = new ArrayList<>();
         }

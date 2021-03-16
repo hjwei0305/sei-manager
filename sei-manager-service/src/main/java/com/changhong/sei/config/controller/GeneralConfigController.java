@@ -2,6 +2,7 @@ package com.changhong.sei.config.controller;
 
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.config.api.GeneralConfigApi;
+import com.changhong.sei.config.dto.EnvVariableDto;
 import com.changhong.sei.config.dto.GeneralConfigDto;
 import com.changhong.sei.config.entity.GeneralConfig;
 import com.changhong.sei.config.service.GeneralConfigService;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +50,10 @@ public class GeneralConfigController extends BaseEntityController<GeneralConfig,
     @Override
     public ResultData<List<GeneralConfigDto>> findByEnv(String envCode) {
         List<GeneralConfig> configList = service.findListByProperty(GeneralConfig.FIELD_ENV_CODE, envCode);
-        List<GeneralConfigDto> list = configList.stream().map(c -> dtoModelMapper.map(c, GeneralConfigDto.class)).collect(Collectors.toList());
+        List<GeneralConfigDto> list = configList.stream()
+                .map(c -> dtoModelMapper.map(c, GeneralConfigDto.class))
+                .sorted(Comparator.comparing(GeneralConfigDto::getKey))
+                .collect(Collectors.toList());
         return ResultData.success(list);
     }
 

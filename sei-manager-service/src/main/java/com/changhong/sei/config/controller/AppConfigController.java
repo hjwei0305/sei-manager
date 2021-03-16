@@ -11,6 +11,7 @@ import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.dto.serach.SearchOrder;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.service.AppModuleService;
@@ -70,6 +71,7 @@ public class AppConfigController extends BaseEntityController<AppConfig, AppConf
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(AppConfig.FIELD_APP_CODE, appCode));
         search.addFilter(new SearchFilter(AppConfig.FIELD_ENV_CODE, envCode));
+        search.addSortOrder(new SearchOrder(AppConfig.FIELD_APP_CODE));
         List<AppConfig> configList = service.findByFilters(search);
         List<AppConfigDto> list = configList.stream().map(c -> dtoModelMapper.map(c, AppConfigDto.class)).collect(Collectors.toList());
         return ResultData.success(list);

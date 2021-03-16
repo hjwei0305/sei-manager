@@ -26,6 +26,8 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
     public static final String FIELD_APP_ID = "appId";
     public static final String FIELD_GIT_ID = "gitId";
     public static final String FIELD_CODE = "code";
+    public static final String FIELD_GROUP_CODE = "groupCode";
+    public static final String FIELD_NAME_SPACE = "nameSpace";
     /**
      * 所属应用id
      */
@@ -46,6 +48,16 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
      */
     @Column(name = "name")
     private String name;
+    /**
+     * 应用分组代码
+     */
+    @Column(name = "group_code")
+    private String groupCode;
+    /**
+     * 应用分组名称
+     */
+    @Column(name = "group_name")
+    private String groupName;
     /**
      * 模块版本
      */
@@ -113,6 +125,22 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public String getVersion() {
