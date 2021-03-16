@@ -21,6 +21,7 @@ import java.io.Serializable;
 @DynamicUpdate
 public class AuthWhitelist extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = -5721511820996126312L;
+    public static final String FIELD_APP_CODE = "appCode";
     public static final String FIELD_ENV_CODE = "envCode";
     /**
      * 应用服务代码

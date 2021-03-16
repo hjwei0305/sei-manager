@@ -6,6 +6,8 @@ import com.changhong.sei.config.entity.AuthWhitelist;
 import com.changhong.sei.config.service.AuthWhitelistService;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,5 +52,44 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
         List<AuthWhitelist> list = service.findListByProperty(AuthWhitelist.FIELD_ENV_CODE, envCode);
         List<AuthWhitelistDto> dtoList = list.stream().map(a -> dtoModelMapper.map(a, AuthWhitelistDto.class)).collect(Collectors.toList());
         return ResultData.success(dtoList);
+    }
+
+    /**
+     * 通过应用和环境代码获取应用认证白名单
+     *
+     * @param appCode 应用代码
+     * @param envCode 环境代码
+     * @return 业务实体
+     */
+    @Override
+    public ResultData<List<AuthWhitelistDto>> findByAppEnv(String appCode, String envCode) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(AuthWhitelist.FIELD_APP_CODE, appCode));
+        search.addFilter(new SearchFilter(AuthWhitelist.FIELD_ENV_CODE, envCode));
+        List<AuthWhitelist> list = service.findByFilters(search);
+        List<AuthWhitelistDto> dtoList = list.stream().map(a -> dtoModelMapper.map(a, AuthWhitelistDto.class)).collect(Collectors.toList());
+        return ResultData.success(dtoList);
+    }
+
+    /**
+     * 新增认证白名单
+     *
+     * @param dtoList 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> add(@NotEmpty List<AuthWhitelistDto> dtoList) {
+        return null;
+    }
+
+    /**
+     * 同步配置到其他环境
+     *
+     * @param dtoList 业务实体DTO
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> syncConfigs(@Valid List<AuthWhitelistDto> dtoList) {
+        return null;
     }
 }
