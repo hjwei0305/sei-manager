@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,9 @@ public class EnvVariableController extends BaseEntityController<EnvVariable, Env
         List<EnvVariableDto> dtoList;
         List<EnvVariable> list = service.findAllKey();
         if (CollectionUtils.isNotEmpty(list)) {
-            dtoList = list.stream().map(v -> dtoModelMapper.map(v, EnvVariableDto.class)).collect(Collectors.toList());
+            dtoList = list.stream()
+                    .map(v -> dtoModelMapper.map(v, EnvVariableDto.class))
+                    .sorted(Comparator.comparing(EnvVariableDto::getCode)).collect(Collectors.toList());
         } else {
             dtoList = new ArrayList<>();
         }
