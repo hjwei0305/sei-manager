@@ -39,6 +39,11 @@ public class RuntimeEnvDto extends BaseEntityDto {
     @ApiModelProperty(value = "代理服务基地址")
     private String agentServer;
     /**
+     * 网关服务基地址
+     */
+    @ApiModelProperty(value = "网关服务基地址")
+    private String gatewayServer;
+    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
@@ -82,6 +87,14 @@ public class RuntimeEnvDto extends BaseEntityDto {
 
     public void setAgentServer(String agentServer) {
         this.agentServer = agentServer;
+    }
+
+    public String getGatewayServer() {
+        return gatewayServer;
+    }
+
+    public void setGatewayServer(String gatewayServer) {
+        this.gatewayServer = gatewayServer;
     }
 
     public String getRemark() {

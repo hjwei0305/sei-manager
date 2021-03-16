@@ -50,6 +50,11 @@ public class RuntimeEnv extends BaseAuditableEntity implements IRank, ICodeUniqu
     @Column(name = "agent_server")
     private String agentServer;
     /**
+     * 网关服务基地址
+     */
+    @Column(name = "gateway_server")
+    private String gatewayServer;
+    /**
      * 描述说明
      */
     @Column(name = "remark")
@@ -99,6 +104,14 @@ public class RuntimeEnv extends BaseAuditableEntity implements IRank, ICodeUniqu
 
     public void setAgentServer(String agentServer) {
         this.agentServer = agentServer;
+    }
+
+    public String getGatewayServer() {
+        return gatewayServer;
+    }
+
+    public void setGatewayServer(String gatewayServer) {
+        this.gatewayServer = gatewayServer;
     }
 
     public String getRemark() {
