@@ -16,7 +16,6 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
-import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.RuntimeEnv;
 import com.changhong.sei.deploy.service.AppModuleService;
@@ -525,10 +524,10 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
      * @return 返回具体的值
      */
     private String resolutionVariable(String value, Map<String, String> variableValueMap) {
-        if (StringUtils.isNotBlank(value) && variableValueMap.size() > 0) {
+        if (StringUtils.isNotBlank(value) && value.contains("${") && variableValueMap.size() > 0) {
             for (Map.Entry<String, String> entry : variableValueMap.entrySet()) {
                 if (value.contains(entry.getKey())) {
-                    return entry.getValue();
+                    return value.replace(entry.getKey(), entry.getValue());
                 }
             }
         }
