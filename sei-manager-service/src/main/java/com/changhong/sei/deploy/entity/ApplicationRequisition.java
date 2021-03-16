@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "v_application_requisition")
 public class ApplicationRequisition extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -64497955636689211L;
+    public static final String APPLICANT_ACCOUNT = "applicantAccount";
     /**
      * 业务key
      */

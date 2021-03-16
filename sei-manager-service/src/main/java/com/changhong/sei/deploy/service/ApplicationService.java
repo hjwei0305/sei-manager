@@ -1,9 +1,11 @@
 package com.changhong.sei.deploy.service;
 
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
@@ -73,6 +75,10 @@ public class ApplicationService extends BaseEntityService<Application> {
      * @return 分页查询结果
      */
     public PageResult<ApplicationRequisition> findRequisitionByPage(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        search.addFilter(new SearchFilter(ApplicationRequisition.APPLICANT_ACCOUNT, ContextUtil.getUserAccount()));
         return applicationRequisitionDao.findByPage(search);
     }
 

@@ -102,6 +102,11 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      * @return 分页查询结果
      */
     public PageResult<BuildJobRequisition> findRequisitionByPage(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        search.addFilter(new SearchFilter(BuildJobRequisition.APPLICANT_ACCOUNT, ContextUtil.getUserAccount()));
+
         return requisitionDao.findByPage(search);
     }
 

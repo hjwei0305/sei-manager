@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 public class BuildJobRequisition extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -78400014111481829L;
+    public static final String APPLICANT_ACCOUNT = "applicantAccount";
     /**
      * 业务key
      */

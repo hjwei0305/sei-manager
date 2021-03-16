@@ -61,6 +61,11 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      * @return 分页查询结果
      */
     public PageResult<ReleaseVersionRequisition> findRequisitionByPage(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        search.addFilter(new SearchFilter(ReleaseVersionRequisition.APPLICANT_ACCOUNT, ContextUtil.getUserAccount()));
+
         return versionRequisitionDao.findByPage(search);
     }
 

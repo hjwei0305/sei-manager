@@ -1,5 +1,6 @@
 package com.changhong.sei.deploy.service;
 
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
@@ -14,10 +15,7 @@ import com.changhong.sei.deploy.dto.AppModuleRequisitionDto;
 import com.changhong.sei.deploy.dto.ApplyType;
 import com.changhong.sei.deploy.dto.ApprovalStatus;
 import com.changhong.sei.deploy.dto.ModuleUser;
-import com.changhong.sei.deploy.entity.AppModule;
-import com.changhong.sei.deploy.entity.AppModuleRequisition;
-import com.changhong.sei.deploy.entity.Application;
-import com.changhong.sei.deploy.entity.RequisitionOrder;
+import com.changhong.sei.deploy.entity.*;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
@@ -102,6 +100,11 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      * @return 分页查询结果
      */
     public PageResult<AppModuleRequisition> findRequisitionByPage(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        search.addFilter(new SearchFilter(AppModuleRequisition.APPLICANT_ACCOUNT, ContextUtil.getUserAccount()));
+
         return appModuleRequisitionDao.findByPage(search);
     }
 
