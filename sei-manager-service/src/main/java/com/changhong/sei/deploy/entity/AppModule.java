@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "app_module")
+@Table(name = "ge_app_module")
 @DynamicInsert
 @DynamicUpdate
 public class AppModule extends BaseAuditableEntity implements IFrozen, Serializable {

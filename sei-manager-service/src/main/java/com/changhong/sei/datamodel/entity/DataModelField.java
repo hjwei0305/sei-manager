@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2020-07-28 17:31:42
  */
 @Entity
-@Table(name = "data_model_field")
+@Table(name = "dm_data_model_field")
 @DynamicInsert
 @DynamicUpdate
 public class DataModelField extends BaseAuditableEntity implements IRank, Serializable {

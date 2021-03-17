@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2020-10-30 15:20:21
  */
 @Entity
-@Table(name = "application")
+@Table(name = "ge_application")
 @DynamicInsert
 @DynamicUpdate
 public class Application extends BaseAuditableEntity implements IFrozen, Serializable {

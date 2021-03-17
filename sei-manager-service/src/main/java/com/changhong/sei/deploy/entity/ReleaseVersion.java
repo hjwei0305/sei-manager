@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "release_version")
+@Table(name = "cicd_release_version")
 @DynamicInsert
 @DynamicUpdate
 public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable {

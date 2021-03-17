@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @since 2020-11-23 08:33:54
  */
 @Entity
-@Table(name = "certificate")
+@Table(name = "cicd_certificate")
 @DynamicInsert
 @DynamicUpdate
 public class Certificate extends BaseAuditableEntity implements Serializable {

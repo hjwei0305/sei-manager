@@ -18,7 +18,7 @@ import java.util.StringJoiner;
  * @since 2020-11-23 08:34:09
  */
 @Entity
-@Table(name = "app_module_tag")
+@Table(name = "cicd_tag")
 @DynamicInsert
 @DynamicUpdate
 public class Tag extends BaseEntity implements Serializable {
@@ -76,8 +76,13 @@ public class Tag extends BaseEntity implements Serializable {
     /**
      * 描述说明
      */
+    @Column(name = "message_id")
+    private String messageId;
+    /**
+     * 描述说明
+     */
     @Column(name = "remark")
-    private String message;
+    private String remark;
     /**
      * 创建时间
      */
@@ -161,12 +166,20 @@ public class Tag extends BaseEntity implements Serializable {
         this.commitId = commitId;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public Long getCreateTime() {

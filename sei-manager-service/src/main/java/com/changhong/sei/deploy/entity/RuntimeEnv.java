@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @version 1.0.00  2020-11-24 01:39
  */
 @Entity
-@Table(name = "runtime_env")
+@Table(name = "ge_runtime_env")
 @DynamicInsert
 @DynamicUpdate
 public class RuntimeEnv extends BaseAuditableEntity implements IRank, ICodeUnique, IFrozen, Serializable {

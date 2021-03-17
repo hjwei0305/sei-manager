@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @version 1.0.00  2020-12-04 16:37
  */
 @Entity
-@Table(name = "build_detail")
+@Table(name = "cicd_build_detail")
 @DynamicInsert
 @DynamicUpdate
 public class BuildDetail extends BaseEntity implements Serializable {

@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @since 2020-07-28 17:31:46
  */
 @Entity
-@Table(name = "element_label")
+@Table(name = "dm_element_label")
 @DynamicInsert
 @DynamicUpdate
 public class ElementLabel extends BaseAuditableEntity implements Serializable {

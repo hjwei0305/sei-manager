@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @since 2020-07-28 17:31:44
  */
 @Entity
-@Table(name = "data_source")
+@Table(name = "dm_data_source")
 @DynamicInsert
 @DynamicUpdate
 public class DataSource extends BaseAuditableEntity implements Serializable, ICodeUnique {

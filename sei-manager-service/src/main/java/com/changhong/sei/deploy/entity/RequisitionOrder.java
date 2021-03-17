@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * @version 1.0.00  2020-11-26 19:04
  */
 @Entity
-@Table(name = "requisition_order")
+@Table(name = "cicd_requisition_order")
 @DynamicInsert
 @DynamicUpdate
 public class RequisitionOrder extends BaseAuditableEntity implements Serializable {

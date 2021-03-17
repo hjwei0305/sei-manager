@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2020-07-28 17:31:47
  */
 @Entity
-@Table(name = "label_library")
+@Table(name = "dm_label_library")
 @DynamicInsert
 @DynamicUpdate
 public class LabelLibrary extends BaseAuditableEntity implements Serializable, ICodeUnique {

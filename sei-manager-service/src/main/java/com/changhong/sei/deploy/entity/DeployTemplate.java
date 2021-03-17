@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @since 2020-11-23 08:34:03
  */
 @Entity
-@Table(name = "deploy_template")
+@Table(name = "cicd_deploy_template")
 @DynamicInsert
 @DynamicUpdate
 public class DeployTemplate extends BaseAuditableEntity implements Serializable {

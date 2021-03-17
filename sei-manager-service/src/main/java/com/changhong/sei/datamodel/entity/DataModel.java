@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @since 2020-07-28 17:31:36
  */
 @Entity
-@Table(name = "data_model")
+@Table(name = "dm_data_model")
 @DynamicInsert
 @DynamicUpdate
 public class DataModel extends BaseAuditableEntity implements Serializable {

@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "build_job")
+@Table(name = "cicd_build_job")
 @DynamicInsert
 @DynamicUpdate
 public class BuildJob extends BaseEntity implements IFrozen, Serializable {

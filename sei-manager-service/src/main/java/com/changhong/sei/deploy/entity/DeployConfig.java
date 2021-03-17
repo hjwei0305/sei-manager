@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "deploy_config")
+@Table(name = "cicd_deploy_config")
 @DynamicInsert
 @DynamicUpdate
 public class DeployConfig extends BaseAuditableEntity implements Serializable {

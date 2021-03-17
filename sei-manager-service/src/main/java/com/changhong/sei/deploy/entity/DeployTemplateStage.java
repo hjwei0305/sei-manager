@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @since 2020-11-23 08:34:07
  */
 @Entity
-@Table(name = "deploy_template_stage")
+@Table(name = "cicd_deploy_template_stage")
 @DynamicInsert
 @DynamicUpdate
 public class DeployTemplateStage extends BaseEntity implements IRank, RelationEntity<DeployTemplate, DeployStage>, Serializable {

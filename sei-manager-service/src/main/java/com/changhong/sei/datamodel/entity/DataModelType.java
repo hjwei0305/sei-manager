@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2020-07-28 17:31:43
  */
 @Entity
-@Table(name = "data_model_type")
+@Table(name = "dm_data_model_type")
 @DynamicInsert
 @DynamicUpdate
 public class DataModelType extends BaseAuditableEntity implements Serializable, TreeEntity<DataModelType>, ICodeUnique, IRank {

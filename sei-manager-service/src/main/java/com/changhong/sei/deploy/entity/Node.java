@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2020-11-23 08:34:09
  */
 @Entity
-@Table(name = "node")
+@Table(name = "ge_node")
 @DynamicInsert
 @DynamicUpdate
 public class Node extends BaseAuditableEntity implements IFrozen, Serializable {
