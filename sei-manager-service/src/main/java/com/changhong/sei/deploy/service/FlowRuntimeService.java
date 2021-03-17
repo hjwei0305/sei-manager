@@ -383,7 +383,7 @@ public class FlowRuntimeService {
             context.setVariable("url", serverWeb);
             context.setVariable("sysName", managerName);
             String content = ThymeLeafHelper.getTemplateEngine().process("notify/FlowTask.html", context);
-            emailManager.sendMail(managerName + "-待办事项", content, sessionUser.getAccount());
+            emailManager.sendMailByAccount(managerName + "-待办事项", content, sessionUser.getAccount());
         } catch (Exception e) {
             LogUtil.error("流程待办任务通知异常", e);
         }

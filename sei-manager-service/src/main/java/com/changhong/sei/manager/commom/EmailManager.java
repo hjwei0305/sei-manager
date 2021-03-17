@@ -43,7 +43,7 @@ public class EmailManager {
     @Autowired
     private UserService userService;
 
-    public ResultData<Void> sendMail(String subject, String context, String... accounts) {
+    public ResultData<Void> sendMailByAccount(String subject, String context, String... accounts) {
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
         List<User> users = userService.findByFilters(search);
