@@ -320,6 +320,7 @@ public class TagService extends BaseEntityService<Tag> {
     private TagDto convert(Tag tag) {
         TagDto dto = new TagDto();
         if (Objects.nonNull(tag)) {
+            dto.setId(tag.getId());
             dto.setModuleId(tag.getModuleId());
             dto.setModuleCode(tag.getModuleCode());
             dto.setTagName(tag.getTagName());

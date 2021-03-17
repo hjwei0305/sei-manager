@@ -65,8 +65,13 @@ public class TagDto extends BaseEntityDto implements Serializable {
      */
     @ApiModelProperty(notes = "创建人")
     private String createAccount;
-    @ApiModelProperty(notes = "描述")
+    @ApiModelProperty(notes = "发版说明")
     private String message;
+    /**
+     * 描述说明
+     */
+    @ApiModelProperty(notes = "备注描述")
+    private String remark;
     @ApiModelProperty(notes = "commitId")
     private String commitId;
     @ApiModelProperty(notes = "是否发布版本")
@@ -164,6 +169,14 @@ public class TagDto extends BaseEntityDto implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public Boolean getRelease() {
