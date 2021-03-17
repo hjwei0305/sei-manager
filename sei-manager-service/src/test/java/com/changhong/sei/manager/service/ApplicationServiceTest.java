@@ -2,8 +2,8 @@ package com.changhong.sei.manager.service;
 
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.core.test.BaseUnitTest;
-import com.changhong.sei.deploy.entity.Application;
-import com.changhong.sei.deploy.service.ApplicationService;
+import com.changhong.sei.ge.entity.Application;
+import com.changhong.sei.ge.service.ApplicationService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

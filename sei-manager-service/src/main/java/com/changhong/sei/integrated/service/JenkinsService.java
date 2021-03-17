@@ -1,7 +1,7 @@
 package com.changhong.sei.integrated.service;
 
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.deploy.dto.BuildStatus;
+import com.changhong.sei.cicd.dto.BuildStatus;
 import com.changhong.sei.util.EnumUtils;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;

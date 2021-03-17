@@ -66,10 +66,13 @@ spring:
     username: seiadmin@changhong.com
 
   datasource:
-    username: sei
-    password: 123456
+#    username: sei
+    username: root
+#    password: 123456
+    password: 5o1BbPJqedZgNSinMiPU
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.4.208.134:3306/sei_manager?characterEncoding=utf8&useSSL=false&useCompression=true&serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://10.4.208.134:3306/sei_manager?characterEncoding=utf8&useSSL=false&useCompression=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://10.4.208.68:3366/sei_manager?characterEncoding=utf8&useSSL=false&useCompression=true&serverTimezone=Asia/Shanghai
   jpa:
     show-sql: true
     hibernate:
