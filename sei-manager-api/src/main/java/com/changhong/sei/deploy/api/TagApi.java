@@ -1,9 +1,12 @@
 package com.changhong.sei.deploy.api;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.dto.TagDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -56,9 +59,9 @@ public interface TagApi {
      * @param gitId gitId
      * @return 创建结果
      */
-    @GetMapping(path = "getTags")
+    @PostMapping(path = "getTags/{gitId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "获取项目标签", notes = "获取项目标签")
-    ResultData<List<TagDto>> getTags(@RequestParam("gitId") String gitId);
+    ResultData<PageResult<TagDto>> getTags(@PathVariable("gitId") String gitId, @RequestBody Search search);
 
     /**
      * 创建标签

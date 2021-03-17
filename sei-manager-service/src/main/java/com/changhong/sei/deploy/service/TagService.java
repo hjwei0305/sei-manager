@@ -2,6 +2,7 @@ package com.changhong.sei.deploy.service;
 
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.dto.serach.SearchOrder;
@@ -12,7 +13,6 @@ import com.changhong.sei.deploy.dto.TagDto;
 import com.changhong.sei.deploy.entity.AppModule;
 import com.changhong.sei.deploy.entity.Tag;
 import com.changhong.sei.integrated.service.GitlabService;
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -122,22 +122,27 @@ public class TagService extends BaseEntityService<Tag> {
      * @param gitId gitId
      * @return 创建结果
      */
-    public ResultData<List<TagDto>> getTags(String gitId) {
+    public ResultData<PageResult<TagDto>> getTags(String gitId, Search search) {
         AppModule appModule = moduleService.getAppModuleByGitId(gitId);
         if (Objects.isNull(appModule)) {
             return ResultData.fail("未找到git[" + gitId + "]对应的应用模块.");
         }
-        Search search = Search.createSearch();
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
         search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, appModule.getId()));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MAJOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));
-        List<Tag> tags = dao.findByFilters(search);
-        if (CollectionUtils.isNotEmpty(tags)) {
-            return ResultData.success(tags.stream().map(this::convert).collect(Collectors.toList()));
-        } else {
-            return ResultData.success(Lists.newArrayList());
+        PageResult<Tag> pageResult = dao.findByPage(search);
+        PageResult<TagDto> result = new PageResult<>(pageResult);
+        if (pageResult.getTotal() > 0) {
+            List<Tag> tags = pageResult.getRows();
+            if (CollectionUtils.isNotEmpty(tags)) {
+                result.setRows(tags.stream().map(this::convert).collect(Collectors.toList()));
+            }
         }
+        return ResultData.success(result);
     }
 
     /**

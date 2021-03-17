@@ -1,6 +1,8 @@
 package com.changhong.sei.deploy.controller;
 
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.deploy.api.TagApi;
 import com.changhong.sei.deploy.dto.TagDto;
 import com.changhong.sei.deploy.service.TagService;
@@ -81,8 +83,8 @@ public class TagController implements TagApi {
      * @return 创建结果
      */
     @Override
-    public ResultData<List<TagDto>> getTags(String gitId) {
-        return service.getTags(gitId);
+    public ResultData<PageResult<TagDto>> getTags(String gitId, Search search) {
+        return service.getTags(gitId, search);
     }
 
     /**

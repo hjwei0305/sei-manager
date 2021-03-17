@@ -60,7 +60,7 @@ public class GitlabServiceTest extends BaseUnitTest {
 
     @Test
     public void getProjectTags() {
-        String gitId = "1434";
+        String gitId = "1455";
         ResultData<List<Tag>> resultData = service.getProjectTags(gitId);
         System.out.println(resultData);
     }
