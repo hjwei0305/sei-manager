@@ -274,6 +274,7 @@ public class TagService extends BaseEntityService<Tag> {
                     tag.setMinor(Integer.valueOf(m.group(2)));
                     tag.setRevised(Integer.valueOf(m.group(3)));
                     tag.setCode(tag.getTagName());
+//                    tag.setBranch(gitTag);
                     tag.setMessage(gitTag.getMessage());
 
                     tag.setRelease(Objects.nonNull(tag.getRelease()));
@@ -312,6 +313,7 @@ public class TagService extends BaseEntityService<Tag> {
             dto.setRevised(tag.getRevised());
             dto.setRelease(tag.getRelease());
             dto.setCommitId(tag.getCommitId());
+            dto.setBranch(tag.getBranch());
             dto.setMessage(tag.getMessage());
             dto.setCreateTime(tag.getCreateTime());
             dto.setCreateAccount(tag.getCreateAccount());
