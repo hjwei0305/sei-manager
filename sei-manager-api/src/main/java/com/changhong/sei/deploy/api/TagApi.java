@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 应用标签(Tag)API
@@ -27,7 +28,7 @@ public interface TagApi {
      */
     @GetMapping(path = "getBranches")
     @ApiOperation(value = "获取项目分支", notes = "获取项目分支")
-    ResultData<List<String>> getBranches(@RequestParam("gitId") String gitId);
+    ResultData<List<Map<String, String>>> getBranches(@RequestParam("gitId") String gitId);
 
     /**
      * 获取最新的标签

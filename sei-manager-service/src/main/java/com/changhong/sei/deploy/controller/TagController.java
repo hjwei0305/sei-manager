@@ -10,7 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 应用标签(Tag)控制类
@@ -33,8 +36,20 @@ public class TagController implements TagApi {
      * @return 项目分支列表
      */
     @Override
-    public ResultData<List<String>> getBranches(String gitId) {
-        return service.getProjectBranches(gitId);
+    public ResultData<List<Map<String, String>>> getBranches(String gitId) {
+        ResultData<List<String>> resultData = service.getProjectBranches(gitId);
+        if (resultData.successful()) {
+            List<String> list = resultData.getData();
+            Map<String, String> map;
+            List<Map<String, String>> mapList = new ArrayList<>();
+            for (String name : list) {
+                map = new HashMap<>(7);
+                map.put("key", name);
+                mapList.add(map);
+            }
+            return ResultData.success(mapList);
+        }
+        return ResultData.fail(resultData.getMessage());
     }
 
     /**
