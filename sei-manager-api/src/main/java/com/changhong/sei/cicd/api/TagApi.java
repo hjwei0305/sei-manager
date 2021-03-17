@@ -56,12 +56,12 @@ public interface TagApi {
     /**
      * 获取项目标签
      *
-     * @param gitId gitId
+     * @param search search
      * @return 创建结果
      */
-    @PostMapping(path = "getTags/{gitId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "getTags", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "获取项目标签", notes = "获取项目标签")
-    ResultData<PageResult<TagDto>> getTags(@PathVariable("gitId") String gitId, @RequestBody Search search);
+    ResultData<PageResult<TagDto>> getTags(@RequestBody Search search);
 
     /**
      * 创建标签

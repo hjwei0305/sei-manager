@@ -79,12 +79,12 @@ public class TagController implements TagApi {
     /**
      * 获取项目标签
      *
-     * @param gitId gitId
+     * @param search search
      * @return 创建结果
      */
     @Override
-    public ResultData<PageResult<TagDto>> getTags(String gitId, Search search) {
-        return service.getTags(gitId, search);
+    public ResultData<PageResult<TagDto>> getTags(Search search) {
+        return service.getTags(search);
     }
 
     /**
