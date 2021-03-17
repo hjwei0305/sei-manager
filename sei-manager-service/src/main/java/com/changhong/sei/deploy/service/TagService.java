@@ -52,6 +52,20 @@ public class TagService extends BaseEntityService<Tag> {
     }
 
     /**
+     * 获取项目分支
+     *
+     * @param gitId git项目id
+     * @return 项目分支列表
+     */
+    public ResultData<List<String>> getProjectBranches(String gitId) {
+        AppModule module = moduleService.getAppModuleByGitId(gitId);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块gitId[" + gitId + "]不存在.");
+        }
+        return gitlabService.getProjectBranches(gitId);
+    }
+
+    /**
      * 获取最新的标签
      *
      * @param moduleId 模块id

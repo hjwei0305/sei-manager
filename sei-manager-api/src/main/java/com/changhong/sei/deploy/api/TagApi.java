@@ -20,6 +20,16 @@ import java.util.List;
 public interface TagApi {
 
     /**
+     * 获取项目分支
+     *
+     * @param gitId git项目id
+     * @return 项目分支列表
+     */
+    @GetMapping(path = "getBranches")
+    @ApiOperation(value = "获取项目分支", notes = "获取项目分支")
+    ResultData<List<String>> getBranches(@RequestParam("gitId") String gitId);
+
+    /**
      * 获取最新的标签
      *
      * @param moduleId 模块id

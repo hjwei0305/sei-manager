@@ -5,6 +5,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import com.changhong.sei.util.DateUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.gitlab4j.api.*;
 import org.gitlab4j.api.models.*;
@@ -15,10 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 实现功能：
@@ -252,6 +251,27 @@ public class GitlabService {
         } catch (Exception e) {
             LOG.error("添加项目用户异常", e);
             return ResultData.fail("添加项目用户异常:" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取项目分支
+     *
+     * @param projectIdOrPath git项目id
+     * @return 项目分支列表
+     */
+    public ResultData<List<String>> getProjectBranches(String projectIdOrPath) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            ProtectedBranchesApi api = gitLabApi.getProtectedBranchesApi();
+            List<ProtectedBranch> list = api.getProtectedBranches(projectIdOrPath);
+            if (CollectionUtils.isNotEmpty(list)) {
+                return ResultData.success(list.stream().map(ProtectedBranch::getName).collect(Collectors.toList()));
+            } else {
+                return ResultData.success(new ArrayList<>());
+            }
+        } catch (Exception e) {
+            LOG.error("获取项目分支异常", e);
+            return ResultData.fail("获取项目分支异常" + e.getMessage());
         }
     }
 

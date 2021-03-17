@@ -27,6 +27,17 @@ public class TagController implements TagApi {
     private TagService service;
 
     /**
+     * 获取项目分支
+     *
+     * @param gitId git项目id
+     * @return 项目分支列表
+     */
+    @Override
+    public ResultData<List<String>> getBranches(String gitId) {
+        return service.getProjectBranches(gitId);
+    }
+
+    /**
      * 获取最新的标签
      *
      * @param moduleId 模块id
