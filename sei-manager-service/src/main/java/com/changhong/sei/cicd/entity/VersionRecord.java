@@ -77,10 +77,10 @@ public class VersionRecord extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "image_name")
     private String imageName;
     /**
-     * 描述说明
+     * 描述说明id
      */
-    @Column(name = "remark")
-    private String remark;
+    @Column(name = "message_id")
+    private String messageId;
     /**
      * 版本创建时间
      */
@@ -107,6 +107,9 @@ public class VersionRecord extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "build_status")
     @Enumerated(EnumType.STRING)
     private BuildStatus buildStatus = BuildStatus.NOT_BUILT;
+
+    @Transient
+    private String remark;
 
     public String getAppId() {
         return appId;
@@ -188,12 +191,12 @@ public class VersionRecord extends BaseEntity implements IFrozen, Serializable {
         this.name = name;
     }
 
-    public String getRemark() {
-        return remark;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public LocalDateTime getCreateTime() {
@@ -236,5 +239,13 @@ public class VersionRecord extends BaseEntity implements IFrozen, Serializable {
 
     public void setBuildStatus(BuildStatus buildStatus) {
         this.buildStatus = buildStatus;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

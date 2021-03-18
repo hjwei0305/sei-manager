@@ -29,13 +29,13 @@ public class MessageContentService extends BaseEntityService<MessageContent> {
     /**
      * 获取内容
      *
-     * @param messageId 内容id
+     * @param contentId 内容id
      * @return 返回内容
      */
-    public String getContent(String messageId) {
+    public String getContent(String contentId) {
         String content = null;
-        if (StringUtils.isNotBlank(messageId)) {
-            MessageContent messageContent = dao.findOne(messageId);
+        if (StringUtils.isNotBlank(contentId)) {
+            MessageContent messageContent = dao.findOne(contentId);
             if (Objects.nonNull(messageContent)) {
                 content = messageContent.getContent();
             }

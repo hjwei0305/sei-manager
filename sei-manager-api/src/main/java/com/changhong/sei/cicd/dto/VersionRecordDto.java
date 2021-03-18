@@ -9,13 +9,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 版本发布记录(ReleaseVersion)DTO类
+ * 版本发布记录(VersionRecord)DTO类
  *
  * @author sei
  * @since 2020-11-23 08:34:10
  */
 @ApiModel(description = "版本发布记录DTO")
-public class ReleaseVersionDto extends BaseEntityDto implements Serializable {
+public class VersionRecordDto extends BaseEntityDto implements Serializable {
     private static final long serialVersionUID = 630890453379821715L;
     /**
      * 所属应用id

@@ -5,7 +5,7 @@ import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.cicd.dto.ReleaseVersionDto;
+import com.changhong.sei.cicd.dto.VersionRecordDto;
 import com.changhong.sei.cicd.dto.ReleaseVersionRequisitionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 
 /**
- * 版本发布记录(ReleaseVersion)API
+ * 版本发布记录(VersionRecord)API
  *
  * @author sei
  * @since 2020-11-23 08:34:10
  */
 @Valid
 @FeignClient(name = "sei-manager", path = "releaseVersion")
-public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, FindByPageApi<ReleaseVersionDto> {
+public interface VersionRecordApi extends BaseEntityApi<VersionRecordDto>, FindByPageApi<VersionRecordDto> {
 
     /**
      * 分页查询应用版本申请单
@@ -45,7 +45,7 @@ public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, Fin
      */
     @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建应用版本申请单", notes = "创建应用版本申请单")
-    ResultData<ReleaseVersionRequisitionDto> createRequisition(@RequestBody @Valid ReleaseVersionDto dto);
+    ResultData<ReleaseVersionRequisitionDto> createRequisition(@RequestBody @Valid VersionRecordDto dto);
 
     /**
      * 修改编辑应用版本申请单
@@ -55,7 +55,7 @@ public interface ReleaseVersionApi extends BaseEntityApi<ReleaseVersionDto>, Fin
      */
     @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "修改编辑应用版本申请单", notes = "修改编辑应用版本申请单")
-    ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@RequestBody @Valid ReleaseVersionDto dto);
+    ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@RequestBody @Valid VersionRecordDto dto);
 
     /**
      * 删除应用版本申请单

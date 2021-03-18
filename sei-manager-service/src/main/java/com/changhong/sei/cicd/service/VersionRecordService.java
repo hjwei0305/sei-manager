@@ -15,7 +15,9 @@ import com.changhong.sei.cicd.dao.VersionRecordRequisitionDao;
 import com.changhong.sei.cicd.dto.*;
 import com.changhong.sei.cicd.entity.*;
 import com.changhong.sei.ge.entity.AppModule;
+import com.changhong.sei.ge.entity.MessageContent;
 import com.changhong.sei.ge.service.AppModuleService;
+import com.changhong.sei.ge.service.MessageContentService;
 import com.changhong.sei.integrated.service.GitlabService;
 import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.Release;
@@ -50,10 +52,29 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
 
     @Autowired
     private GitlabService gitlabService;
+    @Autowired
+    private MessageContentService messageContentService;
 
     @Override
     protected BaseEntityDao<VersionRecord> getDao() {
         return dao;
+    }
+
+
+    /**
+     * 基于主键查询单一数据对象
+     */
+    @Override
+    public VersionRecord findOne(String s) {
+        VersionRecord record = dao.findOne(s);
+        if (Objects.nonNull(record)) {
+            String contentId = record.getMessageId();
+            if (StringUtils.isNotBlank(contentId)) {
+                String content = messageContentService.getContent(contentId);
+                record.setRemark(content);
+            }
+        }
+        return record;
     }
 
     /**
@@ -74,31 +95,38 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
     /**
      * 创建应用模块申请单
      *
-     * @param releaseVersion 模块
+     * @param versionRecord 模块
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseVersionRequisitionDto> createRequisition(VersionRecord releaseVersion) {
+    public ResultData<ReleaseVersionRequisitionDto> createRequisition(VersionRecord versionRecord) {
         // 重置版本
-        releaseVersion.setVersion(releaseVersion.getRefTag() + "-Release");
+        versionRecord.setVersion(versionRecord.getRefTag() + "-Release");
         // 通过模块和版本检查是否重复申请
-        VersionRecord existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
+        VersionRecord existed = getByVersion(versionRecord.getAppId(), versionRecord.getModuleCode(), versionRecord.getVersion());
         if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
+            return ResultData.fail("应用模块[" + versionRecord.getModuleCode() + "]对应版本[" + versionRecord.getVersion() + "]存在申请记录,请不要重复申请.");
         }
 
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
-        releaseVersion.setFrozen(Boolean.TRUE);
+        versionRecord.setFrozen(Boolean.TRUE);
+        // 保存发版记录
+        String content = versionRecord.getRemark();
+        if (StringUtils.isNotBlank(content)) {
+            MessageContent messageContent = new MessageContent(content);
+            messageContentService.save(messageContent);
+            versionRecord.setMessageId(messageContent.getId());
+        }
         // 保存应用模块
-        OperateResultWithData<VersionRecord> resultWithData = this.save(releaseVersion);
+        OperateResultWithData<VersionRecord> resultWithData = this.save(versionRecord);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用版本申请
             requisitionOrder.setApplyType(ApplyType.PUBLISH);
             // 应用版本id
-            requisitionOrder.setRelationId(releaseVersion.getId());
+            requisitionOrder.setRelationId(versionRecord.getId());
             // 申请摘要
-            requisitionOrder.setSummary(releaseVersion.getName().concat("[").concat(releaseVersion.getVersion()).concat("]"));
+            requisitionOrder.setSummary(versionRecord.getName().concat("[").concat(versionRecord.getVersion()).concat("]"));
 
             ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
@@ -111,15 +139,16 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
                 dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
 
-                dto.setRelationId(releaseVersion.getId());
-                dto.setAppId(releaseVersion.getAppId());
-                dto.setAppName(releaseVersion.getAppName());
-                dto.setGitId(releaseVersion.getGitId());
-                dto.setModuleCode(releaseVersion.getModuleCode());
-                dto.setModuleName(releaseVersion.getModuleName());
-                dto.setRefTag(releaseVersion.getRefTag());
-                dto.setName(releaseVersion.getName());
-                dto.setVersion(releaseVersion.getVersion());
+                dto.setRelationId(versionRecord.getId());
+                dto.setAppId(versionRecord.getAppId());
+                dto.setAppName(versionRecord.getAppName());
+                dto.setGitId(versionRecord.getGitId());
+                dto.setModuleCode(versionRecord.getModuleCode());
+                dto.setModuleName(versionRecord.getModuleName());
+                dto.setRefTag(versionRecord.getRefTag());
+                dto.setName(versionRecord.getName());
+                dto.setVersion(versionRecord.getVersion());
+                dto.setRemark(content);
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
@@ -146,7 +175,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
         if (Objects.nonNull(existed)) {
             return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
         }
-        VersionRecord version = this.findOne(releaseVersion.getId());
+        VersionRecord version = dao.findOne(releaseVersion.getId());
         if (Objects.isNull(version)) {
             return ResultData.fail("应用模块不存在!");
         }
@@ -164,7 +193,24 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
         version.setRefTag(releaseVersion.getRefTag());
         version.setName(releaseVersion.getName());
         version.setVersion(releaseVersion.getVersion());
-        version.setRemark(releaseVersion.getRemark());
+        // 更新发版记录
+        String content = releaseVersion.getRemark();
+        if (StringUtils.isNotBlank(content)) {
+            MessageContent messageContent;
+            String messageId = version.getMessageId();
+            if (StringUtils.isNotBlank(messageId)) {
+                messageContent = messageContentService.findOne(messageId);
+                if (Objects.isNull(messageContent)) {
+                    messageContent = new MessageContent(content);
+                } else {
+                    messageContent.setContent(content);
+                }
+            } else {
+                messageContent = new MessageContent(content);
+            }
+            messageContentService.save(messageContent);
+            version.setMessageId(messageContent.getId());
+        }
 
         // 保存应用模块
         OperateResultWithData<VersionRecord> resultWithData = this.save(version);
@@ -209,6 +255,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
                 dto.setRefTag(releaseVersion.getRefTag());
                 dto.setName(releaseVersion.getName());
                 dto.setVersion(releaseVersion.getVersion());
+                dto.setRemark(content);
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
@@ -228,7 +275,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> deleteRequisition(String id) {
-        VersionRecord version = this.findOne(id);
+        VersionRecord version = dao.findOne(id);
         if (Objects.nonNull(version)) {
             if (version.getFrozen()) {
                 // 删除应用版本申请
@@ -255,7 +302,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updateFrozen(String id) {
-        VersionRecord version = dao.findOne(id);
+        VersionRecord version = this.findOne(id);
         if (Objects.isNull(version)) {
             return ResultData.fail("版本申请单[" + id + "]不存在");
         }
@@ -300,7 +347,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
             record.setModuleName(version.getModuleName());
             record.setTagName(version.getVersion());
             record.setName(version.getName());
-            record.setRemark(version.getRemark());
+            record.setMessageId(version.getMessageId());
             record.setFrozen(Boolean.FALSE);
             record.setExpCompleteTime(LocalDateTime.now());
             recordService.save(record);

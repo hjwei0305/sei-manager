@@ -83,15 +83,10 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "name")
     private String name;
     /**
-     * 描述说明(部署要求等)
+     * 描述说明id
      */
-    @Column(name = "remark")
-    private String remark;
-    /**
-     * 脚本内容
-     */
-    @Column(name = "script_")
-    private String script;
+    @Column(name = "message_id")
+    private String messageId;
 
     /**
      * 是否冻结
@@ -129,6 +124,9 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
      */
     @Column(name = "allow_build")
     private Boolean allowBuild = Boolean.TRUE;
+
+    @Transient
+    private String remark;
 
     public String getType() {
         return type;
@@ -226,20 +224,12 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
         this.name = name;
     }
 
-    public String getRemark() {
-        return remark;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public String getScript() {
-        return script;
-    }
-
-    public void setScript(String script) {
-        this.script = script;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     @Override
@@ -298,5 +288,13 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
 
     public void setAllowBuild(Boolean allowBuild) {
         this.allowBuild = allowBuild;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

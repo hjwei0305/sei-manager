@@ -5,8 +5,8 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
-import com.changhong.sei.cicd.api.ReleaseVersionApi;
-import com.changhong.sei.cicd.dto.ReleaseVersionDto;
+import com.changhong.sei.cicd.api.VersionRecordApi;
+import com.changhong.sei.cicd.dto.VersionRecordDto;
 import com.changhong.sei.cicd.dto.ReleaseVersionRequisitionDto;
 import com.changhong.sei.cicd.entity.VersionRecord;
 import com.changhong.sei.cicd.entity.VersionRecordRequisition;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @RestController
 @Api(value = "ReleaseVersionApi", tags = "版本发布记录服务")
 @RequestMapping(path = "releaseVersion", produces = MediaType.APPLICATION_JSON_VALUE)
-public class VersionRecordController extends BaseEntityController<VersionRecord, ReleaseVersionDto> implements ReleaseVersionApi {
+public class VersionRecordController extends BaseEntityController<VersionRecord, VersionRecordDto> implements VersionRecordApi {
     /**
      * 服务器节点服务对象
      */
@@ -50,7 +50,7 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      * @return 分页查询结果
      */
     @Override
-    public ResultData<PageResult<ReleaseVersionDto>> findByPage(Search search) {
+    public ResultData<PageResult<VersionRecordDto>> findByPage(Search search) {
         return convertToDtoPageResult(service.findByPage(search));
     }
 
@@ -79,7 +79,7 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseVersionRequisitionDto> createRequisition(@Valid ReleaseVersionDto dto) {
+    public ResultData<ReleaseVersionRequisitionDto> createRequisition(@Valid VersionRecordDto dto) {
         return service.createRequisition(convertToEntity(dto));
     }
 
@@ -90,7 +90,7 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@Valid ReleaseVersionDto dto) {
+    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@Valid VersionRecordDto dto) {
         return service.modifyRequisition(convertToEntity(dto));
     }
 

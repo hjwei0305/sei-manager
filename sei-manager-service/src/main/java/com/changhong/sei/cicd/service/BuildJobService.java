@@ -17,7 +17,9 @@ import com.changhong.sei.cicd.dao.BuildJobRequisitionDao;
 import com.changhong.sei.cicd.dto.*;
 import com.changhong.sei.cicd.entity.*;
 import com.changhong.sei.ge.entity.AppModule;
+import com.changhong.sei.ge.entity.MessageContent;
 import com.changhong.sei.ge.service.AppModuleService;
+import com.changhong.sei.ge.service.MessageContentService;
 import com.changhong.sei.integrated.service.JenkinsService;
 import com.changhong.sei.util.EnumUtils;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -73,10 +75,28 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     private VersionRecordService releaseVersionService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private MessageContentService messageContentService;
 
     @Override
     protected BaseEntityDao<BuildJob> getDao() {
         return dao;
+    }
+
+    /**
+     * 基于主键查询单一数据对象
+     */
+    @Override
+    public BuildJob findOne(String s) {
+        BuildJob record = dao.findOne(s);
+        if (Objects.nonNull(record)) {
+            String contentId = record.getMessageId();
+            if (StringUtils.isNotBlank(contentId)) {
+                String content = messageContentService.getContent(contentId);
+                record.setRemark(content);
+            }
+        }
+        return record;
     }
 
     /**
@@ -87,7 +107,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     @Override
     protected OperateResult preDelete(String id) {
         // 检查状态控制删除
-        BuildJob app = this.findOne(id);
+        BuildJob app = dao.findOne(id);
         if (Objects.isNull(app)) {
             return OperateResult.operationFailure("[" + id + "]发布记录不存在,删除失败!");
         }
@@ -128,6 +148,13 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
 
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         releaseRecord.setFrozen(Boolean.TRUE);
+        // 保存发版记录
+        String content = releaseRecord.getRemark();
+        if (StringUtils.isNotBlank(content)) {
+            MessageContent messageContent = new MessageContent(content);
+            messageContentService.save(messageContent);
+            releaseRecord.setMessageId(messageContent.getId());
+        }
         // 保存应用
         OperateResultWithData<BuildJob> resultWithData = this.save(releaseRecord);
         if (resultWithData.successful()) {
@@ -160,7 +187,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 dto.setModuleName(releaseRecord.getModuleName());
                 dto.setTagName(releaseRecord.getTagName());
                 dto.setName(releaseRecord.getName());
-                dto.setRemark(releaseRecord.getRemark());
+                dto.setRemark(content);
                 dto.setExpCompleteTime(releaseRecord.getExpCompleteTime());
                 return ResultData.success(dto);
             } else {
@@ -187,7 +214,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getTagName() + "]存在申请记录,请不要重复申请.");
         }
 
-        BuildJob entity = this.findOne(releaseRecord.getId());
+        BuildJob entity = dao.findOne(releaseRecord.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
         }
@@ -205,8 +232,25 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         entity.setModuleName(releaseRecord.getModuleName());
         entity.setTagName(releaseRecord.getTagName());
         entity.setName(releaseRecord.getName());
-        entity.setRemark(releaseRecord.getRemark());
         entity.setExpCompleteTime(releaseRecord.getExpCompleteTime());
+        // 更新发版记录
+        String content = releaseRecord.getRemark();
+        if (StringUtils.isNotBlank(content)) {
+            MessageContent messageContent;
+            String messageId = entity.getMessageId();
+            if (StringUtils.isNotBlank(messageId)) {
+                messageContent = messageContentService.findOne(messageId);
+                if (Objects.isNull(messageContent)) {
+                    messageContent = new MessageContent(content);
+                } else {
+                    messageContent.setContent(content);
+                }
+            } else {
+                messageContent = new MessageContent(content);
+            }
+            messageContentService.save(messageContent);
+            entity.setMessageId(messageContent.getId());
+        }
 
         // 保存应用
         OperateResultWithData<BuildJob> resultWithData = this.save(entity);
@@ -252,7 +296,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 dto.setModuleName(releaseRecord.getModuleName());
                 dto.setTagName(releaseRecord.getTagName());
                 dto.setName(releaseRecord.getName());
-                dto.setRemark(releaseRecord.getRemark());
+                dto.setRemark(content);
                 dto.setExpCompleteTime(releaseRecord.getExpCompleteTime());
                 return ResultData.success(dto);
             } else {
@@ -272,7 +316,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> deleteRequisition(String id) {
-        BuildJob releaseRecord = this.findOne(id);
+        BuildJob releaseRecord = dao.findOne(id);
         if (Objects.nonNull(releaseRecord)) {
             if (releaseRecord.getFrozen()) {
                 // 删除应用
@@ -349,7 +393,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      * @return 返回构建阶段
      */
     public ResultData<BuildDetailDto> getBuildDetail(String id) {
-        BuildJob releaseRecord = this.findOne(id);
+        BuildJob releaseRecord = dao.findOne(id);
         if (Objects.isNull(releaseRecord)) {
             return ResultData.fail("发布记录不存在");
         }
@@ -396,7 +440,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<BuildJob> build(String recordId, String account) {
-        BuildJob buildJob = this.findOne(recordId);
+        BuildJob buildJob = dao.findOne(recordId);
         if (Objects.nonNull(buildJob)) {
             // 检查是否允许构建
             if (!buildJob.getAllowBuild()) {
@@ -611,7 +655,6 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setModuleName(module.getName());
                 record.setTagName("dev");
                 record.setName("开发构建-" + module.getName());
-                record.setRemark("开发构建-" + module.getName());
                 record.setFrozen(Boolean.FALSE);
                 record.setExpCompleteTime(LocalDateTime.now());
                 this.save(record);
