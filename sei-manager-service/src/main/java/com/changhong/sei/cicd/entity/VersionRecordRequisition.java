@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "v_release_version_requisition")
+@Table(name = "v_version_record_requisition")
 public class VersionRecordRequisition extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String APPLICANT_ACCOUNT = "applicantAccount";
