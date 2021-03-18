@@ -24,12 +24,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * 申请记录(RequisitionRecord)业务逻辑实现类
+ * 申请单(RequisitionOrder)业务逻辑实现类
  *
  * @author sei
  * @since 2020-11-26 14:45:21
  */
-@Service("requisitionOrderService")
+@Service
 public class RequisitionOrderService extends BaseEntityService<RequisitionOrder> {
     @Autowired
     private RequisitionOrderDao dao;
@@ -43,7 +43,7 @@ public class RequisitionOrderService extends BaseEntityService<RequisitionOrder>
     @Autowired
     private BuildJobService releaseRecordService;
     @Autowired
-    private ReleaseVersionService versionService;
+    private VersionRecordService versionService;
 
     @Override
     protected BaseEntityDao<RequisitionOrder> getDao() {

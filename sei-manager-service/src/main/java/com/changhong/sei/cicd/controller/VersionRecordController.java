@@ -8,9 +8,9 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.cicd.api.ReleaseVersionApi;
 import com.changhong.sei.cicd.dto.ReleaseVersionDto;
 import com.changhong.sei.cicd.dto.ReleaseVersionRequisitionDto;
-import com.changhong.sei.cicd.entity.ReleaseVersion;
-import com.changhong.sei.cicd.entity.ReleaseVersionRequisition;
-import com.changhong.sei.cicd.service.ReleaseVersionService;
+import com.changhong.sei.cicd.entity.VersionRecord;
+import com.changhong.sei.cicd.entity.VersionRecordRequisition;
+import com.changhong.sei.cicd.service.VersionRecordService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 版本发布记录(ReleaseVersion)控制类
+ * 版本发布记录(VersionRecord)控制类
  *
  * @author sei
  * @since 2020-11-23 08:34:09
@@ -31,15 +31,15 @@ import java.util.stream.Collectors;
 @RestController
 @Api(value = "ReleaseVersionApi", tags = "版本发布记录服务")
 @RequestMapping(path = "releaseVersion", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ReleaseVersionController extends BaseEntityController<ReleaseVersion, ReleaseVersionDto> implements ReleaseVersionApi {
+public class VersionRecordController extends BaseEntityController<VersionRecord, ReleaseVersionDto> implements ReleaseVersionApi {
     /**
      * 服务器节点服务对象
      */
     @Autowired
-    private ReleaseVersionService service;
+    private VersionRecordService service;
 
     @Override
-    public BaseEntityService<ReleaseVersion> getService() {
+    public BaseEntityService<VersionRecord> getService() {
         return service;
     }
 
@@ -62,9 +62,9 @@ public class ReleaseVersionController extends BaseEntityController<ReleaseVersio
      */
     @Override
     public ResultData<PageResult<ReleaseVersionRequisitionDto>> findRequisitionByPage(Search search) {
-        PageResult<ReleaseVersionRequisition> pageResult = service.findRequisitionByPage(search);
+        PageResult<VersionRecordRequisition> pageResult = service.findRequisitionByPage(search);
         PageResult<ReleaseVersionRequisitionDto> result = new PageResult<>(pageResult);
-        List<ReleaseVersionRequisition> requisitions = pageResult.getRows();
+        List<VersionRecordRequisition> requisitions = pageResult.getRows();
         if (CollectionUtils.isNotEmpty(requisitions)) {
             List<ReleaseVersionRequisitionDto> dtos = requisitions.stream().map(e -> dtoModelMapper.map(e, ReleaseVersionRequisitionDto.class)).collect(Collectors.toList());
             result.setRows(dtos);

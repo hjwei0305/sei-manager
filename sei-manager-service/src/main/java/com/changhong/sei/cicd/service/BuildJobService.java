@@ -70,7 +70,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     @Autowired
     private JenkinsService jenkinsService;
     @Autowired
-    private ReleaseVersionService releaseVersionService;
+    private VersionRecordService releaseVersionService;
     @Autowired
     private ModelMapper modelMapper;
 

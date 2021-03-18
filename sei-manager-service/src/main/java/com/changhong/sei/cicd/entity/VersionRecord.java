@@ -11,16 +11,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 版本发布记录(ReleaseVersion)实体类
+ * 版本发布记录(VersionRecord)实体类
  *
  * @author sei
  * @since 2020-11-26 14:45:20
  */
 @Entity
-@Table(name = "cicd_release_version")
+@Table(name = "cicd_version_record")
 @DynamicInsert
 @DynamicUpdate
-public class ReleaseVersion extends BaseEntity implements IFrozen, Serializable {
+public class VersionRecord extends BaseEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_APP_ID = "appId";
     public static final String FIELD_MODULE_CODE = "moduleCode";

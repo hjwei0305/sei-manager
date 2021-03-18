@@ -10,8 +10,8 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.cicd.dao.ReleaseVersionDao;
-import com.changhong.sei.cicd.dao.ReleaseVersionRequisitionDao;
+import com.changhong.sei.cicd.dao.VersionRecordDao;
+import com.changhong.sei.cicd.dao.VersionRecordRequisitionDao;
 import com.changhong.sei.cicd.dto.*;
 import com.changhong.sei.cicd.entity.*;
 import com.changhong.sei.ge.entity.AppModule;
@@ -35,11 +35,11 @@ import java.util.Objects;
  * @since 2020-11-23 08:34:09
  */
 @Service("releaseVersionService")
-public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
+public class VersionRecordService extends BaseEntityService<VersionRecord> {
     @Autowired
-    private ReleaseVersionDao dao;
+    private VersionRecordDao dao;
     @Autowired
-    private ReleaseVersionRequisitionDao versionRequisitionDao;
+    private VersionRecordRequisitionDao versionRequisitionDao;
 
     @Autowired
     private AppModuleService moduleService;
@@ -52,7 +52,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
     private GitlabService gitlabService;
 
     @Override
-    protected BaseEntityDao<ReleaseVersion> getDao() {
+    protected BaseEntityDao<VersionRecord> getDao() {
         return dao;
     }
 
@@ -62,11 +62,11 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      * @param search 查询参数
      * @return 分页查询结果
      */
-    public PageResult<ReleaseVersionRequisition> findRequisitionByPage(Search search) {
+    public PageResult<VersionRecordRequisition> findRequisitionByPage(Search search) {
         if (Objects.isNull(search)) {
             search = Search.createSearch();
         }
-        search.addFilter(new SearchFilter(ReleaseVersionRequisition.APPLICANT_ACCOUNT, ContextUtil.getUserAccount()));
+        search.addFilter(new SearchFilter(VersionRecordRequisition.APPLICANT_ACCOUNT, ContextUtil.getUserAccount()));
 
         return versionRequisitionDao.findByPage(search);
     }
@@ -78,11 +78,11 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseVersionRequisitionDto> createRequisition(ReleaseVersion releaseVersion) {
+    public ResultData<ReleaseVersionRequisitionDto> createRequisition(VersionRecord releaseVersion) {
         // 重置版本
         releaseVersion.setVersion(releaseVersion.getRefTag() + "-Release");
         // 通过模块和版本检查是否重复申请
-        ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
+        VersionRecord existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
         if (Objects.nonNull(existed)) {
             return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
         }
@@ -90,7 +90,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         releaseVersion.setFrozen(Boolean.TRUE);
         // 保存应用模块
-        OperateResultWithData<ReleaseVersion> resultWithData = this.save(releaseVersion);
+        OperateResultWithData<VersionRecord> resultWithData = this.save(releaseVersion);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:应用版本申请
@@ -138,15 +138,15 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(ReleaseVersion releaseVersion) {
+    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(VersionRecord releaseVersion) {
         // 重置版本
         releaseVersion.setVersion(releaseVersion.getRefTag() + "-Release");
         // 通过模块和版本检查是否重复申请
-        ReleaseVersion existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
+        VersionRecord existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
         if (Objects.nonNull(existed)) {
             return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
         }
-        ReleaseVersion version = this.findOne(releaseVersion.getId());
+        VersionRecord version = this.findOne(releaseVersion.getId());
         if (Objects.isNull(version)) {
             return ResultData.fail("应用模块不存在!");
         }
@@ -167,7 +167,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         version.setRemark(releaseVersion.getRemark());
 
         // 保存应用模块
-        OperateResultWithData<ReleaseVersion> resultWithData = this.save(version);
+        OperateResultWithData<VersionRecord> resultWithData = this.save(version);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = requisitionOrderService.getByRelationId(version.getId());
             if (Objects.isNull(requisitionOrder)) {
@@ -228,7 +228,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> deleteRequisition(String id) {
-        ReleaseVersion version = this.findOne(id);
+        VersionRecord version = this.findOne(id);
         if (Objects.nonNull(version)) {
             if (version.getFrozen()) {
                 // 删除应用版本申请
@@ -255,7 +255,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updateFrozen(String id) {
-        ReleaseVersion version = dao.findOne(id);
+        VersionRecord version = dao.findOne(id);
         if (Objects.isNull(version)) {
             return ResultData.fail("版本申请单[" + id + "]不存在");
         }
@@ -322,11 +322,11 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
         }
     }
 
-    public ReleaseVersion getByVersion(String appId, String moduleCode, String version) {
+    public VersionRecord getByVersion(String appId, String moduleCode, String version) {
         Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(ReleaseVersion.FIELD_APP_ID, appId));
-        search.addFilter(new SearchFilter(ReleaseVersion.FIELD_MODULE_CODE, moduleCode));
-        search.addFilter(new SearchFilter(ReleaseVersion.FIELD_VERSION, version));
+        search.addFilter(new SearchFilter(VersionRecord.FIELD_APP_ID, appId));
+        search.addFilter(new SearchFilter(VersionRecord.FIELD_MODULE_CODE, moduleCode));
+        search.addFilter(new SearchFilter(VersionRecord.FIELD_VERSION, version));
         return dao.findFirstByFilters(search);
     }
 
@@ -343,7 +343,7 @@ public class ReleaseVersionService extends BaseEntityService<ReleaseVersion> {
             return ResultData.fail("发布记录不能为空.");
         }
 
-        ReleaseVersion version = this.getByVersion(record.getAppId(), record.getModuleCode(), record.getTagName());
+        VersionRecord version = this.getByVersion(record.getAppId(), record.getModuleCode(), record.getTagName());
         if (Objects.isNull(version)) {
             return ResultData.fail(record.getModuleCode() + "版本[" + record.getTagName() + "]不存在.");
         }
