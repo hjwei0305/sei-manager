@@ -1,11 +1,11 @@
-package com.changhong.sei.cicd.api;
+package com.changhong.sei.ge.api;
 
 import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.cicd.dto.ApplicationDto;
+import com.changhong.sei.ge.dto.ApplicationDto;
 import com.changhong.sei.cicd.dto.ApplicationRequisitionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;

@@ -1,9 +1,9 @@
-package com.changhong.sei.cicd.api;
+package com.changhong.sei.ge.api;
 
 import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.api.FindAllApi;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.cicd.dto.NodeDto;
+import com.changhong.sei.ge.dto.NodeDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

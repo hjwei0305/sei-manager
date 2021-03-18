@@ -1,11 +1,11 @@
-package com.changhong.sei.cicd.api;
+package com.changhong.sei.ge.api;
 
 import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.cicd.dto.AppModuleDto;
+import com.changhong.sei.ge.dto.AppModuleDto;
 import com.changhong.sei.cicd.dto.AppModuleRequisitionDto;
 import com.changhong.sei.cicd.dto.ModuleUser;
 import com.changhong.sei.manager.dto.UserDto;

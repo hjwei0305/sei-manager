@@ -1,8 +1,8 @@
-package com.changhong.sei.cicd.api;
+package com.changhong.sei.ge.api;
 
 import com.changhong.sei.core.api.BaseEntityApi;
 import com.changhong.sei.core.api.FindAllApi;
-import com.changhong.sei.cicd.dto.RuntimeEnvDto;
+import com.changhong.sei.ge.dto.RuntimeEnvDto;
 import org.springframework.cloud.openfeign.FeignClient;
 
 import javax.validation.Valid;

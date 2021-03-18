@@ -1,4 +1,4 @@
-package com.changhong.sei.cicd.dto;
+package com.changhong.sei.ge.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
