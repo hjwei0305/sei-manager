@@ -69,6 +69,8 @@ public class ProjectGroupDto extends BaseEntityDto implements TreeEntity<Project
     private String parentCode;
     @ApiModelProperty(value = "描述说明")
     private String remark;
+    @ApiModelProperty(value = "组路径")
+    private String groupPath;
 
     /**
      * 子节点列表
@@ -149,6 +151,14 @@ public class ProjectGroupDto extends BaseEntityDto implements TreeEntity<Project
 
     public void setParentCode(String parentCode) {
         this.parentCode = parentCode;
+    }
+
+    public String getGroupPath() {
+        return groupPath;
+    }
+
+    public void setGroupPath(String groupPath) {
+        this.groupPath = groupPath;
     }
 
     public String getRemark() {
