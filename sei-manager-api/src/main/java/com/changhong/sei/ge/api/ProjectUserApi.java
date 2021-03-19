@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 项目用户(ProjectUser)API
@@ -40,6 +41,17 @@ public interface ProjectUserApi {
     @PostMapping(path = "assign", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "批量分配应用模块用户", notes = "批量分配应用模块用户")
     ResultData<Void> assign(@RequestBody List<ProjectUserDto> users);
+
+    /**
+     * 按用户账号清单移除应用模块用户
+     *
+     * @param objectId 应用模块id
+     * @param accounts 用户账号
+     * @return 操作结果
+     */
+    @DeleteMapping(path = "cancelAssign/{objectId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "按用户账号清单移除应用模块用户", notes = "按用户账号清单移除应用模块用户")
+    ResultData<Void> cancelAssign(@PathVariable("objectId") String objectId, @RequestBody Set<String> accounts);
 
     /**
      * 获取未分配的用户

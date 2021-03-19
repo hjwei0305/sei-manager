@@ -94,6 +94,18 @@ public class ProjectUserController implements ProjectUserApi {
     }
 
     /**
+     * 按用户账号清单移除应用模块用户
+     *
+     * @param objectId 应用模块id
+     * @param accounts 用户账号
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> cancelAssign(String objectId, Set<String> accounts) {
+        return service.cancelAssign(objectId, accounts);
+    }
+
+    /**
      * 获取未分配的用户
      *
      * @param objectId 对象id

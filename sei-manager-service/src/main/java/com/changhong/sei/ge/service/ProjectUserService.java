@@ -107,6 +107,26 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
     }
 
     /**
+     * 按用户账号清单移除应用模块用户
+     *
+     * @param objectId 应用模块id
+     * @param accounts 用户账号
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> cancelAssign(String objectId, Set<String> accounts) {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(ProjectUser.FIELD_OBJECT_ID, objectId));
+        search.addFilter(new SearchFilter(ProjectUser.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
+        List<ProjectUser> users = dao.findByFilters(search);
+        if (CollectionUtils.isNotEmpty(users)) {
+            Set<String> ids = users.stream().map(ProjectUser::getId).collect(Collectors.toSet());
+            this.delete(ids);
+        }
+        return ResultData.success();
+    }
+
+    /**
      * 获取未分配的用户
      *
      * @param objectId 对象id
