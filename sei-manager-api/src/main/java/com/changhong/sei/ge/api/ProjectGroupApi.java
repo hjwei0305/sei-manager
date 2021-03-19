@@ -40,11 +40,9 @@ public interface ProjectGroupApi extends BaseTreeApi<ProjectGroupDto> {
     ResultData<List<ProjectGroupDto>> findByNameLike(@RequestParam("name") String name);
 
     /**
-     * 获取gitlab群组清单
-     *
-     * @return gitlab群组清单
+     * 同步gitlab群组
      */
-    @GetMapping(path = "getGitlabGroup")
-    @ApiOperation(value = "获取gitlab群组清单", notes = "获取gitlab群组清单")
-    List<ProjectGroupDto> getGitlabGroup();
+    @GetMapping(path = "syncGitlabData")
+    @ApiOperation(value = "同步gitlab群组", notes = "同步gitlab群组")
+    ResultData<Void> syncGitlabData();
 }

@@ -60,13 +60,11 @@ public class ProjectGroupController extends BaseTreeController<ProjectGroup, Pro
     }
 
     /**
-     * 获取gitlab群组清单
-     *
-     * @return gitlab群组清单
+     * 同步gitlab群组
      */
     @Override
-    public List<ProjectGroupDto> getGitlabGroup() {
-        return null;
+    public ResultData<Void> syncGitlabData() {
+        return service.syncGitlabData();
     }
 
 }

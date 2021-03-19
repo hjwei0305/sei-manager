@@ -186,6 +186,9 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
         return super.preDelete(s);
     }
 
+    /**
+     * 同步gitlab群组
+     */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> syncGitlabData() {
         List<ProjectGroup> groupList = dao.findAll();
