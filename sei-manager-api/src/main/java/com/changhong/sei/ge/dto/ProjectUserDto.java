@@ -1,5 +1,6 @@
 package com.changhong.sei.ge.dto;
 
+import com.changhong.sei.common.ObjectType;
 import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,108 +15,66 @@ import io.swagger.annotations.ApiModelProperty;
 public class ProjectUserDto extends BaseEntityDto {
     private static final long serialVersionUID = 630890453379821715L;
     /**
-     * 阶段名称
+     * 用户账号
      */
-    @ApiModelProperty(value = "阶段名称")
-    private String name;
+    @ApiModelProperty(value = "用户账号")
+    private String account;
     /**
-     * 是否冻结
+     * 用户名称
      */
-    @ApiModelProperty(value = "是否冻结")
-    private Boolean frozen = Boolean.FALSE;
+    @ApiModelProperty(value = "用户名称")
+    private String userName;
     /**
-     * 地址
+     * 对象id
      */
-    @ApiModelProperty(value = "地址")
-    private String address;
+    @ApiModelProperty(value = "对象id")
+    private String objectId;
     /**
-     * 环境
+     * 对象id
      */
-    @ApiModelProperty(value = "环境代码")
-    private String envCode;
-    /**
-     * 环境
-     */
-    @ApiModelProperty(value = "环境名称")
-    private String envName;
-    /**
-     * 凭证id
-     */
-    @ApiModelProperty(value = "凭证id")
-    private String certificateId;
-    /**
-     * 凭证名称
-     */
-    @ApiModelProperty(value = "凭证名称")
-    private String certificateName;
-    /**
-     * 描述说明
-     */
-    @ApiModelProperty(value = "描述说明")
-    private String remark;
+    @ApiModelProperty(value = "对象名")
+    private String objectName;
 
-    public String getName() {
-        return name;
+    @ApiModelProperty(value = "对象类型: APPLICATION, MODULE")
+    private ObjectType type = ObjectType.MODULE;
+
+    public String getAccount() {
+        return account;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
-    public Boolean getFrozen() {
-        return frozen;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFrozen(Boolean frozen) {
-        this.frozen = frozen;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getAddress() {
-        return address;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
-    public String getEnvCode() {
-        return envCode;
+    public String getObjectName() {
+        return objectName;
     }
 
-    public void setEnvCode(String envCode) {
-        this.envCode = envCode;
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
-    public String getEnvName() {
-        return envName;
+    public ObjectType getType() {
+        return type;
     }
 
-    public void setEnvName(String envName) {
-        this.envName = envName;
+    public void setType(ObjectType type) {
+        this.type = type;
     }
-
-    public String getCertificateId() {
-        return certificateId;
-    }
-
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
-    }
-
-    public String getCertificateName() {
-        return certificateName;
-    }
-
-    public void setCertificateName(String certificateName) {
-        this.certificateName = certificateName;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
 }

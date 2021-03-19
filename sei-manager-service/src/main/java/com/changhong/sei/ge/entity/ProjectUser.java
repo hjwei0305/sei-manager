@@ -1,12 +1,11 @@
 package com.changhong.sei.ge.entity;
 
+import com.changhong.sei.common.ObjectType;
 import com.changhong.sei.core.entity.BaseAuditableEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -21,97 +20,51 @@ import java.io.Serializable;
 @DynamicUpdate
 public class ProjectUser extends BaseAuditableEntity implements Serializable {
     private static final long serialVersionUID = 954549891503436485L;
-    public static final String FIELD_GROUP_CODE = "groupCode";
-    public static final String FIELD_APP_ID = "appId";
-    public static final String FIELD_MODULE_ID = "moduleId";
+    public static final String FIELD_OBJECT_ID = "objectId";
     public static final String FIELD_ACCOUNT = "account";
+    public static final String FIELD_TYPE = "type";
+
     /**
-     * 阶段名称
-     */
-    @Column(name = "group_code")
-    private String groupCode;
-    /**
-     * 是否冻结
-     */
-    @Column(name = "group_name")
-    private String groupName;
-    /**
-     * 地址
-     */
-    @Column(name = "app_id")
-    private String appId;
-    /**
-     * 环境
-     */
-    @Column(name = "app_name")
-    private String appName;
-    /**
-     * 环境
-     */
-    @Column(name = "module_id")
-    private String moduleId;
-    /**
-     * 凭证id
-     */
-    @Column(name = "module_name")
-    private String moduleName;
-    /**
-     * 凭证名称
+     * 用户账号
      */
     @Column(name = "account")
     private String account;
     /**
-     * 描述说明
+     * 用户名称
      */
     @Column(name = "user_name")
     private String userName;
+    /**
+     * 对象id
+     */
+    @Column(name = "object_id")
+    private String objectId;
+    /**
+     * 对象名称
+     */
+    @Column(name = "object_name")
+    private String objectName;
+    /**
+     * 对象类型
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "object_type")
+    private ObjectType type;
 
-    public String getGroupCode() {
-        return groupCode;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setGroupCode(String groupCode) {
-        this.groupCode = groupCode;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getObjectName() {
+        return objectName;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public String getModuleId() {
-        return moduleId;
-    }
-
-    public void setModuleId(String moduleId) {
-        this.moduleId = moduleId;
-    }
-
-    public String getModuleName() {
-        return moduleName;
-    }
-
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
     public String getAccount() {
@@ -128,5 +81,13 @@ public class ProjectUser extends BaseAuditableEntity implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public ObjectType getType() {
+        return type;
+    }
+
+    public void setType(ObjectType type) {
+        this.type = type;
     }
 }

@@ -373,7 +373,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         final String gitId = module.getGitId();
         ResultData<List<ProjectUser>> resultData = gitlabService.getProjectUser(gitId);
         if (resultData.successful()) {
-            List<ModuleUser> moduleUsers;
             Set<String> accountSet = resultData.getData().stream().map(ProjectUser::getUsername).collect(Collectors.toSet());
             search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accountSet, SearchFilter.Operator.NOTIN));
             PageResult<User> pageResult = userService.findByPage(search);
