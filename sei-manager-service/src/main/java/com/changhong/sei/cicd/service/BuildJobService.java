@@ -50,7 +50,7 @@ import java.util.concurrent.CompletableFuture;
  * @author sei
  * @since 2020-11-23 08:34:09
  */
-@Service("buildJobService")
+@Service
 public class BuildJobService extends BaseEntityService<BuildJob> {
     private static final Logger LOG = LoggerFactory.getLogger(BuildJobService.class);
     @Autowired
@@ -184,6 +184,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 dto.setAppId(releaseRecord.getAppId());
                 dto.setAppName(releaseRecord.getAppName());
                 dto.setGitId(releaseRecord.getGitId());
+                dto.setModuleId(releaseRecord.getModuleId());
+                dto.setModuleCode(releaseRecord.getModuleCode());
                 dto.setModuleName(releaseRecord.getModuleName());
                 dto.setTagName(releaseRecord.getTagName());
                 dto.setName(releaseRecord.getName());
@@ -203,18 +205,18 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     /**
      * 创建应用申请单
      *
-     * @param releaseRecord 应用
+     * @param buildJob 应用
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<BuildJobRequisitionDto> modifyRequisition(BuildJob releaseRecord) {
+    public ResultData<BuildJobRequisitionDto> modifyRequisition(BuildJob buildJob) {
         // 通过模块和tag检查是否重复申请
-        BuildJob existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
+        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getTagName());
         if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getTagName() + "]存在申请记录,请不要重复申请.");
+            return ResultData.fail("应用模块[" + buildJob.getModuleCode() + "]对应标签[" + buildJob.getTagName() + "]存在申请记录,请不要重复申请.");
         }
 
-        BuildJob entity = dao.findOne(releaseRecord.getId());
+        BuildJob entity = dao.findOne(buildJob.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
         }
@@ -223,19 +225,19 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             return ResultData.fail("应用已审核,不允许编辑!");
         }
 
-        entity.setEnvCode(releaseRecord.getEnvCode());
-        entity.setEnvName(releaseRecord.getEnvName());
-        entity.setAppId(releaseRecord.getAppId());
-        entity.setAppName(releaseRecord.getAppName());
-        entity.setGitId(releaseRecord.getGitId());
-        entity.setModuleId(releaseRecord.getModuleId());
-        entity.setModuleCode(releaseRecord.getModuleCode());
-        entity.setModuleName(releaseRecord.getModuleName());
-        entity.setTagName(releaseRecord.getTagName());
-        entity.setName(releaseRecord.getName());
-        entity.setExpCompleteTime(releaseRecord.getExpCompleteTime());
+        entity.setEnvCode(buildJob.getEnvCode());
+        entity.setEnvName(buildJob.getEnvName());
+        entity.setAppId(buildJob.getAppId());
+        entity.setAppName(buildJob.getAppName());
+        entity.setGitId(buildJob.getGitId());
+        entity.setModuleId(buildJob.getModuleId());
+        entity.setModuleCode(buildJob.getModuleCode());
+        entity.setModuleName(buildJob.getModuleName());
+        entity.setTagName(buildJob.getTagName());
+        entity.setName(buildJob.getName());
+        entity.setExpCompleteTime(buildJob.getExpCompleteTime());
         // 更新发版记录
-        String content = releaseRecord.getRemark();
+        String content = buildJob.getRemark();
         if (StringUtils.isNotBlank(content)) {
             MessageContent messageContent;
             String messageId = entity.getMessageId();
@@ -274,8 +276,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             // 发布记录id
             requisitionOrder.setRelationId(entity.getId());
             // 申请摘要
-            requisitionOrder.setSummary(releaseRecord.getAppName().concat("-").concat(releaseRecord.getAppName())
-                    .concat("[").concat(releaseRecord.getName()).concat("]"));
+            requisitionOrder.setSummary(buildJob.getAppName().concat("-").concat(buildJob.getAppName())
+                    .concat("[").concat(buildJob.getName()).concat("]"));
 
             ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
@@ -287,18 +289,20 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 dto.setApplicationTime(requisition.getApplicationTime());
                 dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
-                dto.setRelationId(releaseRecord.getId());
+                dto.setRelationId(buildJob.getId());
 
-                dto.setEnvCode(releaseRecord.getEnvCode());
-                dto.setEnvName(releaseRecord.getEnvName());
-                dto.setAppId(releaseRecord.getAppId());
-                dto.setAppName(releaseRecord.getAppName());
-                dto.setGitId(releaseRecord.getGitId());
-                dto.setModuleName(releaseRecord.getModuleName());
-                dto.setTagName(releaseRecord.getTagName());
-                dto.setName(releaseRecord.getName());
+                dto.setEnvCode(buildJob.getEnvCode());
+                dto.setEnvName(buildJob.getEnvName());
+                dto.setAppId(buildJob.getAppId());
+                dto.setAppName(buildJob.getAppName());
+                dto.setGitId(buildJob.getGitId());
+                dto.setModuleId(buildJob.getModuleId());
+                dto.setModuleCode(buildJob.getModuleCode());
+                dto.setModuleName(buildJob.getModuleName());
+                dto.setTagName(buildJob.getTagName());
+                dto.setName(buildJob.getName());
                 dto.setRemark(content);
-                dto.setExpCompleteTime(releaseRecord.getExpCompleteTime());
+                dto.setExpCompleteTime(buildJob.getExpCompleteTime());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚

@@ -36,7 +36,7 @@ import java.util.Objects;
  * @author sei
  * @since 2020-11-23 08:34:09
  */
-@Service("releaseVersionService")
+@Service
 public class VersionRecordService extends BaseEntityService<VersionRecord> {
     @Autowired
     private VersionRecordDao dao;
@@ -59,7 +59,6 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
     protected BaseEntityDao<VersionRecord> getDao() {
         return dao;
     }
-
 
     /**
      * 基于主键查询单一数据对象
@@ -143,6 +142,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
                 dto.setAppId(versionRecord.getAppId());
                 dto.setAppName(versionRecord.getAppName());
                 dto.setGitId(versionRecord.getGitId());
+                dto.setModuleId(versionRecord.getModuleId());
                 dto.setModuleCode(versionRecord.getModuleCode());
                 dto.setModuleName(versionRecord.getModuleName());
                 dto.setRefTag(versionRecord.getRefTag());
@@ -187,6 +187,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
         version.setAppId(releaseVersion.getAppId());
         version.setAppName(releaseVersion.getAppName());
         version.setGitId(releaseVersion.getGitId());
+        version.setModuleId(releaseVersion.getModuleId());
         version.setModuleCode(releaseVersion.getModuleCode());
         version.setModuleName(releaseVersion.getModuleName());
 
@@ -250,6 +251,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
                 dto.setAppId(releaseVersion.getAppId());
                 dto.setAppName(releaseVersion.getAppName());
                 dto.setGitId(releaseVersion.getGitId());
+                dto.setModuleId(releaseVersion.getModuleId());
                 dto.setModuleCode(releaseVersion.getModuleCode());
                 dto.setModuleName(releaseVersion.getModuleName());
                 dto.setRefTag(releaseVersion.getRefTag());
