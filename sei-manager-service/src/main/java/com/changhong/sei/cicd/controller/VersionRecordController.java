@@ -1,9 +1,12 @@
 package com.changhong.sei.cicd.controller;
 
+import com.changhong.sei.common.AuthorityUtil;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.cicd.api.VersionRecordApi;
 import com.changhong.sei.cicd.dto.VersionRecordDto;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +56,14 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      */
     @Override
     public ResultData<PageResult<VersionRecordDto>> findByPage(Search search) {
+//        if (Objects.isNull(search)) {
+//            search = Search.createSearch();
+//        }
+//        // 添加数据权限过滤
+//        Set<String> ids = AuthorityUtil.getAuthorizedData();
+//        if (CollectionUtils.isNotEmpty(ids)) {
+//            search.addFilter(new SearchFilter(BaseEntity.ID, ids));
+//        }
         return convertToDtoPageResult(service.findByPage(search));
     }
 

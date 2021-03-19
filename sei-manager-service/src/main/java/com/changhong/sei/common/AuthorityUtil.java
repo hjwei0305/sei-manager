@@ -3,7 +3,11 @@ package com.changhong.sei.common;
 import com.changhong.sei.core.context.ApplicationContextHolder;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.ge.service.ProjectUserService;
+import com.changhong.sei.manager.vo.UserPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -18,7 +22,13 @@ public final class AuthorityUtil {
      * 获取当前用户有权限的对象
      */
     public static Set<String> getAuthorizedData() {
-        ProjectUserService service = ApplicationContextHolder.getBean(ProjectUserService.class);
-        return service.getAssignedObjects(ContextUtil.getUserAccount());
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        UserPrincipal userPrincipal = (UserPrincipal) securityContext.getAuthentication().getPrincipal();
+        if (userPrincipal.getIsAdmin()) {
+            return new HashSet<>();
+        } else {
+            ProjectUserService service = ApplicationContextHolder.getBean(ProjectUserService.class);
+            return service.getAssignedObjects(ContextUtil.getUserAccount());
+        }
     }
 }

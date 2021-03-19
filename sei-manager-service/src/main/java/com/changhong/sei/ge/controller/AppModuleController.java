@@ -2,10 +2,13 @@ package com.changhong.sei.ge.controller;
 
 import com.changhong.sei.cicd.dto.AppModuleRequisitionDto;
 import com.changhong.sei.cicd.entity.AppModuleRequisition;
+import com.changhong.sei.common.AuthorityUtil;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.ge.api.AppModuleApi;
 import com.changhong.sei.ge.dto.AppModuleDto;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -56,30 +60,15 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
      */
     @Override
     public ResultData<PageResult<AppModuleDto>> findByPage(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        // 添加数据权限过滤
+        Set<String> ids = AuthorityUtil.getAuthorizedData();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            search.addFilter(new SearchFilter(BaseEntity.ID, ids));
+        }
         return convertToDtoPageResult(service.findByPage(search));
-//        PageResult<AppModule> pageResult = service.findByPage(search);
-//        PageResult<AppModuleDto> result = new PageResult<>(pageResult);
-//
-//        List<AppModule> appModules = pageResult.getRows();
-//        if (CollectionUtils.isNotEmpty(appModules)) {
-//            Map<String, String> appMap = new HashMap<>();
-//            List<Application> applications = applicationService.findAll();
-//            if (CollectionUtils.isNotEmpty(applications)) {
-//                appMap = applications.stream().collect(Collectors.toMap(Application::getId, Application::getName));
-//            }
-//
-//            AppModuleDto moduleDto;
-//            List<AppModuleDto> dtos = new ArrayList<>();
-//            for (AppModule module : appModules) {
-//                moduleDto = dtoModelMapper.map(module, AppModuleDto.class);
-//                moduleDto.setAppName(appMap.get(module.getAppId()));
-//
-//                dtos.add(moduleDto);
-//            }
-//            result.setRows(dtos);
-//        }
-//
-//        return ResultData.success(result);
     }
 
     /**

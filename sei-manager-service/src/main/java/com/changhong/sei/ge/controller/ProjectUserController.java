@@ -4,6 +4,7 @@ import com.changhong.sei.common.ObjectType;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.ge.api.ProjectUserApi;
 import com.changhong.sei.ge.dto.ProjectUserDto;
 import com.changhong.sei.ge.entity.Application;
@@ -22,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -124,7 +122,17 @@ public class ProjectUserController implements ProjectUserApi {
         List<ProjectUserDto> result;
         List<ProjectUser> userLists = service.getAssignedUser(objectId);
         if (CollectionUtils.isNotEmpty(userLists)) {
-            result = userLists.stream().map(o -> modelMapper.map(o, ProjectUserDto.class)).collect(Collectors.toList());
+            Set<String> accounts = userLists.stream().map(ProjectUser::getAccount).collect(Collectors.toSet());
+            Search search = Search.createSearch();
+            search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
+            List<User> users = userService.findByFilters(search);
+            Map<String, String> userMap = users.stream().collect(Collectors.toMap(User::getAccount, User::getNickname));
+            result = userLists.stream().map(o -> {
+                ProjectUserDto userDto = new ProjectUserDto();
+                userDto.setAccount(o.getAccount());
+                userDto.setUserName(userMap.get(o.getAccount()));
+                return userDto;
+            }).collect(Collectors.toList());
         } else {
             result = new ArrayList<>();
         }
