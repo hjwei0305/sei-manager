@@ -103,6 +103,7 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
         if (StringUtils.isBlank(path)) {
             path = name.toLowerCase();
         }
+        entity.setGroupPath(path);
         if (StringUtils.isBlank(entity.getId())) {
             // gitlab的群组id
             String groupId = entity.getCode();
