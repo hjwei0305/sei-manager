@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @since 2020-11-23 08:34:09
  */
 @Entity
-@Table(name = "project_user")
+@Table(name = "ge_project_user")
 @DynamicInsert
 @DynamicUpdate
 public class ProjectUser extends BaseAuditableEntity implements Serializable {
