@@ -172,8 +172,9 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
         search.addFilter(new SearchFilter(ProjectUser.FIELD_OBJECT_ID, objectId));
         List<ProjectUser> projectUsers = dao.findByFilters(search);
         Set<String> accounts = projectUsers.stream().map(ProjectUser::getAccount).collect(Collectors.toSet());
-
-        searchUser.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.NOTIN));
+        if (CollectionUtils.isNotEmpty(accounts)) {
+            searchUser.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.NOTIN));
+        }
         PageResult<User> pageResult = userService.findByPage(searchUser);
         PageResult<ProjectUserDto> userPageResult = new PageResult<>(pageResult);
         if (pageResult.getTotal() > 0) {
