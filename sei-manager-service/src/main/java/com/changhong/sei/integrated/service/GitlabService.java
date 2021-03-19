@@ -438,13 +438,12 @@ public class GitlabService {
      *
      * @return 返回创建的gitlab的组实例
      */
-    public ResultData<String> createGroup(String name, String path, String remark) {
+    public ResultData<String> createGroup(Group group) {
+        if (Objects.isNull(group)) {
+            return ResultData.fail("gitlab组不能为空.");
+        }
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
             GroupApi groupApi = gitLabApi.getGroupApi();
-            Group group = new Group();
-            group.setName(name);
-            group.setPath(path.toLowerCase());
-            group.setDescription(remark);
             group = groupApi.addGroup(group);
             if (Objects.nonNull(group)) {
                 return ResultData.success(String.valueOf(group.getId()));
@@ -469,7 +468,7 @@ public class GitlabService {
             if (resultData.successful()) {
                 Group group = resultData.getData();
                 group.setDescription(remark);
-                group = groupApi.updateGroup(group);
+                groupApi.updateGroup(group);
                 return ResultData.success();
             } else {
                 return ResultData.fail(resultData.getMessage());

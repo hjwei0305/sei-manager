@@ -2,6 +2,7 @@ package com.changhong.sei.ge.service;
 
 import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.ge.dto.ProjectGroupDto;
+import com.changhong.sei.ge.entity.ProjectGroup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,13 @@ class ProjectGroupServiceTest extends BaseUnitTest {
     }
 
     @Test
+    void syncGitlabData() {
+         service.syncGitlabData();
+    }
+
+    @Test
     void getGitlabGroupTree() {
-        List<ProjectGroupDto> nodes = service.getGitlabGroupTree();
+        List<ProjectGroup> nodes = service.getGitlabGroupTree();
         System.out.println(nodes);
     }
 }

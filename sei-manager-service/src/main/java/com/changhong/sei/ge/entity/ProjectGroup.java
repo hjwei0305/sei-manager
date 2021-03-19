@@ -66,6 +66,8 @@ public class ProjectGroup extends BaseAuditableEntity implements TreeEntity<Proj
     private String parentId;
     @Column(name = "parent_code", length = 20)
     private String parentCode;
+    @Column(name = "group_path")
+    private String groupPath;
     @Column(name = "remark")
     private String remark;
 
@@ -148,6 +150,14 @@ public class ProjectGroup extends BaseAuditableEntity implements TreeEntity<Proj
 
     public void setParentCode(String parentCode) {
         this.parentCode = parentCode;
+    }
+
+    public String getGroupPath() {
+        return groupPath;
+    }
+
+    public void setGroupPath(String groupPath) {
+        this.groupPath = groupPath;
     }
 
     public String getRemark() {

@@ -66,7 +66,7 @@ public class ProjectGroupController extends BaseTreeController<ProjectGroup, Pro
      */
     @Override
     public List<ProjectGroupDto> getGitlabGroup() {
-        return service.getGitlabGroupTree();
+        return null;
     }
 
 }

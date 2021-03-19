@@ -90,7 +90,11 @@ public class GitlabServiceTest extends BaseUnitTest {
 
     @Test
     public void createGroup() {
-        ResultData<String> resultData = service.createGroup("OPS-TEST", "ops-test", "ops测试");
+        Group group = new Group();
+        group.setName("OPS-TEST");
+        group.setPath("ops-test");
+        group.setDescription("ops测试");
+        ResultData<String> resultData = service.createGroup(group);
         System.out.println(resultData);
     }
 

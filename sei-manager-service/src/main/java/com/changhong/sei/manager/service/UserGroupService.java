@@ -35,97 +35,10 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
     private UserGroupDao dao;
     @Autowired
     private UserGroupUserService userGroupUserService;
-    @Autowired
-    private ApplicationService applicationService;
-    @Autowired
-    private GitlabService gitlabService;
 
     @Override
     protected BaseEntityDao<UserGroup> getDao() {
         return dao;
-    }
-
-    /**
-     * 数据保存操作
-     */
-    @Override
-    public OperateResultWithData<UserGroup> save(UserGroup entity) {
-        String name = entity.getName();
-        if (StringUtils.isBlank(name)) {
-            return OperateResultWithData.operationFailure("用户组名称不能为空.");
-        }
-        long currentTimeMillis = System.currentTimeMillis();
-
-        String path = name.toLowerCase();
-        entity.setUpdateTime(currentTimeMillis);
-        if (StringUtils.isBlank(entity.getId())) {
-            entity.setCreateTime(currentTimeMillis);
-            // gitlab的群组id
-            String groupId = entity.getCode();
-            if (StringUtils.isNotBlank(groupId)) {
-                ResultData<Group> resultData = gitlabService.getGroup(groupId);
-                if (resultData.failed()) {
-                    ResultData<String> result = gitlabService.createGroup(name, path, entity.getDescription());
-                    if (result.successful()) {
-                        entity.setCode(result.getData());
-                    } else {
-                        // 事务回滚
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                        return OperateResultWithData.operationFailure(result.getMessage());
-                    }
-                }
-            } else {
-                // 检查path是否在gitlab存在
-                ResultData<Group> resultData = gitlabService.getGroup(path);
-                if (resultData.successful()) {
-                    Group gitGroup = resultData.getData();
-                    entity.setCode(String.valueOf(gitGroup.getId()));
-                } else {
-                    ResultData<String> result = gitlabService.createGroup(name, path, entity.getDescription());
-                    if (result.successful()) {
-                        entity.setCode(result.getData());
-                    } else {
-                        // 事务回滚
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                        return OperateResultWithData.operationFailure(resultData.getMessage());
-                    }
-                }
-            }
-        } else {
-            ResultData<Void> resultData = gitlabService.updateGroup(path, entity.getDescription());
-            if (resultData.failed()) {
-                // 事务回滚
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return OperateResultWithData.operationFailure(resultData.getMessage());
-            }
-        }
-        return super.save(entity);
-    }
-
-    /**
-     * 删除数据保存数据之前额外操作回调方法 子类根据需要覆写添加逻辑即可
-     *
-     * @param s 待删除数据对象主键
-     */
-    @Override
-    protected OperateResult preDelete(String s) {
-        UserGroup userGroup = dao.findOne(s);
-        if (Objects.isNull(userGroup)) {
-            return OperateResult.operationFailure("用户组[" + s + "]不存在！");
-        }
-        List<UserGroup> list = userGroupUserService.getParentsFromChildId(s);
-        if (list != null && list.size() > 0) {
-            // 用户组存在已经分配的用户，禁止删除！
-            return OperateResult.operationFailure("用户组存在已经分配的用户，禁止删除！");
-        }
-        if (applicationService.isExistsByProperty(Application.FIELD_GROUP_CODE, userGroup.getCode())) {
-            return OperateResult.operationFailure("[" + userGroup.getCode() + "]应用存在应用模块,不允许删除!");
-        }
-//        ResultData<Void> resultData = gitlabService.deleteGroup(userGroup.getCode());
-//        if (resultData.failed()) {
-//            return OperateResult.operationFailure(resultData.getMessage());
-//        }
-        return super.preDelete(s);
     }
 
     /**
