@@ -109,21 +109,27 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
             search.clearAll();
             search.addFilter(new SearchFilter(AppModule.ID, objIds, SearchFilter.Operator.IN));
             List<AppModule> moduleList = moduleService.findByFilters(search);
-            Map<String, String> moduleMap = moduleList.stream().collect(Collectors.toMap(AppModule::getId, AppModule::getGitId));
+            Map<String, AppModule> moduleMap = moduleList.stream().collect(Collectors.toMap(AppModule::getId, o -> o));
 
             for (ProjectUser user : users) {
                 ObjectType type = user.getType();
                 if (StringUtils.isNotBlank(user.getAccount()) && Objects.nonNull(type)
                         && !accounts.contains(user.getAccount() + "|" + type.name())) {
-                    String gitId = moduleMap.get(user.getObjectId());
-                    if (StringUtils.isNotBlank(gitId)) {
-                        ResultData<Integer> resultData = gitlabService.addProjectUser(gitId, user.getAccount());
-                        if (resultData.successful()) {
-                            user.setGitId(resultData.getData());
-                            this.save(user);
+                    AppModule module = moduleMap.get(user.getObjectId());
+                    if (Objects.nonNull(module)) {
+                        if (StringUtils.isNotBlank(module.getGitId())) {
+                            ResultData<Integer> resultData = gitlabService.addProjectUser(module.getGitId(), user.getAccount());
+                            if (resultData.successful()) {
+                                user.setGitId(resultData.getData());
+                                this.save(user);
+                            } else {
+                                return ResultData.fail(resultData.getMessage());
+                            }
                         } else {
-                            return ResultData.fail(resultData.getMessage());
+                            return ResultData.fail("应用模块["+module.getName()+"]还未创建git项目.");
                         }
+                    } else {
+                        return ResultData.fail("应用模块不存在.");
                     }
                 }
             }
@@ -168,9 +174,7 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
      * @return 返回已分配的用户清单
      */
     public PageResult<ProjectUserDto> getUnassignedUser(String objectId, Search searchUser) {
-        Search search = Search.createSearch();
-        search.addFilter(new SearchFilter(ProjectUser.FIELD_OBJECT_ID, objectId));
-        List<ProjectUser> projectUsers = dao.findByFilters(search);
+        List<ProjectUser> projectUsers = dao.findListByProperty(ProjectUser.FIELD_OBJECT_ID, objectId);
         Set<String> accounts = projectUsers.stream().map(ProjectUser::getAccount).collect(Collectors.toSet());
         if (CollectionUtils.isNotEmpty(accounts)) {
             searchUser.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.NOTIN));

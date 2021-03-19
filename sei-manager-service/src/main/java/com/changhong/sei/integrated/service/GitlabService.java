@@ -238,9 +238,9 @@ public class GitlabService {
             if (optionalUser.isPresent()) {
                 int userId = optionalUser.get().getId();
                 ProjectApi api = gitLabApi.getProjectApi();
-                Member member = api.getMember(projectIdOrPath, userId);
-                if (Objects.isNull(member)) {
-                    member = api.addMember(projectIdOrPath, userId, AccessLevel.DEVELOPER);
+                Optional<Member> optional = api.getOptionalMember(projectIdOrPath, userId);
+                if (!optional.isPresent()) {
+                    Member member = api.addMember(projectIdOrPath, userId, AccessLevel.DEVELOPER);
                     if (Objects.isNull(member)) {
                         return ResultData.fail("添加项目用户失败");
                     }

@@ -1,15 +1,18 @@
 package com.changhong.sei.ge.controller;
 
+import com.changhong.sei.cicd.dto.ApplicationRequisitionDto;
+import com.changhong.sei.cicd.entity.ApplicationRequisition;
+import com.changhong.sei.common.AuthorityUtil;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.ge.api.ApplicationApi;
 import com.changhong.sei.ge.dto.ApplicationDto;
-import com.changhong.sei.cicd.dto.ApplicationRequisitionDto;
 import com.changhong.sei.ge.entity.Application;
-import com.changhong.sei.cicd.entity.ApplicationRequisition;
 import com.changhong.sei.ge.service.ApplicationService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +55,14 @@ public class ApplicationController extends BaseEntityController<Application, App
      */
     @Override
     public ResultData<PageResult<ApplicationDto>> findByPage(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        // 添加数据权限过滤
+        Set<String> ids = AuthorityUtil.getAuthorizedData();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            search.addFilter(new SearchFilter(BaseEntity.ID, ids));
+        }
         return convertToDtoPageResult(service.findByPage(search));
     }
 
