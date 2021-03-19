@@ -228,26 +228,24 @@ public class GitlabService {
      * 添加项目用户
      *
      * @param projectIdOrPath git项目id
-     * @param accounts        用户账号
+     * @param account         用户账号
      * @return 操作结果
      */
-    public ResultData<Integer> addProjectUser(String projectIdOrPath, String... accounts) {
+    public ResultData<Integer> addProjectUser(String projectIdOrPath, String account) {
         try (GitLabApi gitLabApi = this.getGitLabApi()) {
             UserApi userApi = gitLabApi.getUserApi();
-            for (String account : accounts) {
-                Optional<User> optionalUser = userApi.getOptionalUser(account);
-                if (optionalUser.isPresent()) {
-                    int userId = optionalUser.get().getId();
-                    ProjectApi api = gitLabApi.getProjectApi();
-                    Member member = api.addMember(projectIdOrPath, userId, AccessLevel.DEVELOPER);
-                    if (Objects.isNull(member)) {
-                        return ResultData.fail("添加项目用户失败");
-                    }
-                } else {
-                    return ResultData.fail("用户[" + account + "]不在gitlab中");
+            Optional<User> optionalUser = userApi.getOptionalUser(account);
+            if (optionalUser.isPresent()) {
+                int userId = optionalUser.get().getId();
+                ProjectApi api = gitLabApi.getProjectApi();
+                Member member = api.addMember(projectIdOrPath, userId, AccessLevel.DEVELOPER);
+                if (Objects.isNull(member)) {
+                    return ResultData.fail("添加项目用户失败");
                 }
+                return ResultData.success(userId);
+            } else {
+                return ResultData.fail("用户[" + account + "]不在gitlab中");
             }
-            return ResultData.success();
         } catch (Exception e) {
             LOG.error("添加项目用户异常", e);
             return ResultData.fail("添加项目用户异常:" + e.getMessage());

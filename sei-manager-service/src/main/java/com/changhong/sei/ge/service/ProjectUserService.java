@@ -9,20 +9,18 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.ge.dao.ProjectUserDao;
 import com.changhong.sei.ge.dto.ProjectUserDto;
+import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.ProjectUser;
+import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.UserService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +36,9 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
     @Autowired
     private UserService userService;
     @Autowired
-    private ModelMapper modelMapper;
+    private AppModuleService moduleService;
+    @Autowired
+    private GitlabService gitlabService;
 
     @Override
     protected BaseEntityDao<ProjectUser> getDao() {
@@ -51,7 +51,7 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
      * @return 返回分配结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> assign(String account, String userName, String objectId, String objectName, ObjectType type) {
+    public ResultData<Void> assign(String account, String objectId, String objectName, ObjectType type) {
         if (StringUtils.isBlank(account)) {
             return ResultData.fail("分配的账号不能为空");
         }
@@ -72,11 +72,23 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
             user.setObjectId(objectId);
             user.setObjectName(objectName);
             user.setAccount(account);
-            user.setUserName(userName);
-            this.save(user);
+
+            if (ObjectType.MODULE == type) {
+                AppModule module = moduleService.findOne(user.getObjectId());
+                if (Objects.nonNull(module)) {
+                    ResultData<Integer> resultData = gitlabService.addProjectUser(module.getGitId(), account);
+                    if (resultData.successful()) {
+                        user.setGitId(resultData.getData());
+                        this.save(user);
+                    } else {
+                        return ResultData.fail(resultData.getMessage());
+                    }
+                }
+            } else {
+                this.save(user);
+            }
         }
         return ResultData.success();
-
     }
 
     /**
@@ -93,11 +105,26 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
             search.addFilter(new SearchFilter(ProjectUser.FIELD_OBJECT_ID, objIds, SearchFilter.Operator.IN));
             List<ProjectUser> userList = dao.findByFilters(search);
             Set<String> accounts = userList.stream().map(u -> u.getAccount() + "|" + u.getType().name()).collect(Collectors.toSet());
+
+            search.clearAll();
+            search.addFilter(new SearchFilter(AppModule.ID, objIds, SearchFilter.Operator.IN));
+            List<AppModule> moduleList = moduleService.findByFilters(search);
+            Map<String, String> moduleMap = moduleList.stream().collect(Collectors.toMap(AppModule::getId, AppModule::getGitId));
+
             for (ProjectUser user : users) {
                 ObjectType type = user.getType();
                 if (StringUtils.isNotBlank(user.getAccount()) && Objects.nonNull(type)
                         && !accounts.contains(user.getAccount() + "|" + type.name())) {
-                    this.save(user);
+                    String gitId = moduleMap.get(user.getObjectId());
+                    if (StringUtils.isNotBlank(gitId)) {
+                        ResultData<Integer> resultData = gitlabService.addProjectUser(gitId, user.getAccount());
+                        if (resultData.successful()) {
+                            user.setGitId(resultData.getData());
+                            this.save(user);
+                        } else {
+                            return ResultData.fail(resultData.getMessage());
+                        }
+                    }
                 }
             }
             return ResultData.success();
@@ -115,11 +142,19 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> cancelAssign(String objectId, Set<String> accounts) {
+        AppModule module = moduleService.findOne(objectId);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + objectId + "]不存在.");
+        }
+
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(ProjectUser.FIELD_OBJECT_ID, objectId));
         search.addFilter(new SearchFilter(ProjectUser.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
         List<ProjectUser> users = dao.findByFilters(search);
         if (CollectionUtils.isNotEmpty(users)) {
+            // 移除gitlab用户
+            gitlabService.removeProjectUser(module.getGitId(), users.stream().map(ProjectUser::getGitId).distinct().toArray(Integer[]::new));
+
             Set<String> ids = users.stream().map(ProjectUser::getId).collect(Collectors.toSet());
             this.delete(ids);
         }

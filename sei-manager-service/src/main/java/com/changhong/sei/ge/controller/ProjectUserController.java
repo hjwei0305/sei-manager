@@ -1,12 +1,9 @@
 package com.changhong.sei.ge.controller;
 
 import com.changhong.sei.common.ObjectType;
-import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.dto.serach.SearchFilter;
-import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.ge.api.ProjectUserApi;
 import com.changhong.sei.ge.dto.ProjectUserDto;
 import com.changhong.sei.ge.entity.Application;
@@ -77,7 +74,7 @@ public class ProjectUserController implements ProjectUserApi {
             return ResultData.fail("应用[" + appId + "]不存在");
         }
 
-        return service.assign(account, user.getNickname(), appId, application.getName(), ObjectType.APPLICATION);
+        return service.assign(account, appId, application.getName(), ObjectType.APPLICATION);
     }
 
     /**

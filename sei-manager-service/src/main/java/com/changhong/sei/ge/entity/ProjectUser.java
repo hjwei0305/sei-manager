@@ -30,10 +30,10 @@ public class ProjectUser extends BaseAuditableEntity implements Serializable {
     @Column(name = "account")
     private String account;
     /**
-     * 用户名称
+     * 用户gitId
      */
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "git_id")
+    private Integer gitId;
     /**
      * 对象id
      */
@@ -75,12 +75,12 @@ public class ProjectUser extends BaseAuditableEntity implements Serializable {
         this.account = account;
     }
 
-    public String getUserName() {
-        return userName;
+    public Integer getGitId() {
+        return gitId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setGitId(Integer gitId) {
+        this.gitId = gitId;
     }
 
     public ObjectType getType() {

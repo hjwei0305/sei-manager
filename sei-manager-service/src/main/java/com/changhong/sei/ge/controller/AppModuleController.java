@@ -1,5 +1,7 @@
 package com.changhong.sei.ge.controller;
 
+import com.changhong.sei.cicd.dto.AppModuleRequisitionDto;
+import com.changhong.sei.cicd.entity.AppModuleRequisition;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
@@ -7,15 +9,10 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.ge.api.AppModuleApi;
 import com.changhong.sei.ge.dto.AppModuleDto;
-import com.changhong.sei.cicd.dto.AppModuleRequisitionDto;
-import com.changhong.sei.cicd.dto.ModuleUser;
 import com.changhong.sei.ge.entity.AppModule;
-import com.changhong.sei.cicd.entity.AppModuleRequisition;
 import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.ge.service.AppModuleService;
 import com.changhong.sei.ge.service.ApplicationService;
-import com.changhong.sei.manager.dto.UserDto;
-import com.changhong.sei.manager.entity.User;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -162,62 +158,5 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     @Override
     public ResultData<Void> deleteRequisition(String id) {
         return service.deleteRequisition(id);
-    }
-
-    /**
-     * 获取应用模块用户
-     *
-     * @param id 应用模块id
-     * @return 操作结果
-     */
-    @Override
-    public ResultData<List<ModuleUser>> getModuleUsers(String id) {
-        return service.getModuleUsers(id);
-    }
-
-    /**
-     * 获取应用模块未分配的用户
-     *
-     * @param id     应用模块id
-     * @param search
-     * @return 操作结果
-     */
-    @Override
-    public ResultData<PageResult<UserDto>> getUnassignedUsers(String id, Search search) {
-        ResultData<PageResult<User>> resultData = service.getUnassignedUsers(id, search);
-        if (resultData.successful()) {
-            List<UserDto> userDtoList;
-            PageResult<User> userPageResult = resultData.getData();
-            PageResult<UserDto> pageResult = new PageResult<>(userPageResult);
-            userDtoList = userPageResult.getRows().stream().map(user -> dtoModelMapper.map(user, UserDto.class)).collect(Collectors.toList());
-            pageResult.setRows(userDtoList);
-            return ResultData.success(pageResult);
-        } else {
-            return ResultData.fail(resultData.getMessage());
-        }
-    }
-
-    /**
-     * 添加应用模块用户
-     *
-     * @param id       应用模块id
-     * @param accounts 用户account
-     * @return 操作结果
-     */
-    @Override
-    public ResultData<Void> addModuleUser(String id, Set<String> accounts) {
-        return service.addModuleUser(id, accounts);
-    }
-
-    /**
-     * 按用户账号清单移除应用模块用户
-     *
-     * @param id         应用模块id
-     * @param gitUserIds git用户id
-     * @return 操作结果
-     */
-    @Override
-    public ResultData<Void> removeModuleUser(String id, Set<Integer> gitUserIds) {
-        return service.removeModuleUser(id, gitUserIds);
     }
 }
