@@ -4,6 +4,7 @@ import com.changhong.sei.core.api.BaseTreeApi;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.ge.dto.ProjectGroupDto;
 import com.changhong.sei.manager.dto.MenuDto;
+import com.changhong.sei.manager.dto.UserGroupDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,4 +38,13 @@ public interface ProjectGroupApi extends BaseTreeApi<ProjectGroupDto> {
     @GetMapping(path = "findByNameLike")
     @ApiOperation(value = "根据名称模糊查询", notes = "根据名称模糊查询")
     ResultData<List<ProjectGroupDto>> findByNameLike(@RequestParam("name") String name);
+
+    /**
+     * 获取gitlab群组清单
+     *
+     * @return gitlab群组清单
+     */
+    @GetMapping(path = "getGitlabGroup")
+    @ApiOperation(value = "获取gitlab群组清单", notes = "获取gitlab群组清单")
+    List<ProjectGroupDto> getGitlabGroup();
 }

@@ -147,19 +147,4 @@ public class UserGroupService extends BaseEntityService<UserGroup> {
     public List<User> getChildrenFromParentId(String userId) {
         return userGroupUserService.getChildrenFromParentId(userId);
     }
-
-    /**
-     * 获取gitlab群组清单
-     */
-    public List<UserGroupDto> getGitlabGroup() {
-        List<UserGroupDto> dtos = new ArrayList<>();
-        ResultData<List<Group>> resultData = gitlabService.getGroups();
-        if (resultData.successful()) {
-            List<Group> groups = resultData.getData();
-            for (Group group : groups) {
-                dtos.add(new UserGroupDto(String.valueOf(group.getId()), group.getName(), group.getDescription()));
-            }
-        }
-        return dtos;
-    }
 }

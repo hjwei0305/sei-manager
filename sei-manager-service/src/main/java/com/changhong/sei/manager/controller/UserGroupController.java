@@ -60,16 +60,6 @@ public class UserGroupController extends BaseEntityController<UserGroup, UserGro
     }
 
     /**
-     * 获取gitlab群组清单
-     *
-     * @return gitlab群组清单
-     */
-    @Override
-    public List<UserGroupDto> getGitlabGroup() {
-        return service.getGitlabGroup();
-    }
-
-    /**
      * 保存多个用户组
      *
      * @param dtoList 用户组DTO

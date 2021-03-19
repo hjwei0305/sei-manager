@@ -58,4 +58,15 @@ public class ProjectGroupController extends BaseTreeController<ProjectGroup, Pro
         List<ProjectGroupDto> dtos = menus.stream().map(this::convertToDto).collect(Collectors.toList());
         return ResultData.success(dtos);
     }
+
+    /**
+     * 获取gitlab群组清单
+     *
+     * @return gitlab群组清单
+     */
+    @Override
+    public List<ProjectGroupDto> getGitlabGroup() {
+        return service.getGitlabGroupTree();
+    }
+
 }

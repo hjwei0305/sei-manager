@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @author sei
  * @since 2020-11-23 08:34:09
  */
-@Service("nodeService")
+@Service
 public class ProjectUserService extends BaseEntityService<ProjectUser> {
     @Autowired
     private ProjectUserDao dao;

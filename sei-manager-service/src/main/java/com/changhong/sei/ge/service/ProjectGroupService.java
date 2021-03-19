@@ -1,19 +1,20 @@
 package com.changhong.sei.ge.service;
 
 import com.changhong.sei.core.dao.BaseTreeDao;
+import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseTreeService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.ge.dao.ProjectGroupDao;
+import com.changhong.sei.ge.dto.ProjectGroupDto;
 import com.changhong.sei.ge.entity.ProjectGroup;
-import com.changhong.sei.manager.entity.Menu;
+import com.changhong.sei.integrated.service.GitlabService;
 import org.apache.commons.lang3.StringUtils;
+import org.gitlab4j.api.models.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -27,6 +28,8 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
 
     @Autowired
     private ProjectGroupDao dao;
+    @Autowired
+    private GitlabService gitlabService;
 
     @Override
     protected BaseTreeDao<ProjectGroup> getDao() {
@@ -100,4 +103,54 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
         }
     }
 
+
+    /**
+     * 获取gitlab群组清单
+     */
+    public List<ProjectGroupDto> getGitlabGroupTree() {
+        List<ProjectGroupDto> result = new ArrayList<>();
+        ResultData<List<Group>> resultData = gitlabService.getGroups();
+        if (resultData.successful()) {
+            ProjectGroupDto groupDto;
+            List<Group> groups = resultData.getData();
+            List<ProjectGroupDto> dtos = new ArrayList<>();
+            for (Group group : groups) {
+                Integer parentCode = group.getParentId();
+                groupDto = new ProjectGroupDto();
+                groupDto.setCode(String.valueOf(group.getId()));
+                groupDto.setName(group.getName());
+                groupDto.setParentCode(Objects.isNull(parentCode) ? null : String.valueOf(parentCode));
+                groupDto.setRemark(group.getDescription());
+                dtos.add(groupDto);
+            }
+
+            for (ProjectGroupDto group : dtos) {
+                if (StringUtils.isBlank(group.getParentCode())) {
+                    findChildren(group, dtos);
+                    result.add(group);
+                }
+            }
+            result.stream().sorted(Comparator.comparing(ProjectGroupDto::getCode)).collect(Collectors.toList());
+        }
+        return result;
+    }
+
+    /**
+     * 递归查找子节点并设置子节点
+     *
+     * @param treeNode 树形节点（顶级节点）
+     * @param nodes    节点清单
+     * @return 树形节点
+     */
+    private ProjectGroupDto findChildren(ProjectGroupDto treeNode, List<ProjectGroupDto> nodes) {
+        for (ProjectGroupDto node : nodes) {
+            if (StringUtils.equals(treeNode.getCode(), node.getParentCode())) {
+                if (Objects.isNull(treeNode.getChildren())) {
+                    treeNode.setChildren(new ArrayList<>());
+                }
+                treeNode.getChildren().add(findChildren(node, nodes));
+            }
+        }
+        return treeNode;
+    }
 }

@@ -65,6 +65,10 @@ public class ProjectGroupDto extends BaseEntityDto implements TreeEntity<Project
      */
     @ApiModelProperty(value = "父节点id")
     private String parentId;
+    @ApiModelProperty(value = "父节点代码")
+    private String parentCode;
+    @ApiModelProperty(value = "描述说明")
+    private String remark;
 
     /**
      * 子节点列表
@@ -137,6 +141,22 @@ public class ProjectGroupDto extends BaseEntityDto implements TreeEntity<Project
     @Override
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getParentCode() {
+        return parentCode;
+    }
+
+    public void setParentCode(String parentCode) {
+        this.parentCode = parentCode;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     @Override

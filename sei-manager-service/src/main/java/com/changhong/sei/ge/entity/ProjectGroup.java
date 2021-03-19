@@ -2,6 +2,7 @@ package com.changhong.sei.ge.entity;
 
 import com.changhong.sei.core.dto.TreeEntity;
 import com.changhong.sei.core.entity.BaseAuditableEntity;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -63,6 +64,10 @@ public class ProjectGroup extends BaseAuditableEntity implements TreeEntity<Proj
      */
     @Column(name = "parent_id", length = 36)
     private String parentId;
+    @Column(name = "parent_code", length = 20)
+    private String parentCode;
+    @Column(name = "remark")
+    private String remark;
 
     /**
      * 子节点列表
@@ -135,6 +140,22 @@ public class ProjectGroup extends BaseAuditableEntity implements TreeEntity<Proj
     @Override
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getParentCode() {
+        return parentCode;
+    }
+
+    public void setParentCode(String parentCode) {
+        this.parentCode = parentCode;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     @Override
