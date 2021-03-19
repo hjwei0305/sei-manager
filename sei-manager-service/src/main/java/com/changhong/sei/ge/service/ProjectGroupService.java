@@ -6,7 +6,6 @@ import com.changhong.sei.core.service.BaseTreeService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.ge.dao.ProjectGroupDao;
-import com.changhong.sei.ge.dto.ProjectGroupDto;
 import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.ge.entity.ProjectGroup;
 import com.changhong.sei.integrated.service.GitlabService;
@@ -100,7 +99,10 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
             return OperateResultWithData.operationFailure("项目组名称不能为空.");
         }
 
-        String path = name.toLowerCase();
+        String path = entity.getGroupPath();
+        if (StringUtils.isBlank(path)) {
+            path = name.toLowerCase();
+        }
         if (StringUtils.isBlank(entity.getId())) {
             // gitlab的群组id
             String groupId = entity.getCode();
@@ -109,7 +111,7 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
                 if (resultData.failed()) {
                     Group group = new Group();
                     group.setName(name);
-                    group.setPath(path.toLowerCase());
+                    group.setPath(path);
                     String parentCode = entity.getParentCode();
                     if (StringUtils.isNotBlank(parentCode) && StringUtils.isNumeric(parentCode)) {
                         group.setParentId(Integer.valueOf(parentCode));
@@ -133,7 +135,7 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
                 } else {
                     Group group = new Group();
                     group.setName(name);
-                    group.setPath(path.toLowerCase());
+                    group.setPath(path);
                     String parentCode = entity.getParentCode();
                     if (StringUtils.isNotBlank(parentCode) && StringUtils.isNumeric(parentCode)) {
                         group.setParentId(Integer.valueOf(parentCode));
