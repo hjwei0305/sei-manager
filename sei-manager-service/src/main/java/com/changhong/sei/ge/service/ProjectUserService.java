@@ -174,7 +174,7 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
         Set<String> accounts = projectUsers.stream().map(ProjectUser::getAccount).collect(Collectors.toSet());
 
         searchUser.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.NOTIN));
-        PageResult<User> pageResult = userService.findByPage(search);
+        PageResult<User> pageResult = userService.findByPage(searchUser);
         PageResult<ProjectUserDto> userPageResult = new PageResult<>(pageResult);
         if (pageResult.getTotal() > 0) {
             List<ProjectUserDto> list = pageResult.getRows().stream().map(o -> {
