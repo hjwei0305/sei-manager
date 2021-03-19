@@ -26,6 +26,7 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_GIT_ID = "gitId";
     public static final String FIELD_TAG_NAME = "tagName";
+    public static final String FIELD_MODULE_ID = "moduleId";
     public static final String FIELD_MODULE_CODE = "moduleCode";
     /**
      * 类型
@@ -62,6 +63,11 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
      */
     @Column(name = "git_id")
     private String gitId;
+    /**
+     * 模块id
+     */
+    @Column(name = "module_id")
+    private String moduleId;
     /**
      * 模块代码
      */
@@ -191,6 +197,14 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
 
     public void setGitId(String gitId) {
         this.gitId = gitId;
+    }
+
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     public String getModuleCode() {

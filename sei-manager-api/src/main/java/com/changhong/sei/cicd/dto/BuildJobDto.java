@@ -45,6 +45,11 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "模块git id", required = true)
     private String gitId;
     /**
+     * 模块id
+     */
+    @ApiModelProperty(value = "模块id")
+    private String moduleId;
+    /**
      * 模块名称
      */
     @ApiModelProperty(value = "模块代码", required = true)
@@ -146,6 +151,14 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
 
     public void setGitId(String gitId) {
         this.gitId = gitId;
+    }
+
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     public String getModuleCode() {

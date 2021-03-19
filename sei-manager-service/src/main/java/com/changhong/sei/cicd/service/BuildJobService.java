@@ -228,6 +228,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         entity.setAppId(releaseRecord.getAppId());
         entity.setAppName(releaseRecord.getAppName());
         entity.setGitId(releaseRecord.getGitId());
+        entity.setModuleId(releaseRecord.getModuleId());
         entity.setModuleCode(releaseRecord.getModuleCode());
         entity.setModuleName(releaseRecord.getModuleName());
         entity.setTagName(releaseRecord.getTagName());
@@ -651,6 +652,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setAppId(module.getAppId());
                 record.setAppName(module.getAppName());
                 record.setGitId(gitId);
+                record.setModuleId(module.getId());
                 record.setModuleCode(module.getCode());
                 record.setModuleName(module.getName());
                 record.setTagName("dev");

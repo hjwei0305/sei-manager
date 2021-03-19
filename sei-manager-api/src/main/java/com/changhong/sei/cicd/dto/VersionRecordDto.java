@@ -33,6 +33,11 @@ public class VersionRecordDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "模块git id")
     private String gitId;
     /**
+     * 模块id
+     */
+    @ApiModelProperty(value = "模块id")
+    private String moduleId;
+    /**
      * 模块代码
      */
     @ApiModelProperty(value = "模块代码")
@@ -116,6 +121,14 @@ public class VersionRecordDto extends BaseEntityDto implements Serializable {
 
     public void setGitId(String gitId) {
         this.gitId = gitId;
+    }
+
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     public String getModuleCode() {

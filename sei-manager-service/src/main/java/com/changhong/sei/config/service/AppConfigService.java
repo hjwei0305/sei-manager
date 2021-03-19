@@ -1,5 +1,6 @@
 package com.changhong.sei.config.service;
 
+import com.changhong.sei.common.AuthorityUtil;
 import com.changhong.sei.common.UseStatus;
 import com.changhong.sei.common.YamlTransferUtils;
 import com.changhong.sei.config.dao.AppConfigDao;
@@ -14,6 +15,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.dto.serach.SearchOrder;
+import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
@@ -73,6 +75,11 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         search.addFilter(new SearchFilter(AppModule.FROZEN, Boolean.FALSE));
         if (StringUtils.isNotBlank(groupCode)) {
             search.addFilter(new SearchFilter(AppModule.FIELD_GROUP_CODE, groupCode));
+        }
+        // 添加数据权限过滤
+        Set<String> ids = AuthorityUtil.getAuthorizedData();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            search.addFilter(new SearchFilter(AppModule.ID, ids));
         }
         search.addSortOrder(new SearchOrder(AppModule.FIELD_CODE));
         appModules = appModuleService.findByFilters(search);

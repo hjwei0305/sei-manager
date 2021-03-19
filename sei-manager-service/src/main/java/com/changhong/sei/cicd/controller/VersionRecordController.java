@@ -56,14 +56,14 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      */
     @Override
     public ResultData<PageResult<VersionRecordDto>> findByPage(Search search) {
-//        if (Objects.isNull(search)) {
-//            search = Search.createSearch();
-//        }
-//        // 添加数据权限过滤
-//        Set<String> ids = AuthorityUtil.getAuthorizedData();
-//        if (CollectionUtils.isNotEmpty(ids)) {
-//            search.addFilter(new SearchFilter(BaseEntity.ID, ids));
-//        }
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        // 添加数据权限过滤
+        Set<String> ids = AuthorityUtil.getAuthorizedData();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            search.addFilter(new SearchFilter(BaseEntity.ID, ids));
+        }
         return convertToDtoPageResult(service.findByPage(search));
     }
 

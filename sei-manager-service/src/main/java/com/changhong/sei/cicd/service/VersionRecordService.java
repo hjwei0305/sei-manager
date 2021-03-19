@@ -316,6 +316,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
             return ResultData.fail(module.getCode() + "-版本[" + version.getVersion() + "]发布失败: " + resultData.getMessage());
         }
         Release gitlabRelease = resultData.getData();
+        version.setModuleId(module.getId());
         version.setCommitId(gitlabRelease.getCommit().getId());
         // 创建时间
         version.setCreateTime(LocalDateTime.now());
@@ -343,6 +344,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
             record.setAppId(version.getAppId());
             record.setAppName(version.getAppName());
             record.setGitId(version.getGitId());
+            record.setModuleId(version.getModuleId());
             record.setModuleCode(version.getModuleCode());
             record.setModuleName(version.getModuleName());
             record.setTagName(version.getVersion());
