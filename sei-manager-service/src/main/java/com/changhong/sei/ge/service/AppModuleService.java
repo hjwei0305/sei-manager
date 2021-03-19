@@ -1,5 +1,12 @@
 package com.changhong.sei.ge.service;
 
+import com.changhong.sei.cicd.dao.AppModuleRequisitionDao;
+import com.changhong.sei.cicd.dto.AppModuleRequisitionDto;
+import com.changhong.sei.cicd.dto.ApplyType;
+import com.changhong.sei.cicd.dto.ApprovalStatus;
+import com.changhong.sei.cicd.entity.AppModuleRequisition;
+import com.changhong.sei.cicd.entity.RequisitionOrder;
+import com.changhong.sei.cicd.service.RequisitionOrderService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
@@ -9,34 +16,20 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.cicd.service.RequisitionOrderService;
 import com.changhong.sei.ge.dao.AppModuleDao;
-import com.changhong.sei.cicd.dao.AppModuleRequisitionDao;
-import com.changhong.sei.cicd.dto.AppModuleRequisitionDto;
-import com.changhong.sei.cicd.dto.ApplyType;
-import com.changhong.sei.cicd.dto.ApprovalStatus;
-import com.changhong.sei.cicd.dto.ModuleUser;
-import com.changhong.sei.cicd.entity.*;
 import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
-import com.changhong.sei.manager.entity.User;
-import com.changhong.sei.manager.service.UserService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.gitlab4j.api.models.ProjectUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 /**
@@ -55,8 +48,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     private RequisitionOrderService requisitionOrderService;
     @Autowired
     private ApplicationService applicationService;
-    @Autowired
-    private UserService userService;
     @Autowired
     private GitlabService gitlabService;
 
@@ -328,58 +319,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      */
     public int updateVersion(String gitId, String version) {
         return dao.updateVersion(gitId, version);
-    }
-
-    /**
-     * 获取应用模块用户
-     *
-     * @param id 应用模块id
-     * @return 操作结果
-     */
-    public ResultData<List<ModuleUser>> getModuleUsers(String id) {
-        AppModule module = this.findOne(id);
-        if (Objects.isNull(module)) {
-            return ResultData.fail("应用模块[" + id + "]不存在.");
-        }
-        final String gitId = module.getGitId();
-        ResultData<List<ProjectUser>> resultData = gitlabService.getProjectUser(gitId);
-        if (resultData.successful()) {
-            List<ProjectUser> list = resultData.getData();
-            List<ModuleUser> moduleUsers = list.stream().map(o -> {
-                ModuleUser user = new ModuleUser();
-                user.setGitProjectId(gitId);
-                user.setAccount(o.getUsername());
-                user.setName(o.getName());
-                user.setGitUserId(o.getId());
-                return user;
-            }).collect(Collectors.toList());
-            return ResultData.success(moduleUsers);
-        } else {
-            return ResultData.fail(resultData.getMessage());
-        }
-    }
-
-    /**
-     * 获取应用模块未分配的用户
-     *
-     * @param id 应用模块id
-     * @return 操作结果
-     */
-    public ResultData<PageResult<User>> getUnassignedUsers(String id, Search search) {
-        AppModule module = this.findOne(id);
-        if (Objects.isNull(module)) {
-            return ResultData.fail("应用模块[" + id + "]不存在.");
-        }
-        final String gitId = module.getGitId();
-        ResultData<List<ProjectUser>> resultData = gitlabService.getProjectUser(gitId);
-        if (resultData.successful()) {
-            Set<String> accountSet = resultData.getData().stream().map(ProjectUser::getUsername).collect(Collectors.toSet());
-            search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accountSet, SearchFilter.Operator.NOTIN));
-            PageResult<User> pageResult = userService.findByPage(search);
-            return ResultData.success(pageResult);
-        } else {
-            return ResultData.fail(resultData.getMessage());
-        }
     }
 
 }
