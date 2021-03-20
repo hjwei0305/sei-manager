@@ -53,6 +53,10 @@ public class Application extends BaseAuditableEntity implements IFrozen, Seriali
      */
     @Column(name = "group_name")
     private String groupName;
+    @Column(name = "manager_account")
+    private String managerAccount;
+    @Column(name = "manager_account_name")
+    private String managerAccountName;
     /**
      * 是否冻结
      */
@@ -115,5 +119,21 @@ public class Application extends BaseAuditableEntity implements IFrozen, Seriali
     @Override
     public void setFrozen(Boolean frozen) {
         this.frozen = frozen;
+    }
+
+    public String getManagerAccount() {
+        return managerAccount;
+    }
+
+    public void setManagerAccount(String managerAccount) {
+        this.managerAccount = managerAccount;
+    }
+
+    public String getManagerAccountName() {
+        return managerAccountName;
+    }
+
+    public void setManagerAccountName(String managerAccountName) {
+        this.managerAccountName = managerAccountName;
     }
 }

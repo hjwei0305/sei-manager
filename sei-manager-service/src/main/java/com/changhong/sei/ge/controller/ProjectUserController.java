@@ -138,4 +138,28 @@ public class ProjectUserController implements ProjectUserApi {
         }
         return ResultData.success(result);
     }
+
+    /**
+     * 获取有权限的项目组id
+     * 数据权限检查用
+     *
+     * @param account 账号
+     * @return 返回有权限的项目组id
+     */
+    @Override
+    public ResultData<Set<String>> getAssignedGroupIds(String account) {
+        return ResultData.success(service.getAssignedGroupIds(account));
+    }
+
+    /**
+     * 获取有权限的应用id
+     * 数据权限检查用
+     *
+     * @param account 账号
+     * @return 返回有权限的应用id
+     */
+    @Override
+    public ResultData<Set<String>> getAssignedAppIds(String account) {
+        return ResultData.success(service.getAssignedAppIds(account));
+    }
 }

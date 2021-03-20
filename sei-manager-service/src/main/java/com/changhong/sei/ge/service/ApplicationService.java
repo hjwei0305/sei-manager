@@ -1,5 +1,13 @@
 package com.changhong.sei.ge.service;
 
+import com.changhong.sei.cicd.dao.ApplicationRequisitionDao;
+import com.changhong.sei.cicd.dto.ApplicationRequisitionDto;
+import com.changhong.sei.cicd.dto.ApplyType;
+import com.changhong.sei.cicd.dto.ApprovalStatus;
+import com.changhong.sei.cicd.entity.ApplicationRequisition;
+import com.changhong.sei.cicd.entity.RequisitionOrder;
+import com.changhong.sei.cicd.service.RequisitionOrderService;
+import com.changhong.sei.common.ObjectType;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
@@ -9,16 +17,10 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.cicd.service.RequisitionOrderService;
 import com.changhong.sei.ge.dao.ApplicationDao;
-import com.changhong.sei.cicd.dao.ApplicationRequisitionDao;
-import com.changhong.sei.cicd.dto.ApplicationRequisitionDto;
-import com.changhong.sei.cicd.dto.ApplyType;
-import com.changhong.sei.cicd.dto.ApprovalStatus;
 import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.Application;
-import com.changhong.sei.cicd.entity.ApplicationRequisition;
-import com.changhong.sei.cicd.entity.RequisitionOrder;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,7 @@ import java.util.Objects;
  * @author sei
  * @since 2020-10-30 15:20:57
  */
-@Service("applicationService")
+@Service
 public class ApplicationService extends BaseEntityService<Application> {
     @Autowired
     private ApplicationDao dao;
@@ -66,7 +68,12 @@ public class ApplicationService extends BaseEntityService<Application> {
         if (appModuleService.isExistsByProperty(AppModule.FIELD_APP_ID, id)) {
             return OperateResult.operationFailure("[" + id + "]应用存在应用模块,不允许删除!");
         }
-        return super.preDelete(id);
+        OperateResult result = super.preDelete(id);
+        if (result.successful()) {
+            // 移除应用管理员授权
+            ContextUtil.getBean(ProjectUserService.class).cancelAssign(app.getId(), Sets.newHashSet(app.getManagerAccount()));
+        }
+        return result;
     }
 
     /**
@@ -249,6 +256,8 @@ public class ApplicationService extends BaseEntityService<Application> {
         if (Objects.nonNull(application)) {
             application.setFrozen(Boolean.FALSE);
         }
+        // 默认将申请人作为应用的管理员
+        ContextUtil.getBean(ProjectUserService.class).assign(application.getCreatorAccount(), application.getId(), application.getName(), ObjectType.APPLICATION);
         OperateResultWithData<Application> result = this.save(application);
         if (result.successful()) {
             return ResultData.success();

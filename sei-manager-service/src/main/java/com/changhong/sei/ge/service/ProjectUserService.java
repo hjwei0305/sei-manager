@@ -1,6 +1,7 @@
 package com.changhong.sei.ge.service;
 
 import com.changhong.sei.common.ObjectType;
+import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
@@ -10,10 +11,14 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.ge.dao.ProjectUserDao;
 import com.changhong.sei.ge.dto.ProjectUserDto;
 import com.changhong.sei.ge.entity.AppModule;
+import com.changhong.sei.ge.entity.Application;
+import com.changhong.sei.ge.entity.ProjectGroup;
 import com.changhong.sei.ge.entity.ProjectUser;
 import com.changhong.sei.integrated.service.GitlabService;
+import com.changhong.sei.manager.commom.Constants;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.UserService;
+import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +35,21 @@ import java.util.stream.Collectors;
  * @since 2020-11-23 08:34:09
  */
 @Service
-public class ProjectUserService extends BaseEntityService<ProjectUser> {
+public class ProjectUserService extends BaseEntityService<ProjectUser> implements Constants {
     @Autowired
     private ProjectUserDao dao;
     @Autowired
     private UserService userService;
     @Autowired
+    private GitlabService gitlabService;
+    @Autowired
+    private ProjectGroupService projectGroupService;
+    @Autowired
+    private ApplicationService applicationService;
+    @Autowired
     private AppModuleService moduleService;
     @Autowired
-    private GitlabService gitlabService;
+    private CacheBuilder cacheBuilder;
 
     @Override
     protected BaseEntityDao<ProjectUser> getDao() {
@@ -126,7 +137,7 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
                                 return ResultData.fail(resultData.getMessage());
                             }
                         } else {
-                            return ResultData.fail("应用模块["+module.getName()+"]还未创建git项目.");
+                            return ResultData.fail("应用模块[" + module.getName() + "]还未创建git项目.");
                         }
                     } else {
                         return ResultData.fail("应用模块不存在.");
@@ -206,18 +217,120 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> {
     }
 
     /**
-     * 获取已分配的对象
+     * 获取有权限的项目组id
      * 数据权限检查用
      *
      * @param account 账号
-     * @return 返回已分配的对象清单
+     * @return 返回有权限的项目组id
      */
-    public Set<String> getAssignedObjects(String account) {
-        List<ProjectUser> projectUsers = dao.findListByProperty(ProjectUser.FIELD_ACCOUNT, account);
-        if (CollectionUtils.isNotEmpty(projectUsers)) {
-            return projectUsers.stream().map(ProjectUser::getObjectId).collect(Collectors.toSet());
+    public Set<String> getAssignedGroupIds(String account) {
+        Set<String> groupIds;
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(ProjectUser.FIELD_ACCOUNT, account));
+        search.addFilter(new SearchFilter(ProjectUser.FIELD_TYPE, ObjectType.PROJECT));
+        List<ProjectUser> userList = dao.findByFilters(search);
+        if (CollectionUtils.isNotEmpty(userList)) {
+            // 有权限的项目组
+            groupIds = userList.stream().map(ProjectUser::getObjectId).collect(Collectors.toSet());
         } else {
-            return new HashSet<>();
+            groupIds = new HashSet<>();
         }
+        return groupIds;
+    }
+
+    /**
+     * 获取有权限的应用id
+     * 数据权限检查用
+     *
+     * @param account 账号
+     * @return 返回有权限的应用id
+     */
+    public Set<String> getAssignedAppIds(String account) {
+        Set<String> appIdSet = cacheBuilder.get(REDIS_AUTHORIZED_APP_KEY + account);
+        if (CollectionUtils.isEmpty(appIdSet)) {
+            appIdSet = new HashSet<>();
+            Search search = Search.createSearch();
+            search.addFilter(new SearchFilter(ProjectUser.FIELD_ACCOUNT, account));
+            search.addFilter(new SearchFilter(ProjectUser.FIELD_TYPE, Sets.newHashSet(ObjectType.PROJECT, ObjectType.APPLICATION), SearchFilter.Operator.IN));
+            List<ProjectUser> userList = dao.findByFilters(search);
+            if (CollectionUtils.isNotEmpty(userList)) {
+                // 获取有权限的应用
+                appIdSet.addAll(userList.stream().filter(u -> ObjectType.APPLICATION == u.getType()).map(ProjectUser::getObjectId).collect(Collectors.toSet()));
+                // 有权限的项目组
+                Set<String> groupIds = userList.stream().filter(u -> ObjectType.PROJECT == u.getType()).map(ProjectUser::getObjectId).collect(Collectors.toSet());
+                if (CollectionUtils.isNotEmpty(groupIds)) {
+                    List<ProjectGroup> groupList = new ArrayList<>();
+                    for (String groupId : groupIds) {
+                        // 获取子组
+                        groupList.addAll(projectGroupService.getChildrenNodes(groupId));
+                    }
+                    if (CollectionUtils.isNotEmpty(groupList)) {
+                        Set<String> groupCodes = groupList.stream().map(ProjectGroup::getCode).collect(Collectors.toSet());
+                        search.clearAll();
+                        search.addFilter(new SearchFilter(Application.FIELD_GROUP_CODE, groupCodes, SearchFilter.Operator.IN));
+                        List<Application> applicationList = applicationService.findByFilters(search);
+                        if (CollectionUtils.isNotEmpty(applicationList)) {
+                            // 添加项目组所属应用
+                            appIdSet.addAll(applicationList.stream().map(Application::getId).collect(Collectors.toSet()));
+                        }
+                    }
+                }
+                cacheBuilder.set(REDIS_AUTHORIZED_APP_KEY + account, appIdSet, 86400);
+            }
+        }
+        return appIdSet;
+    }
+
+    /**
+     * 获取有权限的应用模块id
+     * 数据权限检查用
+     *
+     * @param account 账号
+     * @return 返回有权限的应用模块id
+     */
+    public Set<String> getAssignedModuleIds(String account) {
+        Set<String> moduleIds = cacheBuilder.get(REDIS_AUTHORIZED_MODULE_KEY + account);
+        if (CollectionUtils.isEmpty(moduleIds)) {
+            moduleIds = new HashSet<>();
+            List<ProjectUser> userList = dao.findListByProperty(ProjectUser.FIELD_ACCOUNT, account);
+            if (CollectionUtils.isNotEmpty(userList)) {
+                Search search = Search.createSearch();
+                // 获取有权限的应用
+                Set<String> appIdSet = userList.stream().filter(u -> ObjectType.APPLICATION == u.getType()).map(ProjectUser::getObjectId).collect(Collectors.toSet());
+                // 有权限的项目组
+                Set<String> groupIds = userList.stream().filter(u -> ObjectType.PROJECT == u.getType()).map(ProjectUser::getObjectId).collect(Collectors.toSet());
+                if (CollectionUtils.isNotEmpty(groupIds)) {
+                    List<ProjectGroup> groupList = new ArrayList<>();
+                    for (String groupId : groupIds) {
+                        // 获取子组
+                        groupList.addAll(projectGroupService.getChildrenNodes(groupId));
+                    }
+                    if (CollectionUtils.isNotEmpty(groupList)) {
+                        Set<String> groupCodes = groupList.stream().map(ProjectGroup::getCode).collect(Collectors.toSet());
+                        search.clearAll();
+                        search.addFilter(new SearchFilter(Application.FIELD_GROUP_CODE, groupCodes, SearchFilter.Operator.IN));
+                        List<Application> applicationList = applicationService.findByFilters(search);
+                        if (CollectionUtils.isNotEmpty(applicationList)) {
+                            // 添加项目组所属应用
+                            appIdSet.addAll(applicationList.stream().map(Application::getId).collect(Collectors.toSet()));
+                        }
+                    }
+                }
+
+                if (CollectionUtils.isNotEmpty(appIdSet)) {
+                    // 添加应用所属的应用模块
+                    search.clearAll();
+                    search.addFilter(new SearchFilter(AppModule.FIELD_APP_ID, appIdSet, SearchFilter.Operator.IN));
+                    List<AppModule> moduleList = moduleService.findByFilters(search);
+                    if (CollectionUtils.isNotEmpty(moduleList)) {
+                        moduleIds.addAll(moduleList.stream().map(AppModule::getId).collect(Collectors.toSet()));
+                    }
+                }
+                // 应用模块id
+                moduleIds.addAll(userList.stream().filter(u -> ObjectType.MODULE == u.getType()).map(ProjectUser::getObjectId).collect(Collectors.toSet()));
+            }
+            cacheBuilder.set(REDIS_AUTHORIZED_MODULE_KEY + account, moduleIds, 86400);
+        }
+        return moduleIds;
     }
 }

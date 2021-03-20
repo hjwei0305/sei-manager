@@ -226,7 +226,11 @@ public class UserController extends BaseEntityController<User, UserDto> implemen
     @Override
     public ResultData<String> logout() {
         SessionUser sessionUser = ContextUtil.getSessionUser();
+        // 移除认证
         cacheBuilder.remove(REDIS_JWT_KEY_PREFIX + sessionUser.getSessionId());
+        // 移除数据权限
+        cacheBuilder.remove(REDIS_AUTHORIZED_APP_KEY + sessionUser.getAccount());
+        cacheBuilder.remove(REDIS_AUTHORIZED_MODULE_KEY + sessionUser.getAccount());
         // 清除个人授权数据缓存
         service.clearUserAuthorizedCaches(sessionUser.getUserId());
 

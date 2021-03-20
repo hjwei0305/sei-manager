@@ -72,4 +72,26 @@ public interface ProjectUserApi {
     @GetMapping(path = "getAssignedUser")
     @ApiOperation(value = "获取已分配的用户", notes = "获取已分配的用户")
     ResultData<List<ProjectUserDto>> getAssignedUser(@RequestParam("objectId") String objectId);
+
+    /**
+     * 获取有权限的项目组id
+     * 数据权限检查用
+     *
+     * @param account 账号
+     * @return 返回有权限的项目组id
+     */
+    @GetMapping(path = "getAssignedGroupIds")
+    @ApiOperation(value = "获取有权限的项目组id", notes = "获取有权限的项目组id")
+    ResultData<Set<String>> getAssignedGroupIds(@RequestParam("account") String account);
+
+    /**
+     * 获取有权限的应用id
+     * 数据权限检查用
+     *
+     * @param account 账号
+     * @return 返回已分配的对象清单
+     */
+    @GetMapping(path = "getAssignedAppIds")
+    @ApiOperation(value = "获取有权限的应用id", notes = "获取有权限的应用")
+    ResultData<Set<String>> getAssignedAppIds(@RequestParam("account") String account);
 }

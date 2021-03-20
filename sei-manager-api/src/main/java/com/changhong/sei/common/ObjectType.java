@@ -8,6 +8,10 @@ package com.changhong.sei.common;
  */
 public enum ObjectType {
     /**
+     * 项目
+     */
+    PROJECT,
+    /**
      * 应用
      */
     APPLICATION,

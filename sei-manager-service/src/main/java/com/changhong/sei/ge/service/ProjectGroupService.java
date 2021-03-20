@@ -1,5 +1,7 @@
 package com.changhong.sei.ge.service;
 
+import com.changhong.sei.common.ObjectType;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseTreeDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseTreeService;
@@ -8,7 +10,9 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.ge.dao.ProjectGroupDao;
 import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.ge.entity.ProjectGroup;
+import com.changhong.sei.ge.entity.ProjectUser;
 import com.changhong.sei.integrated.service.GitlabService;
+import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.Group;
@@ -36,8 +40,8 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
     private GitlabService gitlabService;
     @Autowired
     private ApplicationService applicationService;
-//    @Autowired
-//    private GitlabService gitlabService;
+    @Autowired
+    private ProjectUserService projectUserService;
 
     @Override
     protected BaseTreeDao<ProjectGroup> getDao() {
@@ -160,6 +164,9 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
                 return OperateResultWithData.operationFailure(resultData.getMessage());
             }
         }
+        // 指定组管理员
+        ContextUtil.getBean(ProjectUserService.class).assign(entity.getManagerAccount(), entity.getId(), entity.getName(), ObjectType.PROJECT);
+
         return super.save(entity);
     }
 
@@ -174,11 +181,6 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
         if (Objects.isNull(userGroup)) {
             return OperateResult.operationFailure("用户组[" + s + "]不存在！");
         }
-//        List<UserGroup> list = userGroupUserService.getParentsFromChildId(s);
-//        if (list != null && list.size() > 0) {
-//            // 用户组存在已经分配的用户，禁止删除！
-//            return OperateResult.operationFailure("用户组存在已经分配的用户，禁止删除！");
-//        }
         if (applicationService.isExistsByProperty(Application.FIELD_GROUP_CODE, userGroup.getCode())) {
             return OperateResult.operationFailure("[" + userGroup.getCode() + "]应用存在应用模块,不允许删除!");
         }
@@ -186,7 +188,12 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
 //        if (resultData.failed()) {
 //            return OperateResult.operationFailure(resultData.getMessage());
 //        }
-        return super.preDelete(s);
+        OperateResult result = super.preDelete(s);
+        if (result.successful()) {
+            // 移除组管理员授权
+            ContextUtil.getBean(ProjectUserService.class).cancelAssign(userGroup.getId(), Sets.newHashSet(userGroup.getManagerAccount()));
+        }
+        return result;
     }
 
     /**

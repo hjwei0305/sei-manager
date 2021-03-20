@@ -34,6 +34,10 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
      */
     @ApiModelProperty(notes = "所属组名称")
     private String groupName;
+    @ApiModelProperty(notes = "应用管理账号")
+    private String managerAccount;
+    @ApiModelProperty(notes = "应用管理名称")
+    private String managerAccountName;
 
     public String getCode() {
         return code;
@@ -81,5 +85,21 @@ public class ApplicationDto extends BaseEntityDto implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getManagerAccount() {
+        return managerAccount;
+    }
+
+    public void setManagerAccount(String managerAccount) {
+        this.managerAccount = managerAccount;
+    }
+
+    public String getManagerAccountName() {
+        return managerAccountName;
+    }
+
+    public void setManagerAccountName(String managerAccountName) {
+        this.managerAccountName = managerAccountName;
     }
 }

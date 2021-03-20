@@ -28,5 +28,13 @@ public interface Constants {
      * 忘记密码缓存key
      */
     String REDIS_FORGET_KEY = "sei:manager:forget:";
+    /**
+     * 用户数据权限key
+     */
+    String REDIS_AUTHORIZED_APP_KEY = "sei:manager:authorized:app:";
+    /**
+     * 用户数据权限key
+     */
+    String REDIS_AUTHORIZED_MODULE_KEY = "sei:manager:authorized:module:";
 
 }

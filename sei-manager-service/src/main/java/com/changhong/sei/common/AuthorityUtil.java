@@ -21,14 +21,28 @@ public final class AuthorityUtil {
     /**
      * 获取当前用户有权限的对象
      */
-    public static Set<String> getAuthorizedData() {
+    public static Set<String> getAuthorizedAppIds() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         UserPrincipal userPrincipal = (UserPrincipal) securityContext.getAuthentication().getPrincipal();
         if (userPrincipal.getIsAdmin()) {
-            return new HashSet<>();
+            return null;
         } else {
             ProjectUserService service = ApplicationContextHolder.getBean(ProjectUserService.class);
-            return service.getAssignedObjects(ContextUtil.getUserAccount());
+            return service.getAssignedAppIds(ContextUtil.getUserAccount());
+        }
+    }
+
+    /**
+     * 获取当前用户有权限的对象
+     */
+    public static Set<String> getAuthorizedModuleIds() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        UserPrincipal userPrincipal = (UserPrincipal) securityContext.getAuthentication().getPrincipal();
+        if (userPrincipal.getIsAdmin()) {
+            return null;
+        } else {
+            ProjectUserService service = ApplicationContextHolder.getBean(ProjectUserService.class);
+            return service.getAssignedModuleIds(ContextUtil.getUserAccount());
         }
     }
 }

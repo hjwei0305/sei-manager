@@ -6,7 +6,6 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
-import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.cicd.api.BuildJobApi;
 import com.changhong.sei.cicd.dto.GitlabPushHookRequest;
@@ -61,8 +60,10 @@ public class BuildJobController extends BaseEntityController<BuildJob, BuildJobD
             search = Search.createSearch();
         }
         // 添加数据权限过滤
-        Set<String> ids = AuthorityUtil.getAuthorizedData();
-        search.addFilter(new SearchFilter(BuildJob.ID, ids));
+        Set<String> ids = AuthorityUtil.getAuthorizedModuleIds();
+        if (Objects.nonNull(ids)) {
+            search.addFilter(new SearchFilter(BuildJob.ID, ids));
+        }
         return convertToDtoPageResult(service.findByPage(search));
     }
 

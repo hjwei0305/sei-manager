@@ -15,7 +15,6 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.dto.serach.SearchOrder;
-import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
@@ -77,8 +76,10 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             search.addFilter(new SearchFilter(AppModule.FIELD_GROUP_CODE, groupCode));
         }
         // 添加数据权限过滤
-        Set<String> ids = AuthorityUtil.getAuthorizedData();
-        search.addFilter(new SearchFilter(AppModule.ID, ids));
+        Set<String> ids = AuthorityUtil.getAuthorizedModuleIds();
+        if (Objects.nonNull(ids)) {
+            search.addFilter(new SearchFilter(AppModule.ID, ids));
+        }
         search.addSortOrder(new SearchOrder(AppModule.FIELD_CODE));
         appModules = appModuleService.findByFilters(search);
         if (CollectionUtils.isNotEmpty(appModules)) {
@@ -86,11 +87,11 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
                     // 命名空间不为空,则是后端应用
                     .filter(a -> StringUtils.isNotBlank(a.getNameSpace()))
                     .map(a -> {
-                        AppDto dto = new AppDto();
-                        dto.setCode(a.getCode());
-                        dto.setName(a.getName());
-                        return dto;
-                    }).sorted(Comparator.comparing(AppDto::getCode)).collect(Collectors.toList());
+                AppDto dto = new AppDto();
+                dto.setCode(a.getCode());
+                dto.setName(a.getName());
+                return dto;
+            }).sorted(Comparator.comparing(AppDto::getCode)).collect(Collectors.toList());
         } else {
             appDtoList = new ArrayList<>();
         }

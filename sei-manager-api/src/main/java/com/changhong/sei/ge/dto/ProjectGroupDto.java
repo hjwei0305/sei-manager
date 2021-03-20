@@ -71,6 +71,10 @@ public class ProjectGroupDto extends BaseEntityDto implements TreeEntity<Project
     private String remark;
     @ApiModelProperty(value = "组路径")
     private String groupPath;
+    @ApiModelProperty(value = "管理用户账号")
+    private String managerAccount;
+    @ApiModelProperty(value = "管理用户名称")
+    private String managerAccountName;
 
     /**
      * 子节点列表
@@ -167,6 +171,22 @@ public class ProjectGroupDto extends BaseEntityDto implements TreeEntity<Project
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getManagerAccount() {
+        return managerAccount;
+    }
+
+    public void setManagerAccount(String managerAccount) {
+        this.managerAccount = managerAccount;
+    }
+
+    public String getManagerAccountName() {
+        return managerAccountName;
+    }
+
+    public void setManagerAccountName(String managerAccountName) {
+        this.managerAccountName = managerAccountName;
     }
 
     @Override

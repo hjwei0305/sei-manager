@@ -70,6 +70,10 @@ public class ProjectGroup extends BaseAuditableEntity implements TreeEntity<Proj
     private String groupPath;
     @Column(name = "remark")
     private String remark;
+    @Column(name = "manager_account")
+    private String managerAccount;
+    @Column(name = "manager_account_name")
+    private String managerAccountName;
 
     /**
      * 子节点列表
@@ -166,6 +170,22 @@ public class ProjectGroup extends BaseAuditableEntity implements TreeEntity<Proj
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getManagerAccount() {
+        return managerAccount;
+    }
+
+    public void setManagerAccount(String managerAccount) {
+        this.managerAccount = managerAccount;
+    }
+
+    public String getManagerAccountName() {
+        return managerAccountName;
+    }
+
+    public void setManagerAccountName(String managerAccountName) {
+        this.managerAccountName = managerAccountName;
     }
 
     @Override
