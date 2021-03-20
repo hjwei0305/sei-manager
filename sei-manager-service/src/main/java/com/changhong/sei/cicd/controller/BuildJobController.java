@@ -62,9 +62,7 @@ public class BuildJobController extends BaseEntityController<BuildJob, BuildJobD
         }
         // 添加数据权限过滤
         Set<String> ids = AuthorityUtil.getAuthorizedData();
-        if (CollectionUtils.isNotEmpty(ids)) {
-            search.addFilter(new SearchFilter(BuildJob.ID, ids));
-        }
+        search.addFilter(new SearchFilter(BuildJob.ID, ids));
         return convertToDtoPageResult(service.findByPage(search));
     }
 
