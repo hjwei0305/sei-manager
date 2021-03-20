@@ -78,7 +78,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         // 添加数据权限过滤
         Set<String> ids = AuthorityUtil.getAuthorizedModuleIds();
         if (Objects.nonNull(ids)) {
-            search.addFilter(new SearchFilter(AppModule.ID, ids));
+            search.addFilter(new SearchFilter(AppModule.ID, ids, SearchFilter.Operator.IN));
         }
         search.addSortOrder(new SearchOrder(AppModule.FIELD_CODE));
         appModules = appModuleService.findByFilters(search);

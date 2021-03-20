@@ -62,7 +62,7 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
         // 添加数据权限过滤
         Set<String> ids = AuthorityUtil.getAuthorizedModuleIds();
         if (Objects.nonNull(ids)) {
-            search.addFilter(new SearchFilter(BaseEntity.ID, ids));
+            search.addFilter(new SearchFilter(BaseEntity.ID, ids, SearchFilter.Operator.IN));
         }
         return convertToDtoPageResult(service.findByPage(search));
     }
