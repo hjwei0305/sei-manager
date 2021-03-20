@@ -59,7 +59,7 @@ public class ApplicationController extends BaseEntityController<Application, App
             search = Search.createSearch();
         }
         // 添加数据权限过滤
-        Set<String> ids = AuthorityUtil.getAuthorizedModuleIds();
+        Set<String> ids = AuthorityUtil.getAuthorizedAppIds();
         if (Objects.nonNull(ids)) {
             search.addFilter(new SearchFilter(BaseEntity.ID, ids));
         }
