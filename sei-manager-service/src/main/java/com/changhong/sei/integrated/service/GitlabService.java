@@ -78,7 +78,7 @@ public class GitlabService {
                 return ResultData.fail("在gitlab上找不到群组[" + groupId + "]");
             }
             ProjectApi projectApi = gitLabApi.getProjectApi();
-            Project project1 = projectApi.getProject(group.getPath(), project.getCode());
+            Project project1 = projectApi.getProject(group.getFullPath(), project.getCode());
             if (Objects.nonNull(project1)) {
                 project.setGitId(String.valueOf(project1.getId()));
                 project.setGitWebUrl(project1.getWebUrl());
