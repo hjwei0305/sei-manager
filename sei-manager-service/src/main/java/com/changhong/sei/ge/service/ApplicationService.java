@@ -20,7 +20,10 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.ge.dao.ApplicationDao;
 import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.Application;
+import com.changhong.sei.manager.entity.User;
+import com.changhong.sei.manager.service.UserService;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +47,10 @@ public class ApplicationService extends BaseEntityService<Application> {
     private AppModuleService appModuleService;
     @Autowired
     private RequisitionOrderService requisitionOrderService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ProjectUserService projectUserService;
 
     @Override
     protected BaseEntityDao<Application> getDao() {
@@ -264,5 +271,38 @@ public class ApplicationService extends BaseEntityService<Application> {
         } else {
             return ResultData.fail(result.getMessage());
         }
+    }
+
+    /**
+     * 分配应用管理员
+     *
+     * @return 返回分配结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> assignManager(String account, String appId) {
+        if (StringUtils.isBlank(account)) {
+            return ResultData.fail("分配的账号不能为空");
+        }
+        if (StringUtils.isBlank(appId)) {
+            return ResultData.fail("应用id不能为空.");
+        }
+
+        User user = userService.findByProperty(User.FIELD_ACCOUNT, account);
+        if (Objects.isNull(user)) {
+            return ResultData.fail("用户[" + account + "]不存在");
+        }
+
+        Application application = dao.findByProperty(Application.ID, appId);
+        if (Objects.isNull(application)) {
+            return ResultData.fail("应用[" + appId + "]不存在");
+        }
+
+        ResultData<Void> resultData = projectUserService.assign(account, appId, application.getName(), ObjectType.APPLICATION);
+        if (resultData.successful()) {
+            application.setManagerAccount(user.getAccount());
+            application.setManagerAccountName(user.getNickname());
+            this.save(application);
+        }
+        return resultData;
     }
 }

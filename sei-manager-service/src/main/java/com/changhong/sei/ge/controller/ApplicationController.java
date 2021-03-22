@@ -115,4 +115,14 @@ public class ApplicationController extends BaseEntityController<Application, App
     public ResultData<Void> deleteRequisition(String id) {
         return service.deleteRequisition(id);
     }
+
+    /**
+     * 分配应用管理员
+     *
+     * @return 返回分配结果
+     */
+    @Override
+    public ResultData<Void> assignManager(String account, String appId) {
+        return service.assignManager(account, appId);
+    }
 }

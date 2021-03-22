@@ -10,7 +10,6 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.ge.dao.ProjectGroupDao;
 import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.ge.entity.ProjectGroup;
-import com.changhong.sei.ge.entity.ProjectUser;
 import com.changhong.sei.integrated.service.GitlabService;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
@@ -164,10 +163,17 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
                 return OperateResultWithData.operationFailure(resultData.getMessage());
             }
         }
-        // 指定组管理员
-        ContextUtil.getBean(ProjectUserService.class).assign(entity.getManagerAccount(), entity.getId(), entity.getName(), ObjectType.PROJECT);
-
-        return super.save(entity);
+        if (StringUtils.isNotBlank(entity.getManagerAccount())) {
+            // 指定组管理员
+            ResultData<Void> resultData = ContextUtil.getBean(ProjectUserService.class).assign(entity.getManagerAccount(), entity.getId(), entity.getName(), ObjectType.PROJECT);
+            if (resultData.successful()) {
+                return super.save(entity);
+            } else {
+                return OperateResultWithData.operationFailure(resultData.getMessage());
+            }
+        } else {
+            return super.save(entity);
+        }
     }
 
     /**

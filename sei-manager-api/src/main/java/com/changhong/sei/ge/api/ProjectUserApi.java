@@ -23,14 +23,6 @@ import java.util.Set;
 @Valid
 @FeignClient(name = "sei-manager", path = "projectUser")
 public interface ProjectUserApi {
-    /**
-     * 分配应用管理员
-     *
-     * @return 返回分配结果
-     */
-    @PostMapping(path = "assignAppAdmin", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "分配应用管理员", notes = "分配应用管理员")
-    ResultData<Void> assignAppAdmin(@RequestParam("account") String account, @RequestParam("appId") String appId);
 
     /**
      * 批量分配应用模块用户

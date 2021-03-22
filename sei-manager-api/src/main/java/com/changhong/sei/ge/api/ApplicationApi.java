@@ -10,10 +10,7 @@ import com.changhong.sei.cicd.dto.ApplicationRequisitionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -62,4 +59,14 @@ public interface ApplicationApi extends BaseEntityApi<ApplicationDto>, FindByPag
     @DeleteMapping(path = "deleteRequisition/{id}")
     @ApiOperation(value = "删除应用申请单", notes = "删除应用申请单")
     ResultData<Void> deleteRequisition(@PathVariable("id") String id);
+
+    /**
+     * 分配应用管理员
+     *
+     * @return 返回分配结果
+     */
+    @PostMapping(path = "assignManager", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "分配应用管理员", notes = "分配应用管理员")
+    ResultData<Void> assignManager(@RequestParam("account") String account, @RequestParam("appId") String appId);
+
 }

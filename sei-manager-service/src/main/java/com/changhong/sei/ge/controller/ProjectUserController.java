@@ -44,36 +44,7 @@ public class ProjectUserController implements ProjectUserApi {
     @Autowired
     private UserService userService;
     @Autowired
-    private ApplicationService applicationService;
-    @Autowired
     private ModelMapper modelMapper;
-
-    /**
-     * 分配应用管理员
-     *
-     * @return 返回分配结果
-     */
-    @Override
-    public ResultData<Void> assignAppAdmin(String account, String appId) {
-        if (StringUtils.isBlank(account)) {
-            return ResultData.fail("分配的账号不能为空");
-        }
-        if (StringUtils.isBlank(appId)) {
-            return ResultData.fail("应用id不能为空.");
-        }
-
-        User user = userService.findByProperty(User.FIELD_ACCOUNT, account);
-        if (Objects.isNull(user)) {
-            return ResultData.fail("用户[" + account + "]不存在");
-        }
-
-        Application application = applicationService.findByProperty(Application.ID, appId);
-        if (Objects.isNull(application)) {
-            return ResultData.fail("应用[" + appId + "]不存在");
-        }
-
-        return service.assign(account, appId, application.getName(), ObjectType.APPLICATION);
-    }
 
     /**
      * 批量分配应用模块用户
