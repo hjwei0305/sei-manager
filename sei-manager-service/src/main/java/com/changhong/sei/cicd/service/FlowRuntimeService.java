@@ -1,16 +1,23 @@
 package com.changhong.sei.cicd.service;
 
+import com.changhong.sei.cicd.dto.ApplyType;
+import com.changhong.sei.cicd.dto.ApprovalStatus;
+import com.changhong.sei.cicd.dto.OperationType;
+import com.changhong.sei.cicd.entity.*;
 import com.changhong.sei.common.ThymeLeafHelper;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.cicd.dto.ApplyType;
-import com.changhong.sei.cicd.dto.ApprovalStatus;
-import com.changhong.sei.cicd.dto.OperationType;
-import com.changhong.sei.cicd.entity.*;
+import com.changhong.sei.ge.entity.AppModule;
+import com.changhong.sei.ge.entity.Application;
+import com.changhong.sei.ge.entity.ProjectGroup;
+import com.changhong.sei.ge.service.AppModuleService;
+import com.changhong.sei.ge.service.ApplicationService;
+import com.changhong.sei.ge.service.ProjectGroupService;
 import com.changhong.sei.manager.commom.EmailManager;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 实现功能：
@@ -44,12 +53,17 @@ public class FlowRuntimeService {
     private FlowTaskHistoryService historyService;
     @Autowired
     private EmailManager emailManager;
+    @Autowired
+    private ProjectGroupService projectGroupService;
+    @Autowired
+    private ApplicationService applicationService;
+    @Autowired
+    private AppModuleService appModuleService;
 
     @Value("${sei.server.web}")
     private String serverWeb;
     @Value("${sei.application.name:SEI开发运维平台}")
     private String managerName;
-
 
     /**
      * 提交申请单
@@ -347,6 +361,9 @@ public class FlowRuntimeService {
      * @return 创建结果
      */
     private ResultData<FlowToDoTask> createToDoTask(RequisitionOrder requisition, SessionUser sessionUser, FlowInstanceTask task) {
+        if (StringUtils.isBlank(task.getHandleAccount())) {
+            return ResultData.fail("任务[" + task.getName() + "]处理人为空.");
+        }
         // 存在下个任务,则创建下个任务的待办任务
         FlowToDoTask toDoTask = new FlowToDoTask();
         // 任务
@@ -383,7 +400,30 @@ public class FlowRuntimeService {
             context.setVariable("url", serverWeb);
             context.setVariable("sysName", managerName);
             String content = ThymeLeafHelper.getTemplateEngine().process("notify/FlowTask.html", context);
-            emailManager.sendMailByAccount(managerName + "-待办事项", content, sessionUser.getAccount());
+            // 通知人
+            Set<String> notifyAccounts = new HashSet<>();
+            notifyAccounts.add(task.getHandleAccount());
+            if (ApplyType.APPLICATION == requisition.getApplyType()) {
+                // 应用申请,通知应用所属组管理员
+                Application application = applicationService.findOne(requisition.getRelationId());
+                if (Objects.nonNull(application)) {
+                    ProjectGroup group = projectGroupService.findFirstByProperty(ProjectGroup.CODE, application.getGroupCode());
+                    if (Objects.nonNull(group) && StringUtils.isNotBlank(group.getManagerAccount())) {
+                        notifyAccounts.add(group.getManagerAccount());
+                    }
+                }
+            } else if (ApplyType.MODULE == requisition.getApplyType()) {
+                // 应用模块申请,通知应用模块所属应用管理员
+                AppModule module = appModuleService.findOne(requisition.getRelationId());
+                if (Objects.nonNull(module)) {
+                    Application application = applicationService.findOne(module.getAppId());
+                    if (Objects.nonNull(application) && StringUtils.isNotBlank(application.getManagerAccount())) {
+                        notifyAccounts.add(application.getManagerAccount());
+                    }
+                }
+            }
+            String[] accountArr = notifyAccounts.toArray(new String[0]);
+            emailManager.sendMailByAccount(managerName + "-待办事项", content, accountArr);
         } catch (Exception e) {
             LogUtil.error("流程待办任务通知异常", e);
         }

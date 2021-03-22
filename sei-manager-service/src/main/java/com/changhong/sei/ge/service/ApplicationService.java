@@ -264,7 +264,7 @@ public class ApplicationService extends BaseEntityService<Application> {
             application.setFrozen(Boolean.FALSE);
         }
         // 默认将申请人作为应用的管理员
-        ContextUtil.getBean(ProjectUserService.class).assign(application.getCreatorAccount(), application.getId(), application.getName(), ObjectType.APPLICATION);
+        projectUserService.assign(application.getCreatorAccount(), application.getId(), application.getName(), ObjectType.APPLICATION);
         OperateResultWithData<Application> result = this.save(application);
         if (result.successful()) {
             return ResultData.success();
