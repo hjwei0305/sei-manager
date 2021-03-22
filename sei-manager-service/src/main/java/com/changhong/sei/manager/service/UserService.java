@@ -537,7 +537,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
      * @param userId 平台用户Id
      * @return 功能项清单
      */
-    @Cacheable(value = "sei:manager:user:authorized:features", key = "#userId")
+//    @Cacheable(value = "sei:manager:user:authorized:features", key = "#userId")
     public List<Feature> getUserAuthorizedFeatures(String userId) {
         List<Feature> result = new ArrayList<>();
         //获取用户
