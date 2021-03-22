@@ -56,7 +56,7 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "avatar")
     private String avatar;
     /**
-     * 状态，启用-1，禁用-0
+     * 状态，启用-true，禁用-false
      */
     @Column(name = "status")
     private Boolean status = Boolean.TRUE;

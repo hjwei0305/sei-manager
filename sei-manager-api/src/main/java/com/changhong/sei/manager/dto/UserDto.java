@@ -41,9 +41,9 @@ public class UserDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "头像")
     private String avatar;
     /**
-     * 状态，启用-1，禁用-0
+     * 状态，启用-true，禁用-false
      */
-    @ApiModelProperty(value = "状态，启用-1，禁用-0")
+    @ApiModelProperty(value = "状态，启用-true，禁用-false")
     private Boolean status = Boolean.TRUE;
     /**
      * 是否是管理员
