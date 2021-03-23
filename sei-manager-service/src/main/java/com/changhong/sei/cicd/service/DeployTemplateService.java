@@ -162,7 +162,7 @@ public class DeployTemplateService extends BaseEntityService<DeployTemplate> {
         }
         List<DeployTemplateStageResponse> templateStages = resultData.getData();
         for (DeployTemplateStageResponse templateStage : templateStages) {
-            script.append("stage('").append(templateStage.getName()).append("') { \n\r");
+            script.append("stage(\"").append(templateStage.getName()).append("\") { \n\r");
             script.append(templateStage.getPlayscript()).append("\n\r } \n\r");
         }
         script.append("\n\r} \n\r");
