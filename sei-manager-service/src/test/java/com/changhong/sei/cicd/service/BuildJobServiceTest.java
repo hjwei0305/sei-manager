@@ -1,10 +1,13 @@
 package com.changhong.sei.cicd.service;
 
 import com.changhong.sei.BaseUnitTest;
+import com.changhong.sei.cicd.entity.Tag;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.cicd.dto.BuildDetailDto;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * 实现功能：
@@ -33,5 +36,21 @@ public class BuildJobServiceTest extends BaseUnitTest {
         String id = "1132B7E9-3EA3-11EB-8908-0242C0A84603";
         ResultData<BuildDetailDto> resultData = service.getBuildDetail(id);
         System.out.println(resultData);
+    }
+
+    @Test
+    public void getLastTagName() {
+        String envCode = "dev";
+        String moduleId = "C1B195AC-8AD5-11EB-9EC8-0242C0A8431A";
+        String resultData = service.getLastTagName(envCode, moduleId);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void getTags() {
+        String envCode = "dev";
+        String moduleId = "4BD8B1FA-4598-11EB-9F4F-0242C0A84603";
+        List<Tag> tags = service.getTags(envCode, moduleId, "5.0.4");
+        System.out.println(tags);
     }
 }

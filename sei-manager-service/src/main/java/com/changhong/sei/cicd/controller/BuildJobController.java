@@ -1,5 +1,11 @@
 package com.changhong.sei.cicd.controller;
 
+import com.changhong.sei.cicd.api.BuildJobApi;
+import com.changhong.sei.cicd.dto.*;
+import com.changhong.sei.cicd.entity.BuildJob;
+import com.changhong.sei.cicd.entity.BuildJobRequisition;
+import com.changhong.sei.cicd.entity.Tag;
+import com.changhong.sei.cicd.service.BuildJobService;
 import com.changhong.sei.common.AuthorityUtil;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
@@ -7,14 +13,6 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
-import com.changhong.sei.cicd.api.BuildJobApi;
-import com.changhong.sei.cicd.dto.GitlabPushHookRequest;
-import com.changhong.sei.cicd.dto.BuildDetailDto;
-import com.changhong.sei.cicd.dto.BuildJobDto;
-import com.changhong.sei.cicd.dto.BuildJobRequisitionDto;
-import com.changhong.sei.cicd.entity.BuildJob;
-import com.changhong.sei.cicd.entity.BuildJobRequisition;
-import com.changhong.sei.cicd.service.BuildJobService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -148,5 +147,40 @@ public class BuildJobController extends BaseEntityController<BuildJob, BuildJobD
     @Override
     public ResultData<Void> webhook(GitlabPushHookRequest request) {
         return service.webhook(request);
+    }
+
+    /**
+     * 根据环境代码和应用模块id获取部署的tag与指定tag的变化记录
+     *
+     * @param envCode  环境代码
+     * @param moduleId 应用模块id
+     * @param tag      指定tag
+     * @return 发挥tagName
+     */
+    @Override
+    public ResultData<List<TagDto>> getTags(String envCode, String moduleId, String tag) {
+        List<TagDto> list;
+        List<Tag> tagList = service.getTags(envCode, moduleId, tag);
+        if (CollectionUtils.isNotEmpty(tagList)) {
+            list = tagList.stream().map(t -> {
+                TagDto dto = new TagDto();
+                dto.setId(t.getId());
+                dto.setModuleId(t.getModuleId());
+                dto.setModuleCode(t.getModuleCode());
+                dto.setTagName(t.getTagName());
+                dto.setMajor(t.getMajor());
+                dto.setMinor(t.getMinor());
+                dto.setRevised(t.getRevised());
+                dto.setRelease(t.getRelease());
+                dto.setCommitId(t.getCommitId());
+                dto.setBranch(t.getBranch());
+                dto.setCreateTime(t.getCreateTime());
+                dto.setCreateAccount(t.getCreateAccount());
+                return dto;
+            }).collect(Collectors.toList());
+        } else {
+            list = new ArrayList<>();
+        }
+        return ResultData.success(list);
     }
 }

@@ -1,5 +1,11 @@
 package com.changhong.sei.cicd.service;
 
+import com.changhong.sei.cicd.dao.BuildDetailDao;
+import com.changhong.sei.cicd.dao.BuildJobDao;
+import com.changhong.sei.cicd.dao.BuildJobRequisitionDao;
+import com.changhong.sei.cicd.dto.*;
+import com.changhong.sei.cicd.entity.*;
+import com.changhong.sei.common.Constants;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
@@ -7,15 +13,10 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
+import com.changhong.sei.core.dto.serach.SearchOrder;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.common.Constants;
-import com.changhong.sei.cicd.dao.BuildDetailDao;
-import com.changhong.sei.cicd.dao.BuildJobDao;
-import com.changhong.sei.cicd.dao.BuildJobRequisitionDao;
-import com.changhong.sei.cicd.dto.*;
-import com.changhong.sei.cicd.entity.*;
 import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.MessageContent;
 import com.changhong.sei.ge.service.AppModuleService;
@@ -77,6 +78,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     private ModelMapper modelMapper;
     @Autowired
     private MessageContentService messageContentService;
+    @Autowired
+    private TagService tagService;
 
     @Override
     protected BaseEntityDao<BuildJob> getDao() {
@@ -674,5 +677,40 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             LOG.error("{} 的Push Hook 异常{}", request, ExceptionUtils.getRootCauseMessage(e));
         }
         return ResultData.success();
+    }
+
+    /**
+     * 根据环境代码和应用模块id获取部署的tag
+     *
+     * @param envCode  环境代码
+     * @param moduleId 应用模块id
+     * @return 发挥tagName
+     */
+    public String getLastTagName(String envCode, String moduleId) {
+        return dao.getLastTag(envCode, moduleId);
+    }
+
+    /**
+     * 根据环境代码和应用模块id获取部署的tag与指定tag的变化记录
+     *
+     * @param envCode    环境代码
+     * @param moduleId   应用模块id
+     * @param currentTag 指定tag
+     * @return 发挥tagName
+     */
+    public List<Tag> getTags(String envCode, String moduleId, String currentTag) {
+        // 获取当前指定环境部署的tag
+        String lastTag = dao.getLastTag(envCode, moduleId);
+
+        Search search = Search.createSearch();
+        if (StringUtils.isNotBlank(lastTag)) {
+            search.addFilter(new SearchFilter(Tag.FIELD_CODE, lastTag, SearchFilter.Operator.GT));
+        }
+        search.addFilter(new SearchFilter(Tag.FIELD_CODE, currentTag, SearchFilter.Operator.LE));
+        search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, moduleId));
+        search.addSortOrder(new SearchOrder(Tag.FIELD_MAJOR, SearchOrder.Direction.DESC));
+        search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
+        search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));
+        return tagService.findByFilters(search);
     }
 }
