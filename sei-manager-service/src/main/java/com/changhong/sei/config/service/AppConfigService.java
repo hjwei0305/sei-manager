@@ -379,20 +379,11 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         search.addFilter(new SearchFilter(AppConfig.FIELD_USE_STATUS, UseStatus.ENABLE));
         List<AppConfig> appConfigs = dao.findByFilters(search);
         if (CollectionUtils.isNotEmpty(appConfigs)) {
-            // 获取所有可用的环境变量
-            List<EnvVariableValue> variableValues = envVariableService.getEnableVariableValues(envCode);
-            // 环境变量key-value映射
-            final Map<String, String> variableValueMap = variableValues.stream()
-                    .collect(Collectors.toMap(v -> "${".concat(v.getKey()).concat("}"), EnvVariableValue::getValue));
             StringBuilder str = new StringBuilder();
             for (AppConfig ac : appConfigs) {
                 // 处理环境变量
-                str.append(ac.getKey()).append(" = ").append(resolutionVariable(ac.getValue(), variableValueMap)).append("\n\r");
+                str.append(ac.getKey()).append(" = ").append(ac.getValue()).append("\n\r");
             }
-//            Map<String, Object> dataMap = appConfigs.stream().collect(Collectors.toMap(AppConfig::getKey, ac -> {
-//                // 处理环境变量
-//                return resolutionVariable(ac.getValue(), variableValueMap);
-//            }));
             result = YamlTransferUtils.properties2Yaml(str.toString());
         }
 
