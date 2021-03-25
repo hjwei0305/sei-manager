@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @since 2020-11-26 14:45:23
  */
 @ApiModel(description = "应用版本申请单DTO")
-public class ReleaseVersionRequisitionDto extends RequisitionDto implements Serializable {
+public class VersionRecordRequisitionDto extends RequisitionDto implements Serializable {
     private static final long serialVersionUID = -38024625578859016L;
     /**
      * 所属应用id

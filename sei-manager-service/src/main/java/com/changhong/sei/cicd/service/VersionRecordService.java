@@ -98,7 +98,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseVersionRequisitionDto> createRequisition(VersionRecord versionRecord) {
+    public ResultData<VersionRecordRequisitionDto> createRequisition(VersionRecord versionRecord) {
         // 重置版本
         versionRecord.setVersion(versionRecord.getRefTag() + "-Release");
         // 通过模块和版本检查是否重复申请
@@ -130,7 +130,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
             ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                ReleaseVersionRequisitionDto dto = new ReleaseVersionRequisitionDto();
+                VersionRecordRequisitionDto dto = new VersionRecordRequisitionDto();
                 dto.setId(requisition.getId());
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());
@@ -168,7 +168,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(VersionRecord releaseVersion) {
+    public ResultData<VersionRecordRequisitionDto> modifyRequisition(VersionRecord releaseVersion) {
         // 重置版本
         releaseVersion.setVersion(releaseVersion.getRefTag() + "-Release");
         // 通过模块和版本检查是否重复申请
@@ -241,7 +241,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
             ResultData<RequisitionOrder> result = requisitionOrderService.modifyRequisition(requisitionOrder);
             if (result.successful()) {
                 RequisitionOrder requisition = result.getData();
-                ReleaseVersionRequisitionDto dto = new ReleaseVersionRequisitionDto();
+                VersionRecordRequisitionDto dto = new VersionRecordRequisitionDto();
                 dto.setId(requisition.getId());
                 dto.setApplicantAccount(requisition.getApplicantAccount());
                 dto.setApplicantUserName(requisition.getApplicantUserName());

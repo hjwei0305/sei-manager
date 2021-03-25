@@ -10,7 +10,7 @@ import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.cicd.api.VersionRecordApi;
 import com.changhong.sei.cicd.dto.VersionRecordDto;
-import com.changhong.sei.cicd.dto.ReleaseVersionRequisitionDto;
+import com.changhong.sei.cicd.dto.VersionRecordRequisitionDto;
 import com.changhong.sei.cicd.entity.VersionRecord;
 import com.changhong.sei.cicd.entity.VersionRecordRequisition;
 import com.changhong.sei.cicd.service.VersionRecordService;
@@ -74,12 +74,12 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      * @return 分页查询结果
      */
     @Override
-    public ResultData<PageResult<ReleaseVersionRequisitionDto>> findRequisitionByPage(Search search) {
+    public ResultData<PageResult<VersionRecordRequisitionDto>> findRequisitionByPage(Search search) {
         PageResult<VersionRecordRequisition> pageResult = service.findRequisitionByPage(search);
-        PageResult<ReleaseVersionRequisitionDto> result = new PageResult<>(pageResult);
+        PageResult<VersionRecordRequisitionDto> result = new PageResult<>(pageResult);
         List<VersionRecordRequisition> requisitions = pageResult.getRows();
         if (CollectionUtils.isNotEmpty(requisitions)) {
-            List<ReleaseVersionRequisitionDto> dtos = requisitions.stream().map(e -> dtoModelMapper.map(e, ReleaseVersionRequisitionDto.class)).collect(Collectors.toList());
+            List<VersionRecordRequisitionDto> dtos = requisitions.stream().map(e -> dtoModelMapper.map(e, VersionRecordRequisitionDto.class)).collect(Collectors.toList());
             result.setRows(dtos);
         }
         return ResultData.success(result);
@@ -92,7 +92,7 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseVersionRequisitionDto> createRequisition(@Valid VersionRecordDto dto) {
+    public ResultData<VersionRecordRequisitionDto> createRequisition(@Valid VersionRecordDto dto) {
         return service.createRequisition(convertToEntity(dto));
     }
 
@@ -103,7 +103,7 @@ public class VersionRecordController extends BaseEntityController<VersionRecord,
      * @return 操作结果
      */
     @Override
-    public ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@Valid VersionRecordDto dto) {
+    public ResultData<VersionRecordRequisitionDto> modifyRequisition(@Valid VersionRecordDto dto) {
         return service.modifyRequisition(convertToEntity(dto));
     }
 

@@ -6,7 +6,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.cicd.dto.VersionRecordDto;
-import com.changhong.sei.cicd.dto.ReleaseVersionRequisitionDto;
+import com.changhong.sei.cicd.dto.VersionRecordRequisitionDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -35,7 +35,7 @@ public interface VersionRecordApi extends BaseEntityApi<VersionRecordDto>, FindB
      */
     @PostMapping(path = "findRequisitionByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询应用版本申请单", notes = "分页查询应用版本申请单")
-    ResultData<PageResult<ReleaseVersionRequisitionDto>> findRequisitionByPage(Search search);
+    ResultData<PageResult<VersionRecordRequisitionDto>> findRequisitionByPage(Search search);
 
     /**
      * 创建应用版本申请单
@@ -45,7 +45,7 @@ public interface VersionRecordApi extends BaseEntityApi<VersionRecordDto>, FindB
      */
     @PostMapping(path = "createRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "创建应用版本申请单", notes = "创建应用版本申请单")
-    ResultData<ReleaseVersionRequisitionDto> createRequisition(@RequestBody @Valid VersionRecordDto dto);
+    ResultData<VersionRecordRequisitionDto> createRequisition(@RequestBody @Valid VersionRecordDto dto);
 
     /**
      * 修改编辑应用版本申请单
@@ -55,7 +55,7 @@ public interface VersionRecordApi extends BaseEntityApi<VersionRecordDto>, FindB
      */
     @PostMapping(path = "modifyRequisition", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "修改编辑应用版本申请单", notes = "修改编辑应用版本申请单")
-    ResultData<ReleaseVersionRequisitionDto> modifyRequisition(@RequestBody @Valid VersionRecordDto dto);
+    ResultData<VersionRecordRequisitionDto> modifyRequisition(@RequestBody @Valid VersionRecordDto dto);
 
     /**
      * 删除应用版本申请单

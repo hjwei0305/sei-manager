@@ -92,10 +92,15 @@ public class BuildJobRequisition extends BaseEntity implements Serializable {
     @Column(name = "module_name")
     private String moduleName;
     /**
-     * 标签名称
+     * 引用tag
      */
-    @Column(name = "tag_name")
-    private String tagName;
+    @Column(name = "ref_tag_id")
+    private String refTagId;
+    /**
+     * 引用tag
+     */
+    @Column(name = "ref_tag")
+    private String refTag;
 
     /**
      * 名称
@@ -217,12 +222,20 @@ public class BuildJobRequisition extends BaseEntity implements Serializable {
         this.moduleName = moduleName;
     }
 
-    public String getTagName() {
-        return tagName;
+    public String getRefTagId() {
+        return refTagId;
     }
 
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
+    public void setRefTagId(String refTagId) {
+        this.refTagId = refTagId;
+    }
+
+    public String getRefTag() {
+        return refTag;
+    }
+
+    public void setRefTag(String refTag) {
+        this.refTag = refTag;
     }
 
     public String getName() {

@@ -81,6 +81,11 @@ public class VersionRecordRequisition extends BaseEntity implements Serializable
     /**
      * 引用tag
      */
+    @Column(name = "ref_tag_id")
+    private String refTagId;
+    /**
+     * 引用tag
+     */
     @Column(name = "ref_tag")
     private String refTag;
     /**
@@ -187,6 +192,14 @@ public class VersionRecordRequisition extends BaseEntity implements Serializable
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public String getRefTagId() {
+        return refTagId;
+    }
+
+    public void setRefTagId(String refTagId) {
+        this.refTagId = refTagId;
     }
 
     public String getRefTag() {
