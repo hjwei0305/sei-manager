@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class BuildJob extends BaseEntity implements IFrozen, Serializable {
     private static final long serialVersionUID = -78400014111481829L;
     public static final String FIELD_GIT_ID = "gitId";
-    public static final String FIELD_TAG_NAME = "tagName";
+    public static final String FIELD_TAG_NAME = "refTag";
     public static final String FIELD_MODULE_ID = "moduleId";
     public static final String FIELD_MODULE_CODE = "moduleCode";
     /**
