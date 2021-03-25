@@ -171,11 +171,6 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
     public ResultData<VersionRecordRequisitionDto> modifyRequisition(VersionRecord releaseVersion) {
         // 重置版本
         releaseVersion.setVersion(releaseVersion.getRefTag() + "-Release");
-        // 通过模块和版本检查是否重复申请
-        VersionRecord existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
-        if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
-        }
         VersionRecord version = dao.findOne(releaseVersion.getId());
         if (Objects.isNull(version)) {
             return ResultData.fail("应用模块不存在!");
@@ -183,6 +178,11 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
         // 检查应用审核状态
         if (!version.getFrozen()) {
             return ResultData.fail("应用模块已审核,不允许编辑!");
+        }
+        // 通过模块和版本检查是否重复申请
+        VersionRecord existed = getByVersion(releaseVersion.getAppId(), releaseVersion.getModuleCode(), releaseVersion.getVersion());
+        if (Objects.nonNull(existed) && !StringUtils.equals(existed.getId(), releaseVersion.getId())) {
+            return ResultData.fail("应用模块[" + releaseVersion.getModuleCode() + "]对应版本[" + releaseVersion.getVersion() + "]存在申请记录,请不要重复申请.");
         }
 
         version.setAppId(releaseVersion.getAppId());

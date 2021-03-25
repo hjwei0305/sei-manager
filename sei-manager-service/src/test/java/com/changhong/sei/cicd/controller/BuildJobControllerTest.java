@@ -29,6 +29,13 @@ public class BuildJobControllerTest extends BaseUnitTest {
     }
 
     @Test
+    public void modifyRequisition() {
+        String s = "{\"id\":\"C3D875EB-8D13-11EB-8FFE-0242C0A84620\",\"envCode\":\"Dev\",\"envName\":\"开发环境\",\"appId\":\"EAE9C887-4597-11EB-9F4F-0242C0A84603\",\"appName\":\"资金管理\",\"gitId\":\"1455\",\"moduleId\":\"4BD8B1FA-4598-11EB-9F4F-0242C0A84603\",\"moduleCode\":\"fms-baf\",\"moduleName\":\"资金管理基础配置\",\"refTagId\":\"EBE05DF6-8708-11EB-8CD1-0242C0A84603\",\"refTag\":\"5.0.6\",\"frozen\":true,\"name\":\"test\",\"remark\":\"aaa111\",\"script\":null,\"expCompleteTime\":\"2021-03-25 10:22:00\",\"buildStatus\":null,\"buildTime\":null,\"buildAccount\":null,\"allowBuild\":true}";
+        BuildJobDto dto = JsonUtils.fromJson(s, BuildJobDto.class);
+        controller.modifyRequisition(dto);
+    }
+
+    @Test
     public void findRequisitionByPage() {
         Search search = Search.createSearch();
 

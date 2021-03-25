@@ -214,12 +214,6 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<BuildJobRequisitionDto> modifyRequisition(BuildJob buildJob) {
-        // 通过模块和tag检查是否重复申请
-        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getRefTag());
-        if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + buildJob.getModuleCode() + "]对应标签[" + buildJob.getRefTag() + "]存在申请记录,请不要重复申请.");
-        }
-
         BuildJob entity = dao.findOne(buildJob.getId());
         if (Objects.isNull(entity)) {
             return ResultData.fail("应用不存在!");
@@ -227,6 +221,11 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         // 检查应用审核状态
         if (!entity.getFrozen()) {
             return ResultData.fail("应用已审核,不允许编辑!");
+        }
+        // 通过模块和tag检查是否重复申请
+        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getRefTag());
+        if (Objects.nonNull(existed) && !StringUtils.equals(existed.getId(), entity.getId())) {
+            return ResultData.fail("应用模块[" + buildJob.getModuleCode() + "]对应标签[" + buildJob.getRefTag() + "]存在申请记录,请不要重复申请.");
         }
 
         entity.setEnvCode(buildJob.getEnvCode());
