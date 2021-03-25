@@ -145,6 +145,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
                 dto.setModuleId(versionRecord.getModuleId());
                 dto.setModuleCode(versionRecord.getModuleCode());
                 dto.setModuleName(versionRecord.getModuleName());
+                dto.setRefTagId(versionRecord.getRefTagId());
                 dto.setRefTag(versionRecord.getRefTag());
                 dto.setName(versionRecord.getName());
                 dto.setVersion(versionRecord.getVersion());
@@ -191,6 +192,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
         version.setModuleCode(releaseVersion.getModuleCode());
         version.setModuleName(releaseVersion.getModuleName());
 
+        version.setRefTagId(releaseVersion.getRefTagId());
         version.setRefTag(releaseVersion.getRefTag());
         version.setName(releaseVersion.getName());
         version.setVersion(releaseVersion.getVersion());
@@ -254,6 +256,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
                 dto.setModuleId(releaseVersion.getModuleId());
                 dto.setModuleCode(releaseVersion.getModuleCode());
                 dto.setModuleName(releaseVersion.getModuleName());
+                dto.setRefTagId(releaseVersion.getRefTagId());
                 dto.setRefTag(releaseVersion.getRefTag());
                 dto.setName(releaseVersion.getName());
                 dto.setVersion(releaseVersion.getVersion());
@@ -349,7 +352,8 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
             record.setModuleId(version.getModuleId());
             record.setModuleCode(version.getModuleCode());
             record.setModuleName(version.getModuleName());
-            record.setTagName(version.getVersion());
+            record.setRefTagId(version.getRefTagId());
+            record.setRefTag(version.getVersion());
             record.setName(version.getName());
             record.setMessageId(version.getMessageId());
             record.setFrozen(Boolean.FALSE);
@@ -388,15 +392,15 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
      *
      * @param record 构建记录
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> releaseVersion(BuildJob record) {
         if (Objects.isNull(record)) {
             return ResultData.fail("发布记录不能为空.");
         }
 
-        VersionRecord version = this.getByVersion(record.getAppId(), record.getModuleCode(), record.getTagName());
+        VersionRecord version = this.getByVersion(record.getAppId(), record.getModuleCode(), record.getRefTag());
         if (Objects.isNull(version)) {
-            return ResultData.fail(record.getModuleCode() + "版本[" + record.getTagName() + "]不存在.");
+            return ResultData.fail(record.getModuleCode() + "版本[" + record.getRefTag() + "]不存在.");
         }
 
         if (BuildStatus.SUCCESS == record.getBuildStatus()) {
@@ -404,16 +408,16 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
             version.setAvailable(Boolean.TRUE);
             version.setBuildStatus(record.getBuildStatus());
             this.save(version);
-            LogUtil.bizLog(record.getJobName() + "发版成功[" + record.getTagName() + "].");
-
-            moduleService.updateVersion(record.getGitId(), record.getTagName());
+            LogUtil.bizLog(record.getJobName() + "发版成功[" + record.getRefTag() + "].");
+            // 更新应用模块当前最新版本号
+            moduleService.updateVersion(record.getModuleId(), record.getRefTag());
 
             return ResultData.success();
         } else {
             version.setBuildStatus(record.getBuildStatus());
             this.save(version);
-
-            gitlabService.deleteProjectRelease(record.getGitId(), record.getTagName());
+            // 发版失败,删除gitlab的版本
+            gitlabService.deleteProjectRelease(record.getGitId(), record.getRefTag());
 
             return ResultData.fail(record.getJobName() + "发版失败,当前构建状态:" + record.getBuildStatus().name());
         }

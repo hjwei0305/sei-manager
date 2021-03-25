@@ -66,17 +66,17 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "模块名称")
     private String moduleName;
     /**
-     * 标签Id
+     * 引用tagId
      */
     @NotBlank
-    @ApiModelProperty(value = "标签Id", required = true)
-    private String tagId;
+    @ApiModelProperty(value = "引用tagId")
+    private String refTagId;
     /**
-     * 标签名称
+     * 引用tag
      */
     @NotBlank
-    @ApiModelProperty(value = "标签名称", required = true)
-    private String tagName;
+    @ApiModelProperty(value = "引用tag")
+    private String refTag;
     /**
      * 是否冻结
      */
@@ -190,20 +190,20 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
         this.moduleName = moduleName;
     }
 
-    public String getTagId() {
-        return tagId;
+    public String getRefTagId() {
+        return refTagId;
     }
 
-    public void setTagId(String tagId) {
-        this.tagId = tagId;
+    public void setRefTagId(String refTagId) {
+        this.refTagId = refTagId;
     }
 
-    public String getTagName() {
-        return tagName;
+    public String getRefTag() {
+        return refTag;
     }
 
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
+    public void setRefTag(String refTag) {
+        this.refTag = refTag;
     }
 
     public Boolean getFrozen() {

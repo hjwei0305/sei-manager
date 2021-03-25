@@ -3,6 +3,7 @@ package com.changhong.sei.cicd.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -45,9 +46,14 @@ public class ReleaseVersionRequisitionDto extends RequisitionDto implements Seri
     @ApiModelProperty(value = "模块名称")
     private String moduleName;
     /**
+     * 引用tagId
+     */
+    @ApiModelProperty(value = "引用tagId")
+    private String refTagId;
+    /**
      * 引用tag
      */
-    @ApiModelProperty(value = "关联tag")
+    @ApiModelProperty(value = "引用tag")
     private String refTag;
     /**
      * 版本号
@@ -116,6 +122,14 @@ public class ReleaseVersionRequisitionDto extends RequisitionDto implements Seri
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public String getRefTagId() {
+        return refTagId;
+    }
+
+    public void setRefTagId(String refTagId) {
+        this.refTagId = refTagId;
     }
 
     public String getRefTag() {

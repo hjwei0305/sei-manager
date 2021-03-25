@@ -24,8 +24,8 @@ public interface AppModuleDao extends BaseEntityDao<AppModule> {
      * @return 返回更新的记录数
      */
     @Modifying
-    @Query("update AppModule t set t.version = :version where t.gitId = :gitId ")
-    int updateVersion(@Param("gitId") String gitId, @Param("version") String version);
+    @Query("update AppModule t set t.version = :version where t.id = :moduleId ")
+    int updateVersion(@Param("moduleId") String moduleId, @Param("version") String version);
 
     /**
      * 通过分组代码查询

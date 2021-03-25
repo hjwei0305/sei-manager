@@ -141,9 +141,9 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     @Transactional(rollbackFor = Exception.class)
     public ResultData<BuildJobRequisitionDto> createRequisition(BuildJob releaseRecord) {
         // 通过模块和tag检查是否重复申请
-        BuildJob existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getTagName());
+        BuildJob existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getRefTag());
         if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getTagName() + "]存在申请记录,请不要重复申请.");
+            return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getRefTag() + "]存在申请记录,请不要重复申请.");
         }
 
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
@@ -187,7 +187,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 dto.setModuleId(releaseRecord.getModuleId());
                 dto.setModuleCode(releaseRecord.getModuleCode());
                 dto.setModuleName(releaseRecord.getModuleName());
-                dto.setTagName(releaseRecord.getTagName());
+                dto.setRefTagId(releaseRecord.getRefTagId());
+                dto.setRefTag(releaseRecord.getRefTag());
                 dto.setName(releaseRecord.getName());
                 dto.setRemark(content);
                 dto.setExpCompleteTime(releaseRecord.getExpCompleteTime());
@@ -211,9 +212,9 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     @Transactional(rollbackFor = Exception.class)
     public ResultData<BuildJobRequisitionDto> modifyRequisition(BuildJob buildJob) {
         // 通过模块和tag检查是否重复申请
-        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getTagName());
+        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getRefTag());
         if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + buildJob.getModuleCode() + "]对应标签[" + buildJob.getTagName() + "]存在申请记录,请不要重复申请.");
+            return ResultData.fail("应用模块[" + buildJob.getModuleCode() + "]对应标签[" + buildJob.getRefTag() + "]存在申请记录,请不要重复申请.");
         }
 
         BuildJob entity = dao.findOne(buildJob.getId());
@@ -233,7 +234,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         entity.setModuleId(buildJob.getModuleId());
         entity.setModuleCode(buildJob.getModuleCode());
         entity.setModuleName(buildJob.getModuleName());
-        entity.setTagName(buildJob.getTagName());
+        entity.setRefTagId(buildJob.getRefTagId());
+        entity.setRefTag(buildJob.getRefTag());
         entity.setName(buildJob.getName());
         entity.setExpCompleteTime(buildJob.getExpCompleteTime());
         // 更新发版记录
@@ -299,7 +301,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 dto.setModuleId(buildJob.getModuleId());
                 dto.setModuleCode(buildJob.getModuleCode());
                 dto.setModuleName(buildJob.getModuleName());
-                dto.setTagName(buildJob.getTagName());
+                dto.setRefTagId(buildJob.getRefTagId());
+                dto.setRefTag(buildJob.getRefTag());
                 dto.setName(buildJob.getName());
                 dto.setRemark(content);
                 dto.setExpCompleteTime(buildJob.getExpCompleteTime());
@@ -481,7 +484,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             AppModule module = moduleService.getAppModuleByGitId(buildJob.getGitId());
             params.put(Constants.DEPLOY_PARAM_GIT_PATH, Objects.isNull(module) ? "null" : module.getGitHttpUrl());
             // 参数:代码分支或者TAG
-            params.put(Constants.DEPLOY_PARAM_BRANCH, buildJob.getTagName());
+            params.put(Constants.DEPLOY_PARAM_BRANCH, buildJob.getRefTag());
 
             // 调用Jenkins构建
             ResultData<Integer> buildResult = jenkinsService.buildJob(jobName, params);
@@ -659,7 +662,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setModuleId(module.getId());
                 record.setModuleCode(module.getCode());
                 record.setModuleName(module.getName());
-                record.setTagName("dev");
+                record.setRefTag("dev");
                 record.setName("开发构建-" + module.getName());
                 record.setFrozen(Boolean.FALSE);
                 record.setExpCompleteTime(LocalDateTime.now());

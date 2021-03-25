@@ -79,15 +79,15 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "module_name")
     private String moduleName;
     /**
-     * 标签id
+     * 引用tagId
      */
-    @Column(name = "tag_id")
-    private String tagId;
+    @Column(name = "ref_tag_id")
+    private String refTagId;
     /**
-     * 标签名称
+     * 引用tag
      */
-    @Column(name = "tag_name")
-    private String tagName;
+    @Column(name = "ref_tag")
+    private String refTag;
 
     /**
      * 名称
@@ -228,20 +228,20 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
         this.moduleName = moduleName;
     }
 
-    public String getTagId() {
-        return tagId;
+    public String getRefTagId() {
+        return refTagId;
     }
 
-    public void setTagId(String tagId) {
-        this.tagId = tagId;
+    public void setRefTagId(String refTagId) {
+        this.refTagId = refTagId;
     }
 
-    public String getTagName() {
-        return tagName;
+    public String getRefTag() {
+        return refTag;
     }
 
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
+    public void setRefTag(String refTag) {
+        this.refTag = refTag;
     }
 
     public String getName() {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class VersionRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 所属应用id
      */
+    @NotBlank
     @ApiModelProperty(value = "所属应用id")
     private String appId;
     /**
@@ -30,16 +32,19 @@ public class VersionRecordDto extends BaseEntityDto implements Serializable {
     /**
      * 模块git id
      */
+    @NotBlank
     @ApiModelProperty(value = "模块git id")
     private String gitId;
     /**
      * 模块id
      */
+    @NotBlank
     @ApiModelProperty(value = "模块id")
     private String moduleId;
     /**
      * 模块代码
      */
+    @NotBlank
     @ApiModelProperty(value = "模块代码")
     private String moduleCode;
     /**
@@ -48,8 +53,15 @@ public class VersionRecordDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "模块名称")
     private String moduleName;
     /**
+     * 引用tagId
+     */
+    @NotBlank
+    @ApiModelProperty(value = "引用tagId")
+    private String refTagId;
+    /**
      * 引用tag
      */
+    @NotBlank
     @ApiModelProperty(value = "引用tag")
     private String refTag;
     /**
@@ -145,6 +157,14 @@ public class VersionRecordDto extends BaseEntityDto implements Serializable {
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public String getRefTagId() {
+        return refTagId;
+    }
+
+    public void setRefTagId(String refTagId) {
+        this.refTagId = refTagId;
     }
 
     public String getRefTag() {

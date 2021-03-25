@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -57,10 +58,15 @@ public class BuildJobRequisitionDto extends RequisitionDto implements Serializab
     @ApiModelProperty(value = "模块名称")
     private String moduleName;
     /**
-     * 标签名称
+     * 引用tagId
      */
-    @ApiModelProperty(value = "标签名称")
-    private String tagName;
+    @ApiModelProperty(value = "引用tagId")
+    private String refTagId;
+    /**
+     * 引用tag
+     */
+    @ApiModelProperty(value = "引用tag")
+    private String refTag;
     /**
      * 发布名称
      */
@@ -144,12 +150,20 @@ public class BuildJobRequisitionDto extends RequisitionDto implements Serializab
         this.moduleName = moduleName;
     }
 
-    public String getTagName() {
-        return tagName;
+    public String getRefTagId() {
+        return refTagId;
     }
 
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
+    public void setRefTagId(String refTagId) {
+        this.refTagId = refTagId;
+    }
+
+    public String getRefTag() {
+        return refTag;
+    }
+
+    public void setRefTag(String refTag) {
+        this.refTag = refTag;
     }
 
     public String getName() {

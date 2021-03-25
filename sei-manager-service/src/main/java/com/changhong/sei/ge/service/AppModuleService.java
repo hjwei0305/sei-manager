@@ -314,11 +314,12 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     /**
      * 更新应用模块版本号
      *
-     * @param gitId   gitId
-     * @param version 版本号
+     * @param moduleId moduleId
+     * @param version  版本号
      */
-    public int updateVersion(String gitId, String version) {
-        return dao.updateVersion(gitId, version);
+    @Transactional(rollbackFor = Exception.class)
+    public int updateVersion(String moduleId, String version) {
+        return dao.updateVersion(moduleId, version);
     }
 
 }
