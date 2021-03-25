@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -22,6 +23,7 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
     /**
      * 环境
      */
+    @NotBlank
     @ApiModelProperty(value = "环境代码", required = true)
     private String envCode;
     /**
@@ -32,6 +34,7 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
     /**
      * 所属应用id
      */
+    @NotBlank
     @ApiModelProperty(value = "应用id", required = true)
     private String appId;
     /**
@@ -42,16 +45,19 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
     /**
      * 模块git id
      */
+    @NotBlank
     @ApiModelProperty(value = "模块git id", required = true)
     private String gitId;
     /**
      * 模块id
      */
+    @NotBlank
     @ApiModelProperty(value = "模块id")
     private String moduleId;
     /**
      * 模块名称
      */
+    @NotBlank
     @ApiModelProperty(value = "模块代码", required = true)
     private String moduleCode;
     /**
@@ -60,8 +66,15 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
     @ApiModelProperty(value = "模块名称")
     private String moduleName;
     /**
+     * 标签Id
+     */
+    @NotBlank
+    @ApiModelProperty(value = "标签Id", required = true)
+    private String tagId;
+    /**
      * 标签名称
      */
+    @NotBlank
     @ApiModelProperty(value = "标签名称", required = true)
     private String tagName;
     /**
@@ -175,6 +188,14 @@ public class BuildJobDto extends BaseEntityDto implements Serializable {
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public String getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
     }
 
     public String getTagName() {

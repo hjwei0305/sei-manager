@@ -23,8 +23,9 @@ import javax.validation.Valid;
  * @since 2020-11-23 08:34:10
  */
 @Valid
-@FeignClient(name = "sei-manager", path = "releaseRecord")
+@FeignClient(name = "sei-manager", path = BuildJobApi.PATH)
 public interface BuildJobApi extends BaseEntityApi<BuildJobDto>, FindByPageApi<BuildJobDto> {
+    String PATH = "buildJob";
 
     /**
      * 分页查询发布申请单

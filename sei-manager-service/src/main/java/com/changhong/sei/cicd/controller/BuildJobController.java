@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(value = "BuildJobApi", tags = "构建任务服务")
-@RequestMapping(path = "releaseRecord", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = {"releaseRecord", BuildJobApi.PATH}, produces = MediaType.APPLICATION_JSON_VALUE)
 public class BuildJobController extends BaseEntityController<BuildJob, BuildJobDto> implements BuildJobApi {
     /**
      * 发布记录服务对象

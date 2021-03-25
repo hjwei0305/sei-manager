@@ -79,6 +79,11 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
     @Column(name = "module_name")
     private String moduleName;
     /**
+     * 标签id
+     */
+    @Column(name = "tag_id")
+    private String tagId;
+    /**
      * 标签名称
      */
     @Column(name = "tag_name")
@@ -221,6 +226,14 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public String getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
     }
 
     public String getTagName() {
