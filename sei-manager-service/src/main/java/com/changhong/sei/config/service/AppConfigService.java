@@ -531,7 +531,10 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         if (StringUtils.isNotBlank(value) && value.contains("${") && variableValueMap.size() > 0) {
             for (Map.Entry<String, String> entry : variableValueMap.entrySet()) {
                 if (value.contains(entry.getKey())) {
-                    return value.replace(entry.getKey(), entry.getValue());
+                    value = value.replace(entry.getKey(), entry.getValue());
+                    if (!value.contains("${")) {
+                        return value;
+                    }
                 }
             }
         }

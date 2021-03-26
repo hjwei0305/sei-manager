@@ -22,6 +22,7 @@ import com.changhong.sei.ge.entity.MessageContent;
 import com.changhong.sei.ge.service.AppModuleService;
 import com.changhong.sei.ge.service.MessageContentService;
 import com.changhong.sei.integrated.service.JenkinsService;
+import com.changhong.sei.manager.commom.EmailManager;
 import com.changhong.sei.util.EnumUtils;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
@@ -34,6 +35,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -80,6 +82,11 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     private MessageContentService messageContentService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private EmailManager emailManager;
+
+    @Value("${sei.application.name:SEI开发运维平台}")
+    private String managerName;
 
     @Override
     protected BaseEntityDao<BuildJob> getDao() {
@@ -640,7 +647,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      * @param request gitlab push hook
      * @return 返回结果
      */
-    @Transactional
+    //@Transactional
     public ResultData<Void> webhook(GitlabPushHookRequest request) {
         if (!StringUtils.equalsIgnoreCase("refs/heads/dev", request.getRef())) {
             // 只对dev分支做自动发布,其他分支跳过
@@ -670,10 +677,10 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setExpCompleteTime(LocalDateTime.now());
                 this.save(record);
             }
-
             this.build(record.getId(), request.getUserUsername());
         } catch (Exception e) {
             LOG.error("{} 的Push Hook 异常{}", request, ExceptionUtils.getRootCauseMessage(e));
+            emailManager.sendMail(managerName + "-Push Hook 异常", ExceptionUtils.getRootCauseMessage(e), module.getCreatorAccount());
         }
         return ResultData.success();
     }
