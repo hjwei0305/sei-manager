@@ -163,17 +163,14 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
                 return OperateResultWithData.operationFailure(resultData.getMessage());
             }
         }
-        if (StringUtils.isNotBlank(entity.getManagerAccount())) {
-            // 指定组管理员
-            ResultData<Void> resultData = ContextUtil.getBean(ProjectUserService.class).assign(entity.getManagerAccount(), entity.getId(), entity.getName(), ObjectType.PROJECT);
-            if (resultData.successful()) {
-                return super.save(entity);
-            } else {
-                return OperateResultWithData.operationFailure(resultData.getMessage());
+        OperateResultWithData<ProjectGroup> result = super.save(entity);
+        if (result.successful()) {
+            if (StringUtils.isNotBlank(entity.getManagerAccount())) {
+                // 指定组管理员
+                ContextUtil.getBean(ProjectUserService.class).assign(entity.getManagerAccount(), entity.getId(), entity.getName(), ObjectType.PROJECT);
             }
-        } else {
-            return super.save(entity);
         }
+        return result;
     }
 
     /**
