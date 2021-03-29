@@ -1,5 +1,12 @@
 package com.changhong.sei.cicd.service;
 
+import com.changhong.sei.cicd.dao.VersionRecordDao;
+import com.changhong.sei.cicd.dao.VersionRecordRequisitionDao;
+import com.changhong.sei.cicd.dto.*;
+import com.changhong.sei.cicd.entity.BuildJob;
+import com.changhong.sei.cicd.entity.RequisitionOrder;
+import com.changhong.sei.cicd.entity.VersionRecord;
+import com.changhong.sei.cicd.entity.VersionRecordRequisition;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
@@ -10,10 +17,6 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.cicd.dao.VersionRecordDao;
-import com.changhong.sei.cicd.dao.VersionRecordRequisitionDao;
-import com.changhong.sei.cicd.dto.*;
-import com.changhong.sei.cicd.entity.*;
 import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.MessageContent;
 import com.changhong.sei.ge.service.AppModuleService;
@@ -335,17 +338,22 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
         version.setBuildStatus(BuildStatus.BUILDING);
         this.save(version);
 
-        BuildJob record = recordService.getByGitIdAndTag(version.getGitId(), version.getVersion());
+        String release = "Release";
+        TemplateType type;
+        if (StringUtils.isBlank(module.getNameSpace())) {
+            // 前端应用
+            type = TemplateType.PUBLISH_WEB;
+        } else {
+            // java应用
+            type = TemplateType.PUBLISH_JAVA;
+        }
+        BuildJob record = recordService.getByGitIdAndTag(version.getGitId(), version.getVersion(), release, type.name());
         if (Objects.isNull(record)) {
             // 生成一条构建记录
             record = new BuildJob();
-            if (StringUtils.isBlank(module.getNameSpace())) {
-                // 前端应用
-                record.setType(TemplateType.PUBLISH_WEB.name());
-            } else {
-                // java应用
-                record.setType(TemplateType.PUBLISH_JAVA.name());
-            }
+            record.setType(type.name());
+            record.setEnvCode(release);
+            record.setEnvName(release);
             record.setAppId(version.getAppId());
             record.setAppName(version.getAppName());
             record.setGitId(version.getGitId());

@@ -145,37 +145,37 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     /**
      * 创建应用申请单
      *
-     * @param releaseRecord 应用
+     * @param buildJob 应用
      * @return 操作结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<BuildJobRequisitionDto> createRequisition(BuildJob releaseRecord) {
+    public ResultData<BuildJobRequisitionDto> createRequisition(BuildJob buildJob) {
         // 通过模块和tag检查是否重复申请
-        BuildJob existed = getByGitIdAndTag(releaseRecord.getGitId(), releaseRecord.getRefTag());
+        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getRefTag(), buildJob.getEnvCode(), buildJob.getType());
         if (Objects.nonNull(existed)) {
-            return ResultData.fail("应用模块[" + releaseRecord.getModuleCode() + "]对应标签[" + releaseRecord.getRefTag() + "]存在申请记录,请不要重复申请.");
+            return ResultData.fail("应用模块[" + buildJob.getModuleCode() + "]对应标签[" + buildJob.getRefTag() + "]存在申请记录,请不要重复申请.");
         }
 
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
-        releaseRecord.setFrozen(Boolean.TRUE);
+        buildJob.setFrozen(Boolean.TRUE);
         // 保存发版记录
-        String content = releaseRecord.getRemark();
+        String content = buildJob.getRemark();
         if (StringUtils.isNotBlank(content)) {
             MessageContent messageContent = new MessageContent(content);
             messageContentService.save(messageContent);
-            releaseRecord.setMessageId(messageContent.getId());
+            buildJob.setMessageId(messageContent.getId());
         }
         // 保存应用
-        OperateResultWithData<BuildJob> resultWithData = this.save(releaseRecord);
+        OperateResultWithData<BuildJob> resultWithData = this.save(buildJob);
         if (resultWithData.successful()) {
             RequisitionOrder requisitionOrder = new RequisitionOrder();
             // 申请类型:发布申请
             requisitionOrder.setApplyType(ApplyType.DEPLOY);
             // 发布记录id
-            requisitionOrder.setRelationId(releaseRecord.getId());
+            requisitionOrder.setRelationId(buildJob.getId());
             // 申请摘要
-            requisitionOrder.setSummary(releaseRecord.getAppName().concat("-").concat(releaseRecord.getAppName())
-                    .concat("[").concat(releaseRecord.getName()).concat("]"));
+            requisitionOrder.setSummary(buildJob.getAppName().concat("-").concat(buildJob.getAppName())
+                    .concat("[").concat(buildJob.getName()).concat("]"));
 
             ResultData<RequisitionOrder> result = requisitionOrderService.createRequisition(requisitionOrder);
             if (result.successful()) {
@@ -188,20 +188,20 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 dto.setApplyType(requisition.getApplyType());
                 dto.setApprovalStatus(requisition.getApprovalStatus());
 
-                dto.setRelationId(releaseRecord.getId());
-                dto.setEnvCode(releaseRecord.getEnvCode());
-                dto.setEnvName(releaseRecord.getEnvName());
-                dto.setAppId(releaseRecord.getAppId());
-                dto.setAppName(releaseRecord.getAppName());
-                dto.setGitId(releaseRecord.getGitId());
-                dto.setModuleId(releaseRecord.getModuleId());
-                dto.setModuleCode(releaseRecord.getModuleCode());
-                dto.setModuleName(releaseRecord.getModuleName());
-                dto.setRefTagId(releaseRecord.getRefTagId());
-                dto.setRefTag(releaseRecord.getRefTag());
-                dto.setName(releaseRecord.getName());
+                dto.setRelationId(buildJob.getId());
+                dto.setEnvCode(buildJob.getEnvCode());
+                dto.setEnvName(buildJob.getEnvName());
+                dto.setAppId(buildJob.getAppId());
+                dto.setAppName(buildJob.getAppName());
+                dto.setGitId(buildJob.getGitId());
+                dto.setModuleId(buildJob.getModuleId());
+                dto.setModuleCode(buildJob.getModuleCode());
+                dto.setModuleName(buildJob.getModuleName());
+                dto.setRefTagId(buildJob.getRefTagId());
+                dto.setRefTag(buildJob.getRefTag());
+                dto.setName(buildJob.getName());
                 dto.setRemark(content);
-                dto.setExpCompleteTime(releaseRecord.getExpCompleteTime());
+                dto.setExpCompleteTime(buildJob.getExpCompleteTime());
                 return ResultData.success(dto);
             } else {
                 // 事务回滚
@@ -230,7 +230,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             return ResultData.fail("应用已审核,不允许编辑!");
         }
         // 通过模块和tag检查是否重复申请
-        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getRefTag());
+        BuildJob existed = getByGitIdAndTag(buildJob.getGitId(), buildJob.getRefTag(), buildJob.getEnvCode(), buildJob.getType());
         if (Objects.nonNull(existed) && !StringUtils.equals(existed.getId(), entity.getId())) {
             return ResultData.fail("应用模块[" + buildJob.getModuleCode() + "]对应标签[" + buildJob.getRefTag() + "]存在申请记录,请不要重复申请.");
         }
@@ -634,10 +634,12 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      * @param tag   tag
      * @return 构建记录
      */
-    public BuildJob getByGitIdAndTag(String gitId, String tag) {
+    public BuildJob getByGitIdAndTag(String gitId, String tag, String envCode, String type) {
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(BuildJob.FIELD_GIT_ID, gitId));
         search.addFilter(new SearchFilter(BuildJob.FIELD_TAG_NAME, tag));
+        search.addFilter(new SearchFilter(BuildJob.FIELD_ENV_CODE, envCode));
+        search.addFilter(new SearchFilter(BuildJob.FIELD_TYPE, type));
         return dao.findFirstByFilters(search);
     }
 
@@ -658,12 +660,15 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         if (Objects.isNull(module)) {
             return ResultData.fail("未找到Git Id[" + gitId + "]对应的应用模块");
         }
+
+        TemplateType type = TemplateType.DEPLOY;
         String tag = "dev";
         try {
-            BuildJob record = getByGitIdAndTag(gitId, tag);
+            BuildJob record = getByGitIdAndTag(gitId, tag, tag, type.name());
             if (Objects.isNull(record)) {
                 record = new BuildJob();
-                record.setEnvCode("dev");
+                record.setType(type.name());
+                record.setEnvCode(tag);
                 record.setEnvName("开发环境");
                 record.setAppId(module.getAppId());
                 record.setAppName(module.getAppName());
@@ -671,7 +676,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setModuleId(module.getId());
                 record.setModuleCode(module.getCode());
                 record.setModuleName(module.getName());
-                record.setRefTag("dev");
+                record.setRefTag(tag);
                 record.setName("开发构建-" + module.getName());
                 record.setFrozen(Boolean.FALSE);
                 record.setExpCompleteTime(LocalDateTime.now());
