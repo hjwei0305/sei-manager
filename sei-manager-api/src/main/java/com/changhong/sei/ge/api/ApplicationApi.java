@@ -21,6 +21,16 @@ import javax.validation.Valid;
 public interface ApplicationApi extends BaseEntityApi<ApplicationDto>, FindByPageApi<ApplicationDto> {
 
     /**
+     * 分页查询业务实体
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @PostMapping(path = "findByPageNoAuth", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "分页查询业务实体", notes = "分页查询业务实体")
+    ResultData<PageResult<ApplicationDto>> findByPageNoAuth(@RequestBody Search search);
+
+    /**
      * 分页查询应用申请单
      *
      * @param search 查询参数

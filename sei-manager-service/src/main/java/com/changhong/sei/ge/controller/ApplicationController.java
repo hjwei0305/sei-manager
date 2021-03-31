@@ -54,6 +54,20 @@ public class ApplicationController extends BaseEntityController<Application, App
      * @return 分页查询结果
      */
     @Override
+    public ResultData<PageResult<ApplicationDto>> findByPageNoAuth(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        return convertToDtoPageResult(service.findByPage(search));
+    }
+
+    /**
+     * 分页查询业务实体
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
     public ResultData<PageResult<ApplicationDto>> findByPage(Search search) {
         if (Objects.isNull(search)) {
             search = Search.createSearch();
