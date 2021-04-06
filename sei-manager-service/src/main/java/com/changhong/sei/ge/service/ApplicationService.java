@@ -297,6 +297,11 @@ public class ApplicationService extends BaseEntityService<Application> {
             return ResultData.fail("应用[" + appId + "]不存在");
         }
 
+        if (StringUtils.isNotBlank(application.getManagerAccount())) {
+            // 移除权限
+            projectUserService.cancelAssign(appId, Sets.newHashSet(application.getManagerAccount()));
+        }
+
         ResultData<Void> resultData = projectUserService.assign(account, appId, application.getName(), ObjectType.APPLICATION);
         if (resultData.successful()) {
             application.setManagerAccount(user.getAccount());

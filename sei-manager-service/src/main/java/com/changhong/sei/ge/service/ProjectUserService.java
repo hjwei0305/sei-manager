@@ -159,19 +159,19 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> implement
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> cancelAssign(String objectId, Set<String> accounts) {
-        AppModule module = moduleService.findOne(objectId);
-        if (Objects.isNull(module)) {
-            return ResultData.fail("应用模块[" + objectId + "]不存在.");
-        }
-
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(ProjectUser.FIELD_OBJECT_ID, objectId));
         search.addFilter(new SearchFilter(ProjectUser.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
         List<ProjectUser> users = dao.findByFilters(search);
         if (CollectionUtils.isNotEmpty(users)) {
-            // 移除gitlab用户
-            gitlabService.removeProjectUser(module.getGitId(), users.stream().map(ProjectUser::getGitId).distinct().toArray(Integer[]::new));
-
+            if (ObjectType.MODULE == users.get(0).getType()) {
+                AppModule module = moduleService.findOne(objectId);
+                if (Objects.isNull(module)) {
+                    return ResultData.fail("应用模块[" + objectId + "]不存在.");
+                }
+                // 移除gitlab用户
+                gitlabService.removeProjectUser(module.getGitId(), users.stream().map(ProjectUser::getGitId).distinct().toArray(Integer[]::new));
+            }
             Set<String> ids = users.stream().map(ProjectUser::getId).collect(Collectors.toSet());
             this.delete(ids);
         }
