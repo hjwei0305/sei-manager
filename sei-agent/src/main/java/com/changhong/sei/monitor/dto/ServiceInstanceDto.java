@@ -25,7 +25,7 @@ public class ServiceInstanceDto implements Serializable {
     @ApiModelProperty(notes = "主机")
     private String host;
     @ApiModelProperty(notes = "端口")
-    private String port;
+    private int port;
     @ApiModelProperty(notes = "uri地址")
     private String uri;
     @ApiModelProperty(notes = "其他属性")
@@ -64,11 +64,11 @@ public class ServiceInstanceDto implements Serializable {
         this.host = host;
     }
 
-    public String getPort() {
+    public int getPort() {
         return port;
     }
 
-    public void setPort(String port) {
+    public void setPort(int port) {
         this.port = port;
     }
 

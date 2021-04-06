@@ -2,7 +2,7 @@ package com.changhong.sei.log.service;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
-import com.changhong.sei.monitor.service.BaseElasticService;
+import com.changhong.sei.monitor.service.ElasticSearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class ScheduleService {
     @Value("${spring.cloud.config.profile}")
     private String env;
     @Autowired
-    private BaseElasticService elasticService;
+    private ElasticSearchService elasticService;
 
     // 创建 Pattern 对象
     private static final Pattern PATTERN = Pattern.compile("\\d{4}\\.\\d{1,2}\\.\\d{1,2}");

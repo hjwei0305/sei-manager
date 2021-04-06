@@ -4,7 +4,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.monitor.dto.ElasticSearchRequest;
-import com.changhong.sei.monitor.service.BaseElasticService;
+import com.changhong.sei.monitor.service.ElasticSearchService;
 import com.changhong.sei.util.DateUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,10 @@ import java.util.HashMap;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-10-27 13:48
  */
-public class BaseElasticServiceTest extends BaseUnitTest {
+public class ElasticSearchServiceTest extends BaseUnitTest {
 
     @Autowired
-    private BaseElasticService service;
+    private ElasticSearchService service;
 
     @Test
     public void deleteIndex() {

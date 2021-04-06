@@ -52,8 +52,8 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0.00  2020-09-22 00:03
  */
 @Service
-public class BaseElasticService {
-    private static final Logger LOG = LoggerFactory.getLogger(BaseElasticService.class);
+public class ElasticSearchService {
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticSearchService.class);
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;

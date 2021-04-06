@@ -56,7 +56,7 @@ public class ServiceInstanceService {
             for (ServiceInstance instance : instances) {
                 app = new ServiceInstanceDto(instance.getServiceId(), instance.getServiceId());
                 app.setHost(instance.getHost());
-                app.setPort(instance.getInstanceId());
+                app.setPort(instance.getPort());
                 app.setUri(instance.getUri().toString());
                 app.setMetadata(instance.getMetadata());
                 applications.add(app);

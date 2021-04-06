@@ -3,7 +3,7 @@ package com.changhong.sei.monitor.controller;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.monitor.api.ElasticIndexMonitorApi;
 import com.changhong.sei.monitor.dto.ElasticSearchRequest;
-import com.changhong.sei.monitor.service.ElasticIndexMonitorService;
+import com.changhong.sei.monitor.service.ElasticSearchService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -29,7 +29,7 @@ import java.util.Set;
 public class ElasticIndexMonitorController implements ElasticIndexMonitorApi {
 
     @Autowired
-    private ElasticIndexMonitorService service;
+    private ElasticSearchService service;
 
     /**
      * 获取所有索引

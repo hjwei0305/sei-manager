@@ -6,7 +6,7 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.log.dto.LogDetailResponse;
 import com.changhong.sei.log.dto.LogResponse;
 import com.changhong.sei.monitor.dto.ElasticSearchRequest;
-import com.changhong.sei.monitor.service.BaseElasticService;
+import com.changhong.sei.monitor.service.ElasticSearchService;
 import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.util.*;
 @Service
 public class LogService {
     @Autowired
-    private BaseElasticService elasticService;
+    private ElasticSearchService elasticService;
 
     /**
      * 分页查询
