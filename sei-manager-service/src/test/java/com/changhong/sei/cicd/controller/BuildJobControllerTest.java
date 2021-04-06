@@ -23,7 +23,7 @@ public class BuildJobControllerTest extends BaseUnitTest {
 
     @Test
     public void createRequisition() {
-        String s = "{\"envCode\":\"Demo\",\"appId\":\"E55DDDA7-82CE-11EB-B615-0242C0A8431A\",\"gitId\":\"1509\",\"moduleCode\":\"soms-v7\",\"moduleId\":\"1235F7FE-82CF-11EB-B615-0242C0A8431A\",\"refTagId\":\"4003C9D5-8A32-11EB-9E7E-0242C0A8431A\",\"name\":\"首次部署演示环境\",\"envName\":\"演示环境\",\"appName\":\"财务共享运营API\",\"moduleName\":\"财务共享运营API\",\"refTag\":\"7.0.1\",\"expCompleteTime\":null,\"remark\":\"## 验证部署\\n1. 部署演示环境验证\\n2. 演示环境api\"}";
+        String s = "{\"envCode\":\"Demo\",\"appId\":\"E55DDDA7-82CE-11EB-B615-0242C0A8431A\",\"gitId\":\"1509\",\"moduleCode\":\"soms-v7\",\"moduleId\":\"1235F7FE-82CF-11EB-B615-0242C0A8431A\",\"refTagId\":\"4003C9D5-8A32-11EB-9E7E-0242C0A8431A\",\"name\":\"验证演示环境部署\",\"envName\":\"演示环境\",\"appName\":\"财务共享运营API\",\"moduleName\":\"财务共享运营API\",\"refTag\":\"7.0.1\",\"expCompleteTime\":null,\"remark\":\"### 验证演示环境部署\"}";
         BuildJobDto dto = JsonUtils.fromJson(s, BuildJobDto.class);
         controller.createRequisition(dto);
     }

@@ -7,6 +7,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.ge.dto.AppModuleDto;
+import com.changhong.sei.ge.dto.ForkProjectRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -74,5 +75,15 @@ public interface AppModuleApi extends BaseEntityApi<AppModuleDto>, FindByPageApi
     @DeleteMapping(path = "deleteRequisition/{id}")
     @ApiOperation(value = "删除应用模块申请单", notes = "删除应用模块申请单")
     ResultData<Void> deleteRequisition(@PathVariable("id") String id);
+
+    /**
+     * 派生二开项目
+     *
+     * @param request 派生参数
+     * @return 操作结果
+     */
+    @PostMapping(path = "forkProject")
+    @ApiOperation(value = "派生二开项目", notes = "派生一个新的二开项目")
+    ResultData<Void> forkProject(@RequestBody @Valid ForkProjectRequest request);
 
 }

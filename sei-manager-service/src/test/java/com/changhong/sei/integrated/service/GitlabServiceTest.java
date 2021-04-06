@@ -2,7 +2,7 @@ package com.changhong.sei.integrated.service;
 
 import com.changhong.sei.BaseUnitTest;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.integrated.vo.ProjectType;
+import com.changhong.sei.ge.dto.ModuleType;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectUser;
@@ -27,7 +27,7 @@ public class GitlabServiceTest extends BaseUnitTest {
     @Test
     public void createProject() {
         ProjectVo project = new ProjectVo();
-        project.setType(ProjectType.JAVA);
+        project.setType(ModuleType.PRODUCT_JAVA.name());
 //        project.setProjectId(IdGenerator.uuid2());
         project.setCode("sei-test-mac1");
         project.setName("测试createProject");
@@ -101,6 +101,12 @@ public class GitlabServiceTest extends BaseUnitTest {
     @Test
     public void deleteGroup() {
         ResultData<Void> resultData = service.deleteGroup("389");
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void forkProject() {
+        ResultData<ProjectVo> resultData = service.forkProject("1593", "392");
         System.out.println(resultData);
     }
 }

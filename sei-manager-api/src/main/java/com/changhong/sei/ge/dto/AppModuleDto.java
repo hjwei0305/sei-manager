@@ -84,6 +84,11 @@ public class AppModuleDto extends BaseEntityDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime gitCreateTime;
     /**
+     * 模块类型
+     */
+    @ApiModelProperty(value = "模块类型")
+    private ModuleType type;
+    /**
      * 描述说明
      */
     @ApiModelProperty(value = "描述说明")
@@ -196,6 +201,14 @@ public class AppModuleDto extends BaseEntityDto {
 
     public void setGitCreateTime(LocalDateTime gitCreateTime) {
         this.gitCreateTime = gitCreateTime;
+    }
+
+    public ModuleType getType() {
+        return type;
+    }
+
+    public void setType(ModuleType type) {
+        this.type = type;
     }
 
     public String getRemark() {

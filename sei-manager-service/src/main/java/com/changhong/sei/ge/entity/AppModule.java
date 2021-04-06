@@ -2,6 +2,7 @@ package com.changhong.sei.ge.entity;
 
 import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.IFrozen;
+import com.changhong.sei.ge.dto.ModuleType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -84,6 +85,11 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
     private String gitWebUrl;
     @Column(name = "git_create_time")
     private LocalDateTime gitCreateTime;
+    /**
+     * 模块类型
+     */
+    @Column(name = "type_")
+    private ModuleType type;
     /**
      * 描述说明
      */
@@ -197,6 +203,14 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
 
     public void setGitCreateTime(LocalDateTime gitCreateTime) {
         this.gitCreateTime = gitCreateTime;
+    }
+
+    public ModuleType getType() {
+        return type;
+    }
+
+    public void setType(ModuleType type) {
+        this.type = type;
     }
 
     public String getRemark() {

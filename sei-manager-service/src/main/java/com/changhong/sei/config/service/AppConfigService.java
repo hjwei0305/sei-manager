@@ -400,10 +400,6 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> saveYamlData(final String appCode, final String envCode, String yaml) {
-        AppModule module = appModuleService.findByProperty(AppModule.FIELD_CODE, appCode);
-        if (Objects.isNull(module)) {
-            return ResultData.fail("应用模块中未找到代码[" + appCode + "].");
-        }
         RuntimeEnv env = runtimeEnvService.findByProperty(RuntimeEnv.CODE_FIELD, envCode);
         if (Objects.isNull(env)) {
             return ResultData.fail("运行环境中未找到代码[" + envCode + "].");
@@ -446,7 +442,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
             if (Objects.isNull(config)) {
                 config = new AppConfig();
                 config.setAppCode(appCode);
-                config.setAppName(module.getName());
+                config.setAppName(appCode);
                 config.setEnvCode(envCode);
                 config.setEnvName(env.getName());
                 config.setKey(entry.getKey());

@@ -17,10 +17,10 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.ge.dao.AppModuleDao;
+import com.changhong.sei.ge.dto.ModuleType;
 import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.integrated.service.GitlabService;
-import com.changhong.sei.integrated.vo.ProjectType;
 import com.changhong.sei.integrated.vo.ProjectVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +48,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     private RequisitionOrderService requisitionOrderService;
     @Autowired
     private ApplicationService applicationService;
+    @Autowired
+    private ProjectGroupService projectGroupService;
     @Autowired
     private GitlabService gitlabService;
 
@@ -110,6 +112,13 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     public ResultData<AppModuleRequisitionDto> createRequisition(AppModule module) {
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         module.setFrozen(Boolean.TRUE);
+        if (StringUtils.isBlank(module.getNameSpace())) {
+            // 前端应用
+            module.setType(ModuleType.PRODUCT_WEB);
+        } else {
+            // java应用
+            module.setType(ModuleType.PRODUCT_JAVA);
+        }
         // 保存应用模块
         OperateResultWithData<AppModule> resultWithData = this.save(module);
         if (resultWithData.successful()) {
@@ -171,6 +180,13 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         module.setVersion(appModule.getVersion());
         module.setNameSpace(appModule.getNameSpace());
         module.setRemark(appModule.getRemark());
+        if (StringUtils.isBlank(module.getNameSpace())) {
+            // 前端应用
+            module.setType(ModuleType.PRODUCT_WEB);
+        } else {
+            // java应用
+            module.setType(ModuleType.PRODUCT_JAVA);
+        }
 
         // 保存应用模块
         OperateResultWithData<AppModule> resultWithData = this.save(module);
@@ -266,12 +282,9 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         project.setName(module.getRemark());
         // gitlab群组id
         project.setGroupId(application.getGroupCode());
-        if (StringUtils.isBlank(module.getNameSpace())) {
-            project.setType(ProjectType.WEB);
-        } else {
-            project.setType(ProjectType.JAVA);
-            project.setNameSpace(module.getNameSpace());
-        }
+
+        project.setType(module.getType().name());
+        project.setNameSpace(module.getNameSpace());
         // 创建gitlab项目
         ResultData<ProjectVo> resultData = gitlabService.createProject(project);
         if (resultData.successful()) {
@@ -320,6 +333,60 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     @Transactional(rollbackFor = Exception.class)
     public int updateVersion(String moduleId, String version) {
         return dao.updateVersion(moduleId, version);
+    }
+
+    /**
+     * 在产品模块上派生一个新的二开项目
+     *
+     * @param moduleId 模块id
+     * @param appId    要派生到的应用id
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> forkProject(String appId, String moduleId, String namespace) {
+        Application application = applicationService.findOne(appId);
+        if (Objects.isNull(application)) {
+            return ResultData.fail("应用不存在!");
+        }
+        AppModule module = dao.findOne(moduleId);
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块不存在!");
+        }
+        // 检查当前模块是否是产品项目
+        if (ModuleType.PRODUCT_JAVA == module.getType()
+                || ModuleType.PRODUCT_WEB == module.getType()) {
+            ResultData<ProjectVo> resultData = gitlabService.forkProject(module.getGitId(), application.getGroupCode());
+            if (resultData.failed()) {
+                return ResultData.fail(resultData.getMessage());
+            }
+            ProjectVo projectVo = resultData.getData();
+            AppModule appModule = new AppModule();
+            appModule.setAppId(application.getId());
+            appModule.setAppName(application.getName());
+            appModule.setCode(module.getCode());
+            appModule.setName(module.getName());
+            appModule.setGroupCode(application.getGroupCode());
+            appModule.setGroupName(application.getGroupName());
+            appModule.setVersion(application.getVersion());
+            appModule.setNameSpace(namespace);
+            appModule.setGitId(projectVo.getGitId());
+            appModule.setGitHttpUrl(projectVo.getGitHttpUrl());
+            appModule.setGitSshUrl(projectVo.getGitSshUrl());
+            appModule.setGitWebUrl(projectVo.getGitWebUrl());
+            appModule.setGitCreateTime(projectVo.getGitCreateTime());
+            if (ModuleType.PRODUCT_WEB == module.getType()) {
+                appModule.setType(ModuleType.PROJECT_WEB);
+            } else if (ModuleType.PRODUCT_JAVA == module.getType()) {
+                appModule.setType(ModuleType.PROJECT_JAVA);
+            }
+            appModule.setRemark("");
+            appModule.setFrozen(Boolean.FALSE);
+
+            this.save(module);
+            return ResultData.success();
+        } else {
+            return ResultData.fail("当前模块不是一个产品模块.");
+        }
     }
 
 }

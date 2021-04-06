@@ -12,6 +12,7 @@ import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.ge.api.AppModuleApi;
 import com.changhong.sei.ge.dto.AppModuleDto;
+import com.changhong.sei.ge.dto.ForkProjectRequest;
 import com.changhong.sei.ge.entity.AppModule;
 import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.ge.service.AppModuleService;
@@ -147,5 +148,16 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     @Override
     public ResultData<Void> deleteRequisition(String id) {
         return service.deleteRequisition(id);
+    }
+
+    /**
+     * 派生二开项目
+     *
+     * @param request 派生参数
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> forkProject(ForkProjectRequest request) {
+        return service.forkProject(request.getAppId(), request.getModuleId(), request.getNamespace());
     }
 }

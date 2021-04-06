@@ -153,6 +153,34 @@ public class GitlabService {
         }
     }
 
+
+    /**
+     * 获取git项目
+     *
+     * @param projectIdOrPath 项目id
+     * @return 返回git项目
+     */
+    public ResultData<ProjectVo> forkProject(String projectIdOrPath, String namespace) {
+        try (GitLabApi gitLabApi = this.getGitLabApi()) {
+            ProjectApi projectApi = gitLabApi.getProjectApi();
+            Project project1 = projectApi.forkProject(projectIdOrPath, namespace);
+            if (Objects.nonNull(project1)) {
+                ProjectVo project = new ProjectVo();
+                project.setGitId(String.valueOf(project1.getId()));
+                project.setGitWebUrl(project1.getWebUrl());
+                project.setGitHttpUrl(project1.getHttpUrlToRepo());
+                project.setGitSshUrl(project1.getSshUrlToRepo());
+                project.setGitCreateTime(LocalDateTime.now());
+                return ResultData.success(project);
+            } else {
+                return ResultData.fail("项目[" + projectIdOrPath + "]不存在.");
+            }
+        } catch (Exception e) {
+            LOG.error("获取git项目异常", e);
+            return ResultData.fail("获取git项目异常:" + e.getMessage());
+        }
+    }
+
     /**
      * 添加项目Push Hook
      *

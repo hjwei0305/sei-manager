@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ProjectVo implements Serializable {
     private static final long serialVersionUID = -8673090236429416613L;
 
-    private ProjectType type;
+    private String type;
     private String code;
     private String name;
     private String nameSpace;
@@ -29,11 +29,11 @@ public class ProjectVo implements Serializable {
     private String gitWebUrl;
     private LocalDateTime gitCreateTime;
 
-    public ProjectType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ProjectType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
