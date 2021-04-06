@@ -355,11 +355,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         // 检查当前模块是否是产品项目
         if (ModuleType.PRODUCT_JAVA == module.getType()
                 || ModuleType.PRODUCT_WEB == module.getType()) {
-            ResultData<ProjectVo> resultData = gitlabService.forkProject(module.getGitId(), application.getGroupCode());
-            if (resultData.failed()) {
-                return ResultData.fail(resultData.getMessage());
-            }
-            ProjectVo projectVo = resultData.getData();
             AppModule appModule = new AppModule();
             appModule.setAppId(application.getId());
             appModule.setAppName(application.getName());
@@ -369,19 +364,45 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             appModule.setGroupName(application.getGroupName());
             appModule.setVersion(application.getVersion());
             appModule.setNameSpace(namespace);
+
+            ResultData<ProjectVo> resultData;
+            if (ModuleType.PRODUCT_WEB == module.getType()) {
+                appModule.setType(ModuleType.PROJECT_WEB);
+
+                resultData = gitlabService.forkProject(module.getGitId(), application.getGroupCode());
+                if (resultData.failed()) {
+                    return ResultData.fail(resultData.getMessage());
+                }
+            } else {
+                appModule.setType(ModuleType.PROJECT_JAVA);
+
+                ProjectVo project = new ProjectVo();
+                project.setType(appModule.getType().name());
+                project.setCode(appModule.getCode());
+                project.setName(appModule.getName());
+                // 自身命名空间
+                project.setNameSpace(appModule.getNameSpace());
+                // 产品命名空间
+                project.setProductNameSpace(module.getNameSpace());
+                String productVersion = module.getVersion();
+                project.setProductVersion(productVersion.split("[.]")[0]);
+                project.setGroupId(appModule.getGroupCode());
+
+                // 创建gitlab项目
+                resultData = gitlabService.createProject(project);
+                if (resultData.failed()) {
+                    return ResultData.fail(resultData.getMessage());
+                }
+            }
+
+            ProjectVo projectVo = resultData.getData();
             appModule.setGitId(projectVo.getGitId());
             appModule.setGitHttpUrl(projectVo.getGitHttpUrl());
             appModule.setGitSshUrl(projectVo.getGitSshUrl());
             appModule.setGitWebUrl(projectVo.getGitWebUrl());
             appModule.setGitCreateTime(projectVo.getGitCreateTime());
-            if (ModuleType.PRODUCT_WEB == module.getType()) {
-                appModule.setType(ModuleType.PROJECT_WEB);
-            } else if (ModuleType.PRODUCT_JAVA == module.getType()) {
-                appModule.setType(ModuleType.PROJECT_JAVA);
-            }
             appModule.setRemark("");
             appModule.setFrozen(Boolean.FALSE);
-
             this.save(module);
             return ResultData.success();
         } else {

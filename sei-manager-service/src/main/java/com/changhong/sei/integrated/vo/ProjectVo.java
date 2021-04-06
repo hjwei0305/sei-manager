@@ -16,6 +16,8 @@ public class ProjectVo implements Serializable {
     private String code;
     private String name;
     private String nameSpace;
+    private String productNameSpace;
+    private String productVersion;
     private String groupId;
     /**
      * gitId
@@ -59,6 +61,22 @@ public class ProjectVo implements Serializable {
 
     public void setNameSpace(String nameSpace) {
         this.nameSpace = nameSpace;
+    }
+
+    public String getProductNameSpace() {
+        return productNameSpace;
+    }
+
+    public void setProductNameSpace(String productNameSpace) {
+        this.productNameSpace = productNameSpace;
+    }
+
+    public String getProductVersion() {
+        return productVersion;
+    }
+
+    public void setProductVersion(String productVersion) {
+        this.productVersion = productVersion;
     }
 
     public String getGroupId() {
