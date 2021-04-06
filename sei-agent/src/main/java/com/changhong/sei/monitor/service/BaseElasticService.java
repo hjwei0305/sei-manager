@@ -1,8 +1,8 @@
-package com.changhong.sei.log.service;
+package com.changhong.sei.monitor.service;
 
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.*;
-import com.changhong.sei.log.dto.LogSearch;
+import com.changhong.sei.monitor.dto.ElasticSearchRequest;
 import com.changhong.sei.util.ConverterUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -226,7 +226,8 @@ public class BaseElasticService {
      * @return java.util.List<T>
      */
     public ResultData<List<HashMap<String, Object>>> search(String idxName, String[] properties, String keyword) {
-        MultiMatchQueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, properties);
+        MultiMatchQueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, properties).type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX);
+
         SearchSourceBuilder searchSourceBuilder = this.initSearchSourceBuilder(queryBuilder);
         // 排序
         buildSort(searchSourceBuilder, null);
@@ -241,7 +242,7 @@ public class BaseElasticService {
      * @param search 查询参数
      * @return java.util.List<T>
      */
-    public ResultData<List<HashMap<String, Object>>> search(LogSearch search) {
+    public ResultData<List<HashMap<String, Object>>> search(ElasticSearchRequest search) {
         SearchSourceBuilder searchSourceBuilder = this.initSearchSourceBuilder(buildBoolQueryBuilder(search));
         // 排序
         buildSort(searchSourceBuilder, search.getSortOrders());
@@ -259,7 +260,7 @@ public class BaseElasticService {
      * @return java.util.List<T>
      */
     @SuppressWarnings("unchecked")
-    public ResultData<PageResult<HashMap<String, Object>>> findByPage(LogSearch search) {
+    public ResultData<PageResult<HashMap<String, Object>>> findByPage(ElasticSearchRequest search) {
         String idxName = search.getIdxName();
         if (StringUtils.isBlank(idxName)) {
             return ResultData.fail("索引名不能为空.");

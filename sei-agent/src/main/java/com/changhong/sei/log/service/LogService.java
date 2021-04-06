@@ -5,7 +5,8 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.log.dto.LogDetailResponse;
 import com.changhong.sei.log.dto.LogResponse;
-import com.changhong.sei.log.dto.LogSearch;
+import com.changhong.sei.monitor.dto.ElasticSearchRequest;
+import com.changhong.sei.monitor.service.BaseElasticService;
 import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class LogService {
     /**
      * 分页查询
      */
-    public ResultData<PageResult<LogResponse>> findByPage(@Valid LogSearch search) {
+    public ResultData<PageResult<LogResponse>> findByPage(@Valid ElasticSearchRequest search) {
         ResultData<PageResult<HashMap<String, Object>>> pageData = elasticService.findByPage(search);
         if (pageData.successful()) {
             PageResult<HashMap<String, Object>> mapPageResult = pageData.getData();
@@ -50,7 +51,7 @@ public class LogService {
      * 获取日志明细
      */
     public ResultData<LogDetailResponse> detail(String serviceName, String id) {
-        LogSearch search = new LogSearch();
+        ElasticSearchRequest search = new ElasticSearchRequest();
         search.setIdxName(serviceName);
         search.addFilter(new SearchFilter("_id", id));
 
@@ -69,7 +70,7 @@ public class LogService {
      * 根据TraceId获取日志
      */
     public ResultData<List<LogResponse>> findByTraceId(String serviceName, String traceId) {
-        LogSearch search = new LogSearch();
+        ElasticSearchRequest search = new ElasticSearchRequest();
         search.setIdxName(serviceName);
         search.addFilter(new SearchFilter(LogResponse.SEARCH_TRACE_ID, traceId));
 

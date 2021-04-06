@@ -6,8 +6,7 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.log.dto.LogDetailResponse;
 import com.changhong.sei.log.dto.LogResponse;
-import com.changhong.sei.log.dto.LogSearch;
-import com.changhong.sei.log.service.LogService;
+import com.changhong.sei.monitor.dto.ElasticSearchRequest;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class LogServiceTest extends BaseUnitTest {
 
     @Test
     public void findByPage() {
-        LogSearch search = new LogSearch();
+        ElasticSearchRequest search = new ElasticSearchRequest();
         search.setIdxName("sei-basic-*");
         search.addQuickSearchProperty(LogResponse.SEARCH_TRACE_ID);
         search.addQuickSearchProperty(LogResponse.SEARCH_MESSAGE);

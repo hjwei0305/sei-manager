@@ -4,7 +4,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.log.dto.LogDetailResponse;
 import com.changhong.sei.log.dto.LogResponse;
-import com.changhong.sei.log.dto.LogSearch;
+import com.changhong.sei.monitor.dto.ElasticSearchRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -29,7 +29,7 @@ public interface LogApi {
      */
     @PostMapping(value = "findByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询", notes = "分页查询")
-    ResultData<PageResult<LogResponse>> findByPage(@RequestBody @Valid LogSearch search);
+    ResultData<PageResult<LogResponse>> findByPage(@RequestBody @Valid ElasticSearchRequest search);
 
     /**
      * 获取日志明细

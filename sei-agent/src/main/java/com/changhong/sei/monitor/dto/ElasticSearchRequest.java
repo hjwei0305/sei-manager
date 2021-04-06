@@ -1,9 +1,10 @@
-package com.changhong.sei.log.dto;
+package com.changhong.sei.monitor.dto;
 
 import com.changhong.sei.core.dto.serach.Search;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
@@ -14,11 +15,12 @@ import java.util.StringJoiner;
  * @version 1.0.00  2020-09-22 00:19
  */
 @ApiModel(description = "日志查询dto对象")
-public class LogSearch extends Search {
+public class ElasticSearchRequest extends Search {
     private static final long serialVersionUID = 6339284532868826189L;
     /**
      * 索引名
      */
+    @NotBlank
     @ApiModelProperty(notes = "应用代码")
     private String idxName;
 
@@ -43,7 +45,7 @@ public class LogSearch extends Search {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", LogSearch.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", ElasticSearchRequest.class.getSimpleName() + "[", "]")
                 .add("idxName='" + idxName + "'")
                 .add("highlightFields=" + Arrays.toString(highlightFields))
                 .toString();

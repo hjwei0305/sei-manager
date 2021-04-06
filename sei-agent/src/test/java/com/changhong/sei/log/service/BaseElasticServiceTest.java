@@ -3,8 +3,8 @@ package com.changhong.sei.log.service;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.test.BaseUnitTest;
-import com.changhong.sei.log.dto.LogSearch;
-import com.changhong.sei.log.service.BaseElasticService;
+import com.changhong.sei.monitor.dto.ElasticSearchRequest;
+import com.changhong.sei.monitor.service.BaseElasticService;
 import com.changhong.sei.util.DateUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class BaseElasticServiceTest extends BaseUnitTest {
 
     @Test
     public void testSearch1() {
-        LogSearch search = new LogSearch();
+        ElasticSearchRequest search = new ElasticSearchRequest();
 
         search.setIdxName("sei-basic-*");
 

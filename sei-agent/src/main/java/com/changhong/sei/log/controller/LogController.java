@@ -5,7 +5,7 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.log.api.LogApi;
 import com.changhong.sei.log.dto.LogDetailResponse;
 import com.changhong.sei.log.dto.LogResponse;
-import com.changhong.sei.log.dto.LogSearch;
+import com.changhong.sei.monitor.dto.ElasticSearchRequest;
 import com.changhong.sei.log.service.LogService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class LogController implements LogApi {
      * 分页查询
      */
     @Override
-    public ResultData<PageResult<LogResponse>> findByPage(@Valid LogSearch search) {
+    public ResultData<PageResult<LogResponse>> findByPage(@Valid ElasticSearchRequest search) {
         return service.findByPage(search);
     }
 
