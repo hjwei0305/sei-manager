@@ -691,6 +691,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setModuleId(module.getId());
                 record.setModuleCode(module.getCode());
                 record.setModuleName(module.getName());
+                record.setRefTagId(tag);
                 record.setRefTag(tag);
                 record.setName("开发构建-" + module.getName());
                 record.setFrozen(Boolean.FALSE);
