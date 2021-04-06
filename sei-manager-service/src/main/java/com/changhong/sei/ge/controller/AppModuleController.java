@@ -73,6 +73,20 @@ public class AppModuleController extends BaseEntityController<AppModule, AppModu
     }
 
     /**
+     * 分页查询业务实体
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public ResultData<PageResult<AppModuleDto>> findByPageNoAuth(Search search) {
+        if (Objects.isNull(search)) {
+            search = Search.createSearch();
+        }
+        return convertToDtoPageResult(service.findByPage(search));
+    }
+
+    /**
      * 通过应用Id获取模块清单
      *
      * @param appId 应用id
