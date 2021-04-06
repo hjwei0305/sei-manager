@@ -73,6 +73,12 @@ public class DeployConfigDto extends BaseEntityDto {
     private String nodes;
 
     /**
+     * 是否已初始化
+     */
+    @ApiModelProperty(value = "是否已初始化")
+    private Boolean initialized;
+
+    /**
      * 名称
      */
     @ApiModelProperty(value = "名称", required = true)
@@ -161,6 +167,14 @@ public class DeployConfigDto extends BaseEntityDto {
 
     public void setNodes(String nodes) {
         this.nodes = nodes;
+    }
+
+    public Boolean getInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(Boolean initialized) {
+        this.initialized = initialized;
     }
 
     public String getName() {

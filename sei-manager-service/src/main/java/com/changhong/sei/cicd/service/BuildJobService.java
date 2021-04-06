@@ -660,11 +660,26 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         if (Objects.isNull(module)) {
             return ResultData.fail("未找到Git Id[" + gitId + "]对应的应用模块");
         }
+        ResultData<Void> resultData = buildModule(module, request.getUserUsername());
+        if (resultData.failed()) {
+            LOG.error("{} 的Push Hook 异常{}", request, resultData.getMessage());
+        }
+        return resultData;
+    }
 
+    /**
+     * 按模块进行构建
+     *
+     * @param module       模块
+     * @param buildAccount 构建人账号
+     * @return 构建结果
+     */
+    @Transactional
+    public ResultData<Void> buildModule(AppModule module, String buildAccount) {
         TemplateType type = TemplateType.DEPLOY;
         String tag = "dev";
         try {
-            BuildJob record = getByGitIdAndTag(gitId, tag, tag, type.name());
+            BuildJob record = getByGitIdAndTag(module.getGitId(), tag, tag, type.name());
             if (Objects.isNull(record)) {
                 record = new BuildJob();
                 record.setType(type.name());
@@ -672,7 +687,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setEnvName("开发环境");
                 record.setAppId(module.getAppId());
                 record.setAppName(module.getAppName());
-                record.setGitId(gitId);
+                record.setGitId(module.getGitId());
                 record.setModuleId(module.getId());
                 record.setModuleCode(module.getCode());
                 record.setModuleName(module.getName());
@@ -682,12 +697,13 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setExpCompleteTime(LocalDateTime.now());
                 this.save(record);
             }
-            this.build(record.getId(), request.getUserUsername());
+            this.build(record.getId(), buildAccount);
+            return ResultData.success();
         } catch (Exception e) {
-            LOG.error("{} 的Push Hook 异常{}", request, ExceptionUtils.getRootCauseMessage(e));
-            emailManager.sendMail(managerName + "-Push Hook 异常", ExceptionUtils.getRootCauseMessage(e), module.getCreatorAccount());
+            String error = ExceptionUtils.getRootCauseMessage(e);
+            emailManager.sendMail(managerName + "-Push Hook 异常", error, buildAccount);
+            return ResultData.fail(error);
         }
-        return ResultData.success();
     }
 
     /**

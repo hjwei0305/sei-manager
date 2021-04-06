@@ -46,4 +46,15 @@ public class DeployConfigController extends BaseEntityController<DeployConfig, D
     public ResultData<PageResult<DeployConfigDto>> findByPage(Search search) {
         return convertToDtoPageResult(service.findByPage(search));
     }
+
+    /**
+     * 初始化部署
+     *
+     * @param id 业务实体id
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> initializeDeploy(String id) {
+        return service.initializeDeploy(id);
+    }
 }

@@ -79,6 +79,12 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
     private String nodes;
 
     /**
+     * 是否已初始化
+     */
+    @Column(name = "initialized")
+    private Boolean initialized;
+
+    /**
      * 名称
      */
     @Column(name = "name")
@@ -167,6 +173,14 @@ public class DeployConfig extends BaseAuditableEntity implements Serializable {
 
     public void setNodes(String nodes) {
         this.nodes = nodes;
+    }
+
+    public Boolean getInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(Boolean initialized) {
+        this.initialized = initialized;
     }
 
     public String getName() {

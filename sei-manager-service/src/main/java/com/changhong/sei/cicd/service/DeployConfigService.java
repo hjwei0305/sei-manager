@@ -1,5 +1,8 @@
 package com.changhong.sei.cicd.service;
 
+import com.changhong.sei.cicd.dao.DeployConfigDao;
+import com.changhong.sei.cicd.entity.DeployConfig;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
@@ -7,8 +10,8 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResult;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.cicd.dao.DeployConfigDao;
-import com.changhong.sei.cicd.entity.DeployConfig;
+import com.changhong.sei.ge.entity.AppModule;
+import com.changhong.sei.ge.service.AppModuleService;
 import com.changhong.sei.integrated.service.JenkinsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,10 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
     private DeployConfigDao dao;
     @Autowired
     private DeployTemplateService deployTemplateService;
+    @Autowired
+    private AppModuleService appModuleService;
+    @Autowired
+    private BuildJobService buildJobService;
     @Autowired
     private JenkinsService jenkinsService;
 
@@ -133,5 +140,29 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
         } else {
             return ResultData.success(config);
         }
+    }
+
+    /**
+     * 初始化部署
+     *
+     * @param id 业务实体id
+     * @return 操作结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> initializeDeploy(String id) {
+        DeployConfig deployConfig = dao.findOne(id);
+        if (Objects.isNull(deployConfig)) {
+            return ResultData.fail("部署配置不存在.");
+        }
+        AppModule module = appModuleService.findOne(deployConfig.getModuleId());
+        if (Objects.isNull(module)) {
+            return ResultData.fail("应用模块[" + deployConfig.getModuleCode() + "]不存在.");
+        }
+        ResultData<Void> resultData = buildJobService.buildModule(module, ContextUtil.getUserAccount());
+        if (resultData.successful()) {
+            deployConfig.setInitialized(Boolean.TRUE);
+            dao.save(deployConfig);
+        }
+        return resultData;
     }
 }
