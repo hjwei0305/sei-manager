@@ -1,7 +1,6 @@
 package com.changhong.sei.ge.service;
 
 import com.changhong.sei.common.ObjectType;
-import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseTreeDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseTreeService;
@@ -166,8 +165,10 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
         OperateResultWithData<ProjectGroup> result = super.save(entity);
         if (result.successful()) {
             if (StringUtils.isNotBlank(entity.getManagerAccount())) {
+                // 移除组管理员授权
+                projectUserService.cancelAssign(entity.getId(), Sets.newHashSet(entity.getManagerAccount()));
                 // 指定组管理员
-                ContextUtil.getBean(ProjectUserService.class).assign(entity.getManagerAccount(), entity.getId(), entity.getName(), ObjectType.PROJECT);
+                projectUserService.assign(entity.getManagerAccount(), entity.getId(), entity.getName(), ObjectType.PROJECT);
             }
         }
         return result;
@@ -194,7 +195,7 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
         OperateResult result = super.preDelete(s);
         if (result.successful()) {
             // 移除组管理员授权
-            ContextUtil.getBean(ProjectUserService.class).cancelAssign(userGroup.getId(), Sets.newHashSet(userGroup.getManagerAccount()));
+            projectUserService.cancelAssign(userGroup.getId(), Sets.newHashSet(userGroup.getManagerAccount()));
         }
         return result;
     }
