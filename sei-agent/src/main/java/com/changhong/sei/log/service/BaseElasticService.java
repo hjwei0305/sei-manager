@@ -361,7 +361,8 @@ public class BaseElasticService {
             if (CollectionUtils.isNotEmpty(list)) {
                 String[] fields = list.toArray(new String[0]);
 
-                queryBuilder.must(QueryBuilders.multiMatchQuery(keyword, fields));
+//                queryBuilder.must(QueryBuilders.multiMatchQuery(keyword, fields));
+                queryBuilder.must(QueryBuilders.multiMatchQuery(keyword, fields).type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX));
             }
         }
 

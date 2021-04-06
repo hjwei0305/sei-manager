@@ -22,6 +22,12 @@ public class ServiceInstanceDto implements Serializable {
     private String code;
     @ApiModelProperty(notes = "应用名称")
     private String name;
+    @ApiModelProperty(notes = "主机")
+    private String host;
+    @ApiModelProperty(notes = "端口")
+    private String port;
+    @ApiModelProperty(notes = "uri地址")
+    private String uri;
     @ApiModelProperty(notes = "其他属性")
     private Map<String, String> metadata;
 
@@ -48,6 +54,30 @@ public class ServiceInstanceDto implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public Map<String, String> getMetadata() {
