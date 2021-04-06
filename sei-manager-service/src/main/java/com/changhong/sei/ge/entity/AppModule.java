@@ -6,9 +6,7 @@ import com.changhong.sei.ge.dto.ModuleType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -88,6 +86,7 @@ public class AppModule extends BaseAuditableEntity implements IFrozen, Serializa
     /**
      * 模块类型
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "type_")
     private ModuleType type;
     /**
