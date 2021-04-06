@@ -385,7 +385,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 // 产品命名空间
                 project.setProductNameSpace(module.getNameSpace());
                 String productVersion = module.getVersion();
-                project.setProductVersion(productVersion.split("[.]")[0]);
+                project.setProductVersion(productVersion.split("[.]")[0] + ".+");
                 project.setGroupId(appModule.getGroupCode());
 
                 // 创建gitlab项目
