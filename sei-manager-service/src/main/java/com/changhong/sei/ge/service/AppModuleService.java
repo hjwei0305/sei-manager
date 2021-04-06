@@ -401,9 +401,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             appModule.setGitSshUrl(projectVo.getGitSshUrl());
             appModule.setGitWebUrl(projectVo.getGitWebUrl());
             appModule.setGitCreateTime(projectVo.getGitCreateTime());
-            appModule.setRemark("");
             appModule.setFrozen(Boolean.FALSE);
-            this.save(module);
+            this.save(appModule);
             return ResultData.success();
         } else {
             return ResultData.fail("当前模块不是一个产品模块.");
