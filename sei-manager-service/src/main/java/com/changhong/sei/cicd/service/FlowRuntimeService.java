@@ -17,6 +17,7 @@ import com.changhong.sei.ge.service.AppModuleService;
 import com.changhong.sei.ge.service.ApplicationService;
 import com.changhong.sei.ge.service.ProjectGroupService;
 import com.changhong.sei.manager.commom.EmailManager;
+import com.changhong.sei.util.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -239,6 +240,16 @@ public class FlowRuntimeService {
             if (recordResult.failed()) {
                 return ResultData.fail(recordResult.getMessage());
             } else {
+                Context context = new Context();
+                context.setVariable("userName", requisition.getApplicantUserName());
+                context.setVariable("flowType", requisition.getFlowTypeName());
+                context.setVariable("taskName", EnumUtils.getEnumItemRemark(ApplyType.class, requisition.getApplyType()));
+                context.setVariable("summary", "申请通过 - " + requisition.getSummary());
+                context.setVariable("url", serverWeb);
+                context.setVariable("sysName", managerName);
+                String content = ThymeLeafHelper.getTemplateEngine().process("notify/FlowTask.html", context);
+                emailManager.sendMailByAccount(managerName + "-申请通过", content, requisition.getApplicantAccount());
+
                 // 更新申请单状态为通过
                 requisition.setApprovalStatus(ApprovalStatus.PASSED);
                 return ResultData.success(requisition);
@@ -294,6 +305,16 @@ public class FlowRuntimeService {
         if (recordResult.failed()) {
             return ResultData.fail(recordResult.getMessage());
         } else {
+            Context context = new Context();
+            context.setVariable("userName", requisition.getApplicantUserName());
+            context.setVariable("flowType", requisition.getFlowTypeName());
+            context.setVariable("taskName", EnumUtils.getEnumItemRemark(ApplyType.class, requisition.getApplyType()));
+            context.setVariable("summary", "申请驳回 - " + requisition.getSummary());
+            context.setVariable("url", serverWeb);
+            context.setVariable("sysName", managerName);
+            String content = ThymeLeafHelper.getTemplateEngine().process("notify/FlowTask.html", context);
+            emailManager.sendMailByAccount(managerName + "-申请驳回", content, requisition.getApplicantAccount());
+
             // 驳回申请单状态: 未通过
             requisition.setApprovalStatus(ApprovalStatus.UNPASSED);
             return ResultData.success(requisition);
