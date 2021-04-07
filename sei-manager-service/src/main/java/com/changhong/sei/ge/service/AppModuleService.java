@@ -7,6 +7,7 @@ import com.changhong.sei.cicd.dto.ApprovalStatus;
 import com.changhong.sei.cicd.entity.AppModuleRequisition;
 import com.changhong.sei.cicd.entity.RequisitionOrder;
 import com.changhong.sei.cicd.service.RequisitionOrderService;
+import com.changhong.sei.common.ObjectType;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
@@ -50,6 +51,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     private ApplicationService applicationService;
     @Autowired
     private GitlabService gitlabService;
+    @Autowired
+    private ProjectUserService projectUserService;
 
     /**
      * 开发运维平台的服务端地址(若有代理,配置代理后的地址)
@@ -108,6 +111,18 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<AppModuleRequisitionDto> createRequisition(AppModule module) {
+        String appId = module.getAppId();
+        if (StringUtils.isBlank(appId)) {
+            return ResultData.fail("未选择应用.");
+        }
+        Application application = applicationService.findOne(appId);
+        if (Objects.isNull(application)) {
+            return ResultData.fail("选择的应用不存在.");
+        }
+
+        module.setAppName(application.getName());
+        module.setGroupCode(application.getGroupCode());
+        module.setGroupName(application.getGroupName());
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         module.setFrozen(Boolean.TRUE);
         if (StringUtils.isBlank(module.getNameSpace())) {
@@ -164,6 +179,15 @@ public class AppModuleService extends BaseEntityService<AppModule> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<AppModuleRequisitionDto> modifyRequisition(AppModule appModule) {
+        String appId = appModule.getAppId();
+        if (StringUtils.isBlank(appId)) {
+            return ResultData.fail("未选择应用.");
+        }
+        Application application = applicationService.findOne(appId);
+        if (Objects.isNull(application)) {
+            return ResultData.fail("选择的应用不存在.");
+        }
+
         AppModule module = this.findOne(appModule.getId());
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块不存在!");
@@ -173,6 +197,9 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             return ResultData.fail("应用模块已审核,不允许编辑!");
         }
 
+        module.setAppName(application.getName());
+        module.setGroupCode(application.getGroupCode());
+        module.setGroupName(application.getGroupName());
         module.setCode(appModule.getCode());
         module.setName(appModule.getName());
         module.setVersion(appModule.getVersion());
@@ -278,6 +305,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         ProjectVo project = new ProjectVo();
         project.setCode(module.getCode());
         project.setName(ProjectVo.str2Unicode(module.getRemark()));
+        project.setVersion(application.getVersion() + ".0.1");
         // gitlab群组id
         project.setGroupId(application.getGroupCode());
 
@@ -305,6 +333,9 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                     // @see ReleaseRecordApi#webhook
                     gitlabService.addProjectHook(gitProject.getGitId(), serverHost.concat("/releaseRecord/webhook"));
                 }
+                // 将申请人添加模块权限
+                projectUserService.assign(module.getCreatorAccount(), module.getId(), module.getName(), ObjectType.MODULE);
+
                 return ResultData.success();
             }
         } else {
@@ -360,7 +391,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             appModule.setName(module.getName());
             appModule.setGroupCode(application.getGroupCode());
             appModule.setGroupName(application.getGroupName());
-            appModule.setVersion(application.getVersion());
+            appModule.setVersion(application.getVersion() + ".0.1");
             appModule.setNameSpace(namespace);
 
             ResultData<ProjectVo> resultData;
@@ -378,6 +409,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 project.setType(appModule.getType().name());
                 project.setCode(appModule.getCode());
                 project.setName(ProjectVo.str2Unicode(appModule.getName()));
+                project.setVersion(appModule.getVersion());
                 // 自身命名空间
                 project.setNameSpace(appModule.getNameSpace());
                 // 产品命名空间
