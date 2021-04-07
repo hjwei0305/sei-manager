@@ -57,6 +57,17 @@ public class RequisitionDto extends BaseEntityDto {
     @ApiModelProperty(value = "审核状态")
     private ApprovalStatus approvalStatus = ApprovalStatus.INITIAL;
 
+    /**
+     * 待处理人账号
+     */
+    @ApiModelProperty(value = "待处理人账号")
+    private String executeAccount;
+    /**
+     * 待处理人
+     */
+    @ApiModelProperty(value = "待处理人")
+    private String executeUserName;
+
     public String getBizKey() {
         return bizKey;
     }
@@ -111,5 +122,21 @@ public class RequisitionDto extends BaseEntityDto {
 
     public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
+    }
+
+    public String getExecuteAccount() {
+        return executeAccount;
+    }
+
+    public void setExecuteAccount(String executeAccount) {
+        this.executeAccount = executeAccount;
+    }
+
+    public String getExecuteUserName() {
+        return executeUserName;
+    }
+
+    public void setExecuteUserName(String executeUserName) {
+        this.executeUserName = executeUserName;
     }
 }

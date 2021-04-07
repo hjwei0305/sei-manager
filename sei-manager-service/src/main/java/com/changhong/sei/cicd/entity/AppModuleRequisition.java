@@ -98,6 +98,16 @@ public class AppModuleRequisition extends BaseEntity implements Serializable {
     private String gitWebUrl;
     @Column(name = "git_create_time")
     private LocalDateTime gitCreateTime;
+    /**
+     * 待处理人账号
+     */
+    @Column(name = "execute_account")
+    private String executeAccount;
+    /**
+     * 待处理人
+     */
+    @Column(name = "execute_user_name")
+    private String executeUserName;
 
     public String getBizKey() {
         return bizKey;
@@ -233,5 +243,21 @@ public class AppModuleRequisition extends BaseEntity implements Serializable {
 
     public void setGitCreateTime(LocalDateTime gitCreateTime) {
         this.gitCreateTime = gitCreateTime;
+    }
+
+    public String getExecuteAccount() {
+        return executeAccount;
+    }
+
+    public void setExecuteAccount(String executeAccount) {
+        this.executeAccount = executeAccount;
+    }
+
+    public String getExecuteUserName() {
+        return executeUserName;
+    }
+
+    public void setExecuteUserName(String executeUserName) {
+        this.executeUserName = executeUserName;
     }
 }

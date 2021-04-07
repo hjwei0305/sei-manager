@@ -118,6 +118,17 @@ public class BuildJobRequisition extends BaseEntity implements Serializable {
     @Column(name = "exp_complete_time")
     private LocalDateTime expCompleteTime;
 
+    /**
+     * 待处理人账号
+     */
+    @Column(name = "execute_account")
+    private String executeAccount;
+    /**
+     * 待处理人
+     */
+    @Column(name = "execute_user_name")
+    private String executeUserName;
+
     public String getBizKey() {
         return bizKey;
     }
@@ -260,5 +271,21 @@ public class BuildJobRequisition extends BaseEntity implements Serializable {
 
     public void setExpCompleteTime(LocalDateTime expCompleteTime) {
         this.expCompleteTime = expCompleteTime;
+    }
+
+    public String getExecuteAccount() {
+        return executeAccount;
+    }
+
+    public void setExecuteAccount(String executeAccount) {
+        this.executeAccount = executeAccount;
+    }
+
+    public String getExecuteUserName() {
+        return executeUserName;
+    }
+
+    public void setExecuteUserName(String executeUserName) {
+        this.executeUserName = executeUserName;
     }
 }

@@ -105,6 +105,16 @@ public class VersionRecordRequisition extends BaseEntity implements Serializable
      */
     @Column(name = "build_status")
     private String buildStatus;
+    /**
+     * 待处理人账号
+     */
+    @Column(name = "execute_account")
+    private String executeAccount;
+    /**
+     * 待处理人
+     */
+    @Column(name = "execute_user_name")
+    private String executeUserName;
 
     public String getBizKey() {
         return bizKey;
@@ -232,5 +242,21 @@ public class VersionRecordRequisition extends BaseEntity implements Serializable
 
     public void setBuildStatus(String buildStatus) {
         this.buildStatus = buildStatus;
+    }
+
+    public String getExecuteAccount() {
+        return executeAccount;
+    }
+
+    public void setExecuteAccount(String executeAccount) {
+        this.executeAccount = executeAccount;
+    }
+
+    public String getExecuteUserName() {
+        return executeUserName;
+    }
+
+    public void setExecuteUserName(String executeUserName) {
+        this.executeUserName = executeUserName;
     }
 }
