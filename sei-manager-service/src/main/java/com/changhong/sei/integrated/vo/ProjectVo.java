@@ -126,4 +126,57 @@ public class ProjectVo implements Serializable {
     public void setGitCreateTime(LocalDateTime gitCreateTime) {
         this.gitCreateTime = gitCreateTime;
     }
+
+
+    public static String str2Unicode(String string) {
+        return str2Unicode(string, false);
+    }
+
+    /**
+     * 字符串转 Unicode 编码
+     *
+     * @param string   原字符串
+     * @param halfWith 是否转换半角字符
+     * @return 编码后的字符串
+     */
+    public static String str2Unicode(String string, boolean halfWith) {
+        if (string == null || string.isEmpty()) {
+            // 传入字符串为空返回原内容
+            return string;
+        }
+
+        StringBuilder value = new StringBuilder(string.length() << 3);
+        String prefix = "\\u", zerofix = "0", unicode;
+        char c;
+        for (int i = 0, j; i < string.length(); i++) {
+            c = string.charAt(i);
+            if (!halfWith && c > 31 && c < 127) {
+                // 不转换半角字符
+                value.append(c);
+                continue;
+            }
+            value.append(prefix);
+
+            // 高 8 位
+            j = c >>> 8;
+            unicode = Integer.toHexString(j).toUpperCase();
+            if (unicode.length() == 1) {
+                value.append(zerofix);
+            }
+            value.append(unicode);
+
+            // 低 8 位
+            j = c & 0xFF;
+            unicode = Integer.toHexString(j).toUpperCase();
+            if (unicode.length() == 1) {
+                value.append(zerofix);
+            }
+            value.append(unicode);
+        }
+        return value.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(str2Unicode("财务共享运营API"));
+    }
 }

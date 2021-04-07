@@ -49,8 +49,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
     @Autowired
     private ApplicationService applicationService;
     @Autowired
-    private ProjectGroupService projectGroupService;
-    @Autowired
     private GitlabService gitlabService;
 
     /**
@@ -279,7 +277,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         // 创建git项目
         ProjectVo project = new ProjectVo();
         project.setCode(module.getCode());
-        project.setName(module.getRemark());
+        project.setName(ProjectVo.str2Unicode(module.getRemark()));
         // gitlab群组id
         project.setGroupId(application.getGroupCode());
 
@@ -379,7 +377,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 ProjectVo project = new ProjectVo();
                 project.setType(appModule.getType().name());
                 project.setCode(appModule.getCode());
-                project.setName(appModule.getName());
+                project.setName(ProjectVo.str2Unicode(appModule.getName()));
                 // 自身命名空间
                 project.setNameSpace(appModule.getNameSpace());
                 // 产品命名空间
@@ -402,6 +400,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             appModule.setGitWebUrl(projectVo.getGitWebUrl());
             appModule.setGitCreateTime(projectVo.getGitCreateTime());
             appModule.setFrozen(Boolean.FALSE);
+            appModule.setRemark(appModule.getName() + " 二开项目");
             this.save(appModule);
             return ResultData.success();
         } else {
