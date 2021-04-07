@@ -41,6 +41,7 @@ public class YamlTransferUtils {
         try (YAMLParser parser = yamlFactory.createParser(yamlContent)) {
             StringBuilder key = new StringBuilder();
             String value;
+            String currentName;
             JsonToken token = parser.nextToken();
             while (token != null) {
                 if (!JsonToken.START_OBJECT.equals(token)) {
@@ -48,7 +49,8 @@ public class YamlTransferUtils {
                         if (key.length() > 0) {
                             key.append(DOT);
                         }
-                        key.append(parser.getCurrentName());
+                        currentName = parser.getCurrentName();
+                        key.append(currentName);
 
                         token = parser.nextToken();
                         if (JsonToken.START_OBJECT.equals(token)) {
@@ -57,10 +59,11 @@ public class YamlTransferUtils {
                         value = parser.getText();
                         result.put(key.toString(), value);
 
-                        int dotOffset = key.lastIndexOf(DOT);
-                        if (dotOffset > 0) {
-                            key = new StringBuilder(key.substring(0, dotOffset));
-                        }
+//                        int dotOffset = key.lastIndexOf(DOT);
+//                        if (dotOffset > 0) {
+//                            key = new StringBuilder(key.substring(0, dotOffset));
+//                        }
+                        key = new StringBuilder(key.substring(0, key.length() - currentName.length() - 1));
                     } else if (JsonToken.END_OBJECT.equals(token)) {
                         int dotOffset = key.lastIndexOf(DOT);
                         if (dotOffset > 0) {

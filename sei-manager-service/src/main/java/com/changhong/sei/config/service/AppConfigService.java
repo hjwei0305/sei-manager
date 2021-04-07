@@ -87,11 +87,11 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
                     // 命名空间不为空,则是后端应用
                     .filter(a -> StringUtils.isNotBlank(a.getNameSpace()))
                     .map(a -> {
-                AppDto dto = new AppDto();
-                dto.setCode(a.getCode());
-                dto.setName(a.getName());
-                return dto;
-            }).sorted(Comparator.comparing(AppDto::getCode)).collect(Collectors.toList());
+                        AppDto dto = new AppDto();
+                        dto.setCode(a.getCode());
+                        dto.setName(a.getName());
+                        return dto;
+                    }).sorted(Comparator.comparing(AppDto::getCode)).collect(Collectors.toList());
         } else {
             appDtoList = new ArrayList<>();
         }
@@ -475,6 +475,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
         List<EnvVariableValue> variableValues = envVariableService.getEnableVariableValues(envCode);
         // 环境变量key-value映射
         Map<String, String> variableValueMap = variableValues.stream()
+                .filter(v -> StringUtils.isNotBlank(v.getKey()) && StringUtils.isNotBlank(v.getValue()))
                 .collect(Collectors.toMap(v -> "${".concat(v.getKey()).concat("}"), EnvVariableValue::getValue));
 
         // 获取可用的应用自定义配置清单
