@@ -660,7 +660,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         if (Objects.isNull(module)) {
             return ResultData.fail("未找到Git Id[" + gitId + "]对应的应用模块");
         }
-        ResultData<Void> resultData = buildModule(module, request.getUserUsername());
+        ResultData<Void> resultData = buildModule(module, "dev", "开发环境", request.getUserUsername());
         if (resultData.failed()) {
             LOG.error("{} 的Push Hook 异常{}", request, resultData.getMessage());
         }
@@ -675,7 +675,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      * @return 构建结果
      */
     @Transactional
-    public ResultData<Void> buildModule(AppModule module, String buildAccount) {
+    public ResultData<Void> buildModule(AppModule module, String envCode, String envName, String buildAccount) {
         TemplateType type = TemplateType.DEPLOY;
         String tag = "dev";
         try {
@@ -683,8 +683,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             if (Objects.isNull(record)) {
                 record = new BuildJob();
                 record.setType(type.name());
-                record.setEnvCode(tag);
-                record.setEnvName("开发环境");
+                record.setEnvCode(envCode);
+                record.setEnvName(envName);
                 record.setAppId(module.getAppId());
                 record.setAppName(module.getAppName());
                 record.setGitId(module.getGitId());

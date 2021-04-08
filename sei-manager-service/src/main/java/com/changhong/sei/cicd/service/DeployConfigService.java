@@ -158,7 +158,7 @@ public class DeployConfigService extends BaseEntityService<DeployConfig> {
         if (Objects.isNull(module)) {
             return ResultData.fail("应用模块[" + deployConfig.getModuleCode() + "]不存在.");
         }
-        ResultData<Void> resultData = buildJobService.buildModule(module, ContextUtil.getUserAccount());
+        ResultData<Void> resultData = buildJobService.buildModule(module, deployConfig.getEnvCode(), deployConfig.getEnvName(), ContextUtil.getUserAccount());
         if (resultData.successful()) {
             deployConfig.setInitialized(Boolean.TRUE);
             dao.save(deployConfig);
