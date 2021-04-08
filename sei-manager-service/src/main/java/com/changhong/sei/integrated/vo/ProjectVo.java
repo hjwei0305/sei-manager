@@ -15,7 +15,7 @@ public class ProjectVo implements Serializable {
     private String type;
     private String code;
     private String name;
-    private String version;
+    private String projectVersion;
     private String nameSpace;
     private String productNameSpace;
     private String productVersion;
@@ -56,12 +56,12 @@ public class ProjectVo implements Serializable {
         this.name = name;
     }
 
-    public String getVersion() {
-        return version;
+    public String getProjectVersion() {
+        return projectVersion;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setProjectVersion(String projectVersion) {
+        this.projectVersion = projectVersion;
     }
 
     public String getNameSpace() {
