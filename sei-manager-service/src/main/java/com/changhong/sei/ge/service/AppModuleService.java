@@ -304,7 +304,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         // 创建git项目
         ProjectVo project = new ProjectVo();
         project.setCode(module.getCode());
-        project.setName(ProjectVo.str2Unicode(module.getRemark()));
+        project.setName(module.getRemark());
         project.setProjectVersion(application.getVersion() + ".0.1");
         // gitlab群组id
         project.setGroupId(application.getGroupCode());
@@ -408,7 +408,7 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                 ProjectVo project = new ProjectVo();
                 project.setType(appModule.getType().name());
                 project.setCode(appModule.getCode());
-                project.setName(ProjectVo.str2Unicode(appModule.getName()));
+                project.setName(appModule.getName());
                 project.setProjectVersion(appModule.getVersion());
                 // 自身命名空间
                 project.setNameSpace(appModule.getNameSpace());

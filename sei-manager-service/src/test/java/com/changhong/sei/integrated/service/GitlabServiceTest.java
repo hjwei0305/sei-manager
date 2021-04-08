@@ -30,7 +30,7 @@ public class GitlabServiceTest extends BaseUnitTest {
         project.setType(ModuleType.PRODUCT_JAVA.name());
 //        project.setProjectId(IdGenerator.uuid2());
         project.setCode("sei-test-mac1");
-        project.setName(ProjectVo.str2Unicode("测试createProject"));
+        project.setName("测试createProject");
         project.setNameSpace("com.changhong.sei.demo");
         project.setGroupId("384");
         ResultData<ProjectVo> resultData = service.createProject(project);
