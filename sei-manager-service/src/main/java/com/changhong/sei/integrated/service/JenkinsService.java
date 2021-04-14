@@ -89,7 +89,8 @@ public class JenkinsService {
             server.createJob(jobName, jobXml, Boolean.TRUE);
             return ResultData.success();
         } catch (IOException e) {
-            LOG.error("获取Jenkins任务异常", e);
+            LOG.error(jobName + " 创建Jenkins任务异常", e);
+            LOG.error("创建Jenkins任务异常, XML内容: " + jobXml);
             return ResultData.fail("创建Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -106,8 +107,9 @@ public class JenkinsService {
             server.updateJob(jobName, jobXml, Boolean.TRUE);
             return ResultData.success();
         } catch (IOException e) {
-            LOG.error("获取Jenkins任务异常", e);
-            return ResultData.fail("创建Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+            LOG.error(jobName + " 修改Jenkins任务异常", e);
+            LOG.error("修改Jenkins任务异常, XML内容: " + jobXml);
+            return ResultData.fail("修改Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -122,8 +124,8 @@ public class JenkinsService {
             server.deleteJob(jobName, Boolean.TRUE);
             return ResultData.success();
         } catch (IOException e) {
-            LOG.error("获取Jenkins任务异常", e);
-            return ResultData.fail("创建Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
+            LOG.error(jobName + " 删除Jenkins任务异常", e);
+            return ResultData.fail("删除Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -139,7 +141,7 @@ public class JenkinsService {
 
             return Objects.nonNull(job);
         } catch (Exception e) {
-            throw new RuntimeException("检查Jenkins任务是否存在异常: " + ExceptionUtils.getRootCauseMessage(e), e);
+            throw new RuntimeException("检查Jenkins任务[" + jobName + "]是否存在异常: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
     }
 
@@ -153,7 +155,7 @@ public class JenkinsService {
         try (JenkinsServer server = getJenkinsServer()) {
             return server.getJob(jobName);
         } catch (IOException e) {
-            throw new RuntimeException("获取Jenkins任务异常: " + ExceptionUtils.getRootCauseMessage(e), e);
+            throw new RuntimeException("获取Jenkins任务[" + jobName + "]异常: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
     }
 
@@ -173,7 +175,7 @@ public class JenkinsService {
 
             return ResultData.success(buildNumber);
         } catch (IOException e) {
-            LOG.error("获取Jenkins任务异常", e);
+            LOG.error("构建指定的无参数Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -197,7 +199,7 @@ public class JenkinsService {
 
             return ResultData.success(buildNumber);
         } catch (IOException e) {
-            LOG.error("获取Jenkins任务异常", e);
+            LOG.error("构建指定的带参数Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -223,7 +225,7 @@ public class JenkinsService {
                 return ResultData.fail("构建任务[" + jobName + "]不存在");
             }
         } catch (IOException e) {
-            LOG.error("获取Jenkins任务异常", e);
+            LOG.error("根据构建号指定的Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -244,7 +246,7 @@ public class JenkinsService {
 
             return ResultData.success(build);
         } catch (IOException e) {
-            LOG.error("获取Jenkins任务异常", e);
+            LOG.error("根据构建号指定的Jenkins任务异常", e);
             return ResultData.fail("构建Jenkins的[" + jobName + "]任务异常: " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
