@@ -361,12 +361,13 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> updateFrozen(String id) {
         SessionUser user = ContextUtil.getSessionUser();
-        ResultData<BuildJob> resultData = build(id, user.getAccount());
+        BuildJob buildJob = dao.findOne(id);
+        ResultData<BuildJob> resultData = build(buildJob, user.getAccount());
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
 
-        BuildJob buildJob = resultData.getData();
+        buildJob = resultData.getData();
         buildJob.setFrozen(Boolean.FALSE);
         OperateResultWithData<BuildJob> result = this.save(buildJob);
         if (result.successful()) {
@@ -389,7 +390,8 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> buildJob(String id) {
         SessionUser user = ContextUtil.getSessionUser();
-        ResultData<BuildJob> resultData = build(id, user.getAccount());
+        BuildJob buildJob = dao.findOne(id);
+        ResultData<BuildJob> resultData = build(buildJob, user.getAccount());
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
@@ -452,12 +454,11 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
     /**
      * 构建
      *
-     * @param recordId 发布记录Id
+     * @param buildJob 发布记录Id
      * @return 返回发布记录
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<BuildJob> build(String recordId, String account) {
-        BuildJob buildJob = dao.findOne(recordId);
+    public ResultData<BuildJob> build(BuildJob buildJob, String account) {
         if (Objects.nonNull(buildJob)) {
             // 检查是否允许构建
             if (!buildJob.getAllowBuild()) {
@@ -504,14 +505,14 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 buildJob.setBuildStatus(BuildStatus.BUILDING);
 
                 // 异步上传
-                CompletableFuture.runAsync(() -> ContextUtil.getBean(BuildJobService.class).runBuild(recordId, jobName, buildNumber, account, needRelease));
+                CompletableFuture.runAsync(() -> ContextUtil.getBean(BuildJobService.class).runBuild(buildJob.getId(), jobName, buildNumber, account, needRelease));
             } else {
                 int buildNumber = 0;
                 buildJob.setBuildNumber(buildNumber);
                 buildJob.setBuildStatus(BuildStatus.FAILURE);
 
                 BuildDetail detail = new BuildDetail();
-                detail.setRecordId(recordId);
+                detail.setRecordId(buildJob.getId());
                 detail.setJobName(jobName);
                 detail.setBuildNumber(buildNumber);
                 detail.setBuildAccount(account);
@@ -698,8 +699,13 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 record.setExpCompleteTime(LocalDateTime.now());
                 this.save(record);
             }
-            this.build(record.getId(), buildAccount);
-            return ResultData.success();
+            ResultData<BuildJob> resultData = this.build(record, buildAccount);
+            if (resultData.successful()) {
+                this.save(resultData.getData());
+                return ResultData.success();
+            } else {
+                return ResultData.fail(resultData.getMessage());
+            }
         } catch (Exception e) {
             String error = ExceptionUtils.getRootCauseMessage(e);
             emailManager.sendMail(managerName + "-Push Hook 异常", error, buildAccount);

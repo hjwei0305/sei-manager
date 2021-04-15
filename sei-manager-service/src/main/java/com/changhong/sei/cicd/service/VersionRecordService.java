@@ -371,7 +371,7 @@ public class VersionRecordService extends BaseEntityService<VersionRecord> {
 
         // 发起Jenkins构建ø
         SessionUser user = ContextUtil.getSessionUser();
-        ResultData<BuildJob> buildResult = recordService.build(record.getId(), user.getAccount());
+        ResultData<BuildJob> buildResult = recordService.build(record, user.getAccount());
         if (buildResult.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
