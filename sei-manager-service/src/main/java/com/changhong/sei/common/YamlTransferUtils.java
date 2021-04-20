@@ -63,7 +63,11 @@ public class YamlTransferUtils {
 //                        if (dotOffset > 0) {
 //                            key = new StringBuilder(key.substring(0, dotOffset));
 //                        }
-                        key = new StringBuilder(key.substring(0, key.length() - currentName.length() - 1));
+                        if (StringUtils.equals(key, currentName)) {
+                            key = new StringBuilder();
+                        } else {
+                            key = new StringBuilder(key.substring(0, key.length() - currentName.length() - 1));
+                        }
                     } else if (JsonToken.END_OBJECT.equals(token)) {
                         int dotOffset = key.lastIndexOf(DOT);
                         if (dotOffset > 0) {
