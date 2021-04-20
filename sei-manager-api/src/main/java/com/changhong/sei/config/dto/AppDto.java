@@ -1,11 +1,9 @@
 package com.changhong.sei.config.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.changhong.sei.ge.dto.ModuleType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.time.LocalDateTime;
 
 /**
  * 应用模块(AppModule)DTO类
@@ -26,6 +24,11 @@ public class AppDto extends BaseEntityDto {
      */
     @ApiModelProperty(value = "模块名称")
     private String name;
+    /**
+     * 模块类型
+     */
+    @ApiModelProperty(value = "模块类型")
+    private ModuleType type;
 
     public String getCode() {
         return code;
@@ -41,5 +44,13 @@ public class AppDto extends BaseEntityDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ModuleType getType() {
+        return type;
+    }
+
+    public void setType(ModuleType type) {
+        this.type = type;
     }
 }

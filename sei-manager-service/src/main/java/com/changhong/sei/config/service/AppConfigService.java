@@ -88,8 +88,10 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
                     .filter(a -> StringUtils.isNotBlank(a.getNameSpace()))
                     .map(a -> {
                         AppDto dto = new AppDto();
+                        dto.setId(a.getId());
                         dto.setCode(a.getCode());
                         dto.setName(a.getName());
+                        dto.setType(a.getType());
                         return dto;
                     }).sorted(Comparator.comparing(AppDto::getCode)).collect(Collectors.toList());
         } else {
