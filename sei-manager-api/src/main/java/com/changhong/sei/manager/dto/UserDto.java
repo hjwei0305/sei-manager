@@ -24,7 +24,7 @@ public class UserDto extends BaseEntityDto implements Serializable {
      * 昵称
      */
     @ApiModelProperty(value = "昵称")
-    private String nickname;
+    private String userName;
     /**
      * 手机
      */
@@ -59,12 +59,12 @@ public class UserDto extends BaseEntityDto implements Serializable {
         this.account = account;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPhone() {

@@ -39,7 +39,7 @@ public class User extends BaseEntity implements Serializable {
      * 昵称
      */
     @Column(name = "nickname")
-    private String nickname;
+    private String userName;
     /**
      * 手机
      */
@@ -92,12 +92,12 @@ public class User extends BaseEntity implements Serializable {
         this.password = password;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUserName(String nickname) {
+        this.userName = nickname;
     }
 
     public String getPhone() {

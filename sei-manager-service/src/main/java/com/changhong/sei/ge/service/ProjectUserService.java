@@ -196,7 +196,7 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> implement
             List<ProjectUserDto> list = pageResult.getRows().stream().map(o -> {
                 ProjectUserDto user = new ProjectUserDto();
                 user.setAccount(o.getAccount());
-                user.setUserName(o.getNickname());
+                user.setUserName(o.getUserName());
                 return user;
             }).collect(Collectors.toList());
             userPageResult.setRows(list);

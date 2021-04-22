@@ -60,7 +60,7 @@ public class EmailManager {
         Set<InternetAddress> toSet = new HashSet<>();
         for (User user : users) {
             try {
-                toSet.add(new InternetAddress(user.getEmail(), user.getNickname()));
+                toSet.add(new InternetAddress(user.getEmail(), user.getUserName()));
             } catch (UnsupportedEncodingException e) {
                 LOG.error("构建邮件发送地址异常", e);
             }

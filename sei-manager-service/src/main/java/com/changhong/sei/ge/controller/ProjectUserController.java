@@ -1,21 +1,17 @@
 package com.changhong.sei.ge.controller;
 
-import com.changhong.sei.common.ObjectType;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.ge.api.ProjectUserApi;
 import com.changhong.sei.ge.dto.ProjectUserDto;
-import com.changhong.sei.ge.entity.Application;
 import com.changhong.sei.ge.entity.ProjectUser;
-import com.changhong.sei.ge.service.ApplicationService;
 import com.changhong.sei.ge.service.ProjectUserService;
 import com.changhong.sei.manager.entity.User;
 import com.changhong.sei.manager.service.UserService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -97,7 +93,7 @@ public class ProjectUserController implements ProjectUserApi {
             Search search = Search.createSearch();
             search.addFilter(new SearchFilter(User.FIELD_ACCOUNT, accounts, SearchFilter.Operator.IN));
             List<User> users = userService.findByFilters(search);
-            Map<String, String> userMap = users.stream().collect(Collectors.toMap(User::getAccount, User::getNickname));
+            Map<String, String> userMap = users.stream().collect(Collectors.toMap(User::getAccount, User::getUserName));
             result = userLists.stream().map(o -> {
                 ProjectUserDto userDto = new ProjectUserDto();
                 userDto.setAccount(o.getAccount());

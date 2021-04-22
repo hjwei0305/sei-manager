@@ -305,7 +305,7 @@ public class ApplicationService extends BaseEntityService<Application> {
         ResultData<Void> resultData = projectUserService.assign(account, appId, application.getName(), ObjectType.APPLICATION);
         if (resultData.successful()) {
             application.setManagerAccount(user.getAccount());
-            application.setManagerAccountName(user.getNickname());
+            application.setManagerAccountName(user.getUserName());
             this.save(application);
         }
         return resultData;

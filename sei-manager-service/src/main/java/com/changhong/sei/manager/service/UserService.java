@@ -34,7 +34,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -214,14 +213,14 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
             if (resultData.successful()) {
                 org.gitlab4j.api.models.User gitUser = resultData.getData();
                 user.setAccount(gitUser.getUsername());
-                user.setNickname(gitUser.getName());
+                user.setUserName(gitUser.getName());
                 user.setEmail(gitUser.getEmail());
                 user.setIsAdmin(gitUser.getIsAdmin());
                 user.setCreateTime(System.currentTimeMillis());
             } else {
                 String account = email.split("@")[0];
                 user.setAccount(account);
-                user.setNickname(account);
+                user.setUserName(account);
                 user.setEmail(email);
                 user.setCreateTime(System.currentTimeMillis());
             }
@@ -342,7 +341,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         dao.save(user);
 
         Context context = new Context();
-        context.setVariable("userName", user.getNickname());
+        context.setVariable("userName", user.getUserName());
         context.setVariable("account", user.getAccount());
         context.setVariable("password", randomPass);
         String content = ThymeLeafHelper.getTemplateEngine().process("notify/CreateUser.html", context);
@@ -350,7 +349,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         try {
             ResultData<org.gitlab4j.api.models.User> resultData = gitlabService.getOptionalUserByEmail(email);
             if (resultData.failed()) {
-                gitlabService.createUser(user.getId(), account, user.getNickname(), email);
+                gitlabService.createUser(user.getId(), account, user.getUserName(), email);
             }
         } catch (Exception e) {
             LogUtil.error(email + " 创建gitlab账号异常", e);
@@ -407,7 +406,7 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
         dao.save(user);
 
         Context context = new Context();
-        context.setVariable("userName", user.getNickname());
+        context.setVariable("userName", user.getUserName());
         context.setVariable("sysName", managerName);
         context.setVariable("password", password);
         String content = ThymeLeafHelper.getTemplateEngine().process("notify/UpdatePassword.html", context);
@@ -462,8 +461,8 @@ public class UserService extends BaseEntityService<User> implements UserDetailsS
             }
         } else {
             User user = dao.findOne(entity.getId());
-            if (StringUtils.isNotBlank(entity.getNickname())) {
-                user.setNickname(entity.getNickname());
+            if (StringUtils.isNotBlank(entity.getUserName())) {
+                user.setUserName(entity.getUserName());
             }
             if (StringUtils.isNotBlank(entity.getPhone())) {
                 user.setPhone(entity.getPhone());

@@ -93,7 +93,7 @@ public class UserPrincipal implements UserDetails {
                 .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
                 .collect(Collectors.toList());
 
-        UserPrincipal principal = new UserPrincipal(user.getId(), user.getAccount(), user.getPassword(), user.getNickname(), user.getPhone(), user.getEmail(), user.getStatus(), user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
+        UserPrincipal principal = new UserPrincipal(user.getId(), user.getAccount(), user.getPassword(), user.getUserName(), user.getPhone(), user.getEmail(), user.getStatus(), user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
         principal.isAdmin = user.getIsAdmin();
         return principal;
     }
