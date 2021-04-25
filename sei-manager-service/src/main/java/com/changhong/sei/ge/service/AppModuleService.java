@@ -392,7 +392,6 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             appModule.setGroupCode(application.getGroupCode());
             appModule.setGroupName(application.getGroupName());
             appModule.setVersion(application.getVersion() + ".0.1");
-            appModule.setNameSpace(namespace);
 
             ResultData<ProjectVo> resultData;
             if (ModuleType.PRODUCT_WEB == module.getType()) {
@@ -403,6 +402,10 @@ public class AppModuleService extends BaseEntityService<AppModule> {
                     return ResultData.fail(resultData.getMessage());
                 }
             } else {
+                if (StringUtils.isBlank(namespace)) {
+                    return ResultData.fail("命名空间不能为空!");
+                }
+                appModule.setNameSpace(namespace);
                 appModule.setType(ModuleType.PROJECT_JAVA);
 
                 ProjectVo project = new ProjectVo();

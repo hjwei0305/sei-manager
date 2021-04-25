@@ -22,7 +22,6 @@ public class ForkProjectRequest implements Serializable {
     @NotBlank
     @ApiModelProperty(notes = "模块id")
     private String moduleId;
-    @NotBlank
     @ApiModelProperty(notes = "派生项目命名空间")
     private String namespace;
 
