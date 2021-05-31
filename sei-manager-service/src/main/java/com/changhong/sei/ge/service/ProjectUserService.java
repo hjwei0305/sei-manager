@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,20 +85,24 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> implement
             user.setObjectName(objectName);
             user.setAccount(account);
 
-            if (ObjectType.MODULE == type) {
-                AppModule module = moduleService.findOne(user.getObjectId());
-                if (Objects.nonNull(module)) {
-                    ResultData<Integer> resultData = gitlabService.addProjectUser(module.getGitId(), account);
-                    if (resultData.successful()) {
-                        user.setGitId(resultData.getData());
-                        this.save(user);
-                    } else {
-                        return ResultData.fail(resultData.getMessage());
-                    }
-                }
-            } else {
+//            if (ObjectType.MODULE == type) {
+//                AppModule module = moduleService.findOne(user.getObjectId());
+//                if (Objects.nonNull(module)) {
+//                    objectName = module.getName();
+//                    ResultData<Integer> resultData = gitlabService.addProjectUser(module.getGitId(), account);
+//                    if (resultData.successful()) {
+//                        user.setGitId(resultData.getData());
+//                        user.setObjectName(objectName);
+//                        this.save(user);
+//                    } else {
+//                        return ResultData.fail(resultData.getMessage());
+//                    }
+//                } else {
+//                    return ResultData.fail("应用模块不存在.");
+//                }
+//            } else {
                 this.save(user);
-            }
+//            }
         }
         return ResultData.success();
     }
@@ -120,27 +125,21 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> implement
             search.clearAll();
             search.addFilter(new SearchFilter(AppModule.ID, objIds, SearchFilter.Operator.IN));
             List<AppModule> moduleList = moduleService.findByFilters(search);
-            Map<String, AppModule> moduleMap = moduleList.stream().collect(Collectors.toMap(AppModule::getId, o -> o));
+            Map<String, String> moduleMap = moduleList.stream().collect(Collectors.toMap(AppModule::getId, AppModule::getName));
 
+            String account;
+            ObjectType type;
+            ResultData<Void> result;
             for (ProjectUser user : users) {
-                ObjectType type = user.getType();
-                if (StringUtils.isNotBlank(user.getAccount()) && Objects.nonNull(type)
-                        && !accounts.contains(user.getAccount() + "|" + type.name())) {
-                    AppModule module = moduleMap.get(user.getObjectId());
-                    if (Objects.nonNull(module)) {
-                        if (StringUtils.isNotBlank(module.getGitId())) {
-                            ResultData<Integer> resultData = gitlabService.addProjectUser(module.getGitId(), user.getAccount());
-                            if (resultData.successful()) {
-                                user.setGitId(resultData.getData());
-                                this.save(user);
-                            } else {
-                                return ResultData.fail(resultData.getMessage());
-                            }
-                        } else {
-                            return ResultData.fail("应用模块[" + module.getName() + "]还未创建git项目.");
-                        }
-                    } else {
-                        return ResultData.fail("应用模块不存在.");
+                account = user.getAccount();
+                type = user.getType();
+                if (StringUtils.isNotBlank(account) && Objects.nonNull(type)
+                        && !accounts.contains(account + "|" + type.name())) {
+                    result = this.assign(account, user.getObjectId(), moduleMap.get(user.getObjectId()), type);
+                    if (result.failed()) {
+                        // 事务回滚
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        return result;
                     }
                 }
             }
