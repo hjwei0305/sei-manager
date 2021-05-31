@@ -507,9 +507,10 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
                 // 异步上传
                 CompletableFuture.runAsync(() -> ContextUtil.getBean(BuildJobService.class).runBuild(buildJob.getId(), jobName, buildNumber, account, needRelease));
             } else {
-                int buildNumber = 0;
+                int buildNumber = Objects.isNull(buildJob.getBuildNumber()) ? 0 : buildJob.getBuildNumber();
                 buildJob.setBuildNumber(buildNumber);
                 buildJob.setBuildStatus(BuildStatus.FAILURE);
+                buildJob.setAllowBuild(Boolean.TRUE);
 
                 BuildDetail detail = new BuildDetail();
                 detail.setRecordId(buildJob.getId());
@@ -621,6 +622,9 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
             BuildStatus status = detail.getBuildStatus();
             // 更新发布记录状态
             record.setBuildStatus(status);
+            if (BuildStatus.SUCCESS != status) {
+                record.setAllowBuild(Boolean.TRUE);
+            }
             dao.save(record);
             if (needRelease) {
                 releaseVersionService.releaseVersion(record);
@@ -680,7 +684,7 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
         TemplateType type = TemplateType.DEPLOY;
         String tag = "dev";
         try {
-            BuildJob record = getByGitIdAndTag(module.getGitId(), tag, tag, type.name());
+            BuildJob record = getByGitIdAndTag(module.getGitId(), tag, envCode, type.name());
             if (Objects.isNull(record)) {
                 record = new BuildJob();
                 record.setType(type.name());

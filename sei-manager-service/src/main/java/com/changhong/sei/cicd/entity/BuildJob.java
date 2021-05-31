@@ -115,7 +115,7 @@ public class BuildJob extends BaseEntity implements IFrozen, Serializable {
      * Jenkins构建号
      */
     @Column(name = "build_number")
-    private Integer buildNumber;
+    private Integer buildNumber = 0;
     /**
      * Jenkins构建状态
      */

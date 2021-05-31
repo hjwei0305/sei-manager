@@ -33,33 +33,29 @@ public class YamlTest {
 
     @Test
     public void yaml2Map() {
-        String yaml = "# 本应用的参数配置\n" +
-                "application_parameters:\n" +
-                "  default-user.tenant-code: ${TENANT_CODE}\n" +
-                "  #ERP凭证参数\n" +
-                "  ErpVoucher:\n" +
-                "    #会计凭证模板代码\n" +
-                "    default-voucherTempCode: SAP-R3\n" +
-                "    #记账业务来源类型代码\n" +
-                "    default-accountSourceTypeCode: SAP-R3\n" +
+        String yaml = "application_parameters:\n" +
+                "  default-user:\n" +
+                "    tenant-code: ${TENANT_CODE}\n" +
+                "    account: ${TENANT_ACCOUNT}\n" +
+                "\n" +
                 "spring:\n" +
-                "  main: # 支持服务名相同的Feign Client\n" +
+                "  main: \n" +
                 "    allow-bean-definition-overriding: true\n" +
+                "  jackson: \n" +
+                "    date-format: yyyy-MM-dd HH:mm:ss\n" +
+                "    time-zone: GMT+8    \n" +
+                "    serialization:\n" +
+                "      fail_on_empty_beans: false \n" +
                 "  datasource:\n" +
                 "    driver-class-name: com.mysql.cj.jdbc.Driver\n" +
-                "    url: jdbc:mysql://${DB_HOST}/sei_fim?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai\n" +
+                "    url: jdbc:mysql://${DB_SERVER}/sei_eai?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai\n" +
                 "    username: ${DB_USERNAME}\n" +
                 "    password: ${DB_PASSWORD}\n" +
                 "    hikari:\n" +
-                "      # 最小空闲连接\n" +
                 "      minimum-idle: 10\n" +
-                "      # 最大连接数\n" +
                 "      maximum-pool-size: 100\n" +
-                "      # 连接超时时间\n" +
                 "      connection-timeout: 30000\n" +
-                "      # 空闲连接超时时间\n" +
                 "      idle-timeout: 180000\n" +
-                "      # 连接最大存活时间\n" +
                 "      max-lifetime: 1800000\n" +
                 "  jpa:\n" +
                 "    hibernate:\n" +
@@ -78,11 +74,7 @@ public class YamlTest {
                 "    port: ${REDIS_PORT}\n" +
                 "    password: ${REDIS_PASSWORD}\n" +
                 "    database: 0\n" +
-                "  jackson: # json序列化时间格式\n" +
-                "    date-format: yyyy-MM-dd HH:mm:ss\n" +
-                "    time-zone: GMT+8\n" +
-                "    serialization:\n" +
-                "      fail_on_empty_beans: false     \n" +
+                "    \n" +
                 "sei:\n" +
                 "  serial:\n" +
                 "    service:\n" +
@@ -91,12 +83,16 @@ public class YamlTest {
                 "  flow:\n" +
                 "    server-name: flow-service\n" +
                 "    server-url: http://${FLOW_SERVER}/flow-service/\n" +
-                "feign:\n" +
-                "  client:\n" +
-                "    config:\n" +
-                "      default:\n" +
-                "        connectTimeout: 60000\n" +
-                "        readTimeout: 60000";
+                "  http:\n" +
+                "    filter:\n" +
+                "      ignore-auth-url:  /webservice/ErpVoucherSyncService\n" +
+                "eai:\n" +
+                "  sap-sender: SEI_DEV\n" +
+                "ECC_PI_URL_SUBJECTBALANCE: http://10.3.1.224:8000/sap/bc/srt/rfc/sap/zws_fi_fssc_kmye/800/zws_fi_fssc_kmye/zws_fi_fssc_kmye\n" +
+                "ECC_PI_URL_ZONGZHANGALLNEW: http://10.3.1.224:8000/sap/bc/srt/rfc/sap/zws_fi_fssc_gi_detail/800/zws_fi_fssc_gi_detail/zws_fi_fssc_gi_detail\n" +
+                "\n" +
+                "SAP_USER: rsx\n" +
+                "SAP_PASSWORD: 123456bb";
         Map<String, Object> dataMap = YamlTransferUtils.yaml2Map(yaml);
         System.out.println(dataMap);
     }

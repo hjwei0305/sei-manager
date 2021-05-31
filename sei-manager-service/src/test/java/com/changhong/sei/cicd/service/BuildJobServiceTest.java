@@ -1,6 +1,7 @@
 package com.changhong.sei.cicd.service;
 
 import com.changhong.sei.BaseUnitTest;
+import com.changhong.sei.cicd.entity.BuildJob;
 import com.changhong.sei.cicd.entity.Tag;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.cicd.dto.BuildDetailDto;
@@ -22,7 +23,8 @@ public class BuildJobServiceTest extends BaseUnitTest {
 
     @Test
     public void build() {
-        service.build("3B7EDA7A-3DEB-11EB-9C08-0242C0A84603", "admin");
+        BuildJob buildJob = service.findOne("3B7EDA7A-3DEB-11EB-9C08-0242C0A84603");
+        service.build(buildJob, "admin");
 
         try {
             Thread.sleep(10000000);
