@@ -169,7 +169,7 @@ public class ProjectUserService extends BaseEntityService<ProjectUser> implement
                     return ResultData.fail("应用模块[" + objectId + "]不存在.");
                 }
                 // 移除gitlab用户
-                gitlabService.removeProjectUser(module.getGitId(), users.stream().map(ProjectUser::getGitId).distinct().toArray(Integer[]::new));
+                //gitlabService.removeProjectUser(module.getGitId(), users.stream().map(ProjectUser::getGitId).distinct().toArray(Integer[]::new));
             }
             Set<String> ids = users.stream().map(ProjectUser::getId).collect(Collectors.toSet());
             this.delete(ids);
