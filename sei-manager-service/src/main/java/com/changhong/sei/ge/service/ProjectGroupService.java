@@ -112,22 +112,23 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
             if (StringUtils.isNotBlank(groupId)) {
                 ResultData<Group> resultData = gitlabService.getGroup(groupId);
                 if (resultData.failed()) {
-                    Group group = new Group();
-                    group.setName(name);
-                    group.setPath(path);
-                    String parentCode = entity.getParentCode();
-                    if (StringUtils.isNotBlank(parentCode) && StringUtils.isNumeric(parentCode)) {
-                        group.setParentId(Integer.valueOf(parentCode));
-                    }
-                    group.setDescription(entity.getRemark());
-                    ResultData<String> result = gitlabService.createGroup(group);
-                    if (result.successful()) {
-                        entity.setCode(result.getData());
-                    } else {
-                        // 事务回滚
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                        return OperateResultWithData.operationFailure(result.getMessage());
-                    }
+                    return OperateResultWithData.operationFailure("获取Gitlab群组[" + groupId + "]错误: " + resultData.getMessage());
+//                    Group group = new Group();
+//                    group.setName(name);
+//                    group.setPath(path);
+//                    String parentCode = entity.getParentCode();
+//                    if (StringUtils.isNotBlank(parentCode) && StringUtils.isNumeric(parentCode)) {
+//                        group.setParentId(Integer.valueOf(parentCode));
+//                    }
+//                    group.setDescription(entity.getRemark());
+//                    ResultData<String> result = gitlabService.createGroup(group);
+//                    if (result.successful()) {
+//                        entity.setCode(result.getData());
+//                    } else {
+//                        // 事务回滚
+//                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//                        return OperateResultWithData.operationFailure(result.getMessage());
+//                    }
                 }
             } else {
                 // 检查path是否在gitlab存在
@@ -136,22 +137,23 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
                     Group gitGroup = resultData.getData();
                     entity.setCode(String.valueOf(gitGroup.getId()));
                 } else {
-                    Group group = new Group();
-                    group.setName(name);
-                    group.setPath(path);
-                    String parentCode = entity.getParentCode();
-                    if (StringUtils.isNotBlank(parentCode) && StringUtils.isNumeric(parentCode)) {
-                        group.setParentId(Integer.valueOf(parentCode));
-                    }
-                    group.setDescription(entity.getRemark());
-                    ResultData<String> result = gitlabService.createGroup(group);
-                    if (result.successful()) {
-                        entity.setCode(result.getData());
-                    } else {
-                        // 事务回滚
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                        return OperateResultWithData.operationFailure(resultData.getMessage());
-                    }
+                    return OperateResultWithData.operationFailure("Gitlab上还不存在群组[" + path + "]");
+//                    Group group = new Group();
+//                    group.setName(name);
+//                    group.setPath(path);
+//                    String parentCode = entity.getParentCode();
+//                    if (StringUtils.isNotBlank(parentCode) && StringUtils.isNumeric(parentCode)) {
+//                        group.setParentId(Integer.valueOf(parentCode));
+//                    }
+//                    group.setDescription(entity.getRemark());
+//                    ResultData<String> result = gitlabService.createGroup(group);
+//                    if (result.successful()) {
+//                        entity.setCode(result.getData());
+//                    } else {
+//                        // 事务回滚
+//                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//                        return OperateResultWithData.operationFailure(resultData.getMessage());
+//                    }
                 }
             }
         } else {
@@ -216,7 +218,7 @@ public class ProjectGroupService extends BaseTreeService<ProjectGroup> {
     private void saveTree(String parentId, List<ProjectGroup> nodeList, Map<String, ProjectGroup> groupMap) {
         ProjectGroup entity;
         for (ProjectGroup group : nodeList) {
-            System.out.println("保存 " + group.getCode() + "  " + group.getName());
+//            System.out.println("保存 " + group.getCode() + "  " + group.getName());
             entity = groupMap.get(group.getCode());
             if (Objects.isNull(entity)) {
                 entity = group;

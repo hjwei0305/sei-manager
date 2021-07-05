@@ -41,10 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -737,15 +734,39 @@ public class BuildJobService extends BaseEntityService<BuildJob> {
      * @return 发挥tagName
      */
     public List<Tag> getTags(String envCode, String moduleId, String currentTag) {
+        if (StringUtils.isBlank(currentTag) || !currentTag.contains(".")) {
+            return new ArrayList<>();
+        }
         // 获取当前指定环境部署的tag
         String lastTag = dao.getLastTag(envCode, moduleId);
+        int lastMajor = 0;
+        int lastMinor = 0;
+        int lastRevised = 0;
 
         Search search = Search.createSearch();
-        if (StringUtils.isNotBlank(lastTag)) {
-            search.addFilter(new SearchFilter(Tag.FIELD_CODE, lastTag, SearchFilter.Operator.GT));
+        if (StringUtils.isNotBlank(lastTag) && lastTag.contains(".")) {
+            String[] tagArr = lastTag.split("[.]");
+            lastMajor = Integer.parseInt(tagArr[0]);
+            lastMinor = Integer.parseInt(tagArr[1]);
+            lastRevised = Integer.parseInt(tagArr[2]);
         }
-        search.addFilter(new SearchFilter(Tag.FIELD_CODE, currentTag, SearchFilter.Operator.LE));
+        String[] tagArr = currentTag.split("[.]");
+        int major = Integer.parseInt(tagArr[0]);
+        int minor = Integer.parseInt(tagArr[1]);
+        int revised = Integer.parseInt(tagArr[2]);
         search.addFilter(new SearchFilter(Tag.FIELD_MODULE_ID, moduleId));
+        if (lastMajor != major) {
+            search.addFilter(new SearchFilter(Tag.FIELD_MAJOR, lastMajor, SearchFilter.Operator.GT));
+            search.addFilter(new SearchFilter(Tag.FIELD_MAJOR, major, SearchFilter.Operator.LE));
+        }
+        if (lastMinor != minor) {
+            search.addFilter(new SearchFilter(Tag.FIELD_MINOR, lastMinor, SearchFilter.Operator.GT));
+            search.addFilter(new SearchFilter(Tag.FIELD_MINOR, minor, SearchFilter.Operator.LE));
+        }
+        if (lastRevised != revised) {
+            search.addFilter(new SearchFilter(Tag.FIELD_REVISED, lastRevised, SearchFilter.Operator.GT));
+            search.addFilter(new SearchFilter(Tag.FIELD_REVISED, revised, SearchFilter.Operator.LE));
+        }
         search.addSortOrder(new SearchOrder(Tag.FIELD_MAJOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_MINOR, SearchOrder.Direction.DESC));
         search.addSortOrder(new SearchOrder(Tag.FIELD_REVISED, SearchOrder.Direction.DESC));
