@@ -28,7 +28,7 @@ dependencies {
     )
     // SEI平台依赖包
 
-//    compile("com.changhong.sei:sei-core-service:$sei_version")
+    compile("com.changhong.sei:sei-core-service:$sei_version")
     compile("com.changhong.sei:sei-cloud:$sei_version")
     // 第三方组件依赖包
     compile("mysql:mysql-connector-java:$mysqlVersion")

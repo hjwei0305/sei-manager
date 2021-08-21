@@ -38,7 +38,8 @@ public class RequisitionOrderServiceTest extends BaseUnitTest {
     @Test
     public void submit() {
         TaskSubmitRequest submitRequest = new TaskSubmitRequest();
-        submitRequest.setRequisitionId("97668A83-406B-11EB-B9A4-0242C0A84603");
+        submitRequest.setRequisitionId("15EDE061-DD5D-11EB-AFB2-0242C0A8431A");
+        submitRequest.setBizKey("15EDE060-DD5D-11EB-AFB2-0242C0A8431A");
         ResultData<Void> resultData = service.submit(submitRequest);
         System.out.println(resultData);
     }

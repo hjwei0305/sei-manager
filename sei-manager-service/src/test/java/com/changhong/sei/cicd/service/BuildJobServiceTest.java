@@ -50,9 +50,9 @@ public class BuildJobServiceTest extends BaseUnitTest {
 
     @Test
     public void getTags() {
-        String envCode = "dev";
-        String moduleId = "4BD8B1FA-4598-11EB-9F4F-0242C0A84603";
-        List<Tag> tags = service.getTags(envCode, moduleId, "5.0.4");
+        String envCode = "Test";
+        String moduleId = "A5FA51A6-A318-11EB-A2C6-0242C0A8431A";
+        List<Tag> tags = service.getTags(envCode, moduleId, "6.0.10");
         System.out.println(tags);
     }
 }
