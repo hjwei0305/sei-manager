@@ -80,7 +80,6 @@ public class Menu extends BaseAuditableEntity implements TreeEntity<Menu> {
     /**
      * 图标文件数据
      */
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "icon_file_data")
     private String iconFileData;
