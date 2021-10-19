@@ -125,13 +125,13 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         module.setGroupName(application.getGroupName());
         // 申请是设置为冻结状态,带申请审核确认后再值为可用状态
         module.setFrozen(Boolean.TRUE);
-        if (StringUtils.isBlank(module.getNameSpace())) {
-            // 前端应用
-            module.setType(ModuleType.PRODUCT_WEB);
-        } else {
-            // java应用
-            module.setType(ModuleType.PRODUCT_JAVA);
-        }
+        // if (StringUtils.isBlank(module.getNameSpace())) {
+        //     // 前端应用
+        //     module.setType(ModuleType.PRODUCT_WEB);
+        // } else {
+        //     // java应用
+        //     module.setType(ModuleType.PRODUCT_JAVA);
+        // }
         // 保存应用模块
         OperateResultWithData<AppModule> resultWithData = this.save(module);
         if (resultWithData.successful()) {
@@ -205,13 +205,13 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         module.setVersion(appModule.getVersion());
         module.setNameSpace(appModule.getNameSpace());
         module.setRemark(appModule.getRemark());
-        if (StringUtils.isBlank(module.getNameSpace())) {
-            // 前端应用
-            module.setType(ModuleType.PRODUCT_WEB);
-        } else {
-            // java应用
-            module.setType(ModuleType.PRODUCT_JAVA);
-        }
+        // if (StringUtils.isBlank(module.getNameSpace())) {
+        //     // 前端应用
+        //     module.setType(ModuleType.PRODUCT_WEB);
+        // } else {
+        //     // java应用
+        //     module.setType(ModuleType.PRODUCT_JAVA);
+        // }
 
         // 保存应用模块
         OperateResultWithData<AppModule> resultWithData = this.save(module);
@@ -383,7 +383,8 @@ public class AppModuleService extends BaseEntityService<AppModule> {
         }
         // 检查当前模块是否是产品项目
         if (ModuleType.PRODUCT_JAVA == module.getType()
-                || ModuleType.PRODUCT_WEB == module.getType()) {
+                || ModuleType.PRODUCT_WEB == module.getType()
+                || ModuleType.PRODUCT_MOBILE == module.getType()) {
             AppModule appModule = new AppModule();
             appModule.setAppId(application.getId());
             appModule.setAppName(application.getName());
@@ -396,6 +397,13 @@ public class AppModuleService extends BaseEntityService<AppModule> {
             ResultData<ProjectVo> resultData;
             if (ModuleType.PRODUCT_WEB == module.getType()) {
                 appModule.setType(ModuleType.PROJECT_WEB);
+
+                resultData = gitlabService.forkProject(module.getGitId(), application.getGroupCode());
+                if (resultData.failed()) {
+                    return ResultData.fail(resultData.getMessage());
+                }
+            } else if (ModuleType.PRODUCT_MOBILE == module.getType()) {
+                appModule.setType(ModuleType.PROJECT_MOBILE);
 
                 resultData = gitlabService.forkProject(module.getGitId(), application.getGroupCode());
                 if (resultData.failed()) {

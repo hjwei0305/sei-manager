@@ -15,6 +15,10 @@ public enum ModuleType {
      * 产品服务
      */
     PRODUCT_JAVA,
+    /**
+     * 产品APP
+     */
+    PRODUCT_MOBILE,
 
 
     /**
@@ -24,5 +28,9 @@ public enum ModuleType {
     /**
      * 项目服务
      */
-    PROJECT_JAVA
+    PROJECT_JAVA,
+    /**
+     * 项目APP
+     */
+    PROJECT_MOBILE
 }
