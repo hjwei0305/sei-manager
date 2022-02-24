@@ -43,8 +43,6 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
     private RuntimeEnvService runtimeEnvService;
     @Autowired
     private TokenInterceptor tokenInterceptor;
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Override
     public BaseEntityService<AuthWhitelist> getService() {
@@ -104,7 +102,7 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
         if (Objects.isNull(runtimeEnv)) {
             return ResultData.fail("运行环境中未找到代码[" + env + "].");
         }
-        // RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
         restTemplate.getInterceptors().add(tokenInterceptor);
 

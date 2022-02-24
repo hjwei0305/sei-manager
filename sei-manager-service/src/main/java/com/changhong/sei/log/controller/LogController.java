@@ -35,19 +35,17 @@ public class LogController implements LogApi {
     private RuntimeEnvService runtimeEnvService;
     @Autowired
     private TokenInterceptor tokenInterceptor;
-    @Autowired
-    private RestTemplate restTemplate;
 
     /**
      * 分页查询
      */
     @Override
-    public ResultData<PageResult<LogResponse>> findByPage(@Valid LogSearchRequest search) {
+    public ResultData<PageResult<LogResponse>> findByPage(LogSearchRequest search) {
         RuntimeEnv runtimeEnv = runtimeEnvService.findByCode(search.getEnv());
         if (Objects.isNull(runtimeEnv)) {
             return ResultData.fail("运行环境中未找到代码[" + search.getEnv() + "].");
         }
-        // RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
         restTemplate.getInterceptors().add(tokenInterceptor);
 
@@ -64,7 +62,7 @@ public class LogController implements LogApi {
         if (Objects.isNull(runtimeEnv)) {
             return ResultData.fail("运行环境中未找到代码[" + env + "].");
         }
-        // RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
         restTemplate.getInterceptors().add(tokenInterceptor);
         Map<String, String> params = new HashMap<>();
@@ -84,7 +82,7 @@ public class LogController implements LogApi {
         if (Objects.isNull(runtimeEnv)) {
             return ResultData.fail("运行环境中未找到代码[" + env + "].");
         }
-        // RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
         restTemplate.getInterceptors().add(tokenInterceptor);
         Map<String, String> params = new HashMap<>();
