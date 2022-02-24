@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -62,12 +60,9 @@ public class LogController implements LogApi {
         RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
         restTemplate.getInterceptors().add(new TokenInterceptor());
-        Map<String, String> params = new HashMap<>();
-        params.put("serviceName", serviceName);
-        params.put("id", id);
 
         String baseUrl = runtimeEnv.getAgentServer();
-        return restTemplate.getForObject(baseUrl + "/log/detail", ResultData.class, params);
+        return restTemplate.getForObject(baseUrl + "/log/detail?serviceName=" + serviceName + "&id=" + id, ResultData.class);
     }
 
     /**
@@ -82,11 +77,8 @@ public class LogController implements LogApi {
         RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
         restTemplate.getInterceptors().add(new TokenInterceptor());
-        Map<String, String> params = new HashMap<>();
-        params.put("serviceName", serviceName);
-        params.put("traceId", traceId);
 
         String baseUrl = runtimeEnv.getAgentServer();
-        return restTemplate.getForObject(baseUrl + "/log/findByTraceId", ResultData.class, params);
+        return restTemplate.getForObject(baseUrl + "/log/findByTraceId?serviceName=" + serviceName + "&traceId=" + traceId, ResultData.class);
     }
 }

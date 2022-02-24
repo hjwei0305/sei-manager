@@ -15,6 +15,7 @@ import com.changhong.sei.ge.entity.RuntimeEnv;
 import com.changhong.sei.ge.service.RuntimeEnvService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -105,6 +106,6 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
         restTemplate.getInterceptors().add(new TokenInterceptor());
 
         String baseUrl = runtimeEnv.getGatewayServer();
-        return restTemplate.postForObject(baseUrl + "/routes/reloadCache", null, ResultData.class);
+        return restTemplate.postForObject(baseUrl + "/routes/reloadCache", HttpEntity.EMPTY, ResultData.class);
     }
 }
