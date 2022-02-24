@@ -41,8 +41,6 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
     private AuthWhitelistService service;
     @Autowired
     private RuntimeEnvService runtimeEnvService;
-    @Autowired
-    private TokenInterceptor tokenInterceptor;
 
     @Override
     public BaseEntityService<AuthWhitelist> getService() {
@@ -104,7 +102,7 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
         }
         RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
-        restTemplate.getInterceptors().add(tokenInterceptor);
+        restTemplate.getInterceptors().add(new TokenInterceptor());
 
         String baseUrl = runtimeEnv.getGatewayServer();
         return restTemplate.postForObject(baseUrl + "/routes/reloadCache", null, ResultData.class);

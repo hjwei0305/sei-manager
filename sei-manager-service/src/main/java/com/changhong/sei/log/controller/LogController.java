@@ -32,8 +32,6 @@ import java.util.Objects;
 public class LogController implements LogApi {
     @Autowired
     private RuntimeEnvService runtimeEnvService;
-    @Autowired
-    private TokenInterceptor tokenInterceptor;
 
     /**
      * 分页查询
@@ -46,7 +44,7 @@ public class LogController implements LogApi {
         }
         RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
-        restTemplate.getInterceptors().add(tokenInterceptor);
+        restTemplate.getInterceptors().add(new TokenInterceptor());
 
         String baseUrl = runtimeEnv.getAgentServer();
         return restTemplate.postForObject(baseUrl + "/log/findByPage", search, ResultData.class);
@@ -63,7 +61,7 @@ public class LogController implements LogApi {
         }
         RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
-        restTemplate.getInterceptors().add(tokenInterceptor);
+        restTemplate.getInterceptors().add(new TokenInterceptor());
         Map<String, String> params = new HashMap<>();
         params.put("serviceName", serviceName);
         params.put("id", id);
@@ -83,7 +81,7 @@ public class LogController implements LogApi {
         }
         RestTemplate restTemplate = new RestTemplate();
         //向restTemplate中添加自定义的拦截器
-        restTemplate.getInterceptors().add(tokenInterceptor);
+        restTemplate.getInterceptors().add(new TokenInterceptor());
         Map<String, String> params = new HashMap<>();
         params.put("serviceName", serviceName);
         params.put("traceId", traceId);

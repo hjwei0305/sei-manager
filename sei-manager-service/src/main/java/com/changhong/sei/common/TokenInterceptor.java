@@ -5,7 +5,6 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -15,7 +14,6 @@ import java.io.IOException;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2022-02-24 14:17
  */
-@Component
 public class TokenInterceptor implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
