@@ -53,6 +53,6 @@ public class RuntimeEnvController extends BaseEntityController<RuntimeEnv, Runti
      */
     @Override
     public ResultData<List<RuntimeEnvDto>> findAllUnfrozen() {
-        return ResultData.success(convertToDtos(service.findAll()));
+        return ResultData.success(convertToDtos(service.findAllUnfrozen()));
     }
 }

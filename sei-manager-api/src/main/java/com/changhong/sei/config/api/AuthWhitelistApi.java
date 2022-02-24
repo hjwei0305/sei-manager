@@ -56,4 +56,14 @@ public interface AuthWhitelistApi extends BaseEntityApi<AuthWhitelistDto> {
     @PostMapping(path = "sync", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "同步认证白名单到其他环境", notes = "同步认证白名单到其他环境")
     ResultData<Void> syncConfigs(@Valid @RequestBody SyncAuthWhitelistDto dto);
+
+    /**
+     * 发布
+     *
+     * @param env 环境代码
+     * @return 操作结果
+     */
+    @PostMapping(path = "publish")
+    @ApiOperation(value = "发布", notes = "发布")
+    ResultData<Void> publish(@RequestParam("env") String env);
 }

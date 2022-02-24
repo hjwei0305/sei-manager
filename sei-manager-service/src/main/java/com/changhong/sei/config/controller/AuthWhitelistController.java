@@ -1,5 +1,6 @@
 package com.changhong.sei.config.controller;
 
+import com.changhong.sei.common.TokenInterceptor;
 import com.changhong.sei.config.api.AuthWhitelistApi;
 import com.changhong.sei.config.dto.AuthWhitelistDto;
 import com.changhong.sei.config.dto.SyncAuthWhitelistDto;
@@ -10,13 +11,17 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.ge.entity.RuntimeEnv;
+import com.changhong.sei.ge.service.RuntimeEnvService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +39,12 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
      */
     @Autowired
     private AuthWhitelistService service;
+    @Autowired
+    private RuntimeEnvService runtimeEnvService;
+    @Autowired
+    private TokenInterceptor tokenInterceptor;
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public BaseEntityService<AuthWhitelist> getService() {
@@ -79,5 +90,25 @@ public class AuthWhitelistController extends BaseEntityController<AuthWhitelist,
     @Override
     public ResultData<Void> syncConfigs(SyncAuthWhitelistDto dto) {
         return service.syncConfigs(dto);
+    }
+
+    /**
+     * 发布
+     *
+     * @param env 环境代码
+     * @return 操作结果
+     */
+    @Override
+    public ResultData<Void> publish(String env) {
+        RuntimeEnv runtimeEnv = runtimeEnvService.findByCode(env);
+        if (Objects.isNull(runtimeEnv)) {
+            return ResultData.fail("运行环境中未找到代码[" + env + "].");
+        }
+        // RestTemplate restTemplate = new RestTemplate();
+        //向restTemplate中添加自定义的拦截器
+        restTemplate.getInterceptors().add(tokenInterceptor);
+
+        String baseUrl = runtimeEnv.getGatewayServer();
+        return restTemplate.postForObject(baseUrl + "/routes/reloadCache", null, ResultData.class);
     }
 }

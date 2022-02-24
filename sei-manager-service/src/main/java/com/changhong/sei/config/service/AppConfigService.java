@@ -402,7 +402,7 @@ public class AppConfigService extends BaseEntityService<AppConfig> {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResultData<Void> saveYamlData(final String appCode, final String envCode, String yaml) {
-        RuntimeEnv env = runtimeEnvService.findByProperty(RuntimeEnv.CODE_FIELD, envCode);
+        RuntimeEnv env = runtimeEnvService.findByCode(envCode);
         if (Objects.isNull(env)) {
             return ResultData.fail("运行环境中未找到代码[" + envCode + "].");
         }
